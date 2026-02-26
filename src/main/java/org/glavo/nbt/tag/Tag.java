@@ -17,7 +17,6 @@ package org.glavo.nbt.tag;
 
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.Nullable;
-import org.jetbrains.annotations.Range;
 
 import java.lang.invoke.MethodHandles;
 import java.util.Objects;
@@ -60,7 +59,6 @@ public sealed abstract class Tag
     }
 
     /// If the tag is a child of a [parent tag][ParentTag], returns the index of the tag in its parent; otherwise, returns `-1`.
-    @Range(from = -1, to = Integer.MAX_VALUE)
     @Contract(pure = true)
     public int getIndex() {
         return index;

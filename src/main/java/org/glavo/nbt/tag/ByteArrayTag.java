@@ -21,6 +21,18 @@ public final class ByteArrayTag extends ArrayTag {
 
     byte[] value = EMPTY;
 
+    public ByteArrayTag() {
+    }
+
+    public ByteArrayTag(String name) {
+        this.name = name;
+    }
+
+    public ByteArrayTag(String name, byte[] value) {
+        this.name = name;
+        this.value = value.clone();
+    }
+
     /// Returns the value of the tag.
     public byte[] get() {
         return value.clone();

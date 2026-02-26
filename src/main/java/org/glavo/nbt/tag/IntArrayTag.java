@@ -21,6 +21,13 @@ public final class IntArrayTag extends ArrayTag {
 
     int[] value = EMPTY;
 
+    public IntArrayTag() {
+    }
+
+    public IntArrayTag(String name) {
+        this.name = name;
+    }
+
     /// Returns the value of the tag.
     public int[] get() {
         return value.clone();

@@ -19,6 +19,18 @@ package org.glavo.nbt.tag;
 public final class ShortTag extends Tag {
     private short value;
 
+    public ShortTag() {
+    }
+
+    public ShortTag(String name) {
+        this.name = name;
+    }
+
+    public ShortTag(String name, short value) {
+        this.name = name;
+        this.value = value;
+    }
+
     /// Returns the value of the tag.
     public short get() {
         return value;

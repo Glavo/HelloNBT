@@ -15,8 +15,21 @@
  */
 package org.glavo.nbt.io;
 
+import org.glavo.nbt.tag.Tag;
+
+import java.lang.invoke.MethodHandles;
+
 public final class NBTIO {
 
+    static final Tag.Unsafe TAG_UNSAFE;
+
+    static {
+        try {
+            TAG_UNSAFE = Tag.Unsafe.getInstance(MethodHandles.lookup());
+        } catch (IllegalAccessException e) {
+            throw new AssertionError(e);
+        }
+    }
 
     private NBTIO() {
     }

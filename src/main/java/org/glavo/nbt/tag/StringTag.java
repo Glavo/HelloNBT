@@ -18,7 +18,21 @@ package org.glavo.nbt.tag;
 import java.util.Objects;
 
 public final class StringTag extends Tag {
-    private String value = "";
+    private String value;
+
+    public StringTag() {
+        this.value = "";
+    }
+
+    public StringTag(String name) {
+        this.name = Objects.requireNonNull(name, "name");
+        this.value = "";
+    }
+
+    public StringTag(String name, String value) {
+        this.name = Objects.requireNonNull(name, "name");
+        this.value = Objects.requireNonNull(value, "value");
+    }
 
     /// Returns the value of the tag.
     public String get() {

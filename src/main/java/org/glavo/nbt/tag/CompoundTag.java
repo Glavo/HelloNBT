@@ -24,12 +24,15 @@ public final class CompoundTag<T extends Tag> extends ParentTag<T> {
 
     private final Map<String, T> subTagsByName = new HashMap<>();
 
-    @Override
-    void updateSubTagName(Tag tag, @Nullable String name) throws IllegalStateException {
-        if (name == null) {
-            throw new IllegalStateException("The name of the subtag must not be null for CompoundTag");
-        }
+    public CompoundTag() {
+    }
 
+    public CompoundTag(String name) {
+        this.name = name;
+    }
+
+    @Override
+    void updateSubTagName(Tag tag, String name) throws IllegalStateException {
         if (subTagsByName.containsKey(name)) {
             throw new IllegalStateException("The name '" + name + "' is already used by another subtag");
         }
@@ -58,14 +61,8 @@ public final class CompoundTag<T extends Tag> extends ParentTag<T> {
     /// {@inheritDoc}
     ///
     /// If another tag with the same name already exists, the old tag will be removed.
-    ///
-    /// @throws IllegalArgumentException if the name of the `tag` is `null`.
     @Override
     public void add(T tag) {
-        if (tag.getName() == null) {
-            throw new IllegalArgumentException("The tag name must not be null");
-        }
-
         if (tag.getParent() != null) {
             if (tag.getParent() == this) {
                 // The tag is already a child of this tag.

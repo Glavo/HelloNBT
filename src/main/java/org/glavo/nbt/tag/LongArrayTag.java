@@ -21,6 +21,13 @@ public final class LongArrayTag extends ArrayTag {
 
     long[] value = EMPTY;
 
+    public LongArrayTag() {
+    }
+
+    public LongArrayTag(String name) {
+        this.name = name;
+    }
+
     /// Returns the value of the tag.
     public long[] get() {
         return value.clone();

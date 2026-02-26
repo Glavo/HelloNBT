@@ -20,31 +20,31 @@ import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.Range;
 
 import java.lang.invoke.MethodHandles;
-import java.util.Objects;
 
 /// @author Glavo
 public sealed abstract class Tag
         permits ByteTag, ShortTag, IntTag, LongTag, FloatTag, DoubleTag, StringTag, ArrayTag, ParentTag {
     @Nullable ParentTag<?> parent;
 
-    @Nullable String name;
+    String name = "";
     int index;
+
 
     /// Returns the type of the tag.
     public abstract TagType getType();
 
-    /// Returns the name of the tag, or `null` if it has no name.
+    /// Returns the name of the tag, or an empty string if it has no name.
     @Contract(pure = true)
-    public @Nullable String getName() {
+    public String getName() {
         return name;
     }
 
     /// Set the name of the tag.
     ///
     /// @throws IllegalStateException if this tag is a child of a parent tag and the name is not valid for the parent tag.
-    public void setName(@Nullable String name) throws IllegalStateException {
+    public void setName(String name) throws IllegalStateException {
         // If the name is the same as the current name, do nothing.
-        if (Objects.equals(this.name, name)) {
+        if (this.name.equals(name)) {
             return;
         }
 

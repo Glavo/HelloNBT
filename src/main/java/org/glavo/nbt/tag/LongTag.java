@@ -19,6 +19,18 @@ package org.glavo.nbt.tag;
 public final class LongTag extends Tag {
     private long value;
 
+    public LongTag() {
+    }
+
+    public LongTag(String name) {
+        this.name = name;
+    }
+
+    public LongTag(String name, long value) {
+        this.name = name;
+        this.value = value;
+    }
+
     /// Returns the value of the tag.
     public long get() {
         return value;

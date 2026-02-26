@@ -19,6 +19,18 @@ package org.glavo.nbt.tag;
 public final class DoubleTag extends Tag {
     private double value;
 
+    public DoubleTag() {
+    }
+
+    public DoubleTag(String name) {
+        this.name = name;
+    }
+
+    public DoubleTag(String name, double value) {
+        this.name = name;
+        this.value = value;
+    }
+
     /// Returns the value of the tag.
     public double get() {
         return value;

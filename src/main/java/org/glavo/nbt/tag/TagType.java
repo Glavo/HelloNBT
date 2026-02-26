@@ -15,56 +15,87 @@
  */
 package org.glavo.nbt.tag;
 
+import org.jetbrains.annotations.Nullable;
+
 /// @author Glavo
 public enum TagType {
     /// Used to mark the end of compound tags.
     /// This tag does not have a name, so it is always a single byte 0.
     /// It may also be the type of empty List tags.
-    END(0x00),
+    END(null),
 
     /// 1 byte signed integer type. Sometimes used for booleans.
-    BYTE(0x01),
+    BYTE(ByteTag.class),
 
     /// 2 byte signed integer type.
-    SHORT(0x02),
+    SHORT(ShortTag.class),
 
     /// 4 byte signed integer type.
-    INT(0x03),
+    INT(IntTag.class),
 
     /// 8 byte signed integer type.
-    LONG(0x04),
+    LONG(LongTag.class),
 
     /// 4 byte floating point type.
-    FLOAT(0x05),
+    FLOAT(FloatTag.class),
 
     /// 8 byte floating point type.
-    DOUBLE(0x06),
+    DOUBLE(DoubleTag.class),
 
     /// An array of bytes.
-    BYTE_ARRAY(0x07),
+    BYTE_ARRAY(ByteArrayTag.class),
 
     /// A UTF-8 encoded string. It has a size, rather than being null terminated.
-    STRING(0x08),
+    STRING(StringTag.class),
 
     /// A list of tag payloads, without tag IDs or names, apart from the one before the length.
-    LIST(0x09),
+    LIST(ListTag.class),
 
     /// A list of fully formed tags, including their IDs, names, and payloads. No two tags may have the same name.
-    COMPOUND(0x0A),
+    COMPOUND(CompoundTag.class),
 
     /// An array of 4 byte signed integers.
-    INT_ARRAY(0x0B),
+    INT_ARRAY(IntArrayTag.class),
 
     /// An array of 8 byte signed integers.
-    LONG_ARRAY(0x0C);
+    LONG_ARRAY(LongArrayTag.class);
 
-    private final byte id;
+    private static final TagType[] TYPES = values();
 
-    TagType(int id) {
-        this.id = (byte) id;
+    /// Returns the tag type by its id; returns `null` if the id is invalid.
+    public static @Nullable TagType getById(byte id) {
+        return id >= 0 && id < TYPES.length ? TYPES[id] : null;
     }
 
-    public byte getId() {
-        return id;
+    private final @Nullable Class<? extends Tag> tagClass;
+
+    TagType(@Nullable Class<? extends Tag> tagClass) {
+        this.tagClass = tagClass;
+    }
+
+    /// Returns the tag id.
+    public byte id() {
+        return (byte) ordinal();
+    }
+
+    /// Creates a new tag of this type with the given name.
+    ///
+    /// @throws UnsupportedOperationException if this tag type is `END`.
+    public Tag createTag(String name) {
+        return switch (this) {
+            case END -> throw new UnsupportedOperationException("Cannot create an END tag");
+            case BYTE -> new ByteTag(name);
+            case SHORT -> new ShortTag(name);
+            case INT -> new IntTag(name);
+            case LONG -> new LongTag(name);
+            case FLOAT -> new FloatTag(name);
+            case DOUBLE -> new DoubleTag(name);
+            case STRING -> new StringTag(name);
+            case BYTE_ARRAY -> new ByteArrayTag(name);
+            case INT_ARRAY -> new IntArrayTag(name);
+            case LONG_ARRAY -> new LongArrayTag(name);
+            case LIST -> new ListTag<>(name);
+            case COMPOUND -> new CompoundTag<>(name);
+        };
     }
 }

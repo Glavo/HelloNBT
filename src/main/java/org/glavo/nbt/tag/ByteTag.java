@@ -19,6 +19,18 @@ package org.glavo.nbt.tag;
 public final class ByteTag extends Tag {
     private byte value;
 
+    public ByteTag() {
+    }
+
+    public ByteTag(String name) {
+        this.name = name;
+    }
+
+    public ByteTag(String name, byte value) {
+        this.name = name;
+        this.value = value;
+    }
+
     /// Returns the value of the tag.
     public byte get() {
         return value;

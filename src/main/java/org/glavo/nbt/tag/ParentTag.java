@@ -15,8 +15,6 @@
  */
 package org.glavo.nbt.tag;
 
-import org.jetbrains.annotations.Nullable;
-
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -28,7 +26,7 @@ public sealed abstract class ParentTag<T extends Tag> extends Tag
 
     final List<T> subTags = new ArrayList<>();
 
-    abstract void updateSubTagName(Tag tag, @Nullable String name) throws IllegalStateException;
+    abstract void updateSubTagName(Tag tag, String name) throws IllegalStateException;
 
     /// Returns `true` if this tag is the root tag, `false` otherwise.
     public final boolean isRoot() {

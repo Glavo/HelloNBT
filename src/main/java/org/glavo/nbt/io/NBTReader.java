@@ -15,6 +15,7 @@
  */
 package org.glavo.nbt.io;
 
+import org.glavo.nbt.tag.*;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.*;
@@ -22,8 +23,7 @@ import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.charset.StandardCharsets;
 
-/// An InputStream wrapper with configurable byte order and internal buffering for reading NBT data.
-final class InputWrapper implements Closeable {
+public final class NBTReader implements Closeable {
     private final ByteOrder byteOrder;
     private final InputStream inputStream;
     private ByteBuffer buffer;
@@ -31,7 +31,7 @@ final class InputWrapper implements Closeable {
     /// Used for reading UTF-8 strings
     private @Nullable StringBuilder charsBuffer;
 
-    InputWrapper(ByteOrder byteOrder, InputStream inputStream) {
+    NBTReader(ByteOrder byteOrder, InputStream inputStream) {
         this.byteOrder = byteOrder;
         this.inputStream = inputStream;
         this.buffer = ByteBuffer.allocate(8192).order(byteOrder);
@@ -41,6 +41,93 @@ final class InputWrapper implements Closeable {
     public void close() throws IOException {
         inputStream.close();
     }
+
+    // High-level read methods
+
+    public @Nullable Tag readTag() throws IOException {
+        byte tagByte = readByte();
+        var type = TagType.getById(tagByte);
+        if (type == null) {
+            throw new IOException("Invalid tag type: %02x".formatted(Byte.toUnsignedInt(tagByte)));
+        }
+
+        if (type == TagType.END) {
+            return null;
+        }
+
+        Tag tag = type.createTag(readString());
+        readContent(tag);
+        return tag;
+    }
+
+    private void readContent(Tag tag) throws IOException {
+        if (tag instanceof ByteTag byteTag) {
+            byteTag.set(readByte());
+        } else if (tag instanceof ShortTag shortTag) {
+            shortTag.set(readShort());
+        } else if (tag instanceof IntTag intTag) {
+            intTag.set(readInt());
+        } else if (tag instanceof LongTag longTag) {
+            longTag.set(readLong());
+        } else if (tag instanceof FloatTag floatTag) {
+            floatTag.set(readFloat());
+        } else if (tag instanceof DoubleTag doubleTag) {
+            doubleTag.set(readDouble());
+        } else if (tag instanceof StringTag stringTag) {
+            stringTag.set(readString());
+        } else if (tag instanceof ByteArrayTag byteArrayTag) {
+            NBTIO.TAG_UNSAFE.setInternalArray(byteArrayTag, readByteArray());
+        } else if (tag instanceof IntArrayTag intArrayTag) {
+            NBTIO.TAG_UNSAFE.setInternalArray(intArrayTag, readIntArray());
+        } else if (tag instanceof LongArrayTag longArrayTag) {
+            NBTIO.TAG_UNSAFE.setInternalArray(longArrayTag, readLongArray());
+        } else if (tag instanceof ListTag<?> listTag) {
+            byte elementTypeId = readByte();
+            var elementType = TagType.getById(elementTypeId);
+
+            if (elementType == null) {
+                throw new IOException("Invalid element type: %02x".formatted(Byte.toUnsignedInt(elementTypeId)));
+            }
+
+            listTag.setElementType(elementType);
+
+            int count = readInt();
+            if (count < 0) {
+                throw new IOException("Invalid list length: " + Integer.toUnsignedLong(count));
+            }
+
+            if (elementType == TagType.END && count != 0) {
+                throw new IOException("Cannot create a non-empty list with element type END");
+            }
+
+            @SuppressWarnings("unchecked")
+            var uncheckedListTag = (ListTag<Tag>) listTag;
+            for (int i = 0; i < count; i++) {
+                Tag subTag = elementType.createTag("");
+                readContent(subTag);
+                uncheckedListTag.add(subTag);
+            }
+        } else if (tag instanceof CompoundTag<?> compoundTag) {
+            @SuppressWarnings("unchecked")
+            var uncheckCompoundTag = (CompoundTag<Tag>) compoundTag;
+
+            int count = 0;
+
+            Tag subTag;
+            while ((subTag = readTag()) != null) {
+                count++;
+                uncheckCompoundTag.add(subTag);
+            }
+
+            if (count != compoundTag.size()) {
+                throw new IOException("Duplicate subtags found in compound tag");
+            }
+        } else {
+            throw new AssertionError("Unexpected tag type: " + tag.getType());
+        }
+    }
+
+    // Low-level read methods
 
     private void fillBuffer(int required) throws IOException {
         if (buffer.remaining() >= required) {
@@ -63,6 +150,49 @@ final class InputWrapper implements Closeable {
             }
             buffer.limit(buffer.limit() + read);
         }
+    }
+
+    public byte[] readByteArray() throws IOException {
+        int len = readInt();
+        if (len < 0 || len >= Integer.MAX_VALUE - 8) {
+            throw new IOException("Array length too large");
+        }
+
+        fillBuffer(len);
+
+        byte[] array = new byte[len];
+        buffer.get(array);
+        return array;
+    }
+
+    public int[] readIntArray() throws IOException {
+        int len = readInt();
+        if (len < 0 || len > Integer.MAX_VALUE / Integer.BYTES - 8) {
+            throw new IOException("Array length too large");
+        }
+
+        int bytes = len * Integer.BYTES;
+        fillBuffer(bytes);
+
+        int[] result = new int[len];
+        buffer.asIntBuffer().get(result);
+        buffer.position(buffer.position() + bytes);
+        return result;
+    }
+
+    public long[] readLongArray() throws IOException {
+        int len = readInt();
+        if (len < 0 || len > Integer.MAX_VALUE / Long.BYTES - 8) {
+            throw new IOException("Array length too large");
+        }
+
+        int bytes = len * Long.BYTES;
+        fillBuffer(bytes);
+
+        long[] result = new long[len];
+        buffer.asLongBuffer().get(result);
+        buffer.position(buffer.position() + bytes);
+        return result;
     }
 
     /// Read a byte from the input stream.
@@ -104,8 +234,23 @@ final class InputWrapper implements Closeable {
         return buffer.getLong();
     }
 
-    /// @see <a href="https://en.wikipedia.org/wiki/UTF-8#Modified_UTF-8">Modified UTF-8</a>
-    public String readUTF() throws IOException {
+    /// Read a float from the input stream.
+    public float readFloat() throws IOException {
+        fillBuffer(Float.BYTES);
+        return buffer.getFloat();
+    }
+
+    /// Read a double from the input stream.
+    public double readDouble() throws IOException {
+        fillBuffer(Double.BYTES);
+        return buffer.getDouble();
+    }
+
+    /// Read a string from the input stream.
+    ///
+    /// For big-endian byte order, the string is encoded in [modified UTF-8](https://en.wikipedia.org/wiki/UTF-8#Modified_UTF-8);
+    /// For little-endian byte order, the string is encoded in standard UTF-8.
+    public String readString() throws IOException {
         int len = readUnsignedShort();
 
         if (len == 0) {
@@ -119,6 +264,11 @@ final class InputWrapper implements Closeable {
         int limit = offset + len;
 
         buffer.position(limit);
+
+        // For Minecraft Bedrock Edition, the string is encoded in standard UTF-8
+        if (byteOrder == ByteOrder.LITTLE_ENDIAN) {
+            return new String(array, offset, len, StandardCharsets.UTF_8);
+        }
 
         // Scan the number of ASCII characters in the prefix
         int asciiLen = 0;

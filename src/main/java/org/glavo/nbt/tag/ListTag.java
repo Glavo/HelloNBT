@@ -15,13 +15,23 @@
  */
 package org.glavo.nbt.tag;
 
-import org.jetbrains.annotations.Nullable;
+import java.util.Objects;
 
 public final class ListTag<T extends Tag> extends ParentTag<T> {
 
+    /// The type of the elements in the list.
+    private TagType elementType = TagType.END;
+
+    public ListTag() {
+    }
+
+    public ListTag(String name) {
+        this.name = name;
+    }
+
     @Override
-    void updateSubTagName(Tag tag, @Nullable String name) throws IllegalStateException {
-        if (name != null) {
+    void updateSubTagName(Tag tag, String name) throws IllegalStateException {
+        if (!name.isEmpty()) {
             throw new IllegalStateException("The name of the subtag must be null for ListTag");
         }
     }
@@ -31,11 +41,38 @@ public final class ListTag<T extends Tag> extends ParentTag<T> {
         return TagType.LIST;
     }
 
+    /// Returns the type of the elements in the list.
+    ///
+    /// If the element type is [TagType#END], the list is empty.
+    public TagType getElementType() {
+        return elementType;
+    }
+
+    /// Sets the type of the elements in the list.
+    ///
+    /// If the list is not empty, the element type must match the type of all elements in the list.
+    public void setElementType(TagType elementType) throws IllegalStateException {
+        Objects.requireNonNull(elementType);
+        if (!isEmpty()) {
+            for (T subTag : subTags) {
+                if (subTag.getType() != elementType) {
+                    throw new IllegalStateException("Cannot set element type to " + elementType + " for a list with elements of type " + subTag.getType());
+                }
+            }
+        }
+
+        this.elementType = elementType;
+    }
+
     /// {@inheritDoc}
     ///
-    /// The name of the tag will be set to `null`.
+    /// The name of the tag will be set to empty.
     @Override
     public void add(T tag) {
+        if (tag.getType() != elementType) {
+            throw new IllegalArgumentException("Cannot add a tag of type " + tag.getType() + " to a list of type " + elementType);
+        }
+
         if (tag.getParent() != null) {
             if (tag.getParent() == this) {
                 // The tag is already a child of this tag.
@@ -46,7 +83,7 @@ public final class ListTag<T extends Tag> extends ParentTag<T> {
         }
 
         // Clear the name of the tag.
-        tag.name = null;
+        tag.name = "";
 
         // Set the parent and index of the tag.
         tag.parent = this;

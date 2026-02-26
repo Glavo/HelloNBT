@@ -19,6 +19,18 @@ package org.glavo.nbt.tag;
 public final class IntTag extends Tag {
     private int value;
 
+    public IntTag() {
+    }
+
+    public IntTag(String name) {
+        this.name = name;
+    }
+
+    public IntTag(String name, int value) {
+        this.name = name;
+        this.value = value;
+    }
+
     /// Returns the value of the tag.
     public int get() {
         return value;

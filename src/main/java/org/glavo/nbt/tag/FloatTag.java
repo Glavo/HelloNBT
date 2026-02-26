@@ -19,6 +19,18 @@ package org.glavo.nbt.tag;
 public final class FloatTag extends Tag {
     private float value;
 
+    public FloatTag() {
+    }
+
+    public FloatTag(String name) {
+        this.name = name;
+    }
+
+    public FloatTag(String name, float value) {
+        this.name = name;
+        this.value = value;
+    }
+
     /// Returns the value of the tag.
     public float get() {
         return value;

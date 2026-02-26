@@ -72,7 +72,7 @@ public sealed abstract class ParentTag<T extends Tag> extends Tag
     public final Iterator<T> iterator() {
         Iterator<T> iterator = subTags.iterator();
 
-        // // Prevent calling Iterator#remove()
+        // Prevent calling Iterator#remove()
         return new Iterator<>() {
             @Override
             public boolean hasNext() {

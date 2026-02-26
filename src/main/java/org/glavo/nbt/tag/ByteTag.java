@@ -35,8 +35,10 @@ public final class ByteTag extends Tag {
         this.value = value;
     }
 
-    /// Sets the value of the tag.
-    public void set(boolean value) {
+    /// Sets the boolean value of the tag.
+    ///
+    /// If the `value` is `true`, the tag will be set to `1`; otherwise, it will be set to `0`.
+    public void setBoolean(boolean value) {
         this.value = (byte) (value ? 1 : 0);
     }
 

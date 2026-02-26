@@ -20,20 +20,42 @@ import java.util.Objects;
 public final class ListTag<T extends Tag> extends ParentTag<T> {
 
     /// The type of the elements in the list.
-    private TagType elementType = TagType.END;
+    private TagType elementType;
 
+    /// Creates a new empty list tag without an element type.
     public ListTag() {
+        this("", TagType.END);
     }
 
+    /// Creates a new empty list tag with the given name and without an element type.
+    ///
+    /// @param name The name of the list tag.
     public ListTag(String name) {
-        this.name = Objects.requireNonNull(name, "name must not be null");
+        this(name, TagType.END);
     }
 
+    /// Creates a new empty list tag with the given name and element type.
+    ///
+    /// @param name        The name of the list tag.
+    /// @param elementType The type of the elements in the list.
     public ListTag(String name, TagType elementType) {
         this.name = Objects.requireNonNull(name, "name must not be null");
         this.elementType = Objects.requireNonNull(elementType, "elementType must not be null");
     }
 
+    /// Creates a new empty list tag with the given element type.
+    ///
+    /// @param elementType The type of the elements in the list.
+    /// @throws IllegalArgumentException if the element type is not valid.
+    public ListTag(Class<? super T> elementType) {
+        this("", elementType);
+    }
+
+    /// Creates a new empty list tag with the given name and element type.
+    ///
+    /// @param name        The name of the list tag.
+    /// @param elementType The type of the elements in the list.
+    /// @throws IllegalArgumentException if the element type is not valid.
     public ListTag(String name, Class<? super T> elementType) {
         this.name = Objects.requireNonNull(name, "name must not be null");
 

@@ -27,7 +27,7 @@ public sealed abstract class Tag
         permits ByteTag, ShortTag, IntTag, LongTag, FloatTag, DoubleTag, StringTag, ArrayTag, ParentTag {
     @Nullable ParentTag<?> parent;
 
-    String name = "";
+    String name;
     int index;
 
     protected Tag(String name) {

@@ -22,6 +22,7 @@ import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.charset.StandardCharsets;
 
+/// An InputStream wrapper with configurable byte order and internal buffering for reading NBT data.
 final class InputWrapper implements Closeable {
     private final ByteOrder byteOrder;
     private final InputStream inputStream;
@@ -115,12 +116,13 @@ final class InputWrapper implements Closeable {
 
         byte[] array = buffer.array();
         int offset = buffer.position();
+        int limit = offset + len;
 
-        buffer.position(offset + len);
+        buffer.position(limit);
 
         // Scan the number of ASCII characters in the prefix
         int asciiLen = 0;
-        for (int i = offset; i < offset + len; i++) {
+        for (int i = offset; i < limit; i++) {
             if (array[i] > 0) {
                 asciiLen++;
             } else {
@@ -141,50 +143,50 @@ final class InputWrapper implements Closeable {
         }
 
         int c, char2, char3;
-        int count = 0;
+        int i = offset;
 
-        while (count < len) {
-            c = (int) array[count + offset] & 0xff;
+        while (i < limit) {
+            c = (int) array[i] & 0xff;
             if (c > 127) break;
-            count++;
+            i++;
             charsBuffer.append((char) c);
         }
 
-        while (count < len) {
-            c = (int) array[count + offset] & 0xff;
+        while (i < limit) {
+            c = (int) array[i] & 0xff;
             switch (c >> 4) {
                 case 0, 1, 2, 3, 4, 5, 6, 7 -> {
                     /* 0xxxxxxx*/
-                    count++;
+                    i++;
                     charsBuffer.append((char) c);
                 }
                 case 12, 13 -> {
                     /* 110x xxxx   10xx xxxx*/
-                    count += 2;
-                    if (count > len)
+                    i += 2;
+                    if (i > limit)
                         throw new IllegalArgumentException("malformed input: partial character at end");
-                    char2 = (int) array[count - 1 + offset] & 0xff;
+                    char2 = (int) array[i - 1] & 0xff;
                     if ((char2 & 0xC0) != 0x80)
-                        throw new IllegalArgumentException("malformed input around byte " + count);
+                        throw new IllegalArgumentException("malformed input around byte " + (i - 1));
                     charsBuffer.append((char) (((c & 0x1F) << 6) |
                             (char2 & 0x3F)));
                 }
                 case 14 -> {
                     /* 1110 xxxx  10xx xxxx  10xx xxxx */
-                    count += 3;
-                    if (count > len)
+                    i += 3;
+                    if (i > limit)
                         throw new IllegalArgumentException("malformed input: partial character at end");
-                    char2 = array[count - 2 + offset];
-                    char3 = array[count - 1 + offset];
+                    char2 = array[i - 2];
+                    char3 = array[i - 1];
                     if (((char2 & 0xC0) != 0x80) || ((char3 & 0xC0) != 0x80))
-                        throw new IllegalArgumentException("malformed input around byte " + (count - 1));
+                        throw new IllegalArgumentException("malformed input around byte " + (i - 1));
                     charsBuffer.append((char) (((c & 0x0F) << 12) |
                             ((char2 & 0x3F) << 6) |
                             (char3 & 0x3F)));
                 }
                 default ->
                     /* 10xx xxxx,  1111 xxxx */
-                        throw new IllegalArgumentException("malformed input around byte " + count);
+                        throw new IllegalArgumentException("malformed input around byte " + i);
             }
         }
         return charsBuffer.toString();

@@ -17,7 +17,10 @@ package org.glavo.nbt.io;
 
 import org.glavo.nbt.tag.Tag;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.lang.invoke.MethodHandles;
+import java.nio.ByteOrder;
 
 public final class NBTIO {
 
@@ -28,6 +31,24 @@ public final class NBTIO {
             TAG_UNSAFE = Tag.Unsafe.getInstance(MethodHandles.lookup());
         } catch (IllegalAccessException e) {
             throw new AssertionError(e);
+        }
+    }
+
+    /// Read a tag from the input stream.
+    ///
+    /// After calling this method, the state of `inputStream` is undefined, so it should no longer be used.
+    ///
+    /// @param inputStream The input stream.
+    /// @param byteOrder   The byte order of the input stream.
+    /// @return The tag read from the input stream.
+    /// @throws IOException If an I/O error occurs.
+    public static Tag readTag(InputStream inputStream, ByteOrder byteOrder) throws IOException {
+        try (var reader = new NBTReader(byteOrder, inputStream)) {
+            Tag tag = reader.readTag();
+            if (tag == null) {
+                throw new IOException("Unexpected end of stream");
+            }
+            return tag;
         }
     }
 

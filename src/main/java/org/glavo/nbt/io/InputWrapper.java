@@ -15,6 +15,8 @@
  */
 package org.glavo.nbt.io;
 
+import org.jetbrains.annotations.Nullable;
+
 import java.io.*;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
@@ -24,6 +26,9 @@ final class InputWrapper implements Closeable {
     private final ByteOrder byteOrder;
     private final InputStream inputStream;
     private ByteBuffer buffer;
+
+    /// Used for reading UTF-8 strings
+    private @Nullable StringBuilder charsBuffer;
 
     InputWrapper(ByteOrder byteOrder, InputStream inputStream) {
         this.byteOrder = byteOrder;
@@ -129,17 +134,20 @@ final class InputWrapper implements Closeable {
         }
 
         // Slow path
-        char[] chars = new char[len];
+        if (charsBuffer != null) {
+            charsBuffer.setLength(0);
+        } else {
+            charsBuffer = new StringBuilder(len);
+        }
 
         int c, char2, char3;
         int count = 0;
-        int charsCount = 0;
 
         while (count < len) {
             c = (int) array[count + offset] & 0xff;
             if (c > 127) break;
             count++;
-            chars[charsCount++] = (char) c;
+            charsBuffer.append((char) c);
         }
 
         while (count < len) {
@@ -148,7 +156,7 @@ final class InputWrapper implements Closeable {
                 case 0, 1, 2, 3, 4, 5, 6, 7 -> {
                     /* 0xxxxxxx*/
                     count++;
-                    chars[charsCount++] = (char) c;
+                    charsBuffer.append((char) c);
                 }
                 case 12, 13 -> {
                     /* 110x xxxx   10xx xxxx*/
@@ -158,8 +166,8 @@ final class InputWrapper implements Closeable {
                     char2 = (int) array[count - 1 + offset] & 0xff;
                     if ((char2 & 0xC0) != 0x80)
                         throw new IllegalArgumentException("malformed input around byte " + count);
-                    chars[charsCount++] = (char) (((c & 0x1F) << 6) |
-                            (char2 & 0x3F));
+                    charsBuffer.append((char) (((c & 0x1F) << 6) |
+                            (char2 & 0x3F)));
                 }
                 case 14 -> {
                     /* 1110 xxxx  10xx xxxx  10xx xxxx */
@@ -170,16 +178,15 @@ final class InputWrapper implements Closeable {
                     char3 = array[count - 1 + offset];
                     if (((char2 & 0xC0) != 0x80) || ((char3 & 0xC0) != 0x80))
                         throw new IllegalArgumentException("malformed input around byte " + (count - 1));
-                    chars[charsCount++] = (char) (((c & 0x0F) << 12) |
+                    charsBuffer.append((char) (((c & 0x0F) << 12) |
                             ((char2 & 0x3F) << 6) |
-                            (char3 & 0x3F));
+                            (char3 & 0x3F)));
                 }
                 default ->
                     /* 10xx xxxx,  1111 xxxx */
                         throw new IllegalArgumentException("malformed input around byte " + count);
             }
         }
-        // The number of chars produced may be less than len
-        return new String(chars, 0, charsCount);
+        return charsBuffer.toString();
     }
 }

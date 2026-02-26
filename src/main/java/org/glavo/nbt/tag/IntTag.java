@@ -13,10 +13,24 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+package org.glavo.nbt.tag;
 
-module org.glavo.nbt {
-    requires static org.jetbrains.annotations;
+/// 4 byte signed integer tag type.
+public final class IntTag extends Tag {
+    private int value;
 
-    exports org.glavo.nbt;
-    exports org.glavo.nbt.tag;
+    /// Returns the value of the tag.
+    public int get() {
+        return value;
+    }
+
+    /// Sets the value of the tag.
+    public void set(int value) {
+        this.value = value;
+    }
+
+    @Override
+    public TagType getType() {
+        return TagType.INT;
+    }
 }

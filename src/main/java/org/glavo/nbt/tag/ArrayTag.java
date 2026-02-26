@@ -13,10 +13,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+package org.glavo.nbt.tag;
 
-module org.glavo.nbt {
-    requires static org.jetbrains.annotations;
-
-    exports org.glavo.nbt;
-    exports org.glavo.nbt.tag;
+public sealed abstract class ArrayTag extends Tag
+        permits ByteArrayTag, IntArrayTag, LongArrayTag {
 }

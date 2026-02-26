@@ -13,10 +13,24 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+package org.glavo.nbt.tag;
 
-module org.glavo.nbt {
-    requires static org.jetbrains.annotations;
+/// 8 byte floating point tag type.
+public final class DoubleTag extends Tag {
+    private double value;
 
-    exports org.glavo.nbt;
-    exports org.glavo.nbt.tag;
+    /// Returns the value of the tag.
+    public double get() {
+        return value;
+    }
+
+    /// Sets the value of the tag.
+    public void set(double value) {
+        this.value = value;
+    }
+
+    @Override
+    public TagType getType() {
+        return TagType.DOUBLE;
+    }
 }

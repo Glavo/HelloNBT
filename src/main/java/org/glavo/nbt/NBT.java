@@ -13,10 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+package org.glavo.nbt;
 
-module org.glavo.nbt {
-    requires static org.jetbrains.annotations;
+public final class NBT {
 
-    exports org.glavo.nbt;
-    exports org.glavo.nbt.tag;
+
+    private NBT() {
+    }
 }

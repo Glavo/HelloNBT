@@ -13,10 +13,26 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+package org.glavo.nbt.tag;
 
-module org.glavo.nbt {
-    requires static org.jetbrains.annotations;
+/// An ordered list of 64-bit integers.
+public final class LongArrayTag extends ArrayTag {
+    private static final long[] EMPTY = new long[0];
 
-    exports org.glavo.nbt;
-    exports org.glavo.nbt.tag;
+    private long[] value = EMPTY;
+
+    /// Returns the value of the tag.
+    public long[] get() {
+        return value.clone();
+    }
+
+    /// Sets the value of the tag.
+    public void set(long[] value) {
+        this.value = value.clone();
+    }
+
+    @Override
+    public TagType getType() {
+        return TagType.LONG_ARRAY;
+    }
 }

@@ -13,10 +13,24 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+package org.glavo.nbt.tag;
 
-module org.glavo.nbt {
-    requires static org.jetbrains.annotations;
+/// 2 byte signed integer tag type.
+public final class ShortTag extends Tag {
+    private short value;
 
-    exports org.glavo.nbt;
-    exports org.glavo.nbt.tag;
+    /// Returns the value of the tag.
+    public short get() {
+        return value;
+    }
+
+    /// Sets the value of the tag.
+    public void set(short value) {
+        this.value = value;
+    }
+
+    @Override
+    public TagType getType() {
+        return TagType.SHORT;
+    }
 }

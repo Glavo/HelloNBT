@@ -13,10 +13,26 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+package org.glavo.nbt.tag;
 
-module org.glavo.nbt {
-    requires static org.jetbrains.annotations;
+/// An ordered list of 32-bit integers.
+public final class IntArrayTag extends ArrayTag {
+    private static final int[] EMPTY = new int[0];
 
-    exports org.glavo.nbt;
-    exports org.glavo.nbt.tag;
+    private int[] value = EMPTY;
+
+    /// Returns the value of the tag.
+    public int[] get() {
+        return value.clone();
+    }
+
+    /// Sets the value of the tag.
+    public void set(int[] value) {
+        this.value = value.clone();
+    }
+
+    @Override
+    public TagType getType() {
+        return TagType.INT_ARRAY;
+    }
 }

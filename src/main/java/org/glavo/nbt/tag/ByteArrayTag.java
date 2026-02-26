@@ -13,10 +13,26 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+package org.glavo.nbt.tag;
 
-module org.glavo.nbt {
-    requires static org.jetbrains.annotations;
+/// An ordered list of 8-bit integers.
+public final class ByteArrayTag extends ArrayTag {
+    private static final byte[] EMPTY = new byte[0];
 
-    exports org.glavo.nbt;
-    exports org.glavo.nbt.tag;
+    private byte[] value = EMPTY;
+
+    /// Returns the value of the tag.
+    public byte[] get() {
+        return value.clone();
+    }
+
+    /// Sets the value of the tag.
+    public void set(byte[] value) {
+        this.value = value.clone();
+    }
+
+    @Override
+    public TagType getType() {
+        return TagType.BYTE_ARRAY;
+    }
 }

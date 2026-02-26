@@ -13,10 +13,4 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-module org.glavo.nbt {
-    requires static org.jetbrains.annotations;
-
-    exports org.glavo.nbt;
-    exports org.glavo.nbt.tag;
-}
+package org.glavo.nbt;

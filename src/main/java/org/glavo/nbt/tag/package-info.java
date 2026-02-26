@@ -14,9 +14,7 @@
  * limitations under the License.
  */
 
-module org.glavo.nbt {
-    requires static org.jetbrains.annotations;
+@NotNullByDefault
+package org.glavo.nbt.tag;
 
-    exports org.glavo.nbt;
-    exports org.glavo.nbt.tag;
-}
+import org.jetbrains.annotations.NotNullByDefault;

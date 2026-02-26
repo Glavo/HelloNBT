@@ -19,7 +19,7 @@ package org.glavo.nbt.tag;
 public final class IntArrayTag extends ArrayTag {
     private static final int[] EMPTY = new int[0];
 
-    private int[] value = EMPTY;
+    int[] value = EMPTY;
 
     /// Returns the value of the tag.
     public int[] get() {
@@ -29,6 +29,25 @@ public final class IntArrayTag extends ArrayTag {
     /// Sets the value of the tag.
     public void set(int[] value) {
         this.value = value.clone();
+    }
+
+    /// Returns the element at the given index.
+    ///
+    /// @throws IndexOutOfBoundsException if the index is out of bounds.
+    public int get(int index) throws IndexOutOfBoundsException {
+        return value[index];
+    }
+
+    /// Sets the element at the given index.
+    ///
+    /// @throws IndexOutOfBoundsException if the index is out of bounds.
+    public void set(int index, int value) throws IndexOutOfBoundsException {
+        this.value[index] = value;
+    }
+
+    @Override
+    public int size() {
+        return value.length;
     }
 
     @Override

@@ -15,10 +15,8 @@
  */
 package org.glavo.nbt.tag;
 
-import org.jetbrains.annotations.NotNullByDefault;
 import org.jetbrains.annotations.Nullable;
 
-@NotNullByDefault
 public final class ListTag<T extends Tag> extends ParentTag<T> {
 
     @Override

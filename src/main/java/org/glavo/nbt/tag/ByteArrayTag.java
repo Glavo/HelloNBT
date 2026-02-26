@@ -19,7 +19,7 @@ package org.glavo.nbt.tag;
 public final class ByteArrayTag extends ArrayTag {
     private static final byte[] EMPTY = new byte[0];
 
-    private byte[] value = EMPTY;
+    byte[] value = EMPTY;
 
     /// Returns the value of the tag.
     public byte[] get() {
@@ -29,6 +29,25 @@ public final class ByteArrayTag extends ArrayTag {
     /// Sets the value of the tag.
     public void set(byte[] value) {
         this.value = value.clone();
+    }
+
+    /// Returns the element at the given index.
+    ///
+    /// @throws IndexOutOfBoundsException if the index is out of bounds.
+    public byte get(int index) throws IndexOutOfBoundsException {
+        return value[index];
+    }
+
+    /// Sets the element at the given index.
+    ///
+    /// @throws IndexOutOfBoundsException if the index is out of bounds.
+    public void set(int index, byte value) throws IndexOutOfBoundsException {
+        this.value[index] = value;
+    }
+
+    @Override
+    public int size() {
+        return value.length;
     }
 
     @Override

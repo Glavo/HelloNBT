@@ -19,11 +19,12 @@ import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.Range;
 
+import java.lang.invoke.MethodHandles;
 import java.util.Objects;
 
 /// @author Glavo
 public sealed abstract class Tag
-        permits ByteTag, ShortTag, IntTag, LongTag, FloatTag, DoubleTag, ArrayTag, ParentTag {
+        permits ByteTag, ShortTag, IntTag, LongTag, FloatTag, DoubleTag, StringTag, ArrayTag, ParentTag {
     @Nullable ParentTag<?> parent;
 
     @Nullable String name;
@@ -65,5 +66,53 @@ public sealed abstract class Tag
     @Contract(pure = true)
     public @Nullable ParentTag<?> getParent() {
         return parent;
+    }
+
+    /// Unsafe operations for internal use.
+    public static final class Unsafe {
+        private static final Unsafe INSTANCE = new Unsafe();
+
+        /// Get an instance of the unsafe operations.
+        ///
+        /// @param lookup A lookup object used to check whether a user has access rights to the [Tag].
+        /// @return An instance of the unsafe operations.
+        /// @throws IllegalAccessException if the user does not have access rights to the [Tag].
+        public static Unsafe getInstance(MethodHandles.Lookup lookup) throws IllegalAccessException {
+            MethodHandles.privateLookupIn(Tag.class, lookup);
+            return INSTANCE;
+        }
+
+        private Unsafe() {
+        }
+
+        /// Returns the internal value of the tag without cloning.
+        public byte[] getInternalArray(ByteArrayTag tag) {
+            return tag.value;
+        }
+
+        /// Sets the internal value of the tag without cloning.
+        public void setInternalArray(ByteArrayTag tag, byte[] value) {
+            tag.value = value;
+        }
+
+        /// Returns the internal value of the tag without cloning.
+        public int[] getInternalArray(IntArrayTag tag) {
+            return tag.value;
+        }
+
+        /// Sets the internal value of the tag without cloning.
+        public void setInternalArray(IntArrayTag tag, int[] value) {
+            tag.value = value;
+        }
+
+        /// Returns the internal value of the tag without cloning.
+        public long[] getInternalArray(LongArrayTag tag) {
+            return tag.value;
+        }
+
+        /// Sets the internal value of the tag without cloning.
+        public void setInternalArray(LongArrayTag tag, long[] value) {
+            tag.value = value;
+        }
     }
 }

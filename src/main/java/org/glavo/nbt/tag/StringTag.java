@@ -15,15 +15,23 @@
  */
 package org.glavo.nbt.tag;
 
-/// An abstract tag that contains an ordered list of values.
-public sealed abstract class ArrayTag extends Tag
-        permits ByteArrayTag, IntArrayTag, LongArrayTag {
+import java.util.Objects;
 
-    /// Returns `true` if the array is empty; otherwise, returns `false`.
-    public final boolean isEmpty() {
-        return size() == 0;
+public final class StringTag extends Tag {
+    private String value = "";
+
+    /// Returns the value of the tag.
+    public String get() {
+        return value;
     }
 
-    /// Returns the size of the array.
-    public abstract int size();
+    /// Sets the value of the tag.
+    public void set(String value) {
+        this.value = Objects.requireNonNull(value);
+    }
+
+    @Override
+    public TagType getType() {
+        return TagType.STRING;
+    }
 }

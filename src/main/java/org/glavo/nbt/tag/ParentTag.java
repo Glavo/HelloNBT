@@ -35,6 +35,16 @@ public sealed abstract class ParentTag<T extends Tag> extends Tag
         return parent == null;
     }
 
+    /// Returns `true` if this tag has no subtags, `false` otherwise.
+    public final boolean isEmpty() {
+        return subTags.isEmpty();
+    }
+
+    /// Returns the number of subtags in this tag.
+    public final int size() {
+        return subTags.size();
+    }
+
     /// Returns the subtag at the given index.
     ///
     /// @throws IndexOutOfBoundsException if the index is out of bounds.

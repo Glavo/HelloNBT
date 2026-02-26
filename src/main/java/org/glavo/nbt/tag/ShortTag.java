@@ -20,14 +20,15 @@ public final class ShortTag extends Tag {
     private short value;
 
     public ShortTag() {
+        this("", (short) 0);
     }
 
     public ShortTag(String name) {
-        this.name = name;
+        this(name, (short) 0);
     }
 
     public ShortTag(String name, short value) {
-        this.name = name;
+        super(name);
         this.value = value;
     }
 

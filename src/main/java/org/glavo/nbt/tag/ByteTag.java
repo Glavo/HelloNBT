@@ -20,14 +20,15 @@ public final class ByteTag extends Tag {
     private byte value;
 
     public ByteTag() {
+        this("", (byte) 0);
     }
 
     public ByteTag(String name) {
-        this.name = name;
+        this(name, (byte) 0);
     }
 
     public ByteTag(String name, byte value) {
-        this.name = name;
+        super(name);
         this.value = value;
     }
 

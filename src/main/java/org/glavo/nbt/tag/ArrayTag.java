@@ -19,6 +19,10 @@ package org.glavo.nbt.tag;
 public sealed abstract class ArrayTag extends Tag
         permits ByteArrayTag, IntArrayTag, LongArrayTag {
 
+    protected ArrayTag(String name) {
+        super(name);
+    }
+
     /// Returns `true` if the array is empty; otherwise, returns `false`.
     public final boolean isEmpty() {
         return size() == 0;

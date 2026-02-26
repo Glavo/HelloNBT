@@ -20,6 +20,7 @@ import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.Range;
 
 import java.lang.invoke.MethodHandles;
+import java.util.Objects;
 
 /// @author Glavo
 public sealed abstract class Tag
@@ -29,6 +30,9 @@ public sealed abstract class Tag
     String name = "";
     int index;
 
+    protected Tag(String name) {
+        this.name = Objects.requireNonNull(name, "name");
+    }
 
     /// Returns the type of the tag.
     public abstract TagType getType();

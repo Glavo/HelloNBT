@@ -19,13 +19,19 @@ package org.glavo.nbt.tag;
 public final class LongArrayTag extends ArrayTag {
     private static final long[] EMPTY = new long[0];
 
-    long[] value = EMPTY;
+    long[] value;
 
     public LongArrayTag() {
+        this("");
     }
 
     public LongArrayTag(String name) {
-        this.name = name;
+        super(name);
+        this.value = EMPTY;
+    }
+    public LongArrayTag(String name, long[] value) {
+        super(name);
+        this.value = value.clone();
     }
 
     /// Returns the value of the tag.

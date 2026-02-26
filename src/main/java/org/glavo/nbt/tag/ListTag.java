@@ -39,8 +39,8 @@ public final class ListTag<T extends Tag> extends ParentTag<T> {
     /// @param name        The name of the list tag.
     /// @param elementType The type of the elements in the list.
     public ListTag(String name, TagType elementType) {
-        this.name = Objects.requireNonNull(name, "name must not be null");
-        this.elementType = Objects.requireNonNull(elementType, "elementType must not be null");
+        super(name);
+        this.elementType = Objects.requireNonNull(elementType, "elementType");
     }
 
     /// Creates a new empty list tag with the given element type.
@@ -57,7 +57,7 @@ public final class ListTag<T extends Tag> extends ParentTag<T> {
     /// @param elementType The type of the elements in the list.
     /// @throws IllegalArgumentException if the element type is not valid.
     public ListTag(String name, Class<? super T> elementType) {
-        this.name = Objects.requireNonNull(name, "name must not be null");
+        super(name);
 
         @SuppressWarnings("unchecked")
         TagType tagType = TagType.getByClass((Class<? extends Tag>) elementType);

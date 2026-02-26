@@ -19,17 +19,19 @@ package org.glavo.nbt.tag;
 public final class ByteArrayTag extends ArrayTag {
     private static final byte[] EMPTY = new byte[0];
 
-    byte[] value = EMPTY;
+    byte[] value;
 
     public ByteArrayTag() {
+        this("");
     }
 
     public ByteArrayTag(String name) {
-        this.name = name;
+        super(name);
+        this.value = EMPTY;
     }
 
     public ByteArrayTag(String name, byte[] value) {
-        this.name = name;
+        super(name);
         this.value = value.clone();
     }
 

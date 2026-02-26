@@ -26,6 +26,10 @@ public sealed abstract class ParentTag<T extends Tag> extends Tag
 
     final List<T> subTags = new ArrayList<>();
 
+    protected ParentTag(String name) {
+        super(name);
+    }
+
     abstract void updateSubTagName(Tag tag, String name) throws IllegalStateException;
 
     /// Returns `true` if this tag is the root tag, `false` otherwise.

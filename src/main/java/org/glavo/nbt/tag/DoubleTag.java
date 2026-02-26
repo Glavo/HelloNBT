@@ -20,14 +20,15 @@ public final class DoubleTag extends Tag {
     private double value;
 
     public DoubleTag() {
+        this("", 0.0);
     }
 
     public DoubleTag(String name) {
-        this.name = name;
+        this(name, 0.0);
     }
 
     public DoubleTag(String name, double value) {
-        this.name = name;
+        super(name);
         this.value = value;
     }
 

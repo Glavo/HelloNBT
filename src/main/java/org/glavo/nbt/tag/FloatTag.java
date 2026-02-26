@@ -20,14 +20,15 @@ public final class FloatTag extends Tag {
     private float value;
 
     public FloatTag() {
+        this("", 0.0f);
     }
 
     public FloatTag(String name) {
-        this.name = name;
+        this(name, 0.0f);
     }
 
     public FloatTag(String name, float value) {
-        this.name = name;
+        super(name);
         this.value = value;
     }
 

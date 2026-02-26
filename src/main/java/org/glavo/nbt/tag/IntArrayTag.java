@@ -19,13 +19,20 @@ package org.glavo.nbt.tag;
 public final class IntArrayTag extends ArrayTag {
     private static final int[] EMPTY = new int[0];
 
-    int[] value = EMPTY;
+    int[] value;
 
     public IntArrayTag() {
+        this("");
     }
 
     public IntArrayTag(String name) {
-        this.name = name;
+        super(name);
+        this.value = EMPTY;
+    }
+
+    public IntArrayTag(String name, int[] value) {
+        super(name);
+        this.value = value.clone();
     }
 
     /// Returns the value of the tag.

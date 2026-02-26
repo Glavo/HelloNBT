@@ -21,16 +21,16 @@ public final class StringTag extends Tag {
     private String value;
 
     public StringTag() {
-        this.value = "";
+        this("", "");
     }
 
     public StringTag(String name) {
-        this.name = Objects.requireNonNull(name, "name");
+        super(name);
         this.value = "";
     }
 
     public StringTag(String name, String value) {
-        this.name = Objects.requireNonNull(name, "name");
+        super(name);
         this.value = Objects.requireNonNull(value, "value");
     }
 

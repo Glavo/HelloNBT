@@ -20,14 +20,15 @@ public final class IntTag extends Tag {
     private int value;
 
     public IntTag() {
+        this("", 0);
     }
 
     public IntTag(String name) {
-        this.name = name;
+        this(name, 0);
     }
 
     public IntTag(String name, int value) {
-        this.name = name;
+        super(name);
         this.value = value;
     }
 

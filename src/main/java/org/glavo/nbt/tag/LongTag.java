@@ -20,14 +20,15 @@ public final class LongTag extends Tag {
     private long value;
 
     public LongTag() {
+        this("", 0L);
     }
 
     public LongTag(String name) {
-        this.name = name;
+        this(name, 0L);
     }
 
     public LongTag(String name, long value) {
-        this.name = name;
+        super(name);
         this.value = value;
     }
 

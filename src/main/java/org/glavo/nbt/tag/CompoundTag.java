@@ -25,10 +25,11 @@ public final class CompoundTag<T extends Tag> extends ParentTag<T> {
     private final Map<String, T> subTagsByName = new HashMap<>();
 
     public CompoundTag() {
+        this("");
     }
 
     public CompoundTag(String name) {
-        this.name = name;
+        super(name);
     }
 
     @Override

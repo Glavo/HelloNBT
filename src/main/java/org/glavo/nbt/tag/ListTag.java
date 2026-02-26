@@ -26,7 +26,24 @@ public final class ListTag<T extends Tag> extends ParentTag<T> {
     }
 
     public ListTag(String name) {
-        this.name = name;
+        this.name = Objects.requireNonNull(name, "name must not be null");
+    }
+
+    public ListTag(String name, TagType elementType) {
+        this.name = Objects.requireNonNull(name, "name must not be null");
+        this.elementType = Objects.requireNonNull(elementType, "elementType must not be null");
+    }
+
+    public ListTag(String name, Class<? super T> elementType) {
+        this.name = Objects.requireNonNull(name, "name must not be null");
+
+        @SuppressWarnings("unchecked")
+        TagType tagType = TagType.getByClass((Class<? extends Tag>) elementType);
+        if (tagType == null) {
+            throw new IllegalArgumentException("Invalid element type: " + elementType);
+        }
+
+        this.elementType = tagType;
     }
 
     @Override

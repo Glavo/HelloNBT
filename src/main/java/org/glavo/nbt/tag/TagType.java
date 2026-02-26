@@ -17,6 +17,9 @@ package org.glavo.nbt.tag;
 
 import org.jetbrains.annotations.Nullable;
 
+import java.util.HashMap;
+import java.util.Map;
+
 /// @author Glavo
 public enum TagType {
     /// Used to mark the end of compound tags.
@@ -61,10 +64,28 @@ public enum TagType {
     LONG_ARRAY(LongArrayTag.class);
 
     private static final TagType[] TYPES = values();
+    private static final Map<Class<? extends Tag>, TagType> CLASS_TO_TYPE;
+
+    static {
+        var map = new HashMap<Class<? extends Tag>, TagType>();
+        for (TagType type : TYPES) {
+            if (type.tagClass != null) {
+                map.put(type.tagClass, type);
+            }
+        }
+        CLASS_TO_TYPE = Map.copyOf(map);
+    }
 
     /// Returns the tag type by its id; returns `null` if the id is invalid.
     public static @Nullable TagType getById(byte id) {
         return id >= 0 && id < TYPES.length ? TYPES[id] : null;
+    }
+
+    /// Returns the tag type by its class; returns `null` if the class is not found.
+    ///
+    /// @apiNote Only the final subclasses of `Tag` define `TagType`.
+    public static @Nullable TagType getByClass(Class<? extends Tag> tagClass) {
+        return CLASS_TO_TYPE.get(tagClass);
     }
 
     private final @Nullable Class<? extends Tag> tagClass;

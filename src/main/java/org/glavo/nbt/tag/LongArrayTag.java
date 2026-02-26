@@ -29,6 +29,7 @@ public final class LongArrayTag extends ArrayTag {
         super(name);
         this.value = EMPTY;
     }
+
     public LongArrayTag(String name, long[] value) {
         super(name);
         this.value = value.clone();

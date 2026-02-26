@@ -54,7 +54,6 @@ public final class CompoundTag<T extends Tag> extends ParentTag<T> {
     }
 
     /// Returns the subtag with the given name, or `null` if no such subtag exists.
-    /// The subtag name must not be null.
     public @Nullable T get(String name) {
         return subTagsByName.get(name);
     }

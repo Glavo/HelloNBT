@@ -48,7 +48,7 @@ public sealed abstract class Tag
     /// @throws IllegalStateException if this tag is a child of a parent tag and the name is not valid for the parent tag.
     public void setName(String name) throws IllegalStateException {
         // If the name is the same as the current name, do nothing.
-        if (this.name.equals(name)) {
+        if (name.equals(this.name)) { // implicit null check
             return;
         }
 

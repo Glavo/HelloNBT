@@ -30,6 +30,11 @@ public sealed abstract class ParentTag<T extends Tag> extends Tag
         super(name);
     }
 
+    /// Updates the name of the given subtag.
+    ///
+    /// Used internally by [Tag#setName(String)].
+    ///
+    /// @see Tag#setName(String)
     abstract void updateSubTagName(Tag tag, String name) throws IllegalStateException;
 
     /// Returns `true` if this tag is the root tag, `false` otherwise.

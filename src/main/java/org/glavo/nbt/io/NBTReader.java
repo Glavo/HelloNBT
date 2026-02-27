@@ -69,8 +69,8 @@ public final class NBTReader implements Closeable {
         }
     }
 
-    private final ByteOrder byteOrder;
     private final InputStream inputStream;
+    private final ByteOrder byteOrder;
     private ByteBuffer buffer;
 
     /// Used for reading UTF-8 strings
@@ -90,6 +90,22 @@ public final class NBTReader implements Closeable {
 
     // High-level read methods
 
+    public @Nullable Tag readTag() throws IOException {
+        byte tagByte = readByte();
+        var type = TagType.getById(tagByte);
+        if (type == null) {
+            throw new IOException("Invalid tag type: %02x".formatted(Byte.toUnsignedInt(tagByte)));
+        }
+
+        if (type == TagType.END) {
+            return null;
+        }
+
+        Tag tag = createTag(type, readString());
+        readContent(tag);
+        return tag;
+    }
+
     private static Tag createTag(TagType type, String name) {
         return switch (type) {
             case END -> throw new UnsupportedOperationException("Cannot create an END tag");
@@ -106,22 +122,6 @@ public final class NBTReader implements Closeable {
             case LIST -> new ListTag<>(name, TagType.END);
             case COMPOUND -> new CompoundTag<>(name);
         };
-    }
-
-    public @Nullable Tag readTag() throws IOException {
-        byte tagByte = readByte();
-        var type = TagType.getById(tagByte);
-        if (type == null) {
-            throw new IOException("Invalid tag type: %02x".formatted(Byte.toUnsignedInt(tagByte)));
-        }
-
-        if (type == TagType.END) {
-            return null;
-        }
-
-        Tag tag = createTag(type, readString());
-        readContent(tag);
-        return tag;
     }
 
     private void readContent(Tag tag) throws IOException {

@@ -17,54 +17,76 @@ package org.glavo.nbt.tag;
 
 import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 public final class TagTests {
 
     @Test
     public void testDefaultValue() {
-        assertEquals((byte) 0, new ByteTag().get());
-        assertEquals((short) 0, new ShortTag().get());
-        assertEquals(0, new IntTag().get());
-        assertEquals(0L, new LongTag().get());
-        assertEquals(0.0f, new FloatTag().get());
-        assertEquals(0.0, new DoubleTag().get());
-        assertEquals("", new StringTag().get());
+        {
+            var tag = new ByteTag();
+            assertEquals((byte) 0, tag.get());
+            assertEquals("", tag.getName());
+            assertFalse(tag.getBoolean());
+        }
+
+        {
+            var tag = new ShortTag();
+            assertEquals((short) 0, tag.get());
+            assertEquals("", tag.getName());
+        }
+
+        {
+            var tag = new IntTag();
+            assertEquals(0, tag.get());
+            assertEquals("", tag.getName());
+        }
+
+        {
+            var tag = new LongTag();
+            assertEquals(0L, tag.get());
+            assertEquals("", tag.getName());
+        }
+
+        {
+            var tag = new FloatTag();
+            assertEquals(0.0f, tag.get());
+            assertEquals("", tag.getName());
+        }
+
+        {
+            var tag = new DoubleTag();
+            assertEquals(0.0, tag.get());
+            assertEquals("", tag.getName());
+        }
+
+        {
+            var tag = new StringTag();
+            assertEquals("", tag.get());
+            assertEquals("", tag.getName());
+
+        }
 
         {
             var tag = new ByteArrayTag();
+            assertEquals("", tag.getName());
             assertEquals(0, tag.size());
             assertTrue(tag.isEmpty());
         }
 
         {
             var tag = new IntArrayTag();
+            assertEquals("", tag.getName());
             assertEquals(0, tag.size());
             assertTrue(tag.isEmpty());
         }
 
         {
             var tag = new LongArrayTag();
+            assertEquals("", tag.getName());
             assertEquals(0, tag.size());
             assertTrue(tag.isEmpty());
         }
-    }
-
-    @Test
-    public void testDefaultName() {
-        assertEquals("", new ByteTag().getName());
-        assertEquals("", new ShortTag().getName());
-        assertEquals("", new IntTag().getName());
-        assertEquals("", new LongTag().getName());
-        assertEquals("", new FloatTag().getName());
-        assertEquals("", new DoubleTag().getName());
-        assertEquals("", new StringTag().getName());
-        assertEquals("", new ByteArrayTag().getName());
-        assertEquals("", new IntArrayTag().getName());
-        assertEquals("", new LongArrayTag().getName());
-        assertEquals("", new ListTag<>().getName());
-        assertEquals("", new CompoundTag<>().getName());
     }
 
     @Test

@@ -1,5 +1,6 @@
 plugins {
-    id("java")
+    id("java-library")
+    id("jacoco")
 }
 
 group = "org.glavo"
@@ -24,4 +25,13 @@ tasks.compileJava {
 
 tasks.test {
     useJUnitPlatform()
+}
+
+tasks.jacocoTestReport {
+    dependsOn(tasks.test)
+    reports {
+        xml.required.set(true)
+        csv.required.set(true)
+        html.required.set(true)
+    }
 }

@@ -211,6 +211,32 @@ public final class TagTests {
     }
 
     @Test
+    public void testAddToOtherListTag() {
+        var list0 = new ListTag<>("List0", IntTag.class);
+        var list1 = new ListTag<>("List1", IntTag.class);
+
+        var subTag = new IntTag("", 0);
+
+        list0.add(subTag);
+
+        assertSame(subTag, list0.get(0));
+        assertSame(list0, subTag.getParent());
+        assertEquals(0, subTag.getIndex());
+
+        // Move subTag to list1
+
+        list1.add(new IntTag()); // Add a placeholder tag to list1
+        list1.add(subTag);
+
+        assertTrue(list0.isEmpty());
+        assertEquals(0, list0.size());
+
+        assertSame(subTag, list1.get(1));
+        assertSame(list1, subTag.getParent());
+        assertEquals(1, subTag.getIndex());
+    }
+
+    @Test
     public void testEquals() {
         assertEquals(new ByteTag("Meow", (byte) 42), new ByteTag("Meow", (byte) 42));
         assertNotEquals(new ByteTag("Meow", (byte) 42), new ByteTag("Meow", (byte) 43));

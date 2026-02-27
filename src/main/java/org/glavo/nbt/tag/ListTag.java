@@ -146,7 +146,7 @@ public final class ListTag<T extends Tag> extends ParentTag<T> {
 
         // Update the index of the successor tags.
         for (int i = subtagIndex; i < subTags.size(); i++) {
-            subTags.get(i).index--;
+            subTags.get(i).index = i;
         }
     }
 

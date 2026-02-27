@@ -16,7 +16,7 @@
 package org.glavo.nbt.io;
 
 import com.github.steveice10.opennbt.NBTIO;
-import org.glavo.nbt.tag.Tag;
+import org.glavo.nbt.tag.*;
 import org.junit.jupiter.api.Test;
 
 import java.io.ByteArrayInputStream;
@@ -39,25 +39,22 @@ public final class NBTReaderTest {
                 NBTReader.Options.newBuilder().byteOrder(byteOrder).build());
     }
 
-    private static void assertEqualTag(
+    private static void assertTagEquals(
             Tag expected,
-            Tag actual) {
+            com.github.steveice10.opennbt.tag.builtin.Tag actual) throws IOException {
 
-    }
-
-    private static void assertEqualTag(
-            Tag expected,
-            com.github.steveice10.opennbt.tag.builtin.Tag actual) {
-
-
-
+        assertEquals(expected, convert(actual, ByteOrder.BIG_ENDIAN));
+        assertEquals(expected, convert(actual, ByteOrder.LITTLE_ENDIAN));
     }
 
     @Test
     public void testReadTag() throws IOException {
-
-
-        convert(new com.github.steveice10.opennbt.tag.builtin.ByteTag("Meow", (byte) 42),
-                ByteOrder.BIG_ENDIAN);
+        assertTagEquals(new ByteTag("Meow", (byte) 42), new com.github.steveice10.opennbt.tag.builtin.ByteTag("Meow", (byte) 42));
+        assertTagEquals(new ShortTag("Meow", (short) 42), new com.github.steveice10.opennbt.tag.builtin.ShortTag("Meow", (short) 42));
+        assertTagEquals(new IntTag("Meow", 42), new com.github.steveice10.opennbt.tag.builtin.IntTag("Meow", 42));
+        assertTagEquals(new LongTag("Meow", 42L), new com.github.steveice10.opennbt.tag.builtin.LongTag("Meow", 42L));
+        assertTagEquals(new FloatTag("Meow", 42.0f), new com.github.steveice10.opennbt.tag.builtin.FloatTag("Meow", 42.0f));
+        assertTagEquals(new DoubleTag("Meow", 42.0), new com.github.steveice10.opennbt.tag.builtin.DoubleTag("Meow", 42.0));
+        assertTagEquals(new StringTag("Meow", "Glavo"), new com.github.steveice10.opennbt.tag.builtin.StringTag("Meow", "Glavo"));
     }
 }

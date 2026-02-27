@@ -32,6 +32,11 @@ public final class FloatTag extends Tag {
         this.value = value;
     }
 
+    @Override
+    public TagType getType() {
+        return TagType.FLOAT;
+    }
+
     /// Returns the value of the tag.
     public float get() {
         return value;
@@ -41,9 +46,14 @@ public final class FloatTag extends Tag {
     public void set(float value) {
         this.value = value;
     }
-    
+
     @Override
-    public TagType getType() {
-        return TagType.FLOAT;
+    protected int contentHashCode() {
+        return Float.hashCode(value);
+    }
+
+    @Override
+    protected boolean contentEquals(Tag other) {
+        return other instanceof FloatTag that && Float.floatToIntBits(value) == Float.floatToIntBits(that.value);
     }
 }

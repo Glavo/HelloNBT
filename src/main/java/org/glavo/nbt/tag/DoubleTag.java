@@ -32,6 +32,11 @@ public final class DoubleTag extends Tag {
         this.value = value;
     }
 
+    @Override
+    public TagType getType() {
+        return TagType.DOUBLE;
+    }
+
     /// Returns the value of the tag.
     public double get() {
         return value;
@@ -43,7 +48,12 @@ public final class DoubleTag extends Tag {
     }
 
     @Override
-    public TagType getType() {
-        return TagType.DOUBLE;
+    protected int contentHashCode() {
+        return Double.hashCode(value);
+    }
+
+    @Override
+    protected boolean contentEquals(Tag other) {
+        return other instanceof DoubleTag that && Double.doubleToLongBits(value) == Double.doubleToLongBits(that.value);
     }
 }

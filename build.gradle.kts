@@ -1,6 +1,7 @@
 plugins {
     id("java-library")
     id("jacoco")
+    id("maven-publish")
 }
 
 group = "org.glavo"

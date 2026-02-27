@@ -104,4 +104,36 @@ public final class TagTests {
         assertEquals("Meow", new ListTag<>("Meow").getName());
         assertEquals("Meow", new CompoundTag<>("Meow").getName());
     }
+
+    @Test
+    public void testSetName() {
+        var parent = new CompoundTag<>("Parent");
+        assertEquals("Parent", parent.getName());
+
+        // Set the name to the same value
+        parent.setName("Parent");
+        assertEquals("Parent", parent.getName());
+
+        // Set the name to a different value
+        parent.setName("Parent-Modified");
+        assertEquals("Parent-Modified", parent.getName());
+
+        //noinspection DataFlowIssue
+        assertThrows(NullPointerException.class, () -> parent.setName(null));
+
+        var sub0 = new ByteTag("Sub0");
+        var sub1 = new ByteTag("Sub1");
+        parent.add(sub0);
+        parent.add(sub1);
+
+        assertSame(sub0, parent.get("Sub0"));
+        assertSame(sub1, parent.get("Sub1"));
+
+        assertThrows(IllegalStateException.class, () -> sub1.setName("Sub0"));
+
+        // Set the name of subtag to a different value
+        sub1.setName("Sub1-Modified");
+        assertSame(sub1, parent.get("Sub1-Modified"));
+        assertNull(parent.get("Sub1"));
+    }
 }

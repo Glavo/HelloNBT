@@ -44,6 +44,24 @@ public final class NBTReader implements Closeable {
 
     // High-level read methods
 
+    private Tag createTag(TagType type, String name) {
+        return switch (type) {
+            case END -> throw new UnsupportedOperationException("Cannot create an END tag");
+            case BYTE -> new ByteTag(name);
+            case SHORT -> new ShortTag(name);
+            case INT -> new IntTag(name);
+            case LONG -> new LongTag(name);
+            case FLOAT -> new FloatTag(name);
+            case DOUBLE -> new DoubleTag(name);
+            case STRING -> new StringTag(name);
+            case BYTE_ARRAY -> new ByteArrayTag(name);
+            case INT_ARRAY -> new IntArrayTag(name);
+            case LONG_ARRAY -> new LongArrayTag(name);
+            case LIST -> new ListTag<>(name);
+            case COMPOUND -> new CompoundTag<>(name);
+        };
+    }
+
     public @Nullable Tag readTag() throws IOException {
         byte tagByte = readByte();
         var type = TagType.getById(tagByte);
@@ -55,7 +73,7 @@ public final class NBTReader implements Closeable {
             return null;
         }
 
-        Tag tag = type.createTag(readString());
+        Tag tag = createTag(type, readString());
         readContent(tag);
         return tag;
     }
@@ -103,7 +121,7 @@ public final class NBTReader implements Closeable {
             @SuppressWarnings("unchecked")
             var uncheckedListTag = (ListTag<Tag>) listTag;
             for (int i = 0; i < count; i++) {
-                Tag subTag = elementType.createTag("");
+                Tag subTag = createTag(elementType, "");
                 readContent(subTag);
                 uncheckedListTag.add(subTag);
             }

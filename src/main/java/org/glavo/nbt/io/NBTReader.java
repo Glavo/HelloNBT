@@ -15,6 +15,7 @@
  */
 package org.glavo.nbt.io;
 
+import org.glavo.nbt.internal.StringCache;
 import org.glavo.nbt.tag.*;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.Nullable;
@@ -30,6 +31,12 @@ import java.util.Objects;
 public final class NBTReader implements Closeable {
 
     private static final Tag.Unsafe TAG_UNSAFE = Tag.Unsafe.getUnsafe(MethodHandles.lookup());
+
+    // Used for reading UTF-8 strings
+    private static final StringCache CACHE = new StringCache(
+            "data", "Data", "DataVersion"
+            // TODO: More tag names
+    );
 
     public static NBTReader create(InputStream inputStream, Options options) {
         return new NBTReader(inputStream, options);
@@ -304,6 +311,12 @@ public final class NBTReader implements Closeable {
         return buffer.getDouble();
     }
 
+
+    private static String getString(byte[] array, int offset, int length) {
+        String cached = CACHE.get(array, offset, length);
+        return cached != null ? cached : new String(array, offset, length, StandardCharsets.UTF_8);
+    }
+
     /// Read a string from the input stream.
     ///
     /// For big-endian byte order, the string is encoded in [modified UTF-8](https://en.wikipedia.org/wiki/UTF-8#Modified_UTF-8);
@@ -325,7 +338,7 @@ public final class NBTReader implements Closeable {
 
         // For Minecraft Bedrock Edition, the string is encoded in standard UTF-8
         if (byteOrder == ByteOrder.LITTLE_ENDIAN) {
-            return new String(array, offset, len, StandardCharsets.UTF_8);
+            return getString(array, offset, len);
         }
 
         // Scan the number of ASCII characters in the prefix
@@ -340,7 +353,7 @@ public final class NBTReader implements Closeable {
 
         // If all characters are ASCII, return the string directly
         if (asciiLen == len) {
-            return new String(array, offset, asciiLen, StandardCharsets.US_ASCII);
+            return getString(array, offset, asciiLen);
         }
 
         // Slow path
@@ -436,7 +449,6 @@ public final class NBTReader implements Closeable {
 
             private Builder() {
             }
-
         }
     }
 }

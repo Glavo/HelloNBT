@@ -25,7 +25,7 @@ public final class StringCache {
     private final Object[] pool; // (String | String[])[]
     private int maxLength = 0;
 
-    private StringCache(String... strings) {
+    public StringCache(String... strings) {
         this.pool = new String[strings.length << 1];
 
         for (String str : strings) {
@@ -64,7 +64,7 @@ public final class StringCache {
         return false;
     }
 
-    private @Nullable String get(byte[] array, int offset, int length) {
+    public @Nullable String get(byte[] array, int offset, int length) {
         if (length > maxLength) {
             return null;
         }

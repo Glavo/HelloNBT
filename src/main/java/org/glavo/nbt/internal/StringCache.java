@@ -16,6 +16,7 @@
 package org.glavo.nbt.internal;
 
 import org.jetbrains.annotations.Nullable;
+import org.jetbrains.annotations.TestOnly;
 
 import java.util.Arrays;
 
@@ -26,7 +27,7 @@ public final class StringCache {
     private int maxLength = 0;
 
     public StringCache(String... strings) {
-        this.pool = new String[strings.length << 1];
+        this.pool = new Object[strings.length << 1];
 
         for (String str : strings) {
             add(str);
@@ -62,6 +63,11 @@ public final class StringCache {
             return true;
         }
         return false;
+    }
+
+    @TestOnly
+    @Nullable String get(byte[] array) {
+        return get(array, 0, array.length);
     }
 
     public @Nullable String get(byte[] array, int offset, int length) {

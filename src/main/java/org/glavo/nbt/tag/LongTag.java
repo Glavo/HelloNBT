@@ -32,6 +32,11 @@ public final class LongTag extends Tag {
         this.value = value;
     }
 
+    @Override
+    public TagType getType() {
+        return TagType.LONG;
+    }
+
     /// Returns the value of the tag.
     public long get() {
         return value;
@@ -43,7 +48,12 @@ public final class LongTag extends Tag {
     }
 
     @Override
-    public TagType getType() {
-        return TagType.LONG;
+    protected int contentHashCode() {
+        return Long.hashCode(value);
+    }
+
+    @Override
+    protected boolean contentEquals(Tag other) {
+        return other instanceof LongTag that && value == that.value;
     }
 }

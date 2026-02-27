@@ -34,6 +34,11 @@ public final class StringTag extends Tag {
         this.value = Objects.requireNonNull(value, "value");
     }
 
+    @Override
+    public TagType getType() {
+        return TagType.STRING;
+    }
+
     /// Returns the value of the tag.
     public String get() {
         return value;
@@ -45,7 +50,12 @@ public final class StringTag extends Tag {
     }
 
     @Override
-    public TagType getType() {
-        return TagType.STRING;
+    protected int contentHashCode() {
+        return value.hashCode();
+    }
+
+    @Override
+    protected boolean contentEquals(Tag other) {
+        return other instanceof StringTag that && value.equals(that.value);
     }
 }

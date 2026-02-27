@@ -15,6 +15,8 @@
  */
 package org.glavo.nbt.tag;
 
+import java.util.Arrays;
+
 /// An ordered list of 8-bit integers.
 public final class ByteArrayTag extends ArrayTag {
     private static final byte[] EMPTY = new byte[0];
@@ -33,6 +35,11 @@ public final class ByteArrayTag extends ArrayTag {
     public ByteArrayTag(String name, byte[] value) {
         super(name);
         this.value = value.clone();
+    }
+
+    @Override
+    public TagType getType() {
+        return TagType.BYTE_ARRAY;
     }
 
     /// Returns the value of the tag.
@@ -65,7 +72,12 @@ public final class ByteArrayTag extends ArrayTag {
     }
 
     @Override
-    public TagType getType() {
-        return TagType.BYTE_ARRAY;
+    protected int contentHashCode() {
+        return Arrays.hashCode(value);
+    }
+
+    @Override
+    protected boolean contentEquals(Tag other) {
+        return other instanceof ByteArrayTag that && Arrays.equals(value, that.value);
     }
 }

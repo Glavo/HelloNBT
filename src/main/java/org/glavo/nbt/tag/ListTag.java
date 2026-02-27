@@ -154,4 +154,14 @@ public final class ListTag<T extends Tag> extends ParentTag<T> {
             subTags.get(i).index--;
         }
     }
+
+    @Override
+    protected int contentHashCode() {
+        return subTags.hashCode();
+    }
+
+    @Override
+    protected boolean contentEquals(Tag other) {
+        return other instanceof ListTag<?> that && subTags.equals(that.subTags);
+    }
 }

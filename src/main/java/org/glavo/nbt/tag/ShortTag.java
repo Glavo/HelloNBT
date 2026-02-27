@@ -32,6 +32,11 @@ public final class ShortTag extends Tag {
         this.value = value;
     }
 
+    @Override
+    public TagType getType() {
+        return TagType.SHORT;
+    }
+
     /// Returns the value of the tag.
     public short get() {
         return value;
@@ -43,7 +48,12 @@ public final class ShortTag extends Tag {
     }
 
     @Override
-    public TagType getType() {
-        return TagType.SHORT;
+    protected int contentHashCode() {
+        return Short.hashCode(value);
+    }
+
+    @Override
+    protected boolean contentEquals(Tag other) {
+        return other instanceof ShortTag that && value == that.value;
     }
 }

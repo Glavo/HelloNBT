@@ -16,6 +16,7 @@
 package org.glavo.nbt.io;
 
 import org.glavo.nbt.tag.*;
+import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.VisibleForTesting;
 
@@ -24,9 +25,42 @@ import java.lang.invoke.MethodHandles;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.charset.StandardCharsets;
+import java.util.Objects;
 
 public final class NBTReader implements Closeable {
+
     private static final Tag.Unsafe TAG_UNSAFE = Tag.Unsafe.getUnsafe(MethodHandles.lookup());
+
+    public static NBTReader create(InputStream inputStream, Options options) {
+        return new NBTReader(inputStream, options);
+    }
+
+    public static Tag readTag(InputStream inputStream) throws IOException {
+        return readTag(inputStream, Options.getDefault());
+    }
+
+    public static Tag readTag(InputStream inputStream, Options options) throws IOException {
+        try (var reader = new NBTReader(inputStream, options)) {
+            Tag tag = reader.readTag();
+            if (tag == null) {
+                throw new IOException("No tag found");
+            }
+            return tag;
+        }
+    }
+
+    public static CompoundTag<?> readCompoundTag(InputStream inputStream) throws IOException {
+        return readCompoundTag(inputStream, Options.getDefault());
+    }
+
+    public static CompoundTag<?> readCompoundTag(InputStream inputStream, Options options) throws IOException {
+        Tag rootTag = readTag(inputStream, options);
+        if (rootTag instanceof CompoundTag<?> compoundTag) {
+            return compoundTag;
+        } else {
+            throw new IOException("Expected a compound tag, but got " + rootTag);
+        }
+    }
 
     private final ByteOrder byteOrder;
     private final InputStream inputStream;
@@ -36,9 +70,9 @@ public final class NBTReader implements Closeable {
     private @Nullable StringBuilder charsBuffer;
 
     @VisibleForTesting
-    NBTReader(InputStream inputStream, ByteOrder byteOrder) {
-        this.byteOrder = byteOrder;
+    NBTReader(InputStream inputStream, Options options) {
         this.inputStream = inputStream;
+        this.byteOrder = options.byteOrder;
         this.buffer = ByteBuffer.allocate(8192).order(byteOrder);
     }
 
@@ -49,7 +83,7 @@ public final class NBTReader implements Closeable {
 
     // High-level read methods
 
-    private Tag createTag(TagType type, String name) {
+    private static Tag createTag(TagType type, String name) {
         return switch (type) {
             case END -> throw new UnsupportedOperationException("Cannot create an END tag");
             case BYTE -> new ByteTag(name);
@@ -363,5 +397,45 @@ public final class NBTReader implements Closeable {
             }
         }
         return charsBuffer.toString();
+    }
+
+    /// Options for reading NBT data.
+    public static final class Options {
+
+        private static final Options DEFAULT = new Options(ByteOrder.BIG_ENDIAN);
+
+        /// Returns the default options.
+        public static Options getDefault() {
+            return DEFAULT;
+        }
+
+        /// Creates a new builder for options.
+        public static Builder newBuilder() {
+            return new Builder();
+        }
+
+        private final ByteOrder byteOrder;
+
+        private Options(ByteOrder byteOrder) {
+            this.byteOrder = byteOrder;
+        }
+
+        public static final class Builder {
+            private ByteOrder byteOrder = ByteOrder.BIG_ENDIAN;
+
+            public Options build() {
+                return new Options(byteOrder);
+            }
+
+            @Contract("_ -> this")
+            public Builder byteOrder(ByteOrder byteOrder) {
+                this.byteOrder = Objects.requireNonNull(byteOrder);
+                return this;
+            }
+
+            private Builder() {
+            }
+
+        }
     }
 }

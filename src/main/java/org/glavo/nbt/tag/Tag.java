@@ -70,6 +70,26 @@ public sealed abstract class Tag
         return parent;
     }
 
+    protected abstract int contentHashCode();
+
+    protected abstract boolean contentEquals(Tag other);
+
+    /// Returns a hash code for this tag.
+    @Override
+    public int hashCode() {
+        return Objects.hash(name, this.getClass(), contentHashCode());
+    }
+
+    /// Returns `true` if this tag is equal to the given tag.
+    ///
+    /// Two tags are considered equal if they have the same name, type, and content.
+    /// The parent tag and index are not considered.
+    public boolean equals(Object obj) {
+        return this == obj || obj instanceof Tag that
+                && Objects.equals(this.name, that.name)
+                && this.contentEquals(that);
+    }
+
     /// Unsafe operations for internal use.
     public static final class Unsafe {
         private static final Unsafe INSTANCE = new Unsafe();

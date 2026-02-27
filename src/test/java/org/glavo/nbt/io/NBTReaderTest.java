@@ -16,22 +16,48 @@
 package org.glavo.nbt.io;
 
 import com.github.steveice10.opennbt.NBTIO;
-import com.github.steveice10.opennbt.tag.builtin.Tag;
+import org.glavo.nbt.tag.Tag;
 import org.junit.jupiter.api.Test;
 
+import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.nio.ByteOrder;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public final class NBTReaderTest {
 
-    private static byte[] toByteArray(Tag tag) throws IOException {
-        ByteArrayOutputStream buffer = new ByteArrayOutputStream();
-        NBTIO.writeTag(buffer, tag);
-        return buffer.toByteArray();
+    private static Tag convert(
+            com.github.steveice10.opennbt.tag.builtin.Tag tag,
+            ByteOrder byteOrder)
+            throws IOException {
+        var buffer = new ByteArrayOutputStream();
+        NBTIO.writeTag(buffer, tag, byteOrder == ByteOrder.LITTLE_ENDIAN);
+
+        return NBTReader.readTag(new ByteArrayInputStream(buffer.toByteArray()),
+                NBTReader.Options.newBuilder().byteOrder(byteOrder).build());
+    }
+
+    private static void assertEqualTag(
+            Tag expected,
+            Tag actual) {
+
+    }
+
+    private static void assertEqualTag(
+            Tag expected,
+            com.github.steveice10.opennbt.tag.builtin.Tag actual) {
+
+
+
     }
 
     @Test
     public void testReadTag() throws IOException {
-        
+
+
+        convert(new com.github.steveice10.opennbt.tag.builtin.ByteTag("Meow", (byte) 42),
+                ByteOrder.BIG_ENDIAN);
     }
 }

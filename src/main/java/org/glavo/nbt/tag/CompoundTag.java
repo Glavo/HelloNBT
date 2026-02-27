@@ -116,4 +116,14 @@ public final class CompoundTag<T extends Tag> extends ParentTag<T> {
             subTags.get(i).index--;
         }
     }
+
+    @Override
+    protected int contentHashCode() {
+        return subTagsByName.hashCode();
+    }
+
+    @Override
+    protected boolean contentEquals(Tag other) {
+        return other instanceof CompoundTag<?> that && subTagsByName.equals(that.subTagsByName);
+    }
 }

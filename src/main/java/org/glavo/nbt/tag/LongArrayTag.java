@@ -15,6 +15,8 @@
  */
 package org.glavo.nbt.tag;
 
+import java.util.Arrays;
+
 /// An ordered list of 64-bit integers.
 public final class LongArrayTag extends ArrayTag {
     private static final long[] EMPTY = new long[0];
@@ -33,6 +35,11 @@ public final class LongArrayTag extends ArrayTag {
     public LongArrayTag(String name, long[] value) {
         super(name);
         this.value = value.clone();
+    }
+
+    @Override
+    public TagType getType() {
+        return TagType.LONG_ARRAY;
     }
 
     /// Returns the value of the tag.
@@ -65,7 +72,12 @@ public final class LongArrayTag extends ArrayTag {
     }
 
     @Override
-    public TagType getType() {
-        return TagType.LONG_ARRAY;
+    protected int contentHashCode() {
+        return Arrays.hashCode(value);
+    }
+
+    @Override
+    protected boolean contentEquals(Tag other) {
+        return other instanceof LongArrayTag that && Arrays.equals(value, that.value);
     }
 }

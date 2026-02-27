@@ -15,6 +15,8 @@
  */
 package org.glavo.nbt.tag;
 
+import java.util.Arrays;
+
 /// An ordered list of 32-bit integers.
 public final class IntArrayTag extends ArrayTag {
     private static final int[] EMPTY = new int[0];
@@ -33,6 +35,11 @@ public final class IntArrayTag extends ArrayTag {
     public IntArrayTag(String name, int[] value) {
         super(name);
         this.value = value.clone();
+    }
+
+    @Override
+    public TagType getType() {
+        return TagType.INT_ARRAY;
     }
 
     /// Returns the value of the tag.
@@ -65,7 +72,12 @@ public final class IntArrayTag extends ArrayTag {
     }
 
     @Override
-    public TagType getType() {
-        return TagType.INT_ARRAY;
+    protected int contentHashCode() {
+        return Arrays.hashCode(value);
+    }
+
+    @Override
+    protected boolean contentEquals(Tag other) {
+        return other instanceof IntArrayTag that && Arrays.equals(value, that.value);
     }
 }

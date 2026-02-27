@@ -32,6 +32,11 @@ public final class ByteTag extends Tag {
         this.value = value;
     }
 
+    @Override
+    public TagType getType() {
+        return TagType.BYTE;
+    }
+
     /// Returns the value of the tag.
     public byte get() {
         return value;
@@ -56,7 +61,12 @@ public final class ByteTag extends Tag {
     }
 
     @Override
-    public TagType getType() {
-        return TagType.BYTE;
+    protected int contentHashCode() {
+        return Byte.hashCode(value);
+    }
+
+    @Override
+    protected boolean contentEquals(Tag other) {
+        return other instanceof ByteTag that && value == that.value;
     }
 }

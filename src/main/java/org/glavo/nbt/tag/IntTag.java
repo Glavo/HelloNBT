@@ -32,6 +32,11 @@ public final class IntTag extends Tag {
         this.value = value;
     }
 
+    @Override
+    public TagType getType() {
+        return TagType.INT;
+    }
+
     /// Returns the value of the tag.
     public int get() {
         return value;
@@ -43,7 +48,12 @@ public final class IntTag extends Tag {
     }
 
     @Override
-    public TagType getType() {
-        return TagType.INT;
+    protected int contentHashCode() {
+        return Integer.hashCode(value);
+    }
+
+    @Override
+    protected boolean contentEquals(Tag other) {
+        return other instanceof IntTag that && value == that.value;
     }
 }

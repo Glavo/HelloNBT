@@ -1,0 +1,7 @@
+[versions]
+junit = "6.0.3"
+opennbt = "1.5"
+
+[libraries]
+junit-jupiter = { module = "org.junit.jupiter:junit-jupiter", version.ref = "junit" }
+opennbt = { module = "com.github.steveice10:opennbt", version.ref = "opennbt" }

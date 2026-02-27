@@ -161,36 +161,52 @@ public final class TagTests {
     }
 
     @Test
-    public void testSubTagIndexOfListTag() {
-        var listTag = new ListTag<>("Parent", ByteTag.class);
+    public void testSubTagOfListTag() {
+        var listTag = new ListTag<>("Parent", IntTag.class);
 
         for (int i = 0; i < 100; i++) {
-            listTag.add(new ByteTag("", (byte) i));
-        }
+            var subTag = new IntTag("", i);
 
-        verifyIndex(listTag);
+            assertEquals(-1, subTag.getIndex());
+            assertNull(subTag.getParent());
+
+            listTag.add(subTag);
+
+            assertEquals(i, subTag.getIndex());
+            assertSame(listTag, subTag.getParent());
+        }
 
         var sub10 = listTag.get(10);
         listTag.remove(sub10);
 
-        verifyIndex(listTag);
         assertEquals(-1, sub10.getIndex());
+        assertNull(sub10.getParent());
+
+        verifyIndex(listTag);
     }
 
     @Test
-    public void testSubTagIndexOfCompoundTag() {
+    public void testSubTagOfCompoundTag() {
         var compoundTag = new CompoundTag<>("Parent");
 
         for (int i = 0; i < 100; i++) {
-            compoundTag.add(new ByteTag("Sub" + i, (byte) i));
-        }
+            var subTag = new IntTag("Sub" + i, i);
 
-        verifyIndex(compoundTag);
+            assertEquals(-1, subTag.getIndex());
+            assertNull(subTag.getParent());
+
+            compoundTag.add(subTag);
+
+            assertEquals(i, subTag.getIndex());
+            assertSame(compoundTag, subTag.getParent());
+        }
 
         var sub10 = compoundTag.get(10);
         compoundTag.remove(sub10);
 
-        verifyIndex(compoundTag);
         assertEquals(-1, sub10.getIndex());
+        assertNull(sub10.getParent());
+
+        verifyIndex(compoundTag);
     }
 }

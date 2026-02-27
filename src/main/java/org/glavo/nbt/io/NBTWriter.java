@@ -244,7 +244,11 @@ public final class NBTWriter implements Closeable, Flushable {
 
         // Slow path for non-ASCII strings
         int encodedLength = MUTF8.encodedLength(value, asciiLength);
-        writeInt(encodedLength);
+        if (encodedLength > 65535) {
+            throw new UTFDataFormatException("String too long: " + value);
+        }
+
+        writeUnsignedShort(encodedLength);
 
         flushBuffer(encodedLength);
 

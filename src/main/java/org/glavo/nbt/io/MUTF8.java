@@ -23,8 +23,11 @@ final class MUTF8 {
 
         for (int i = asciiLength; i < value.length(); i++) {
             char ch = value.charAt(i);
-            if (ch >= 0x80 || ch == 0) {
-                length += ch >= 0x800 ? 2 : 1;
+
+            if (ch >= 0x800) {
+                length += 2;
+            } else if (ch >= 0x80 || ch == 0) {
+                length += 1;
             }
         }
 

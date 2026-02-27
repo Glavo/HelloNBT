@@ -21,6 +21,7 @@ import java.io.*;
 import java.lang.invoke.MethodHandles;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
+import java.nio.charset.StandardCharsets;
 
 import static org.glavo.nbt.io.NBTReader.readTag;
 
@@ -213,6 +214,22 @@ public final class NBTWriter implements Closeable, Flushable {
         buffer.putDouble(value);
     }
 
+    private static int encodedMutf8Length(String value, int asciiLength) {
+        int length = value.length();
+
+        for (int i = asciiLength; i < value.length(); i++) {
+            char ch = value.charAt(i);
+
+            if (ch >= 0x800) {
+                length += 2;
+            } else if (ch >= 0x80 || ch == 0) {
+                length += 1;
+            }
+        }
+
+        return length;
+    }
+
 
     @SuppressWarnings("deprecation")
     private void writeString(String value) throws IOException {
@@ -242,8 +259,20 @@ public final class NBTWriter implements Closeable, Flushable {
             return;
         }
 
+        if (byteOrder == ByteOrder.LITTLE_ENDIAN) {
+            // Need Optimization
+            byte[] bytes = value.getBytes(StandardCharsets.UTF_8);
+            if (value.length() > 65535) {
+                throw new UTFDataFormatException("String too long: " + value);
+            }
+            writeUnsignedShort(bytes.length);
+            flushBuffer(bytes.length);
+            buffer.put(bytes);
+            return;
+        }
+
         // Slow path for non-ASCII strings
-        int encodedLength = MUTF8.encodedLength(value, asciiLength);
+        int encodedLength = encodedMutf8Length(value, asciiLength);
         if (encodedLength > 65535) {
             throw new UTFDataFormatException("String too long: " + value);
         }

@@ -42,7 +42,6 @@ public final class NBTReaderTest {
     private static void assertTagEquals(
             Tag expected,
             com.github.steveice10.opennbt.tag.builtin.Tag actual) throws IOException {
-
         assertEquals(expected, convert(actual, ByteOrder.BIG_ENDIAN));
         assertEquals(expected, convert(actual, ByteOrder.LITTLE_ENDIAN));
     }
@@ -123,7 +122,14 @@ public final class NBTReaderTest {
 
             assertTagEquals(expected, actual);
         }
+    }
 
+    @Test
+    public void testReadModifiedUTF8String() throws IOException {
+        String value = "ABCǾ喵喵喵🐱ABC123";
 
+        var expected = new StringTag("Meow", value);
+        var actual = new com.github.steveice10.opennbt.tag.builtin.StringTag("Meow", value);
+        assertTagEquals(expected, actual);
     }
 }

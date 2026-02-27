@@ -152,4 +152,46 @@ public final class TagTests {
             assertEquals("", sub1.getName());
         }
     }
+
+    private static void verifyIndex(ParentTag<?> list) {
+        int index = 0;
+        for (Tag tag : list) {
+            assertEquals(index++, tag.getIndex());
+        }
+    }
+
+    @Test
+    public void testIndex() {
+        {
+            var listTag = new ListTag<>("Parent", ByteTag.class);
+
+            for (int i = 0; i < 100; i++) {
+                listTag.add(new ByteTag("", (byte) i));
+            }
+
+            verifyIndex(listTag);
+
+            var sub10 = listTag.get(10);
+            listTag.remove(sub10);
+
+            verifyIndex(listTag);
+            assertEquals(-1, sub10.getIndex());
+        }
+
+        {
+            var compoundTag = new CompoundTag<>("Parent");
+
+            for (int i = 0; i < 100; i++) {
+                compoundTag.add(new ByteTag("Sub" + i, (byte) i));
+            }
+
+            verifyIndex(compoundTag);
+
+            var sub10 = compoundTag.get(10);
+            compoundTag.remove(sub10);
+
+            verifyIndex(compoundTag);
+            assertEquals(-1, sub10.getIndex());
+        }
+    }
 }

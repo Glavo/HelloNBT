@@ -78,9 +78,13 @@ public sealed abstract class Tag
         ///
         /// @param lookup A lookup object used to check whether a user has access rights to the [Tag].
         /// @return An instance of the unsafe operations.
-        /// @throws IllegalAccessException if the user does not have access rights to the [Tag].
-        public static Unsafe getInstance(MethodHandles.Lookup lookup) throws IllegalAccessException {
-            MethodHandles.privateLookupIn(Tag.class, lookup);
+        /// @throws UnsupportedOperationException if the user does not have access rights to the [Tag].
+        public static Unsafe getUnsafe(MethodHandles.Lookup lookup) {
+            try {
+                MethodHandles.privateLookupIn(Tag.class, lookup);
+            } catch (IllegalAccessException e) {
+                throw new UnsupportedOperationException(e);
+            }
             return INSTANCE;
         }
 

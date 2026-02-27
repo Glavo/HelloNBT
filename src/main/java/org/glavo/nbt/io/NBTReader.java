@@ -17,13 +17,17 @@ package org.glavo.nbt.io;
 
 import org.glavo.nbt.tag.*;
 import org.jetbrains.annotations.Nullable;
+import org.jetbrains.annotations.VisibleForTesting;
 
 import java.io.*;
+import java.lang.invoke.MethodHandles;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.charset.StandardCharsets;
 
 public final class NBTReader implements Closeable {
+    private static final Tag.Unsafe TAG_UNSAFE = Tag.Unsafe.getUnsafe(MethodHandles.lookup());
+
     private final ByteOrder byteOrder;
     private final InputStream inputStream;
     private ByteBuffer buffer;
@@ -31,7 +35,8 @@ public final class NBTReader implements Closeable {
     /// Used for reading UTF-8 strings
     private @Nullable StringBuilder charsBuffer;
 
-    NBTReader(ByteOrder byteOrder, InputStream inputStream) {
+    @VisibleForTesting
+    NBTReader(InputStream inputStream, ByteOrder byteOrder) {
         this.byteOrder = byteOrder;
         this.inputStream = inputStream;
         this.buffer = ByteBuffer.allocate(8192).order(byteOrder);
@@ -94,11 +99,11 @@ public final class NBTReader implements Closeable {
         } else if (tag instanceof StringTag stringTag) {
             stringTag.set(readString());
         } else if (tag instanceof ByteArrayTag byteArrayTag) {
-            NBTIO.TAG_UNSAFE.setInternalArray(byteArrayTag, readByteArray());
+            TAG_UNSAFE.setInternalArray(byteArrayTag, readByteArray());
         } else if (tag instanceof IntArrayTag intArrayTag) {
-            NBTIO.TAG_UNSAFE.setInternalArray(intArrayTag, readIntArray());
+            TAG_UNSAFE.setInternalArray(intArrayTag, readIntArray());
         } else if (tag instanceof LongArrayTag longArrayTag) {
-            NBTIO.TAG_UNSAFE.setInternalArray(longArrayTag, readLongArray());
+            TAG_UNSAFE.setInternalArray(longArrayTag, readLongArray());
         } else if (tag instanceof ListTag<?> listTag) {
             byte elementTypeId = readByte();
             var elementType = TagType.getById(elementTypeId);

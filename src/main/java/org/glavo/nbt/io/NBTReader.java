@@ -96,7 +96,7 @@ public final class NBTReader implements Closeable {
             case BYTE_ARRAY -> new ByteArrayTag(name);
             case INT_ARRAY -> new IntArrayTag(name);
             case LONG_ARRAY -> new LongArrayTag(name);
-            case LIST -> new ListTag<>(name);
+            case LIST -> new ListTag<>(name, TagType.END);
             case COMPOUND -> new CompoundTag<>(name);
         };
     }

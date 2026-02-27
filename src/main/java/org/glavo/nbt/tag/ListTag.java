@@ -22,16 +22,11 @@ public final class ListTag<T extends Tag> extends ParentTag<T> {
     /// The type of the elements in the list.
     private TagType elementType;
 
-    /// Creates a new empty list tag without an element type.
-    public ListTag() {
-        this("", TagType.END);
-    }
-
-    /// Creates a new empty list tag with the given name and without an element type.
+    /// Creates a new empty list tag with the given element type.
     ///
-    /// @param name The name of the list tag.
-    public ListTag(String name) {
-        this(name, TagType.END);
+    /// @param elementType The type of the elements in the list.
+    public ListTag(TagType elementType) {
+        this("", elementType);
     }
 
     /// Creates a new empty list tag with the given name and element type.

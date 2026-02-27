@@ -27,7 +27,7 @@ public sealed abstract class Tag
     @Nullable ParentTag<?> parent;
 
     String name;
-    int index;
+    int index = -1;
 
     protected Tag(String name) {
         this.name = Objects.requireNonNull(name, "name");

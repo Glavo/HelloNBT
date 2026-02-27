@@ -209,4 +209,53 @@ public final class TagTests {
 
         verifyIndex(compoundTag);
     }
+
+    @Test
+    public void testEquals() {
+        assertEquals(new ByteTag("Meow", (byte) 42), new ByteTag("Meow", (byte) 42));
+        assertNotEquals(new ByteTag("Meow", (byte) 42), new ByteTag("Meow", (byte) 43));
+        assertNotEquals(new ByteTag("Meow", (byte) 42), new ByteTag("Glavo", (byte) 42));
+
+        assertEquals(new ShortTag("Meow", (short) 42), new ShortTag("Meow", (short) 42));
+        assertNotEquals(new ShortTag("Meow", (short) 42), new ShortTag("Meow", (short) 43));
+        assertNotEquals(new ShortTag("Meow", (short) 42), new ShortTag("Glavo", (short) 42));
+
+        assertEquals(new IntTag("Meow", 42), new IntTag("Meow", 42));
+        assertNotEquals(new IntTag("Meow", 42), new IntTag("Meow", 43));
+        assertNotEquals(new IntTag("Meow", 42), new IntTag("Glavo", 42));
+
+        assertEquals(new LongTag("Meow", 42L), new LongTag("Meow", 42L));
+        assertNotEquals(new LongTag("Meow", 42L), new LongTag("Meow", 43L));
+        assertNotEquals(new LongTag("Meow", 42L), new LongTag("Glavo", 42L));
+
+        assertEquals(new FloatTag("Meow", 42.0f), new FloatTag("Meow", 42.0f));
+        assertNotEquals(new FloatTag("Meow", 42.0f), new FloatTag("Meow", 43.0f));
+        assertNotEquals(new FloatTag("Meow", 42.0f), new FloatTag("Glavo", 42.0f));
+
+        assertEquals(new DoubleTag("Meow", 42.0), new DoubleTag("Meow", 42.0));
+        assertNotEquals(new DoubleTag("Meow", 42.0), new DoubleTag("Meow", 43.0));
+        assertNotEquals(new DoubleTag("Meow", 42.0), new DoubleTag("Glavo", 42.0));
+
+        assertEquals(new StringTag("Meow", "Glavo"), new StringTag("Meow", "Glavo"));
+        assertNotEquals(new StringTag("Meow", "Glavo"), new StringTag("Meow", "Hello"));
+        assertNotEquals(new StringTag("Meow", "Glavo"), new StringTag("Glavo", "Glavo"));
+
+        assertEquals(new ByteArrayTag("Meow", new byte[]{1, 2, 3}), new ByteArrayTag("Meow", new byte[]{1, 2, 3}));
+        assertNotEquals(new ByteArrayTag("Meow", new byte[]{1, 2, 3}), new ByteArrayTag("Meow", new byte[]{1, 2, 4}));
+        assertNotEquals(new ByteArrayTag("Meow", new byte[]{1, 2, 3}), new ByteArrayTag("Glavo", new byte[]{1, 2, 3}));
+
+        assertEquals(new IntArrayTag("Meow", new int[]{1, 2, 3}), new IntArrayTag("Meow", new int[]{1, 2, 3}));
+        assertNotEquals(new IntArrayTag("Meow", new int[]{1, 2, 3}), new IntArrayTag("Meow", new int[]{1, 2, 4}));
+        assertNotEquals(new IntArrayTag("Meow", new int[]{1, 2, 3}), new IntArrayTag("Glavo", new int[]{1, 2, 3}));
+
+        assertEquals(new LongArrayTag("Meow", new long[]{1, 2, 3}), new LongArrayTag("Meow", new long[]{1, 2, 3}));
+        assertNotEquals(new LongArrayTag("Meow", new long[]{1, 2, 3}), new LongArrayTag("Meow", new long[]{1, 2, 4}));
+        assertNotEquals(new LongArrayTag("Meow", new long[]{1, 2, 3}), new LongArrayTag("Glavo", new long[]{1, 2, 3}));
+
+        assertEquals(new ListTag<>("Meow", ByteTag.class), new ListTag<>("Meow", ByteTag.class));
+        assertNotEquals(new ListTag<>("Meow", ByteTag.class), new ListTag<>("Glavo", ByteTag.class));
+
+        assertEquals(new CompoundTag<>("Meow"), new CompoundTag<>("Meow"));
+        assertNotEquals(new CompoundTag<>("Meow"), new CompoundTag<>("Glavo"));
+    }
 }

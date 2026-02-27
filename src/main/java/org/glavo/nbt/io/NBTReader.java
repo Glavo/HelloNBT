@@ -73,7 +73,7 @@ public final class NBTReader implements Closeable {
     NBTReader(InputStream inputStream, Options options) {
         this.inputStream = inputStream;
         this.byteOrder = options.byteOrder;
-        this.buffer = ByteBuffer.allocate(8192).order(byteOrder);
+        this.buffer = ByteBuffer.allocate(8192).order(byteOrder).flip();
     }
 
     @Override
@@ -196,8 +196,9 @@ public final class NBTReader implements Closeable {
             newBuffer.put(buffer);
             newBuffer.flip();
             buffer = newBuffer;
-        } else {
+        } else if (buffer.position() > 0) {
             buffer.compact();
+            buffer.flip();
         }
 
         while (buffer.remaining() < required) {

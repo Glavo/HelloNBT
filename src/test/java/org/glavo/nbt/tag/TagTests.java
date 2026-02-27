@@ -237,6 +237,35 @@ public final class TagTests {
     }
 
     @Test
+    public void testAddToOtherCompoundTag() {
+        var compound0 = new CompoundTag<>("List0");
+        var compound1 = new CompoundTag<>("List1");
+
+        var subTag = new IntTag("Sub", 0);
+
+        compound0.add(subTag);
+
+        assertSame(subTag, compound0.get(0));
+        assertSame(subTag, compound0.get("Sub"));
+        assertSame(compound0, subTag.getParent());
+        assertEquals(0, subTag.getIndex());
+
+        // Move subTag to compound1
+
+        compound1.add(new IntTag("Placeholder")); // Add a placeholder tag to compound1
+        compound1.add(subTag);
+
+        assertTrue(compound0.isEmpty());
+        assertEquals(0, compound0.size());
+        assertNull(compound0.get("Sub"));
+
+        assertSame(subTag, compound1.get(1));
+        assertSame(subTag, compound1.get("Sub"));
+        assertSame(compound1, subTag.getParent());
+        assertEquals(1, subTag.getIndex());
+    }
+
+    @Test
     public void testEquals() {
         assertEquals(new ByteTag("Meow", (byte) 42), new ByteTag("Meow", (byte) 42));
         assertNotEquals(new ByteTag("Meow", (byte) 42), new ByteTag("Meow", (byte) 43));

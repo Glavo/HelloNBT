@@ -311,7 +311,6 @@ public final class NBTReader implements Closeable {
         return buffer.getDouble();
     }
 
-
     private static String getString(byte[] array, int offset, int length) {
         String cached = CACHE.get(array, offset, length);
         return cached != null ? cached : new String(array, offset, length, StandardCharsets.UTF_8);

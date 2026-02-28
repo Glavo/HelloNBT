@@ -19,7 +19,6 @@ import org.glavo.nbt.internal.input.NBTReader;
 
 import java.io.IOException;
 import java.util.Iterator;
-import java.util.List;
 import java.util.Objects;
 
 public final class ListTag<T extends Tag> extends ParentTag<T> {

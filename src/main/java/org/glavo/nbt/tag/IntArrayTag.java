@@ -16,13 +16,14 @@
 package org.glavo.nbt.tag;
 
 import org.glavo.nbt.internal.input.NBTReader;
+import org.jetbrains.annotations.NotNull;
 
 import java.io.IOException;
-import java.util.Arrays;
+import java.util.*;
 import java.util.stream.IntStream;
 
 /// An ordered list of 32-bit integers.
-public final class IntArrayTag extends ArrayTag {
+public final class IntArrayTag extends ArrayTag<Integer> {
     private static final int[] EMPTY = new int[0];
 
     int[] value;
@@ -73,6 +74,27 @@ public final class IntArrayTag extends ArrayTag {
     @Override
     public int size() {
         return value.length;
+    }
+
+    @Override
+    public PrimitiveIterator.OfInt iterator() {
+        final int[] array = this.value;
+        return new PrimitiveIterator.OfInt() {
+            private int cursor;
+
+            @Override
+            public boolean hasNext() {
+                return cursor < array.length;
+            }
+
+            @Override
+            public int nextInt() {
+                if (cursor >= array.length) {
+                    throw new NoSuchElementException();
+                }
+                return array[cursor++];
+            }
+        };
     }
 
     /// Returns a sequential [IntStream] with this value as its source.

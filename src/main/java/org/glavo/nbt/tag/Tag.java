@@ -174,7 +174,7 @@ public sealed abstract class Tag implements NBTElement
             builder.append(')');
         }
 
-        if (this instanceof ArrayTag || this instanceof ParentTag<?>) {
+        if (this instanceof ArrayTag<?> || this instanceof ParentTag<?>) {
             this.contentToString(builder);
         } else {
             builder.append('[');

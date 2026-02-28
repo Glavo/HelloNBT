@@ -19,10 +19,12 @@ import org.glavo.nbt.internal.input.NBTReader;
 
 import java.io.IOException;
 import java.util.Arrays;
+import java.util.NoSuchElementException;
+import java.util.PrimitiveIterator;
 import java.util.stream.LongStream;
 
 /// An ordered list of 64-bit integers.
-public final class LongArrayTag extends ArrayTag {
+public final class LongArrayTag extends ArrayTag<Long> {
     private static final long[] EMPTY = new long[0];
 
     long[] value;
@@ -75,6 +77,27 @@ public final class LongArrayTag extends ArrayTag {
         return value.length;
     }
 
+    @Override
+    public PrimitiveIterator.OfLong iterator() {
+        final long[] array = this.value;
+        return new PrimitiveIterator.OfLong() {
+            private int cursor;
+
+            @Override
+            public boolean hasNext() {
+                return cursor < array.length;
+            }
+
+            @Override
+            public long nextLong() {
+                if (cursor >= array.length) {
+                    throw new NoSuchElementException();
+                }
+                return array[cursor++];
+            }
+        };
+    }
+
     /// Returns a sequential [LongStream] with this value as its source.
     public LongStream stream() {
         return Arrays.stream(value);
@@ -94,6 +117,7 @@ public final class LongArrayTag extends ArrayTag {
     protected boolean contentEquals(Tag other) {
         return other instanceof LongArrayTag that && Arrays.equals(value, that.value);
     }
+
     @Override
     protected void contentToString(StringBuilder builder) {
         if (value.length > 0) {

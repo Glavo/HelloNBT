@@ -19,9 +19,11 @@ import org.glavo.nbt.internal.input.NBTReader;
 
 import java.io.IOException;
 import java.util.Arrays;
+import java.util.Iterator;
+import java.util.NoSuchElementException;
 
 /// An ordered list of 8-bit integers.
-public final class ByteArrayTag extends ArrayTag {
+public final class ByteArrayTag extends ArrayTag<Byte> {
     private static final byte[] EMPTY = new byte[0];
 
     byte[] value;
@@ -72,6 +74,27 @@ public final class ByteArrayTag extends ArrayTag {
     @Override
     public int size() {
         return value.length;
+    }
+
+    @Override
+    public Iterator<Byte> iterator() {
+        final byte[] array = this.value;
+        return new Iterator<>() {
+            private int cursor;
+
+            @Override
+            public boolean hasNext() {
+                return cursor < array.length;
+            }
+
+            @Override
+            public Byte next() {
+                if (cursor >= array.length) {
+                    throw new NoSuchElementException();
+                }
+                return array[cursor++];
+            }
+        };
     }
 
     @Override

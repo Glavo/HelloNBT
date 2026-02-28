@@ -20,11 +20,11 @@ import java.util.Iterator;
 import java.util.List;
 
 /// An abstract tag that contains other tags.
-public sealed abstract class ParentTag<T extends Tag> extends Tag
-        implements Iterable<T>
+public sealed abstract class ParentTag<E extends Tag> extends Tag
+        implements Iterable<E>
         permits CompoundTag, ListTag {
 
-    final List<T> subTags = new ArrayList<>();
+    final List<E> subTags = new ArrayList<>();
 
     protected ParentTag(String name) {
         super(name);
@@ -61,7 +61,7 @@ public sealed abstract class ParentTag<T extends Tag> extends Tag
     /// Returns the subtag at the given index.
     ///
     /// @throws IndexOutOfBoundsException if the index is out of bounds.
-    public final T get(int index) throws IndexOutOfBoundsException {
+    public final E get(int index) throws IndexOutOfBoundsException {
         return subTags.get(index);
     }
 
@@ -70,7 +70,7 @@ public sealed abstract class ParentTag<T extends Tag> extends Tag
     /// If the `tag` is already a child of this tag, does nothing.
     ///
     /// If the `tag` is already a child of another tag, removes it from old parent and adds it to this tag.
-    public abstract void add(T tag) throws IllegalArgumentException;
+    public abstract void add(E tag) throws IllegalArgumentException;
 
     /// Removes the `tag` from this tag.
     ///
@@ -80,8 +80,8 @@ public sealed abstract class ParentTag<T extends Tag> extends Tag
     // Iterable implementation
 
     @Override
-    public final Iterator<T> iterator() {
-        Iterator<T> iterator = subTags.iterator();
+    public final Iterator<E> iterator() {
+        Iterator<E> iterator = subTags.iterator();
 
         // Prevent calling Iterator#remove()
         return new Iterator<>() {
@@ -91,7 +91,7 @@ public sealed abstract class ParentTag<T extends Tag> extends Tag
             }
 
             @Override
-            public T next() {
+            public E next() {
                 return iterator.next();
             }
         };

@@ -16,7 +16,7 @@
 package org.glavo.nbt.tag;
 
 /// An abstract tag that contains an ordered list of values.
-public sealed abstract class ArrayTag extends Tag
+public sealed abstract class ArrayTag<E extends Number> extends Tag implements Iterable<E>
         permits ByteArrayTag, IntArrayTag, LongArrayTag {
 
     protected ArrayTag(String name) {

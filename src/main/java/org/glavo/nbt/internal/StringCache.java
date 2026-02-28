@@ -23,7 +23,7 @@ import java.util.Arrays;
 /// A simple ASCII string cache pool.
 public final class StringCache {
 
-    private final Object[] pool; // (String | String[])[]
+    private final @Nullable Object[] pool; // (String | String[] | null)[]
     private int maxLength = 0;
 
     public StringCache(String... strings) {

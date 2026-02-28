@@ -56,14 +56,7 @@ public final class NBTWriter implements Closeable, Flushable {
     }
 
     public void writeTag(Tag tag) throws IOException {
-        TagType type = tag.getType(); // implicit null check
-
-        writeByte(type.id());
-
-        if (type == TagType.END) {
-            return;
-        }
-
+        writeByte(tag.getType().id()); // implicit null check
         writeString(tag.getName());
         writeContent(tag);
     }
@@ -90,7 +83,7 @@ public final class NBTWriter implements Closeable, Flushable {
         } else if (tag instanceof LongArrayTag longArrayTag) {
             writeLongArray(IOUtils.TAG_UNSAFE.getInternalArray(longArrayTag));
         } else if (tag instanceof ListTag<?> listTag) {
-            writeByte(listTag.getElementType().id());
+            writeByte(listTag.getElementType() != null ? listTag.getElementType().id() : 0);
             writeInt(listTag.size());
 
             for (Tag subTag : listTag) {
@@ -101,7 +94,7 @@ public final class NBTWriter implements Closeable, Flushable {
                 writeTag(subTag);
             }
 
-            writeByte(TagType.END.id());
+            writeByte((byte) 0x00);
         } else {
             throw new AssertionError("Unexpected tag type: " + tag.getType());
         }

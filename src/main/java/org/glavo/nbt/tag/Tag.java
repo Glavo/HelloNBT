@@ -36,13 +36,13 @@ public sealed abstract class Tag implements NBTElement
 
     static @Nullable Tag readTag(NBTReader reader) throws IOException {
         byte tagByte = reader.readByte();
+        if (tagByte == 0) {
+            return null;
+        }
+
         var type = TagType.getById(tagByte);
         if (type == null) {
             throw new IOException("Invalid tag type: %02x".formatted(Byte.toUnsignedInt(tagByte)));
-        }
-
-        if (type == TagType.END) {
-            return null;
         }
 
         Tag tag = type.createTag();

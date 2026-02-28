@@ -22,53 +22,61 @@ import java.util.Map;
 
 /// @author Glavo
 public enum TagType {
-    /// Used to mark the end of compound tags.
-    /// This tag does not have a name, so it is always a single byte 0.
-    /// It may also be the type of empty List tags.
-    END(null),
+    // /// Used to mark the end of compound tags.
+    // /// This tag does not have a name, so it is always a single byte 0.
+    // /// It may also be the type of empty List tags.
+    // END(0x00, null),
 
     /// 1 byte signed integer type. Sometimes used for booleans.
-    BYTE(ByteTag.class),
+    BYTE(0x01, ByteTag.class),
 
     /// 2 byte signed integer type.
-    SHORT(ShortTag.class),
+    SHORT(0x02, ShortTag.class),
 
     /// 4 byte signed integer type.
-    INT(IntTag.class),
+    INT(0x03, IntTag.class),
 
     /// 8 byte signed integer type.
-    LONG(LongTag.class),
+    LONG(0x04, LongTag.class),
 
     /// 4 byte floating point type.
-    FLOAT(FloatTag.class),
+    FLOAT(0x05, FloatTag.class),
 
     /// 8 byte floating point type.
-    DOUBLE(DoubleTag.class),
+    DOUBLE(0x06, DoubleTag.class),
 
     /// An array of bytes.
-    BYTE_ARRAY(ByteArrayTag.class),
+    BYTE_ARRAY(0x07, ByteArrayTag.class),
 
     /// A UTF-8 encoded string. It has a size, rather than being null terminated.
-    STRING(StringTag.class),
+    STRING(0x08, StringTag.class),
 
     /// A list of tag payloads, without tag IDs or names, apart from the one before the length.
-    LIST(ListTag.class),
+    LIST(0x09, ListTag.class),
 
     /// A list of fully formed tags, including their IDs, names, and payloads. No two tags may have the same name.
-    COMPOUND(CompoundTag.class),
+    COMPOUND(0x0A, CompoundTag.class),
 
     /// An array of 4 byte signed integers.
-    INT_ARRAY(IntArrayTag.class),
+    INT_ARRAY(0x0B, IntArrayTag.class),
 
     /// An array of 8 byte signed integers.
-    LONG_ARRAY(LongArrayTag.class);
+    LONG_ARRAY(0x0C, LongArrayTag.class);
 
-    private static final TagType[] TYPES = values();
+    private static final TagType[] ID_TO_TYPE;
     private static final Map<Class<? extends Tag>, TagType> CLASS_TO_TYPE;
 
     static {
+        TagType[] values = values();
+
+        TagType[] idToType = new TagType[values.length + 1];
+        for (TagType type : values) {
+            idToType[Byte.toUnsignedInt(type.id)] = type;
+        }
+        ID_TO_TYPE = idToType;
+
         var map = new HashMap<Class<? extends Tag>, TagType>();
-        for (TagType type : TYPES) {
+        for (TagType type : values) {
             if (type.tagClass != null) {
                 map.put(type.tagClass, type);
             }
@@ -78,7 +86,7 @@ public enum TagType {
 
     /// Returns the tag type by its id; returns `null` if the id is invalid.
     public static @Nullable TagType getById(byte id) {
-        return id >= 0 && id < TYPES.length ? TYPES[id] : null;
+        return id > 0 && id < ID_TO_TYPE.length ? ID_TO_TYPE[id] : null;
     }
 
     /// Returns the tag type by its class; returns `null` if the class is not found.
@@ -88,15 +96,16 @@ public enum TagType {
         return CLASS_TO_TYPE.get(tagClass);
     }
 
+    private final byte id;
     private final @Nullable Class<? extends Tag> tagClass;
 
-    TagType(@Nullable Class<? extends Tag> tagClass) {
+    TagType(int id, @Nullable Class<? extends Tag> tagClass) {
+        this.id = (byte) id;
         this.tagClass = tagClass;
     }
 
     public Tag createTag() {
         return switch (this) {
-            case END -> throw new UnsupportedOperationException("Cannot create an END tag");
             case BYTE -> new ByteTag();
             case SHORT -> new ShortTag();
             case INT -> new IntTag();
@@ -107,13 +116,13 @@ public enum TagType {
             case BYTE_ARRAY -> new ByteArrayTag();
             case INT_ARRAY -> new IntArrayTag();
             case LONG_ARRAY -> new LongArrayTag();
-            case LIST -> new ListTag<>(TagType.END);
+            case LIST -> new ListTag<>("", (TagType) null);
             case COMPOUND -> new CompoundTag<>();
         };
     }
 
     /// Returns the tag id.
     public byte id() {
-        return (byte) ordinal();
+        return id;
     }
 }

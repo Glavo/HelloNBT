@@ -101,7 +101,7 @@ public final class TagTests {
         assertEquals("Meow", new ByteArrayTag("Meow").getName());
         assertEquals("Meow", new IntArrayTag("Meow").getName());
         assertEquals("Meow", new LongArrayTag("Meow").getName());
-        assertEquals("Meow", new ListTag<>("Meow", TagType.END).getName());
+        assertEquals("Meow", new ListTag<>("Meow", (TagType) null).getName());
         assertEquals("Meow", new CompoundTag<>("Meow").getName());
     }
 

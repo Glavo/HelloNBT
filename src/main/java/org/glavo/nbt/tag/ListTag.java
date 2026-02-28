@@ -16,15 +16,15 @@
 package org.glavo.nbt.tag;
 
 import org.glavo.nbt.internal.input.NBTReader;
+import org.jetbrains.annotations.Nullable;
 
 import java.io.IOException;
 import java.util.Iterator;
-import java.util.Objects;
 
 public final class ListTag<T extends Tag> extends ParentTag<T> {
 
     /// The type of the elements in the list.
-    private TagType elementType;
+    private @Nullable TagType elementType;
 
     /// Creates a new empty list tag with the given element type.
     ///
@@ -37,16 +37,16 @@ public final class ListTag<T extends Tag> extends ParentTag<T> {
     ///
     /// @param name        The name of the list tag.
     /// @param elementType The type of the elements in the list.
-    public ListTag(String name, TagType elementType) {
+    public ListTag(String name, @Nullable TagType elementType) {
         super(name);
-        this.elementType = Objects.requireNonNull(elementType, "elementType");
+        this.elementType = elementType;
     }
 
     /// Creates a new empty list tag with the given element type.
     ///
     /// @param elementType The type of the elements in the list.
     /// @throws IllegalArgumentException if the element type is not valid.
-    public ListTag(Class<? super T> elementType) {
+    public ListTag(@Nullable Class<? super T> elementType) {
         this("", elementType);
     }
 
@@ -55,16 +55,19 @@ public final class ListTag<T extends Tag> extends ParentTag<T> {
     /// @param name        The name of the list tag.
     /// @param elementType The type of the elements in the list.
     /// @throws IllegalArgumentException if the element type is not valid.
-    public ListTag(String name, Class<? super T> elementType) {
+    public ListTag(String name, @Nullable Class<? super T> elementType) {
         super(name);
 
-        @SuppressWarnings("unchecked")
-        TagType tagType = TagType.getByClass((Class<? extends Tag>) elementType);
-        if (tagType == null) {
-            throw new IllegalArgumentException("Invalid element type: " + elementType);
+        if (elementType != null) {
+            @SuppressWarnings("unchecked")
+            TagType tagType = TagType.getByClass((Class<? extends Tag>) elementType);
+            if (tagType == null) {
+                throw new IllegalArgumentException("Invalid element type: " + elementType);
+            }
+            this.elementType = tagType;
+        } else {
+            this.elementType = null;
         }
-
-        this.elementType = tagType;
     }
 
     @Override
@@ -81,17 +84,20 @@ public final class ListTag<T extends Tag> extends ParentTag<T> {
 
     /// Returns the type of the elements in the list.
     ///
-    /// If the element type is [TagType#END], the list is empty.
-    public TagType getElementType() {
+    /// If the element type is `null`, the list is empty.
+    public @Nullable TagType getElementType() {
         return elementType;
     }
 
     /// Sets the type of the elements in the list.
     ///
     /// If the list is not empty, the element type must match the type of all elements in the list.
-    public void setElementType(TagType elementType) throws IllegalStateException {
-        Objects.requireNonNull(elementType);
+    public void setElementType(@Nullable TagType elementType) throws IllegalStateException {
         if (!isEmpty()) {
+            if (elementType == null) {
+                throw new IllegalStateException("Cannot set element type to END for a non-empty list");
+            }
+
             for (T subTag : subTags) {
                 if (subTag.getType() != elementType) {
                     throw new IllegalStateException("Cannot set element type to " + elementType + " for a list with elements of type " + subTag.getType());
@@ -175,10 +181,15 @@ public final class ListTag<T extends Tag> extends ParentTag<T> {
     @Override
     protected void readContent(NBTReader reader) throws IOException {
         byte elementTypeId = reader.readByte();
-        var elementType = TagType.getById(elementTypeId);
 
-        if (elementType == null) {
-            throw new IOException("Invalid element type: %02x".formatted(Byte.toUnsignedInt(elementTypeId)));
+        TagType elementType;
+        if (elementTypeId != 0) {
+            elementType = TagType.getById(elementTypeId);
+            if (elementType == null) {
+                throw new IOException("Invalid element type: %02x".formatted(Byte.toUnsignedInt(elementTypeId)));
+            }
+        } else {
+            elementType = null;
         }
 
         setElementType(elementType);
@@ -188,7 +199,7 @@ public final class ListTag<T extends Tag> extends ParentTag<T> {
             throw new IOException("Invalid list length: " + Integer.toUnsignedLong(count));
         }
 
-        if (elementType == TagType.END && count != 0) {
+        if (elementType == null && count != 0) {
             throw new IOException("Cannot create a non-empty list with element type END");
         }
 

@@ -17,6 +17,7 @@
 module org.glavo.nbt {
     requires static org.jetbrains.annotations;
 
+    exports org.glavo.nbt;
     exports org.glavo.nbt.tag;
     exports org.glavo.nbt.io;
 }

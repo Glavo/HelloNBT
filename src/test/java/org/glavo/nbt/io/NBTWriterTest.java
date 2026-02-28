@@ -33,7 +33,7 @@ public final class NBTWriterTest {
             throws IOException {
 
         var buffer = new ByteArrayOutputStream();
-        NBTWriter.writeTag(buffer, tag, NBTWriter.Options.newBuilder().byteOrder(byteOrder).build());
+        tag.writeTo(buffer, byteOrder);
 
         return NBTIO.readTag(new ByteArrayInputStream(buffer.toByteArray()), byteOrder == ByteOrder.LITTLE_ENDIAN);
     }

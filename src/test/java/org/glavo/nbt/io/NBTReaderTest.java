@@ -16,6 +16,7 @@
 package org.glavo.nbt.io;
 
 import com.github.steveice10.opennbt.NBTIO;
+import org.glavo.nbt.internal.io.NBTReader;
 import org.glavo.nbt.tag.*;
 import org.junit.jupiter.api.Test;
 
@@ -35,8 +36,7 @@ public final class NBTReaderTest {
         var buffer = new ByteArrayOutputStream();
         NBTIO.writeTag(buffer, tag, byteOrder == ByteOrder.LITTLE_ENDIAN);
 
-        return NBTReader.readTag(new ByteArrayInputStream(buffer.toByteArray()),
-                NBTReader.Options.newBuilder().byteOrder(byteOrder).build());
+        return Tag.readTag(new ByteArrayInputStream(buffer.toByteArray()), byteOrder);
     }
 
     private static void assertTagEquals(

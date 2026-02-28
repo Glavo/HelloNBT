@@ -13,61 +13,24 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.glavo.nbt.io;
+package org.glavo.nbt.internal.io;
 
 import org.glavo.nbt.internal.StringCache;
 import org.glavo.nbt.tag.*;
-import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.Nullable;
-import org.jetbrains.annotations.VisibleForTesting;
 
 import java.io.*;
-import java.lang.invoke.MethodHandles;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.charset.StandardCharsets;
-import java.util.Objects;
 
 public final class NBTReader implements Closeable {
-
-    private static final Tag.Unsafe TAG_UNSAFE = Tag.Unsafe.getUnsafe(MethodHandles.lookup());
 
     // Used for reading UTF-8 strings
     private static final StringCache CACHE = new StringCache(
             "data", "Data", "DataVersion"
             // TODO: More tag names
     );
-
-    public static NBTReader create(InputStream inputStream, Options options) {
-        return new NBTReader(inputStream, options);
-    }
-
-    public static Tag readTag(InputStream inputStream) throws IOException {
-        return readTag(inputStream, Options.getDefault());
-    }
-
-    public static Tag readTag(InputStream inputStream, Options options) throws IOException {
-        try (var reader = new NBTReader(inputStream, options)) {
-            Tag tag = reader.readTag();
-            if (tag == null) {
-                throw new IOException("No tag found");
-            }
-            return tag;
-        }
-    }
-
-    public static CompoundTag<?> readCompoundTag(InputStream inputStream) throws IOException {
-        return readCompoundTag(inputStream, Options.getDefault());
-    }
-
-    public static CompoundTag<?> readCompoundTag(InputStream inputStream, Options options) throws IOException {
-        Tag rootTag = readTag(inputStream, options);
-        if (rootTag instanceof CompoundTag<?> compoundTag) {
-            return compoundTag;
-        } else {
-            throw new IOException("Expected a compound tag, but got " + rootTag);
-        }
-    }
 
     private final InputStream inputStream;
     private final ByteOrder byteOrder;
@@ -76,10 +39,9 @@ public final class NBTReader implements Closeable {
     /// Used for reading UTF-8 strings
     private @Nullable StringBuilder charsBuffer;
 
-    @VisibleForTesting
-    NBTReader(InputStream inputStream, Options options) {
+    public NBTReader(InputStream inputStream, ByteOrder byteOrder) {
         this.inputStream = inputStream;
-        this.byteOrder = options.byteOrder;
+        this.byteOrder = byteOrder;
         this.buffer = ByteBuffer.allocate(8192).order(byteOrder).flip();
     }
 
@@ -140,11 +102,11 @@ public final class NBTReader implements Closeable {
         } else if (tag instanceof StringTag stringTag) {
             stringTag.set(readString());
         } else if (tag instanceof ByteArrayTag byteArrayTag) {
-            TAG_UNSAFE.setInternalArray(byteArrayTag, readByteArray());
+            IOUtils.TAG_UNSAFE.setInternalArray(byteArrayTag, readByteArray());
         } else if (tag instanceof IntArrayTag intArrayTag) {
-            TAG_UNSAFE.setInternalArray(intArrayTag, readIntArray());
+            IOUtils.TAG_UNSAFE.setInternalArray(intArrayTag, readIntArray());
         } else if (tag instanceof LongArrayTag longArrayTag) {
-            TAG_UNSAFE.setInternalArray(longArrayTag, readLongArray());
+            IOUtils.TAG_UNSAFE.setInternalArray(longArrayTag, readLongArray());
         } else if (tag instanceof ListTag<?> listTag) {
             byte elementTypeId = readByte();
             var elementType = TagType.getById(elementTypeId);
@@ -412,42 +374,4 @@ public final class NBTReader implements Closeable {
         return charsBuffer.toString();
     }
 
-    /// Options for reading NBT data.
-    public static final class Options {
-
-        private static final Options DEFAULT = new Options(ByteOrder.BIG_ENDIAN);
-
-        /// Returns the default options.
-        public static Options getDefault() {
-            return DEFAULT;
-        }
-
-        /// Creates a new builder for options.
-        public static Builder newBuilder() {
-            return new Builder();
-        }
-
-        private final ByteOrder byteOrder;
-
-        private Options(ByteOrder byteOrder) {
-            this.byteOrder = byteOrder;
-        }
-
-        public static final class Builder {
-            private ByteOrder byteOrder = ByteOrder.BIG_ENDIAN;
-
-            public Options build() {
-                return new Options(byteOrder);
-            }
-
-            @Contract("_ -> this")
-            public Builder byteOrder(ByteOrder byteOrder) {
-                this.byteOrder = Objects.requireNonNull(byteOrder);
-                return this;
-            }
-
-            private Builder() {
-            }
-        }
-    }
 }

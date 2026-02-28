@@ -13,44 +13,27 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.glavo.nbt.io;
+package org.glavo.nbt.internal.io;
 
 import org.glavo.nbt.tag.*;
 
 import java.io.*;
-import java.lang.invoke.MethodHandles;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.charset.StandardCharsets;
 
-import static org.glavo.nbt.io.NBTReader.readTag;
+import static org.glavo.nbt.tag.Tag.readTag;
 
 public final class NBTWriter implements Closeable, Flushable {
-
-    private static final Tag.Unsafe TAG_UNSAFE = Tag.Unsafe.getUnsafe(MethodHandles.lookup());
-
-    public static NBTWriter create(OutputStream outputStream, Options options) {
-        return new NBTWriter(outputStream, options);
-    }
-
-    public static void writeTag(OutputStream outputStream, Tag tag) throws IOException {
-        writeTag(outputStream, tag, Options.getDefault());
-    }
-
-    public static void writeTag(OutputStream outputStream, Tag tag, Options options) throws IOException {
-        try (var writer = create(outputStream, options)) {
-            writer.writeTag(tag);
-        }
-    }
 
     private final OutputStream outputStream;
     private final ByteOrder byteOrder;
     private ByteBuffer buffer;
 
-    NBTWriter(OutputStream outputStream, Options options) {
+    public NBTWriter(OutputStream outputStream, ByteOrder byteOrder) {
         this.outputStream = outputStream;
-        this.byteOrder = options.byteOrder;
-        this.buffer = ByteBuffer.allocate(8192).order(byteOrder);
+        this.byteOrder = byteOrder;
+        this.buffer = ByteBuffer.allocate(8192).order(this.byteOrder);
     }
 
     @Override
@@ -99,11 +82,11 @@ public final class NBTWriter implements Closeable, Flushable {
         } else if (tag instanceof StringTag stringTag) {
             writeString(stringTag.get());
         } else if (tag instanceof ByteArrayTag byteArrayTag) {
-            writeByteArray(TAG_UNSAFE.getInternalArray(byteArrayTag));
+            writeByteArray(IOUtils.TAG_UNSAFE.getInternalArray(byteArrayTag));
         } else if (tag instanceof IntArrayTag intArrayTag) {
-            writeIntArray(TAG_UNSAFE.getInternalArray(intArrayTag));
+            writeIntArray(IOUtils.TAG_UNSAFE.getInternalArray(intArrayTag));
         } else if (tag instanceof LongArrayTag longArrayTag) {
-            writeLongArray(TAG_UNSAFE.getInternalArray(longArrayTag));
+            writeLongArray(IOUtils.TAG_UNSAFE.getInternalArray(longArrayTag));
         } else if (tag instanceof ListTag<?> listTag) {
             writeByte(listTag.getElementType().id());
             writeInt(listTag.size());
@@ -305,40 +288,6 @@ public final class NBTWriter implements Closeable, Flushable {
 
         if (offset != buffer.position()) {
             throw new AssertionError("Unexpected buffer position: " + offset + " != " + buffer.position());
-        }
-    }
-
-    public static final class Options {
-        private static final Options DEFAULT = new Options(ByteOrder.BIG_ENDIAN);
-
-        public static Options getDefault() {
-            return DEFAULT;
-        }
-
-        public static Builder newBuilder() {
-            return new Builder();
-        }
-
-        private final ByteOrder byteOrder;
-
-        private Options(ByteOrder byteOrder) {
-            this.byteOrder = byteOrder;
-        }
-
-        public static final class Builder {
-            private ByteOrder byteOrder = ByteOrder.BIG_ENDIAN;
-
-            private Builder() {
-            }
-
-            public Options build() {
-                return new Options(byteOrder);
-            }
-
-            public Builder byteOrder(ByteOrder byteOrder) {
-                this.byteOrder = byteOrder;
-                return this;
-            }
         }
     }
 }

@@ -16,15 +16,50 @@
 package org.glavo.nbt.tag;
 
 import org.glavo.nbt.NBTElement;
+import org.glavo.nbt.internal.io.IOUtils;
+import org.glavo.nbt.internal.io.NBTReader;
+import org.glavo.nbt.internal.io.NBTWriter;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.Nullable;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.lang.invoke.MethodHandles;
+import java.nio.ByteOrder;
 import java.util.Objects;
 
 /// @author Glavo
 public sealed abstract class Tag implements NBTElement
         permits ValueTag, ArrayTag, ParentTag {
+
+    public static Tag readTag(InputStream inputStream) throws IOException {
+        return readTag(inputStream, IOUtils.DEFAULT_BYTE_ORDER);
+    }
+
+    public static Tag readTag(InputStream inputStream, ByteOrder byteOrder) throws IOException {
+        try (var reader = new NBTReader(inputStream, byteOrder)) {
+            Tag tag = reader.readTag();
+            if (tag == null) {
+                throw new IOException("No tag found");
+            }
+            return tag;
+        }
+    }
+
+    public static CompoundTag<?> readCompoundTag(InputStream inputStream) throws IOException {
+        return readCompoundTag(inputStream, IOUtils.DEFAULT_BYTE_ORDER);
+    }
+
+    public static CompoundTag<?> readCompoundTag(InputStream inputStream, ByteOrder byteOrder) throws IOException {
+        Tag rootTag = readTag(inputStream, byteOrder);
+        if (rootTag instanceof CompoundTag<?> compoundTag) {
+            return compoundTag;
+        } else {
+            throw new IOException("Expected a compound tag, but got " + rootTag);
+        }
+    }
+
     @Nullable ParentTag<?> parent;
 
     String name;
@@ -69,6 +104,16 @@ public sealed abstract class Tag implements NBTElement
     @Contract(pure = true)
     public @Nullable ParentTag<?> getParent() {
         return parent;
+    }
+
+    public void writeTo(OutputStream outputStream) throws IOException {
+        writeTo(outputStream, IOUtils.DEFAULT_BYTE_ORDER);
+    }
+
+    public void writeTo(OutputStream outputStream, ByteOrder byteOrder) throws IOException {
+        try (var writer = new NBTWriter(outputStream, byteOrder)) {
+            writer.writeTag(this);
+        }
     }
 
     protected abstract int contentHashCode();

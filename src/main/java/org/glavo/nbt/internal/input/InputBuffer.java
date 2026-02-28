@@ -15,19 +15,20 @@
  */
 package org.glavo.nbt.internal.input;
 
-import org.glavo.nbt.internal.IOUtils;
 import org.jetbrains.annotations.Nullable;
 
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 
 public final class InputBuffer {
-    public static InputBuffer allocateHeap(ByteOrder byteOrder) {
-        return new InputBuffer(ByteBuffer.allocate(IOUtils.DEFAULT_BUFFER_SIZE).order(byteOrder));
-    }
+    public static InputBuffer allocate(int size, boolean direct, ByteOrder byteOrder) {
+        ByteBuffer bytesBuffer = direct
+                ? ByteBuffer.allocateDirect(size)
+                : ByteBuffer.allocate(size);
 
-    public static InputBuffer allocateDirect(ByteOrder byteOrder) {
-        return new InputBuffer(ByteBuffer.allocateDirect(IOUtils.DEFAULT_BUFFER_SIZE).order(byteOrder));
+        bytesBuffer.order(byteOrder);
+        bytesBuffer.limit(0);
+        return new InputBuffer(bytesBuffer);
     }
 
     ByteBuffer bytesBuffer;
@@ -43,5 +44,49 @@ public final class InputBuffer {
 
     public ByteOrder order() {
         return bytesBuffer.order();
+    }
+
+    public byte getByte() {
+        return bytesBuffer.get();
+    }
+
+    public short getShort() {
+        return bytesBuffer.getShort();
+    }
+
+    public int getInt() {
+        return bytesBuffer.getInt();
+    }
+
+    public long getLong() {
+        return bytesBuffer.getLong();
+    }
+
+    public float getFloat() {
+        return bytesBuffer.getFloat();
+    }
+
+    public double getDouble() {
+        return bytesBuffer.getDouble();
+    }
+
+    public byte[] getByteArray(int len) {
+        var array = new byte[len];
+        bytesBuffer.get(array);
+        return array;
+    }
+
+    public int[] getIntArray(int len) {
+        var array = new int[len];
+        bytesBuffer.asIntBuffer().get(array);
+        bytesBuffer.position(bytesBuffer.position() + len * Integer.BYTES);
+        return array;
+    }
+
+    public long[] getLongArray(int len) {
+        var array = new long[len];
+        bytesBuffer.asLongBuffer().get(array);
+        bytesBuffer.position(bytesBuffer.position() + len * Long.BYTES);
+        return array;
     }
 }

@@ -15,6 +15,9 @@
  */
 package org.glavo.nbt.tag;
 
+import org.glavo.nbt.internal.input.NBTReader;
+
+import java.io.IOException;
 import java.util.Arrays;
 
 /// An ordered list of 8-bit integers.
@@ -69,6 +72,11 @@ public final class ByteArrayTag extends ArrayTag {
     @Override
     public int size() {
         return value.length;
+    }
+
+    @Override
+    protected void readContent(NBTReader reader) throws IOException {
+        value = reader.readByteArray();
     }
 
     @Override

@@ -17,10 +17,10 @@ package org.glavo.nbt.internal.input;
 
 import org.glavo.nbt.internal.IOUtils;
 import org.glavo.nbt.internal.StringCache;
-import org.glavo.nbt.tag.*;
 import org.jetbrains.annotations.Nullable;
 
-import java.io.*;
+import java.io.Closeable;
+import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.charset.StandardCharsets;
@@ -33,151 +33,20 @@ public final class NBTReader implements Closeable {
             // TODO: More tag names
     );
 
-    private final InputStream inputStream;
-    private final ByteOrder byteOrder;
-    private ByteBuffer buffer;
+    private final InputSource source;
+    private final InputBuffer buffer;
 
     /// Used for reading UTF-8 strings
     private @Nullable StringBuilder charsBuffer;
 
-    public NBTReader(InputStream inputStream, ByteOrder byteOrder) {
-        this.inputStream = inputStream;
-        this.byteOrder = byteOrder;
-        this.buffer = ByteBuffer.allocate(8192).order(byteOrder).flip();
+    public NBTReader(InputSource source, ByteOrder byteOrder) {
+        this.source = source;
+        this.buffer = InputBuffer.allocate(IOUtils.DEFAULT_BUFFER_SIZE, source.supportDirectBuffer(), byteOrder);
     }
 
     @Override
     public void close() throws IOException {
-        inputStream.close();
-    }
-
-    // High-level read methods
-
-    public @Nullable Tag readTag() throws IOException {
-        byte tagByte = readByte();
-        var type = TagType.getById(tagByte);
-        if (type == null) {
-            throw new IOException("Invalid tag type: %02x".formatted(Byte.toUnsignedInt(tagByte)));
-        }
-
-        if (type == TagType.END) {
-            return null;
-        }
-
-        Tag tag = createTag(type, readString());
-        readContent(tag);
-        return tag;
-    }
-
-    private static Tag createTag(TagType type, String name) {
-        return switch (type) {
-            case END -> throw new UnsupportedOperationException("Cannot create an END tag");
-            case BYTE -> new ByteTag(name);
-            case SHORT -> new ShortTag(name);
-            case INT -> new IntTag(name);
-            case LONG -> new LongTag(name);
-            case FLOAT -> new FloatTag(name);
-            case DOUBLE -> new DoubleTag(name);
-            case STRING -> new StringTag(name);
-            case BYTE_ARRAY -> new ByteArrayTag(name);
-            case INT_ARRAY -> new IntArrayTag(name);
-            case LONG_ARRAY -> new LongArrayTag(name);
-            case LIST -> new ListTag<>(name, TagType.END);
-            case COMPOUND -> new CompoundTag<>(name);
-        };
-    }
-
-    private void readContent(Tag tag) throws IOException {
-        if (tag instanceof ByteTag byteTag) {
-            byteTag.set(readByte());
-        } else if (tag instanceof ShortTag shortTag) {
-            shortTag.set(readShort());
-        } else if (tag instanceof IntTag intTag) {
-            intTag.set(readInt());
-        } else if (tag instanceof LongTag longTag) {
-            longTag.set(readLong());
-        } else if (tag instanceof FloatTag floatTag) {
-            floatTag.set(readFloat());
-        } else if (tag instanceof DoubleTag doubleTag) {
-            doubleTag.set(readDouble());
-        } else if (tag instanceof StringTag stringTag) {
-            stringTag.set(readString());
-        } else if (tag instanceof ByteArrayTag byteArrayTag) {
-            IOUtils.TAG_UNSAFE.setInternalArray(byteArrayTag, readByteArray());
-        } else if (tag instanceof IntArrayTag intArrayTag) {
-            IOUtils.TAG_UNSAFE.setInternalArray(intArrayTag, readIntArray());
-        } else if (tag instanceof LongArrayTag longArrayTag) {
-            IOUtils.TAG_UNSAFE.setInternalArray(longArrayTag, readLongArray());
-        } else if (tag instanceof ListTag<?> listTag) {
-            byte elementTypeId = readByte();
-            var elementType = TagType.getById(elementTypeId);
-
-            if (elementType == null) {
-                throw new IOException("Invalid element type: %02x".formatted(Byte.toUnsignedInt(elementTypeId)));
-            }
-
-            listTag.setElementType(elementType);
-
-            int count = readInt();
-            if (count < 0) {
-                throw new IOException("Invalid list length: " + Integer.toUnsignedLong(count));
-            }
-
-            if (elementType == TagType.END && count != 0) {
-                throw new IOException("Cannot create a non-empty list with element type END");
-            }
-
-            @SuppressWarnings("unchecked")
-            var uncheckedListTag = (ListTag<Tag>) listTag;
-            for (int i = 0; i < count; i++) {
-                Tag subTag = createTag(elementType, "");
-                readContent(subTag);
-                uncheckedListTag.add(subTag);
-            }
-        } else if (tag instanceof CompoundTag<?> compoundTag) {
-            @SuppressWarnings("unchecked")
-            var uncheckCompoundTag = (CompoundTag<Tag>) compoundTag;
-
-            int count = 0;
-
-            Tag subTag;
-            while ((subTag = readTag()) != null) {
-                count++;
-                uncheckCompoundTag.add(subTag);
-            }
-
-            if (count != compoundTag.size()) {
-                throw new IOException("Duplicate subtags found in compound tag");
-            }
-        } else {
-            throw new AssertionError("Unexpected tag type: " + tag.getType());
-        }
-    }
-
-    // Low-level read methods
-
-    private void fillBuffer(int required) throws IOException {
-        if (buffer.remaining() >= required) {
-            return;
-        }
-
-        if (buffer.capacity() < required) {
-            ByteBuffer newBuffer = ByteBuffer.allocate(Math.max(required, buffer.capacity() * 2)).order(byteOrder);
-            newBuffer.put(buffer);
-            newBuffer.flip();
-            buffer = newBuffer;
-        } else if (buffer.position() > 0) {
-            buffer.compact();
-            buffer.flip();
-        }
-
-        while (buffer.remaining() < required) {
-            int read = inputStream.read(buffer.array(), buffer.limit(), buffer.capacity() - buffer.limit());
-            if (read < 0) {
-                throw new EOFException("Unexpected end of stream");
-            }
-            buffer.limit(buffer.limit() + read);
-        }
+        source.close();
     }
 
     public byte[] readByteArray() throws IOException {
@@ -186,11 +55,8 @@ public final class NBTReader implements Closeable {
             throw new IOException("Array length too large");
         }
 
-        fillBuffer(len);
-
-        byte[] array = new byte[len];
-        buffer.get(array);
-        return array;
+        source.fillBuffer(buffer, len);
+        return buffer.getByteArray(len);
     }
 
     public int[] readIntArray() throws IOException {
@@ -199,13 +65,8 @@ public final class NBTReader implements Closeable {
             throw new IOException("Array length too large");
         }
 
-        int bytes = len * Integer.BYTES;
-        fillBuffer(bytes);
-
-        int[] result = new int[len];
-        buffer.asIntBuffer().get(result);
-        buffer.position(buffer.position() + bytes);
-        return result;
+        source.fillBuffer(buffer, len * Integer.BYTES);
+        return buffer.getIntArray(len);
     }
 
     public long[] readLongArray() throws IOException {
@@ -214,19 +75,14 @@ public final class NBTReader implements Closeable {
             throw new IOException("Array length too large");
         }
 
-        int bytes = len * Long.BYTES;
-        fillBuffer(bytes);
-
-        long[] result = new long[len];
-        buffer.asLongBuffer().get(result);
-        buffer.position(buffer.position() + bytes);
-        return result;
+        source.fillBuffer(buffer, len * Long.BYTES);
+        return buffer.getLongArray(len);
     }
 
     /// Read a byte from the input stream.
     public byte readByte() throws IOException {
-        fillBuffer(Byte.BYTES);
-        return buffer.get();
+        source.fillBuffer(buffer, Byte.BYTES);
+        return buffer.getByte();
     }
 
     /// Read an unsigned byte from the input stream.
@@ -236,7 +92,7 @@ public final class NBTReader implements Closeable {
 
     /// Read a short from the input stream.
     public short readShort() throws IOException {
-        fillBuffer(Short.BYTES);
+        source.fillBuffer(buffer, Short.BYTES);
         return buffer.getShort();
     }
 
@@ -247,7 +103,7 @@ public final class NBTReader implements Closeable {
 
     /// Read an int from the input stream.
     public int readInt() throws IOException {
-        fillBuffer(Integer.BYTES);
+        source.fillBuffer(buffer, Integer.BYTES);
         return buffer.getInt();
     }
 
@@ -258,25 +114,35 @@ public final class NBTReader implements Closeable {
 
     /// Read a long from the input stream.
     public long readLong() throws IOException {
-        fillBuffer(Long.BYTES);
+        source.fillBuffer(buffer, Long.BYTES);
         return buffer.getLong();
     }
 
     /// Read a float from the input stream.
     public float readFloat() throws IOException {
-        fillBuffer(Float.BYTES);
+        source.fillBuffer(buffer, Float.BYTES);
         return buffer.getFloat();
     }
 
     /// Read a double from the input stream.
     public double readDouble() throws IOException {
-        fillBuffer(Double.BYTES);
+        source.fillBuffer(buffer, Double.BYTES);
         return buffer.getDouble();
     }
 
-    private static String getString(byte[] array, int offset, int length) {
-        String cached = CACHE.get(array, offset, length);
-        return cached != null ? cached : new String(array, offset, length, StandardCharsets.UTF_8);
+    private String getUTF8(ByteBuffer buffer, int offset, int length) {
+        String cached = CACHE.get(buffer, offset, length);
+        if (cached != null) {
+            return cached;
+        }
+
+        if (buffer.hasArray() && !buffer.isReadOnly()) {
+            return new String(buffer.array(), offset + buffer.arrayOffset(), length, StandardCharsets.UTF_8);
+        } else {
+            byte[] bytes = new byte[length];
+            buffer.get(offset, bytes);
+            return new String(bytes, StandardCharsets.UTF_8);
+        }
     }
 
     /// Read a string from the input stream.
@@ -290,23 +156,23 @@ public final class NBTReader implements Closeable {
             return "";
         }
 
-        fillBuffer(len);
+        source.fillBuffer(buffer, len);
 
-        byte[] array = buffer.array();
-        int offset = buffer.position();
+        ByteBuffer bytes = buffer.bytesBuffer();
+        int offset = bytes.position();
         int limit = offset + len;
 
-        buffer.position(limit);
+        bytes.position(limit);
 
         // For Minecraft Bedrock Edition, the string is encoded in standard UTF-8
-        if (byteOrder == ByteOrder.LITTLE_ENDIAN) {
-            return getString(array, offset, len);
+        if (buffer.order() == ByteOrder.LITTLE_ENDIAN) {
+            return getUTF8(bytes, offset, len);
         }
 
         // Scan the number of ASCII characters in the prefix
         int asciiLen = 0;
         for (int i = offset; i < limit; i++) {
-            if (array[i] > 0) {
+            if (bytes.get(i) > 0) {
                 asciiLen++;
             } else {
                 break;
@@ -315,7 +181,7 @@ public final class NBTReader implements Closeable {
 
         // If all characters are ASCII, return the string directly
         if (asciiLen == len) {
-            return getString(array, offset, asciiLen);
+            return getUTF8(bytes, offset, asciiLen);
         }
 
         // Slow path
@@ -329,14 +195,14 @@ public final class NBTReader implements Closeable {
         int i = offset;
 
         while (i < limit) {
-            c = (int) array[i] & 0xff;
+            c = (int) bytes.get(i) & 0xff;
             if (c > 127) break;
             i++;
             charsBuffer.append((char) c);
         }
 
         while (i < limit) {
-            c = (int) array[i] & 0xff;
+            c = (int) bytes.get(i) & 0xff;
             switch (c >> 4) {
                 case 0, 1, 2, 3, 4, 5, 6, 7 -> {
                     /* 0xxxxxxx*/
@@ -348,7 +214,7 @@ public final class NBTReader implements Closeable {
                     i += 2;
                     if (i > limit)
                         throw new IllegalArgumentException("malformed input: partial character at end");
-                    char2 = (int) array[i - 1] & 0xff;
+                    char2 = (int) bytes.get(i - 1) & 0xff;
                     if ((char2 & 0xC0) != 0x80)
                         throw new IllegalArgumentException("malformed input around byte " + (i - 1));
                     charsBuffer.append((char) (((c & 0x1F) << 6) |
@@ -359,8 +225,8 @@ public final class NBTReader implements Closeable {
                     i += 3;
                     if (i > limit)
                         throw new IllegalArgumentException("malformed input: partial character at end");
-                    char2 = array[i - 2];
-                    char3 = array[i - 1];
+                    char2 = bytes.get(i - 2);
+                    char3 = bytes.get(i - 1);
                     if (((char2 & 0xC0) != 0x80) || ((char3 & 0xC0) != 0x80))
                         throw new IllegalArgumentException("malformed input around byte " + (i - 1));
                     charsBuffer.append((char) (((c & 0x0F) << 12) |

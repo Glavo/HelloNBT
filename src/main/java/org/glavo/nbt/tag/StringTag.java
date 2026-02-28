@@ -15,6 +15,9 @@
  */
 package org.glavo.nbt.tag;
 
+import org.glavo.nbt.internal.input.NBTReader;
+
+import java.io.IOException;
 import java.util.Objects;
 
 public final class StringTag extends ValueTag {
@@ -47,6 +50,11 @@ public final class StringTag extends ValueTag {
     /// Sets the value of the tag.
     public void set(String value) {
         this.value = Objects.requireNonNull(value);
+    }
+
+    @Override
+    protected void readContent(NBTReader reader) throws IOException {
+        set(reader.readString());
     }
 
     @Override

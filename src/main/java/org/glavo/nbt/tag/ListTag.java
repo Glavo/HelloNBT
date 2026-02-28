@@ -15,6 +15,9 @@
  */
 package org.glavo.nbt.tag;
 
+import org.glavo.nbt.internal.input.NBTReader;
+
+import java.io.IOException;
 import java.util.Iterator;
 import java.util.Objects;
 
@@ -148,6 +151,35 @@ public final class ListTag<T extends Tag> extends ParentTag<T> {
         // Update the index of the successor tags.
         for (int i = subtagIndex; i < subTags.size(); i++) {
             subTags.get(i).index = i;
+        }
+    }
+
+    @Override
+    protected void readContent(NBTReader reader) throws IOException {
+        byte elementTypeId = reader.readByte();
+        var elementType = TagType.getById(elementTypeId);
+
+        if (elementType == null) {
+            throw new IOException("Invalid element type: %02x".formatted(Byte.toUnsignedInt(elementTypeId)));
+        }
+
+        setElementType(elementType);
+
+        int count = reader.readInt();
+        if (count < 0) {
+            throw new IOException("Invalid list length: " + Integer.toUnsignedLong(count));
+        }
+
+        if (elementType == TagType.END && count != 0) {
+            throw new IOException("Cannot create a non-empty list with element type END");
+        }
+
+        @SuppressWarnings("unchecked")
+        var uncheckedListTag = (ListTag<Tag>) this;
+        for (int i = 0; i < count; i++) {
+            Tag subTag = elementType.createTag("");
+            subTag.readContent(reader);
+            uncheckedListTag.add(subTag);
         }
     }
 

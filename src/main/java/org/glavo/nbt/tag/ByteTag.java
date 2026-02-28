@@ -15,6 +15,10 @@
  */
 package org.glavo.nbt.tag;
 
+import org.glavo.nbt.internal.input.NBTReader;
+
+import java.io.IOException;
+
 /// 1 byte signed integer tag type. Sometimes used for booleans.
 public final class ByteTag extends ValueTag {
     private byte value;
@@ -58,6 +62,11 @@ public final class ByteTag extends ValueTag {
     /// If the `value` is `true`, the tag will be set to `1`; otherwise, it will be set to `0`.
     public void setBoolean(boolean value) {
         this.value = (byte) (value ? 1 : 0);
+    }
+
+    @Override
+    protected void readContent(NBTReader reader) throws IOException {
+        set(reader.readByte());
     }
 
     @Override

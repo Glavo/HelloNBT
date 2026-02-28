@@ -98,4 +98,22 @@ public enum TagType {
     public byte id() {
         return (byte) ordinal();
     }
+
+    public Tag createTag(String name) {
+        return switch (this) {
+            case END -> throw new UnsupportedOperationException("Cannot create an END tag");
+            case BYTE -> new ByteTag(name);
+            case SHORT -> new ShortTag(name);
+            case INT -> new IntTag(name);
+            case LONG -> new LongTag(name);
+            case FLOAT -> new FloatTag(name);
+            case DOUBLE -> new DoubleTag(name);
+            case STRING -> new StringTag(name);
+            case BYTE_ARRAY -> new ByteArrayTag(name);
+            case INT_ARRAY -> new IntArrayTag(name);
+            case LONG_ARRAY -> new LongArrayTag(name);
+            case LIST -> new ListTag<>(name, TagType.END);
+            case COMPOUND -> new CompoundTag<>(name);
+        };
+    }
 }

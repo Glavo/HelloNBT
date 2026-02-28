@@ -16,8 +16,8 @@
 package org.glavo.nbt.internal;
 
 import org.jetbrains.annotations.Nullable;
-import org.jetbrains.annotations.TestOnly;
 
+import java.nio.ByteBuffer;
 import java.util.Arrays;
 
 /// A simple ASCII string cache pool.
@@ -53,10 +53,10 @@ public final class StringCache {
         maxLength = Math.max(maxLength, str.length());
     }
 
-    private static boolean equals(String str, byte[] array, int offset, int length, int hash) {
+    private static boolean equals(String str, ByteBuffer array, int offset, int length, int hash) {
         if (length == str.length() && hash == str.hashCode()) {
             for (int i = offset, j = 0; i < offset + length; i++, j++) {
-                if (array[i] != str.charAt(j)) {
+                if (array.get(i) != str.charAt(j)) {
                     return false;
                 }
             }
@@ -65,19 +65,14 @@ public final class StringCache {
         return false;
     }
 
-    @TestOnly
-    @Nullable String get(byte[] array) {
-        return get(array, 0, array.length);
-    }
-
-    public @Nullable String get(byte[] array, int offset, int length) {
+    public @Nullable String get(ByteBuffer buffer, int offset, int length) {
         if (length > maxLength) {
             return null;
         }
 
         int hash = 0;
         for (int i = offset; i < offset + length; i++) {
-            byte ch = array[i];
+            byte ch = buffer.get(i);
 
             // Not ASCII String
             if (ch < 0) {
@@ -93,10 +88,10 @@ public final class StringCache {
         if (obj == null) {
             return null;
         } else if (obj instanceof String str) {
-            return equals(str, array, offset, length, hash) ? str : null;
+            return equals(str, buffer, offset, length, hash) ? str : null;
         } else if (obj instanceof String[] strings) {
             for (String str : strings) {
-                if (equals(str, array, offset, length, hash)) {
+                if (equals(str, buffer, offset, length, hash)) {
                     return str;
                 }
             }
@@ -105,4 +100,5 @@ public final class StringCache {
             throw new AssertionError("Unexpected object in pool: " + obj);
         }
     }
+
 }

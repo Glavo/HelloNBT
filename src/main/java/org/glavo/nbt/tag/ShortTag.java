@@ -15,6 +15,10 @@
  */
 package org.glavo.nbt.tag;
 
+import org.glavo.nbt.internal.input.NBTReader;
+
+import java.io.IOException;
+
 /// 2 byte signed integer tag type.
 public final class ShortTag extends ValueTag {
     private short value;
@@ -45,6 +49,11 @@ public final class ShortTag extends ValueTag {
     /// Sets the value of the tag.
     public void set(short value) {
         this.value = value;
+    }
+
+    @Override
+    protected void readContent(NBTReader reader) throws IOException {
+        set(reader.readShort());
     }
 
     @Override

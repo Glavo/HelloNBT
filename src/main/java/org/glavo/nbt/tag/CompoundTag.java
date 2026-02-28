@@ -15,8 +15,10 @@
  */
 package org.glavo.nbt.tag;
 
+import org.glavo.nbt.internal.input.NBTReader;
 import org.jetbrains.annotations.Nullable;
 
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
@@ -115,6 +117,24 @@ public final class CompoundTag<T extends Tag> extends ParentTag<T> {
         // Update the index of the successor tags.
         for (int i = subtagIndex; i < subTags.size(); i++) {
             subTags.get(i).index = i;
+        }
+    }
+
+    @Override
+    protected void readContent(NBTReader reader) throws IOException {
+        @SuppressWarnings("unchecked")
+        var uncheckCompoundTag = (CompoundTag<Tag>) this;
+
+        int count = 0;
+
+        Tag subTag;
+        while ((subTag = Tag.readTag(reader)) != null) {
+            count++;
+            uncheckCompoundTag.add(subTag);
+        }
+
+        if (count != this.size()) {
+            throw new IOException("Duplicate subtags found in compound tag");
         }
     }
 

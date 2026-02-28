@@ -17,6 +17,7 @@ package org.glavo.nbt.tag;
 
 import org.glavo.nbt.NBTElement;
 import org.glavo.nbt.internal.IOUtils;
+import org.glavo.nbt.internal.input.InputSource;
 import org.glavo.nbt.internal.input.NBTReader;
 import org.glavo.nbt.internal.output.NBTWriter;
 import org.jetbrains.annotations.Contract;
@@ -33,13 +34,29 @@ import java.util.Objects;
 public sealed abstract class Tag implements NBTElement
         permits ValueTag, ArrayTag, ParentTag {
 
+    static @Nullable Tag readTag(NBTReader reader) throws IOException {
+        byte tagByte = reader.readByte();
+        var type = TagType.getById(tagByte);
+        if (type == null) {
+            throw new IOException("Invalid tag type: %02x".formatted(Byte.toUnsignedInt(tagByte)));
+        }
+
+        if (type == TagType.END) {
+            return null;
+        }
+
+        Tag tag = type.createTag(reader.readString());
+        tag.readContent(reader);
+        return tag;
+    }
+
     public static Tag readTag(InputStream inputStream) throws IOException {
         return readTag(inputStream, IOUtils.DEFAULT_BYTE_ORDER);
     }
 
     public static Tag readTag(InputStream inputStream, ByteOrder byteOrder) throws IOException {
-        try (var reader = new NBTReader(inputStream, byteOrder)) {
-            Tag tag = reader.readTag();
+        try (var reader = new NBTReader(new InputSource.OfInputStream(inputStream, false), byteOrder)) {
+            Tag tag = readTag(reader);
             if (tag == null) {
                 throw new IOException("No tag found");
             }
@@ -115,6 +132,8 @@ public sealed abstract class Tag implements NBTElement
             writer.writeTag(this);
         }
     }
+
+    protected abstract void readContent(NBTReader reader) throws IOException;
 
     protected abstract int contentHashCode();
 

@@ -16,7 +16,9 @@
 package org.glavo.nbt.internal;
 
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.shadow.de.siegmar.fastcsv.util.Nullable;
 
+import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -25,6 +27,15 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertSame;
 
 public final class StringCacheTest {
+
+    private static @Nullable String get(StringCache cache, byte[] bytes) {
+        return cache.get(ByteBuffer.wrap(bytes), 0, bytes.length);
+    }
+
+    private static @Nullable String get(StringCache cache, byte[] bytes, int offset, int len) {
+        return cache.get(ByteBuffer.wrap(bytes), offset, len);
+    }
+
     @Test
     public void test() {
         var strings = new ArrayList<String>();
@@ -37,27 +48,27 @@ public final class StringCacheTest {
         for (String string : strings) {
             byte[] bytes = string.getBytes(StandardCharsets.UTF_8);
 
-            assertSame(string, cache.get(bytes, 0, bytes.length));
+            assertSame(string, get(cache, bytes, 0, bytes.length));
 
-            assertNull(cache.get(bytes, 1, bytes.length - 1));
+            assertNull(get(cache, bytes, 1, bytes.length - 1));
 
             // Test with a different offset
             byte[] newBytes = new byte[bytes.length + 1];
             System.arraycopy(bytes, 0, newBytes, 1, bytes.length);
-            assertSame(string, cache.get(newBytes, 1, bytes.length));
+            assertSame(string, get(cache, newBytes, 1, bytes.length));
 
             // Test with leading zeros
             Arrays.fill(newBytes, (byte) 0);
             System.arraycopy(bytes, 0, newBytes, 0, bytes.length);
-            assertSame(string, cache.get(newBytes, 0, bytes.length));
+            assertSame(string, get(cache, newBytes, 0, bytes.length));
         }
 
-        assertNull(cache.get("ABC".getBytes(StandardCharsets.UTF_8)));
+        assertNull(get(cache, "ABC".getBytes(StandardCharsets.UTF_8)));
 
         // Test long strings
-        assertNull(cache.get("A".repeat(20).getBytes(StandardCharsets.UTF_8)));
+        assertNull(get(cache, "A".repeat(20).getBytes(StandardCharsets.UTF_8)));
 
         // Test non-ASCII characters
-        assertNull(cache.get("喵".getBytes(StandardCharsets.UTF_8)));
+        assertNull(get(cache, "喵".getBytes(StandardCharsets.UTF_8)));
     }
 }

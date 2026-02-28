@@ -25,6 +25,10 @@ public sealed abstract class InputSource implements Closeable {
     private boolean closed = false;
     protected long bytesRead = 0L;
 
+    public boolean supportDirectBuffer() {
+        return false;
+    }
+
     @Override
     public final void close() throws IOException {
         if (!closed) {
@@ -42,6 +46,8 @@ public sealed abstract class InputSource implements Closeable {
     }
 
     public final void fillBuffer(InputBuffer buffer, int required) throws IOException {
+        ensureOpen();
+
         ByteBuffer bytesBuffer = buffer.bytesBuffer();
 
         if (bytesBuffer.remaining() > required) {

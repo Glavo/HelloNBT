@@ -15,6 +15,10 @@
  */
 package org.glavo.nbt.tag;
 
+import org.glavo.nbt.internal.input.NBTReader;
+
+import java.io.IOException;
+
 /// 4 byte floating point tag type.
 public final class FloatTag extends ValueTag {
     private float value;
@@ -45,6 +49,11 @@ public final class FloatTag extends ValueTag {
     /// Sets the value of the tag.
     public void set(float value) {
         this.value = value;
+    }
+
+    @Override
+    protected void readContent(NBTReader reader) throws IOException {
+        set(reader.readFloat());
     }
 
     @Override

@@ -55,13 +55,17 @@ public final class NBTReader implements Closeable {
         source.close();
     }
 
+    private void fillBuffer(int required) throws IOException {
+        source.fillBuffer(buffer, required);
+    }
+
     public byte[] readByteArray() throws IOException {
         int len = readInt();
         if (len < 0 || len >= Integer.MAX_VALUE - 8) {
             throw new IOException("Array length too large");
         }
 
-        source.fillBuffer(buffer, len);
+        fillBuffer(len);
         return buffer.getByteArray(len);
     }
 
@@ -71,7 +75,7 @@ public final class NBTReader implements Closeable {
             throw new IOException("Array length too large");
         }
 
-        source.fillBuffer(buffer, len * Integer.BYTES);
+        fillBuffer(len * Integer.BYTES);
         return buffer.getIntArray(len);
     }
 
@@ -81,13 +85,13 @@ public final class NBTReader implements Closeable {
             throw new IOException("Array length too large");
         }
 
-        source.fillBuffer(buffer, len * Long.BYTES);
+        fillBuffer(len * Long.BYTES);
         return buffer.getLongArray(len);
     }
 
     /// Read a byte from the input stream.
     public byte readByte() throws IOException {
-        source.fillBuffer(buffer, Byte.BYTES);
+        fillBuffer(Byte.BYTES);
         return buffer.getByte();
     }
 
@@ -98,7 +102,7 @@ public final class NBTReader implements Closeable {
 
     /// Read a short from the input stream.
     public short readShort() throws IOException {
-        source.fillBuffer(buffer, Short.BYTES);
+        fillBuffer(Short.BYTES);
         return buffer.getShort();
     }
 
@@ -109,7 +113,7 @@ public final class NBTReader implements Closeable {
 
     /// Read an int from the input stream.
     public int readInt() throws IOException {
-        source.fillBuffer(buffer, Integer.BYTES);
+        fillBuffer(Integer.BYTES);
         return buffer.getInt();
     }
 
@@ -120,19 +124,19 @@ public final class NBTReader implements Closeable {
 
     /// Read a long from the input stream.
     public long readLong() throws IOException {
-        source.fillBuffer(buffer, Long.BYTES);
+        fillBuffer(Long.BYTES);
         return buffer.getLong();
     }
 
     /// Read a float from the input stream.
     public float readFloat() throws IOException {
-        source.fillBuffer(buffer, Float.BYTES);
+        fillBuffer(Float.BYTES);
         return buffer.getFloat();
     }
 
     /// Read a double from the input stream.
     public double readDouble() throws IOException {
-        source.fillBuffer(buffer, Double.BYTES);
+        fillBuffer(Double.BYTES);
         return buffer.getDouble();
     }
 
@@ -162,7 +166,7 @@ public final class NBTReader implements Closeable {
             return "";
         }
 
-        source.fillBuffer(buffer, len);
+        fillBuffer(len);
 
         ByteBuffer bytes = buffer.bytesBuffer();
         int offset = bytes.position();

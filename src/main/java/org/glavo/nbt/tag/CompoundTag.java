@@ -105,6 +105,56 @@ public final class CompoundTag extends ParentTag<Tag> {
         subTagsByName.put(tag.getName(), tag);
     }
 
+    /// Adds a byte tag with the given name and value to this compound tag.
+    public void putByte(String name, byte value) {
+        add(new ByteTag(name, value));
+    }
+
+    /// Adds a short tag with the given name and value to this compound tag.
+    public void putShort(String name, short value) {
+        add(new ShortTag(name, value));
+    }
+
+    /// Adds an int tag with the given name and value to this compound tag.
+    public void putInt(String name, int value) {
+        add(new IntTag(name, value));
+    }
+
+    /// Adds a long tag with the given name and value to this compound tag.
+    public void putLong(String name, long value) {
+        add(new LongTag(name, value));
+    }
+
+    /// Adds a float tag with the given name and value to this compound tag.
+    public void putFloat(String name, float value) {
+        add(new FloatTag(name, value));
+    }
+
+    /// Adds a double tag with the given name and value to this compound tag.
+    public void putDouble(String name, double value) {
+        add(new DoubleTag(name, value));
+    }
+
+    /// Adds a string tag with the given name and value to this compound tag.
+    public void putString(String name, String value) {
+        add(new StringTag(name, value));
+    }
+
+    /// Adds a byte array tag with the given name and value to this compound tag.
+    public void putByteArray(String name, byte[] value) {
+        add(new ByteArrayTag(name, value));
+    }
+
+    /// Adds an int array tag with the given name and value to this compound tag.
+    public void putIntArray(String name, int[] value) {
+        add(new IntArrayTag(name, value));
+    }
+
+    /// Adds a long array tag with the given name and value to this compound tag.
+    public void putLongArray(String name, long[] value) {
+        add(new LongArrayTag(name, value));
+    }
+
     @Override
     public void remove(Tag tag) {
         if (tag.getParent() != this) {

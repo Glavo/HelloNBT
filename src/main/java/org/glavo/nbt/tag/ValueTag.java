@@ -15,6 +15,7 @@
  */
 package org.glavo.nbt.tag;
 
+/// Base class for tags that hold a single simple value.
 public sealed abstract class ValueTag<V> extends Tag
         permits ByteTag, ShortTag, IntTag, LongTag, DoubleTag, FloatTag, StringTag {
     protected ValueTag(String name) {

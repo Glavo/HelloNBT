@@ -19,7 +19,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-/// An abstract tag that contains other tags.
+/// Base class for tags that can contain other tags as children.
 public sealed abstract class ParentTag<E extends Tag> extends Tag
         implements Iterable<E>
         permits CompoundTag, ListTag {

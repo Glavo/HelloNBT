@@ -77,9 +77,7 @@ public enum TagType {
 
         var map = new HashMap<Class<? extends Tag>, TagType>();
         for (TagType type : values) {
-            if (type.tagClass != null) {
-                map.put(type.tagClass, type);
-            }
+            map.put(type.tagClass, type);
         }
         CLASS_TO_TYPE = Map.copyOf(map);
     }
@@ -97,9 +95,9 @@ public enum TagType {
     }
 
     private final byte id;
-    private final @Nullable Class<? extends Tag> tagClass;
+    private final Class<? extends Tag> tagClass;
 
-    TagType(int id, @Nullable Class<? extends Tag> tagClass) {
+    TagType(int id, Class<? extends Tag> tagClass) {
         this.id = (byte) id;
         this.tagClass = tagClass;
     }

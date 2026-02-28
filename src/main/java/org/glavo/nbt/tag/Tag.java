@@ -15,6 +15,7 @@
  */
 package org.glavo.nbt.tag;
 
+import org.glavo.nbt.NBTElement;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.Nullable;
 
@@ -22,7 +23,7 @@ import java.lang.invoke.MethodHandles;
 import java.util.Objects;
 
 /// @author Glavo
-public sealed abstract class Tag
+public sealed abstract class Tag implements NBTElement
         permits ByteTag, ShortTag, IntTag, LongTag, FloatTag, DoubleTag, StringTag, ArrayTag, ParentTag {
     @Nullable ParentTag<?> parent;
 

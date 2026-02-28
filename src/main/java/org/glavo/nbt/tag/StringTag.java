@@ -47,9 +47,19 @@ public final class StringTag extends ValueTag<String> {
         return value;
     }
 
+    @Override
+    public String getValue() {
+        return value;
+    }
+
     /// Sets the value of the tag.
     public void set(String value) {
         this.value = Objects.requireNonNull(value);
+    }
+
+    @Override
+    public void setValue(String value) {
+        this.value = value;
     }
 
     @Override

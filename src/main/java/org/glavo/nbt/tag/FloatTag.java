@@ -16,7 +16,7 @@
 package org.glavo.nbt.tag;
 
 /// 4 byte floating point tag type.
-public final class FloatTag extends Tag {
+public final class FloatTag extends ValueTag {
     private float value;
 
     public FloatTag() {
@@ -55,5 +55,10 @@ public final class FloatTag extends Tag {
     @Override
     protected boolean contentEquals(Tag other) {
         return other instanceof FloatTag that && Float.floatToIntBits(value) == Float.floatToIntBits(that.value);
+    }
+
+    @Override
+    protected void contentToString(StringBuilder builder) {
+        builder.append(value);
     }
 }

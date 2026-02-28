@@ -18,6 +18,7 @@ package org.glavo.nbt.tag;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
 
 public final class CompoundTag<T extends Tag> extends ParentTag<T> {
@@ -125,5 +126,21 @@ public final class CompoundTag<T extends Tag> extends ParentTag<T> {
     @Override
     protected boolean contentEquals(Tag other) {
         return other instanceof CompoundTag<?> that && subTagsByName.equals(that.subTagsByName);
+    }
+
+    @Override
+    protected void contentToString(StringBuilder builder) {
+        builder.append('[');
+
+        if (!subTags.isEmpty()) {
+            Iterator<T> it = subTags.iterator();
+            it.next().toString(builder);
+
+            while (it.hasNext()) {
+                builder.append(", ");
+                it.next().toString(builder);
+            }
+        }
+        builder.append(']');
     }
 }

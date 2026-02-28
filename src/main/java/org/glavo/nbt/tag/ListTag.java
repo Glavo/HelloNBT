@@ -15,6 +15,7 @@
  */
 package org.glavo.nbt.tag;
 
+import java.util.Iterator;
 import java.util.Objects;
 
 public final class ListTag<T extends Tag> extends ParentTag<T> {
@@ -158,5 +159,21 @@ public final class ListTag<T extends Tag> extends ParentTag<T> {
     @Override
     protected boolean contentEquals(Tag other) {
         return other instanceof ListTag<?> that && subTags.equals(that.subTags);
+    }
+
+    @Override
+    protected void contentToString(StringBuilder builder) {
+        builder.append('[').append(getElementType()).append(';');
+
+        if (!subTags.isEmpty()) {
+            Iterator<T> it = subTags.iterator();
+            it.next().contentToString(builder);
+
+            while (it.hasNext()) {
+                builder.append(", ");
+                it.next().contentToString(builder);
+            }
+        }
+        builder.append(']');
     }
 }

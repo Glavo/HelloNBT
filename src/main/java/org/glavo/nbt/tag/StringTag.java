@@ -17,7 +17,7 @@ package org.glavo.nbt.tag;
 
 import java.util.Objects;
 
-public final class StringTag extends Tag {
+public final class StringTag extends ValueTag {
     private String value;
 
     public StringTag() {
@@ -57,5 +57,12 @@ public final class StringTag extends Tag {
     @Override
     protected boolean contentEquals(Tag other) {
         return other instanceof StringTag that && value.equals(that.value);
+    }
+
+    @Override
+    protected void contentToString(StringBuilder builder) {
+        builder.append('"');
+        appendString(builder, value);
+        builder.append('"');
     }
 }

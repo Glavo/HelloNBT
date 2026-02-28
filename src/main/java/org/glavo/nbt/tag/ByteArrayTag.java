@@ -80,4 +80,17 @@ public final class ByteArrayTag extends ArrayTag {
     protected boolean contentEquals(Tag other) {
         return other instanceof ByteArrayTag that && Arrays.equals(value, that.value);
     }
+
+    @Override
+    protected void contentToString(StringBuilder builder) {
+        if (value.length > 0) {
+            builder.append('[').append(value[0]);
+            for (int i = 1; i < value.length; i++) {
+                builder.append(", ").append(value[i]);
+            }
+            builder.append(']');
+        } else {
+            builder.append("[]");
+        }
+    }
 }

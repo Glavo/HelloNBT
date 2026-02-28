@@ -16,7 +16,7 @@
 package org.glavo.nbt.tag;
 
 /// 8 byte floating point tag type.
-public final class DoubleTag extends Tag {
+public final class DoubleTag extends ValueTag {
     private double value;
 
     public DoubleTag() {
@@ -55,5 +55,10 @@ public final class DoubleTag extends Tag {
     @Override
     protected boolean contentEquals(Tag other) {
         return other instanceof DoubleTag that && Double.doubleToLongBits(value) == Double.doubleToLongBits(that.value);
+    }
+
+    @Override
+    protected void contentToString(StringBuilder builder) {
+        builder.append(value);
     }
 }

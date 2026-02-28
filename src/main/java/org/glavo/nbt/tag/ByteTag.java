@@ -16,7 +16,7 @@
 package org.glavo.nbt.tag;
 
 /// 1 byte signed integer tag type. Sometimes used for booleans.
-public final class ByteTag extends Tag {
+public final class ByteTag extends ValueTag {
     private byte value;
 
     public ByteTag() {
@@ -68,5 +68,10 @@ public final class ByteTag extends Tag {
     @Override
     protected boolean contentEquals(Tag other) {
         return other instanceof ByteTag that && value == that.value;
+    }
+
+    @Override
+    protected void contentToString(StringBuilder builder) {
+        builder.append(value);
     }
 }

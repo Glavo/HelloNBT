@@ -24,7 +24,7 @@ import java.util.Objects;
 
 /// @author Glavo
 public sealed abstract class Tag implements NBTElement
-        permits ByteTag, ShortTag, IntTag, LongTag, FloatTag, DoubleTag, StringTag, ArrayTag, ParentTag {
+        permits ValueTag, ArrayTag, ParentTag {
     @Nullable ParentTag<?> parent;
 
     String name;
@@ -74,6 +74,56 @@ public sealed abstract class Tag implements NBTElement
     protected abstract int contentHashCode();
 
     protected abstract boolean contentEquals(Tag other);
+
+    protected abstract void contentToString(StringBuilder builder);
+
+    protected void appendString(StringBuilder builder, String value) {
+        for (int i = 0; i < value.length(); i++) {
+            char ch = value.charAt(i);
+
+            switch (ch) {
+                case '\0' -> builder.append("\\0");
+                case '\b' -> builder.append("\\b");
+                case '\t' -> builder.append("\\t");
+                case '\n' -> builder.append("\\n");
+                case '\f' -> builder.append("\\f");
+                case '\r' -> builder.append("\\r");
+                case '"' -> builder.append("\"");
+                case ' ' -> builder.append(' ');
+                default -> {
+                    if (Character.isJavaIdentifierPart(ch)) {
+                        builder.appendCodePoint(ch);
+                    } else {
+                        builder.append("\\u%04x".formatted((int) ch));
+                    }
+                }
+            }
+        }
+    }
+
+    protected void toString(StringBuilder builder) {
+        builder.append("TAG_").append(getType());
+        if (!name.isEmpty()) {
+            builder.append('(');
+            appendString(builder, name);
+            builder.append(')');
+        }
+
+        if (this instanceof ArrayTag || this instanceof ParentTag<?>) {
+            this.contentToString(builder);
+        } else {
+            builder.append('[');
+            this.contentToString(builder);
+            builder.append(']');
+        }
+    }
+
+    @Override
+    public String toString() {
+        var builder = new StringBuilder();
+        toString(builder);
+        return builder.toString();
+    }
 
     /// Returns a hash code for this tag.
     @Override

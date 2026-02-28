@@ -16,7 +16,7 @@
 package org.glavo.nbt.tag;
 
 /// 2 byte signed integer tag type.
-public final class ShortTag extends Tag {
+public final class ShortTag extends ValueTag {
     private short value;
 
     public ShortTag() {
@@ -55,5 +55,10 @@ public final class ShortTag extends Tag {
     @Override
     protected boolean contentEquals(Tag other) {
         return other instanceof ShortTag that && value == that.value;
+    }
+
+    @Override
+    protected void contentToString(StringBuilder builder) {
+        builder.append(value);
     }
 }

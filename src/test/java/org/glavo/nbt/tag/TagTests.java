@@ -266,6 +266,17 @@ public final class TagTests {
     }
 
     @Test
+    public void testToString() {
+        assertEquals("TAG_BYTE[0]", new ByteTag().toString());
+        assertEquals("TAG_SHORT[0]", new ShortTag().toString());
+        assertEquals("TAG_INT[0]", new IntTag().toString());
+        assertEquals("TAG_LONG[0]", new LongTag().toString());
+        assertEquals("TAG_FLOAT[0.0]", new FloatTag().toString());
+        assertEquals("TAG_DOUBLE[0.0]", new DoubleTag().toString());
+        assertEquals("TAG_STRING[\"\"]", new StringTag().toString());
+    }
+
+    @Test
     public void testEquals() {
         assertEquals(new ByteTag("Meow", (byte) 42), new ByteTag("Meow", (byte) 42));
         assertNotEquals(new ByteTag("Meow", (byte) 42), new ByteTag("Meow", (byte) 43));

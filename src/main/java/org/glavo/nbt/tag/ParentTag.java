@@ -37,6 +37,7 @@ public sealed abstract class ParentTag<E extends Tag> extends Tag
     /// @see Tag#setName(String)
     abstract void updateSubTagName(Tag tag, String name) throws IllegalStateException;
 
+    /// Updates the indexes of the subtags starting from the given index.
     protected final void updateIndexes(int startIndex) {
         for (int i = startIndex, end = subTags.size(); i < end; i++) {
             subTags.get(i).index = i;
@@ -67,7 +68,7 @@ public sealed abstract class ParentTag<E extends Tag> extends Tag
 
     /// Adds the `tag` to this tag.
     ///
-    /// If the `tag` is already a child of this tag, does nothing.
+    /// If the `tag` is already a child of this tag, move it to the end of the list.
     ///
     /// If the `tag` is already a child of another tag, removes it from old parent and adds it to this tag.
     public abstract void add(E tag) throws IllegalArgumentException;

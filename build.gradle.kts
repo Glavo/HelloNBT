@@ -13,11 +13,13 @@ repositories {
 }
 
 dependencies {
-    compileOnly("org.jetbrains:annotations:26.1.0")
+    compileOnly(libs.jetbrains.annotations)
+    compileOnly(libs.lz4)
 
     testImplementation(libs.junit.jupiter)
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")
     testImplementation(libs.opennbt)
+    testImplementation(libs.lz4)
 }
 
 java {

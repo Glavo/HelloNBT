@@ -65,13 +65,13 @@ public sealed abstract class Tag implements NBTElement
         }
     }
 
-    public static CompoundTag<?> readCompoundTag(InputStream inputStream) throws IOException {
+    public static CompoundTag readCompoundTag(InputStream inputStream) throws IOException {
         return readCompoundTag(inputStream, MinecraftEdition.JAVA_EDITION);
     }
 
-    public static CompoundTag<?> readCompoundTag(InputStream inputStream, MinecraftEdition edition) throws IOException {
+    public static CompoundTag readCompoundTag(InputStream inputStream, MinecraftEdition edition) throws IOException {
         Tag rootTag = readTag(inputStream, edition);
-        if (rootTag instanceof CompoundTag<?> compoundTag) {
+        if (rootTag instanceof CompoundTag compoundTag) {
             return compoundTag;
         } else {
             throw new IOException("Expected a compound tag, but got " + rootTag);

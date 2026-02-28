@@ -102,13 +102,13 @@ public final class TagTests {
         assertEquals("Meow", new IntArrayTag("Meow").getName());
         assertEquals("Meow", new LongArrayTag("Meow").getName());
         assertEquals("Meow", new ListTag<>("Meow", (TagType) null).getName());
-        assertEquals("Meow", new CompoundTag<>("Meow").getName());
+        assertEquals("Meow", new CompoundTag("Meow").getName());
     }
 
     @Test
     public void testSetName() {
         {
-            var parent = new CompoundTag<>("Parent");
+            var parent = new CompoundTag("Parent");
             assertEquals("Parent", parent.getName());
 
             // Set the name to the same value
@@ -187,7 +187,7 @@ public final class TagTests {
 
     @Test
     public void testSubTagOfCompoundTag() {
-        var compoundTag = new CompoundTag<>("Parent");
+        var compoundTag = new CompoundTag("Parent");
 
         for (int i = 0; i < 100; i++) {
             var subTag = new IntTag("Sub" + i, i);
@@ -238,8 +238,8 @@ public final class TagTests {
 
     @Test
     public void testAddToOtherCompoundTag() {
-        var compound0 = new CompoundTag<>("List0");
-        var compound1 = new CompoundTag<>("List1");
+        var compound0 = new CompoundTag("List0");
+        var compound1 = new CompoundTag("List1");
 
         var subTag = new IntTag("Sub", 0);
 
@@ -321,7 +321,7 @@ public final class TagTests {
         assertEquals(new ListTag<>("Meow", ByteTag.class), new ListTag<>("Meow", ByteTag.class));
         assertNotEquals(new ListTag<>("Meow", ByteTag.class), new ListTag<>("Glavo", ByteTag.class));
 
-        assertEquals(new CompoundTag<>("Meow"), new CompoundTag<>("Meow"));
-        assertNotEquals(new CompoundTag<>("Meow"), new CompoundTag<>("Glavo"));
+        assertEquals(new CompoundTag("Meow"), new CompoundTag("Meow"));
+        assertNotEquals(new CompoundTag("Meow"), new CompoundTag("Glavo"));
     }
 }

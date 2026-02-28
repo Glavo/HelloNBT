@@ -72,7 +72,7 @@ public final class NBTReaderTest {
         }
 
         {
-            var expected = new CompoundTag<>("Meow");
+            var expected = new CompoundTag("Meow");
             expected.add(new ByteTag("Sub0", (byte) 42));
             expected.add(new ShortTag("Sub1", (short) 42));
             expected.add(new IntTag("Sub2", 42));
@@ -84,7 +84,7 @@ public final class NBTReaderTest {
             expected.add(new IntArrayTag("Sub8", new int[]{1, 2, 3}));
             expected.add(new LongArrayTag("Sub9", new long[]{1, 2, 3}));
             {
-                var sub10 = new CompoundTag<>("Sub10");
+                var sub10 = new CompoundTag("Sub10");
                 sub10.add(new ByteTag("Sub10Sub0", (byte) 42));
                 expected.add(sub10);
             }

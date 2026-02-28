@@ -29,7 +29,7 @@ public final class ListTag<T extends Tag> extends ParentTag<T> {
     /// Creates a new empty list tag with the given element type.
     ///
     /// @param elementType The type of the elements in the list.
-    public ListTag(TagType elementType) {
+    public ListTag(@Nullable TagType elementType) {
         this("", elementType);
     }
 

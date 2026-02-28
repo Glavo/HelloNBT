@@ -21,10 +21,7 @@ import org.glavo.nbt.tag.*;
 
 import java.io.*;
 import java.nio.ByteBuffer;
-import java.nio.ByteOrder;
 import java.nio.charset.StandardCharsets;
-
-import static org.glavo.nbt.tag.Tag.readTag;
 
 public final class NBTWriter implements Closeable, Flushable {
 
@@ -89,7 +86,7 @@ public final class NBTWriter implements Closeable, Flushable {
             for (Tag subTag : listTag) {
                 writeContent(subTag);
             }
-        } else if (tag instanceof CompoundTag<?> compoundTag) {
+        } else if (tag instanceof CompoundTag compoundTag) {
             for (Tag subTag : compoundTag) {
                 writeTag(subTag);
             }

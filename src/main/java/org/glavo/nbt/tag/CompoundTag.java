@@ -23,9 +23,9 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 
-public final class CompoundTag<T extends Tag> extends ParentTag<T> {
+public final class CompoundTag extends ParentTag<Tag> {
 
-    private final Map<String, T> subTagsByName = new HashMap<>();
+    private final Map<String, Tag> subTagsByName = new HashMap<>();
 
     public CompoundTag() {
         this("");
@@ -41,14 +41,12 @@ public final class CompoundTag<T extends Tag> extends ParentTag<T> {
             throw new IllegalStateException("The name '" + name + "' is already used by another subtag");
         }
 
-        T removedTag = subTagsByName.remove(tag.getName());
+        Tag removedTag = subTagsByName.remove(tag.getName());
         if (removedTag != tag) {
             throw new AssertionError("Expected " + tag + ", but got " + removedTag);
         }
 
-        @SuppressWarnings("unchecked")
-        T castedTag = (T) tag;
-        subTagsByName.put(name, castedTag);
+        subTagsByName.put(name, tag);
     }
 
     @Override
@@ -57,7 +55,7 @@ public final class CompoundTag<T extends Tag> extends ParentTag<T> {
     }
 
     /// Returns the subtag with the given name, or `null` if no such subtag exists.
-    public @Nullable T get(String name) {
+    public @Nullable Tag get(String name) {
         return subTagsByName.get(name);
     }
 
@@ -65,7 +63,7 @@ public final class CompoundTag<T extends Tag> extends ParentTag<T> {
     ///
     /// If another tag with the same name already exists, the old tag will be removed.
     @Override
-    public void add(T tag) {
+    public void add(Tag tag) {
         if (tag.getParent() != null) {
             if (tag.getParent() == this) {
                 int index = tag.getIndex();
@@ -75,7 +73,7 @@ public final class CompoundTag<T extends Tag> extends ParentTag<T> {
                 } else {
                     // Move the tag to the end of the subTags list.
 
-                    T oldTag = subTags.remove(index);
+                    Tag oldTag = subTags.remove(index);
                     if (oldTag != tag) {
                         throw new AssertionError("Expected " + tag + ", but got " + oldTag);
                     }
@@ -93,7 +91,7 @@ public final class CompoundTag<T extends Tag> extends ParentTag<T> {
         }
 
         // If a tag with the same name already exists, remove it first.
-        T oldTag = subTagsByName.get(tag.getName());
+        Tag oldTag = subTagsByName.get(tag.getName());
         if (oldTag != null) {
             remove(oldTag);
         }
@@ -114,7 +112,7 @@ public final class CompoundTag<T extends Tag> extends ParentTag<T> {
         }
 
         // Remove the tag from the subTagsByName map.
-        T removed = subTagsByName.remove(tag.getName());
+        Tag removed = subTagsByName.remove(tag.getName());
         if (removed != tag) {
             throw new AssertionError("Expected " + tag + ", but got " + removed);
         }
@@ -146,15 +144,12 @@ public final class CompoundTag<T extends Tag> extends ParentTag<T> {
 
     @Override
     protected void readContent(NBTReader reader) throws IOException {
-        @SuppressWarnings("unchecked")
-        var uncheckCompoundTag = (CompoundTag<Tag>) this;
-
         int count = 0;
 
         Tag subTag;
         while ((subTag = Tag.readTag(reader)) != null) {
             count++;
-            uncheckCompoundTag.add(subTag);
+            add(subTag);
         }
 
         if (count != this.size()) {
@@ -169,7 +164,7 @@ public final class CompoundTag<T extends Tag> extends ParentTag<T> {
 
     @Override
     protected boolean contentEquals(Tag other) {
-        return other instanceof CompoundTag<?> that && subTagsByName.equals(that.subTagsByName);
+        return other instanceof CompoundTag that && subTagsByName.equals(that.subTagsByName);
     }
 
     @Override
@@ -177,7 +172,7 @@ public final class CompoundTag<T extends Tag> extends ParentTag<T> {
         builder.append('[');
 
         if (!subTags.isEmpty()) {
-            Iterator<T> it = subTags.iterator();
+            Iterator<Tag> it = subTags.iterator();
             it.next().toString(builder);
 
             while (it.hasNext()) {
@@ -189,12 +184,11 @@ public final class CompoundTag<T extends Tag> extends ParentTag<T> {
     }
 
     @Override
-    @SuppressWarnings("unchecked")
-    public CompoundTag<T> clone() {
-        var newTag = new CompoundTag<T>(this.name);
+    public CompoundTag clone() {
+        var newTag = new CompoundTag(this.name);
         newTag.subTags.ensureCapacity(this.size());
-        for (T tag : this) {
-            newTag.add((T) tag.clone());
+        for (Tag tag : this) {
+            newTag.add(tag.clone());
         }
         return newTag;
     }

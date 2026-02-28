@@ -95,7 +95,7 @@ public final class NBTWriterTest {
                 expected.put(sub11);
             }
 
-            var actual = new CompoundTag<>("Meow");
+            var actual = new CompoundTag("Meow");
             actual.add(new ByteTag("Sub0", (byte) 42));
             actual.add(new ShortTag("Sub1", (short) 42));
             actual.add(new IntTag("Sub2", 42));
@@ -107,7 +107,7 @@ public final class NBTWriterTest {
             actual.add(new IntArrayTag("Sub8", new int[]{1, 2, 3}));
             actual.add(new LongArrayTag("Sub9", new long[]{1, 2, 3}));
             {
-                var sub10 = new CompoundTag<>("Sub10");
+                var sub10 = new CompoundTag("Sub10");
                 sub10.add(new ByteTag("Sub10Sub0", (byte) 42));
                 actual.add(sub10);
             }

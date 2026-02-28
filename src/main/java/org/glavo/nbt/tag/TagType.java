@@ -114,8 +114,8 @@ public enum TagType {
             case BYTE_ARRAY -> new ByteArrayTag();
             case INT_ARRAY -> new IntArrayTag();
             case LONG_ARRAY -> new LongArrayTag();
-            case LIST -> new ListTag<>("", (TagType) null);
-            case COMPOUND -> new CompoundTag<>();
+            case LIST -> new ListTag<>((TagType) null);
+            case COMPOUND -> new CompoundTag();
         };
     }
 

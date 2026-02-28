@@ -19,6 +19,7 @@ import org.glavo.nbt.internal.input.NBTReader;
 
 import java.io.IOException;
 import java.util.Arrays;
+import java.util.stream.IntStream;
 
 /// An ordered list of 32-bit integers.
 public final class IntArrayTag extends ArrayTag {
@@ -72,6 +73,11 @@ public final class IntArrayTag extends ArrayTag {
     @Override
     public int size() {
         return value.length;
+    }
+
+    /// Returns a sequential [IntStream] with this value as its source.
+    public IntStream stream() {
+        return Arrays.stream(value);
     }
 
     @Override

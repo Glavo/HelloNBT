@@ -19,6 +19,7 @@ import org.glavo.nbt.internal.input.NBTReader;
 
 import java.io.IOException;
 import java.util.Arrays;
+import java.util.stream.LongStream;
 
 /// An ordered list of 64-bit integers.
 public final class LongArrayTag extends ArrayTag {
@@ -72,6 +73,11 @@ public final class LongArrayTag extends ArrayTag {
     @Override
     public int size() {
         return value.length;
+    }
+
+    /// Returns a sequential [LongStream] with this value as its source.
+    public LongStream stream() {
+        return Arrays.stream(value);
     }
 
     @Override

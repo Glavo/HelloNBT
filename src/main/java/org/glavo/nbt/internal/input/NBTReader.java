@@ -35,6 +35,7 @@ public final class NBTReader implements Closeable {
 
     private final InputSource source;
     private final InputBuffer buffer;
+    private final ByteOrder byteOrder;
 
     /// Used for reading UTF-8 strings
     private @Nullable StringBuilder charsBuffer;
@@ -42,6 +43,11 @@ public final class NBTReader implements Closeable {
     public NBTReader(InputSource source, ByteOrder byteOrder) {
         this.source = source;
         this.buffer = InputBuffer.allocate(IOUtils.DEFAULT_BUFFER_SIZE, source.supportDirectBuffer(), byteOrder);
+        this.byteOrder = byteOrder;
+    }
+
+    public ByteOrder byteOrder() {
+        return this.byteOrder;
     }
 
     @Override
@@ -165,7 +171,7 @@ public final class NBTReader implements Closeable {
         bytes.position(limit);
 
         // For Minecraft Bedrock Edition, the string is encoded in standard UTF-8
-        if (buffer.order() == ByteOrder.LITTLE_ENDIAN) {
+        if (byteOrder == ByteOrder.LITTLE_ENDIAN) {
             return getUTF8(bytes, offset, len);
         }
 

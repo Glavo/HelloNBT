@@ -18,11 +18,9 @@ package org.glavo.nbt.internal;
 import org.glavo.nbt.tag.Tag;
 
 import java.lang.invoke.MethodHandles;
-import java.nio.ByteOrder;
 
 public final class IOUtils {
     public static final Tag.Unsafe TAG_UNSAFE = Tag.Unsafe.getUnsafe(MethodHandles.lookup());
-    public static final ByteOrder DEFAULT_BYTE_ORDER = ByteOrder.BIG_ENDIAN;
 
     public static final int DEFAULT_BUFFER_SIZE = 8192;
 

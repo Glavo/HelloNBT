@@ -16,7 +16,6 @@
 package org.glavo.nbt.tag;
 
 import org.glavo.nbt.NBTElement;
-import org.glavo.nbt.internal.IOUtils;
 import org.glavo.nbt.internal.input.InputSource;
 import org.glavo.nbt.internal.input.NBTReader;
 import org.glavo.nbt.internal.output.NBTWriter;
@@ -52,7 +51,7 @@ public sealed abstract class Tag implements NBTElement
     }
 
     public static Tag readTag(InputStream inputStream) throws IOException {
-        return readTag(inputStream, IOUtils.DEFAULT_BYTE_ORDER);
+        return readTag(inputStream, ByteOrder.BIG_ENDIAN);
     }
 
     public static Tag readTag(InputStream inputStream, ByteOrder byteOrder) throws IOException {
@@ -66,7 +65,7 @@ public sealed abstract class Tag implements NBTElement
     }
 
     public static CompoundTag<?> readCompoundTag(InputStream inputStream) throws IOException {
-        return readCompoundTag(inputStream, IOUtils.DEFAULT_BYTE_ORDER);
+        return readCompoundTag(inputStream, ByteOrder.BIG_ENDIAN);
     }
 
     public static CompoundTag<?> readCompoundTag(InputStream inputStream, ByteOrder byteOrder) throws IOException {
@@ -125,7 +124,7 @@ public sealed abstract class Tag implements NBTElement
     }
 
     public void writeTo(OutputStream outputStream) throws IOException {
-        writeTo(outputStream, IOUtils.DEFAULT_BYTE_ORDER);
+        writeTo(outputStream, ByteOrder.BIG_ENDIAN);
     }
 
     public void writeTo(OutputStream outputStream, ByteOrder byteOrder) throws IOException {

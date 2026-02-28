@@ -15,9 +15,15 @@
  */
 package org.glavo.nbt.tag;
 
-public sealed abstract class ValueTag extends Tag
+public sealed abstract class ValueTag<V> extends Tag
         permits ByteTag, ShortTag, IntTag, LongTag, DoubleTag, FloatTag, StringTag {
     protected ValueTag(String name) {
         super(name);
     }
+
+    /// Returns the value of the tag.
+    public abstract V getValue();
+
+    /// Sets the value of the tag.
+    public abstract void setValue(V value);
 }

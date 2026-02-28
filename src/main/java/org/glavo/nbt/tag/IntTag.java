@@ -20,7 +20,7 @@ import org.glavo.nbt.internal.input.NBTReader;
 import java.io.IOException;
 
 /// 4 byte signed integer tag type.
-public final class IntTag extends ValueTag {
+public final class IntTag extends ValueTag<Integer> {
     private int value;
 
     public IntTag() {
@@ -46,8 +46,18 @@ public final class IntTag extends ValueTag {
         return value;
     }
 
+    @Override
+    public Integer getValue() {
+        return value;
+    }
+
     /// Sets the value of the tag.
     public void set(int value) {
+        this.value = value;
+    }
+
+    @Override
+    public void setValue(Integer value) {
         this.value = value;
     }
 

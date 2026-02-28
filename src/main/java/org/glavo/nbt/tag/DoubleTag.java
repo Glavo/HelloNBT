@@ -20,7 +20,7 @@ import org.glavo.nbt.internal.input.NBTReader;
 import java.io.IOException;
 
 /// 8 byte floating point tag type.
-public final class DoubleTag extends ValueTag {
+public final class DoubleTag extends ValueTag<Double> {
     private double value;
 
     public DoubleTag() {
@@ -46,8 +46,18 @@ public final class DoubleTag extends ValueTag {
         return value;
     }
 
+    @Override
+    public Double getValue() {
+        return value;
+    }
+
     /// Sets the value of the tag.
     public void set(double value) {
+        this.value = value;
+    }
+
+    @Override
+    public void setValue(Double value) {
         this.value = value;
     }
 

@@ -20,7 +20,7 @@ import org.glavo.nbt.internal.input.NBTReader;
 import java.io.IOException;
 import java.util.Objects;
 
-public final class StringTag extends ValueTag {
+public final class StringTag extends ValueTag<String> {
     private String value;
 
     public StringTag() {

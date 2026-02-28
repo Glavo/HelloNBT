@@ -64,6 +64,11 @@ public final class ByteArrayTag extends ArrayTag<Byte> {
         return value[index];
     }
 
+    @Override
+    public Byte getValue(int index) throws IndexOutOfBoundsException {
+        return get(index);
+    }
+
     /// Sets the element at the given index.
     ///
     /// @throws IndexOutOfBoundsException if the index is out of bounds.

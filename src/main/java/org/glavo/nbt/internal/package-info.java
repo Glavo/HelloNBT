@@ -13,18 +13,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.glavo.nbt.internal.io;
 
-import org.glavo.nbt.tag.Tag;
+@NotNullByDefault
+package org.glavo.nbt.internal;
 
-import java.lang.invoke.MethodHandles;
-import java.nio.ByteOrder;
-
-public final class IOUtils {
-    public static final Tag.Unsafe TAG_UNSAFE = Tag.Unsafe.getUnsafe(MethodHandles.lookup());
-
-    public static final ByteOrder DEFAULT_BYTE_ORDER = ByteOrder.BIG_ENDIAN;
-
-    private IOUtils() {
-    }
-}
+import org.jetbrains.annotations.NotNullByDefault;

@@ -15,6 +15,6 @@
  */
 
 @NotNullByDefault
-package org.glavo.nbt.internal.io;
+package org.glavo.nbt.internal.output;
 
 import org.jetbrains.annotations.NotNullByDefault;

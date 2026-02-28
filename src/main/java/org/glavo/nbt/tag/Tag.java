@@ -16,9 +16,9 @@
 package org.glavo.nbt.tag;
 
 import org.glavo.nbt.NBTElement;
-import org.glavo.nbt.internal.io.IOUtils;
-import org.glavo.nbt.internal.io.NBTReader;
-import org.glavo.nbt.internal.io.NBTWriter;
+import org.glavo.nbt.internal.IOUtils;
+import org.glavo.nbt.internal.input.NBTReader;
+import org.glavo.nbt.internal.output.NBTWriter;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.Nullable;
 

@@ -15,8 +15,6 @@
  */
 package org.glavo.nbt.internal.input;
 
-import org.jetbrains.annotations.Nullable;
-
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 
@@ -32,7 +30,6 @@ public final class InputBuffer {
     }
 
     ByteBuffer bytesBuffer;
-    private @Nullable StringBuilder charsBuffer;
 
     public InputBuffer(ByteBuffer bytesBuffer) {
         this.bytesBuffer = bytesBuffer;

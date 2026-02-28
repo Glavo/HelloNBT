@@ -177,7 +177,7 @@ public final class ListTag<T extends Tag> extends ParentTag<T> {
         @SuppressWarnings("unchecked")
         var uncheckedListTag = (ListTag<Tag>) this;
         for (int i = 0; i < count; i++) {
-            Tag subTag = elementType.createTag("");
+            Tag subTag = elementType.createTag();
             subTag.readContent(reader);
             uncheckedListTag.add(subTag);
         }

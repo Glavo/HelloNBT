@@ -45,7 +45,8 @@ public sealed abstract class Tag implements NBTElement
             return null;
         }
 
-        Tag tag = type.createTag(reader.readString());
+        Tag tag = type.createTag();
+        tag.setName(reader.readString());
         tag.readContent(reader);
         return tag;
     }

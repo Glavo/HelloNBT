@@ -72,6 +72,25 @@ public sealed abstract class ParentTag<T extends Tag> extends Tag
     /// If the `tag` is already a child of another tag, removes it from old parent and adds it to this tag.
     public abstract void add(T tag) throws IllegalArgumentException;
 
+    /// Adds all `tags` to this tag.`
+    ///
+    /// @see #add(Tag)
+    public final void addAll(Iterable<? extends T> tags) throws IllegalArgumentException {
+        for (T tag : tags) {
+            this.add(tag);
+        }
+    }
+
+    /// Adds all `tags` to this tag.
+    ///
+    /// @see #add(Tag)
+    @SafeVarargs
+    public final void addAll(T... tags) throws IllegalArgumentException {
+        for (T tag : tags) {
+            this.add(tag);
+        }
+    }
+
     /// Removes the `tag` from this tag.
     ///
     /// @throws IllegalArgumentException if the `tag` is not a child of this tag.

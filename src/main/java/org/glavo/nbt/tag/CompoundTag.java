@@ -114,9 +114,9 @@ public final class CompoundTag<T extends Tag> extends ParentTag<T> {
         }
 
         // Remove the tag from the subTagsByName map.
-        T removedNode = subTagsByName.remove(tag.getName());
-        if (removedNode != tag) {
-            throw new AssertionError("Expected " + tag + ", but got " + removedNode);
+        T removed = subTagsByName.remove(tag.getName());
+        if (removed != tag) {
+            throw new AssertionError("Expected " + tag + ", but got " + removed);
         }
 
         // Remove the tag from the subTags list.
@@ -124,7 +124,11 @@ public final class CompoundTag<T extends Tag> extends ParentTag<T> {
         if (subtagIndex < 0 || subtagIndex >= subTags.size()) {
             throw new AssertionError("Expected subtag index in range [0, " + subTags.size() + "), but got " + subtagIndex);
         }
-        subTags.remove(subtagIndex);
+
+        removed = subTags.remove(subtagIndex);
+        if (removed != tag) {
+            throw new AssertionError("Expected " + tag + ", but got " + removed);
+        }
 
         // Clear the tag's parent and index.
         tag.index = -1;

@@ -158,7 +158,11 @@ public final class ListTag<T extends Tag> extends ParentTag<T> {
         if (subtagIndex < 0 || subtagIndex >= subTags.size()) {
             throw new AssertionError("Expected subtag index in range [0, " + subTags.size() + "), but got " + subtagIndex);
         }
-        subTags.remove(subtagIndex);
+
+        T removedTag = subTags.remove(subtagIndex);
+        if (removedTag != tag) {
+            throw new AssertionError("Expected " + tag + ", but got " + removedTag);
+        }
 
         // Clear the tag's parent and index.
         tag.index = -1;

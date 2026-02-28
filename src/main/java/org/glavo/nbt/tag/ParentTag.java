@@ -37,6 +37,12 @@ public sealed abstract class ParentTag<T extends Tag> extends Tag
     /// @see Tag#setName(String)
     abstract void updateSubTagName(Tag tag, String name) throws IllegalStateException;
 
+    protected final void updateIndexes(int startIndex) {
+        for (int i = startIndex, end = subTags.size(); i < end; i++) {
+            subTags.get(i).index = i;
+        }
+    }
+
     /// Returns `true` if this tag is the root tag, `false` otherwise.
     public final boolean isRoot() {
         return parent == null;

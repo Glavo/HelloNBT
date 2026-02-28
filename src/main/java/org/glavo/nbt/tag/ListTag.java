@@ -149,9 +149,7 @@ public final class ListTag<T extends Tag> extends ParentTag<T> {
         tag.parent = null;
 
         // Update the index of the successor tags.
-        for (int i = subtagIndex; i < subTags.size(); i++) {
-            subTags.get(i).index = i;
-        }
+        updateIndexes(subtagIndex);
     }
 
     @Override

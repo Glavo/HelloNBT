@@ -135,6 +135,12 @@ public final class CompoundTag<T extends Tag> extends ParentTag<T> {
     }
 
     @Override
+    public void clear() {
+        super.clear();
+        subTagsByName.clear();
+    }
+
+    @Override
     protected void readContent(NBTReader reader) throws IOException {
         @SuppressWarnings("unchecked")
         var uncheckCompoundTag = (CompoundTag<Tag>) this;

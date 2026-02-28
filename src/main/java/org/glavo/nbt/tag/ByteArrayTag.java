@@ -129,4 +129,9 @@ public final class ByteArrayTag extends ArrayTag<Byte> {
             builder.append("[]");
         }
     }
+
+    @Override
+    public ByteArrayTag clone() {
+        return new ByteArrayTag(name, value);
+    }
 }

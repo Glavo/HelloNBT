@@ -26,4 +26,7 @@ public sealed abstract class ValueTag<V> extends Tag
 
     /// Sets the value of the tag.
     public abstract void setValue(V value);
+
+    @Override
+    public abstract ValueTag<V> clone();
 }

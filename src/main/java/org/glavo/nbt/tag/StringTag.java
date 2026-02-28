@@ -83,4 +83,9 @@ public final class StringTag extends ValueTag<String> {
         appendString(builder, value);
         builder.append('"');
     }
+
+    @Override
+    public StringTag clone() {
+        return new StringTag(name, value);
+    }
 }

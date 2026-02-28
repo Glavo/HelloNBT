@@ -80,4 +80,9 @@ public final class DoubleTag extends ValueTag<Double> {
     protected void contentToString(StringBuilder builder) {
         builder.append(value);
     }
+
+    @Override
+    public DoubleTag clone() {
+        return new DoubleTag(getName(), value);
+    }
 }

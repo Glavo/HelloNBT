@@ -134,4 +134,9 @@ public final class IntArrayTag extends ArrayTag<Integer> {
             builder.append("[]");
         }
     }
+
+    @Override
+    public IntArrayTag clone() {
+        return new IntArrayTag(name, value);
+    }
 }

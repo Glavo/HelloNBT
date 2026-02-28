@@ -80,4 +80,9 @@ public final class FloatTag extends ValueTag<Float> {
     protected void contentToString(StringBuilder builder) {
         builder.append(value);
     }
+
+    @Override
+    public FloatTag clone() {
+        return new FloatTag(getName(), value);
+    }
 }

@@ -80,4 +80,9 @@ public final class ShortTag extends ValueTag<Short> {
     protected void contentToString(StringBuilder builder) {
         builder.append(value);
     }
+
+    @Override
+    public ShortTag clone() {
+        return new ShortTag(getName(), value);
+    }
 }

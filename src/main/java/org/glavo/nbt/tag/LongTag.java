@@ -80,4 +80,9 @@ public final class LongTag extends ValueTag<Long> {
     protected void contentToString(StringBuilder builder) {
         builder.append(value);
     }
+
+    @Override
+    public LongTag clone() {
+        return new LongTag(getName(), value);
+    }
 }

@@ -136,4 +136,8 @@ public final class LongArrayTag extends ArrayTag<Long> {
         }
     }
 
+    @Override
+    public LongArrayTag clone() {
+        return new LongArrayTag(name, value);
+    }
 }

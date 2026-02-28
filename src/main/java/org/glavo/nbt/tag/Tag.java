@@ -190,6 +190,12 @@ public sealed abstract class Tag implements NBTElement
         return builder.toString();
     }
 
+    /// Returns a new tag with the same name and content as the current tag.
+    ///
+    /// This method always performs a deep copy.
+    @Override
+    public abstract Tag clone();
+
     /// Returns a hash code for this tag.
     @Override
     public int hashCode() {

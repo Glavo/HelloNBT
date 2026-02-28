@@ -35,4 +35,7 @@ public sealed abstract class ArrayTag<E extends Number> extends Tag implements I
     ///
     /// @throws IndexOutOfBoundsException if the index is out of bounds.
     public abstract E getValue(int index) throws IndexOutOfBoundsException;
+
+    @Override
+    public abstract ArrayTag<E> clone();
 }

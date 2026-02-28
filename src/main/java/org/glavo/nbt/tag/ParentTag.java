@@ -24,7 +24,7 @@ public sealed abstract class ParentTag<E extends Tag> extends Tag
         implements Iterable<E>
         permits CompoundTag, ListTag {
 
-    final List<E> subTags = new ArrayList<>();
+    final ArrayList<E> subTags = new ArrayList<>();
 
     protected ParentTag(String name) {
         super(name);
@@ -77,8 +77,6 @@ public sealed abstract class ParentTag<E extends Tag> extends Tag
     /// @throws IllegalArgumentException if the `tag` is not a child of this tag.
     public abstract void remove(Tag tag) throws IllegalArgumentException;
 
-    // Iterable implementation
-
     @Override
     public final Iterator<E> iterator() {
         Iterator<E> iterator = subTags.iterator();
@@ -96,4 +94,7 @@ public sealed abstract class ParentTag<E extends Tag> extends Tag
             }
         };
     }
+
+    @Override
+    public abstract ParentTag<E> clone();
 }

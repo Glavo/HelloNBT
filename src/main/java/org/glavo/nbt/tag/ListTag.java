@@ -19,6 +19,7 @@ import org.glavo.nbt.internal.input.NBTReader;
 
 import java.io.IOException;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Objects;
 
 public final class ListTag<T extends Tag> extends ParentTag<T> {
@@ -205,5 +206,16 @@ public final class ListTag<T extends Tag> extends ParentTag<T> {
             }
         }
         builder.append(']');
+    }
+
+    @Override
+    @SuppressWarnings("unchecked")
+    public ListTag<T> clone() {
+        var newTag = new ListTag<T>(this.name, this.elementType);
+        newTag.subTags.ensureCapacity(this.size());
+        for (T tag : this) {
+            newTag.add((T) tag.clone());
+        }
+        return newTag;
     }
 }

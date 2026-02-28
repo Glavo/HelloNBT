@@ -80,4 +80,9 @@ public final class IntTag extends ValueTag<Integer> {
     protected void contentToString(StringBuilder builder) {
         builder.append(value);
     }
+
+    @Override
+    public IntTag clone() {
+        return new IntTag(name, value);
+    }
 }

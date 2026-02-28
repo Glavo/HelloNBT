@@ -93,4 +93,9 @@ public final class ByteTag extends ValueTag<Byte> {
     protected void contentToString(StringBuilder builder) {
         builder.append(value);
     }
+
+    @Override
+    public ByteTag clone() {
+        return new ByteTag(name, value);
+    }
 }

@@ -161,4 +161,15 @@ public final class CompoundTag<T extends Tag> extends ParentTag<T> {
         }
         builder.append(']');
     }
+
+    @Override
+    @SuppressWarnings("unchecked")
+    public CompoundTag<T> clone() {
+        var newTag = new CompoundTag<T>(this.name);
+        newTag.subTags.ensureCapacity(this.size());
+        for (T tag : this) {
+            newTag.add((T) tag.clone());
+        }
+        return newTag;
+    }
 }

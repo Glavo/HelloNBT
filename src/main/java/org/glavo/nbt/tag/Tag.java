@@ -15,6 +15,7 @@
  */
 package org.glavo.nbt.tag;
 
+import org.glavo.nbt.MinecraftEdition;
 import org.glavo.nbt.NBTElement;
 import org.glavo.nbt.internal.input.InputSource;
 import org.glavo.nbt.internal.input.NBTReader;
@@ -51,11 +52,11 @@ public sealed abstract class Tag implements NBTElement
     }
 
     public static Tag readTag(InputStream inputStream) throws IOException {
-        return readTag(inputStream, ByteOrder.BIG_ENDIAN);
+        return readTag(inputStream, MinecraftEdition.JAVA_EDITION);
     }
 
-    public static Tag readTag(InputStream inputStream, ByteOrder byteOrder) throws IOException {
-        try (var reader = new NBTReader(new InputSource.OfInputStream(inputStream, false), byteOrder)) {
+    public static Tag readTag(InputStream inputStream, MinecraftEdition edition) throws IOException {
+        try (var reader = new NBTReader(new InputSource.OfInputStream(inputStream, false), edition)) {
             Tag tag = readTag(reader);
             if (tag == null) {
                 throw new IOException("No tag found");
@@ -65,11 +66,11 @@ public sealed abstract class Tag implements NBTElement
     }
 
     public static CompoundTag<?> readCompoundTag(InputStream inputStream) throws IOException {
-        return readCompoundTag(inputStream, ByteOrder.BIG_ENDIAN);
+        return readCompoundTag(inputStream, MinecraftEdition.JAVA_EDITION);
     }
 
-    public static CompoundTag<?> readCompoundTag(InputStream inputStream, ByteOrder byteOrder) throws IOException {
-        Tag rootTag = readTag(inputStream, byteOrder);
+    public static CompoundTag<?> readCompoundTag(InputStream inputStream, MinecraftEdition edition) throws IOException {
+        Tag rootTag = readTag(inputStream, edition);
         if (rootTag instanceof CompoundTag<?> compoundTag) {
             return compoundTag;
         } else {
@@ -124,11 +125,11 @@ public sealed abstract class Tag implements NBTElement
     }
 
     public void writeTo(OutputStream outputStream) throws IOException {
-        writeTo(outputStream, ByteOrder.BIG_ENDIAN);
+        writeTo(outputStream, MinecraftEdition.JAVA_EDITION);
     }
 
-    public void writeTo(OutputStream outputStream, ByteOrder byteOrder) throws IOException {
-        try (var writer = new NBTWriter(outputStream, byteOrder)) {
+    public void writeTo(OutputStream outputStream, MinecraftEdition edition) throws IOException {
+        try (var writer = new NBTWriter(outputStream, edition)) {
             writer.writeTag(this);
         }
     }

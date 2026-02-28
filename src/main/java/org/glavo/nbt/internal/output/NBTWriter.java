@@ -15,6 +15,7 @@
  */
 package org.glavo.nbt.internal.output;
 
+import org.glavo.nbt.MinecraftEdition;
 import org.glavo.nbt.internal.IOUtils;
 import org.glavo.nbt.tag.*;
 
@@ -28,13 +29,13 @@ import static org.glavo.nbt.tag.Tag.readTag;
 public final class NBTWriter implements Closeable, Flushable {
 
     private final OutputStream outputStream;
-    private final ByteOrder byteOrder;
     private ByteBuffer buffer;
+    private final MinecraftEdition edition;
 
-    public NBTWriter(OutputStream outputStream, ByteOrder byteOrder) {
+    public NBTWriter(OutputStream outputStream, MinecraftEdition edition) {
         this.outputStream = outputStream;
-        this.byteOrder = byteOrder;
-        this.buffer = ByteBuffer.allocate(8192).order(this.byteOrder);
+        this.buffer = ByteBuffer.allocate(8192).order(edition.byteOrder());
+        this.edition = edition;
     }
 
     @Override
@@ -116,7 +117,7 @@ public final class NBTWriter implements Closeable, Flushable {
             if (buffer.capacity() >= required) {
                 buffer.clear();
             } else {
-                buffer = ByteBuffer.allocate(Math.max(required, buffer.capacity() * 2)).order(byteOrder);
+                buffer = ByteBuffer.allocate(Math.max(required, buffer.capacity() * 2)).order(buffer.order());
             }
         }
     }
@@ -243,7 +244,7 @@ public final class NBTWriter implements Closeable, Flushable {
             return;
         }
 
-        if (byteOrder == ByteOrder.LITTLE_ENDIAN) {
+        if (edition == MinecraftEdition.BEDROCK_EDITION) {
             // Need Optimization
             byte[] bytes = value.getBytes(StandardCharsets.UTF_8);
             if (value.length() > 65535) {

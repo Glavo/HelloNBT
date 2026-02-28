@@ -15,6 +15,7 @@
  */
 package org.glavo.nbt.internal.input;
 
+import org.glavo.nbt.MinecraftEdition;
 import org.glavo.nbt.internal.IOUtils;
 import org.glavo.nbt.internal.StringCache;
 import org.jetbrains.annotations.Nullable;
@@ -35,19 +36,19 @@ public final class NBTReader implements Closeable {
 
     private final InputSource source;
     private final InputBuffer buffer;
-    private final ByteOrder byteOrder;
+    private final MinecraftEdition edition;
 
     /// Used for reading UTF-8 strings
     private @Nullable StringBuilder charsBuffer;
 
-    public NBTReader(InputSource source, ByteOrder byteOrder) {
+    public NBTReader(InputSource source, MinecraftEdition edition) {
         this.source = source;
-        this.buffer = InputBuffer.allocate(IOUtils.DEFAULT_BUFFER_SIZE, source.supportDirectBuffer(), byteOrder);
-        this.byteOrder = byteOrder;
+        this.buffer = InputBuffer.allocate(IOUtils.DEFAULT_BUFFER_SIZE, source.supportDirectBuffer(), edition.byteOrder());
+        this.edition = edition;
     }
 
-    public ByteOrder byteOrder() {
-        return this.byteOrder;
+    public MinecraftEdition getEdition() {
+        return edition;
     }
 
     @Override
@@ -175,7 +176,7 @@ public final class NBTReader implements Closeable {
         bytes.position(limit);
 
         // For Minecraft Bedrock Edition, the string is encoded in standard UTF-8
-        if (byteOrder == ByteOrder.LITTLE_ENDIAN) {
+        if (edition == MinecraftEdition.BEDROCK_EDITION) {
             return getUTF8(bytes, offset, len);
         }
 

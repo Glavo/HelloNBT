@@ -16,6 +16,7 @@
 package org.glavo.nbt.io;
 
 import com.github.steveice10.opennbt.NBTIO;
+import org.glavo.nbt.MinecraftEdition;
 import org.glavo.nbt.tag.*;
 import org.junit.jupiter.api.Test;
 
@@ -30,19 +31,19 @@ public final class NBTReaderTest {
 
     private static Tag convert(
             com.github.steveice10.opennbt.tag.builtin.Tag tag,
-            ByteOrder byteOrder)
+            MinecraftEdition edition)
             throws IOException {
         var buffer = new ByteArrayOutputStream();
-        NBTIO.writeTag(buffer, tag, byteOrder == ByteOrder.LITTLE_ENDIAN);
+        NBTIO.writeTag(buffer, tag, edition == MinecraftEdition.BEDROCK_EDITION);
 
-        return Tag.readTag(new ByteArrayInputStream(buffer.toByteArray()), byteOrder);
+        return Tag.readTag(new ByteArrayInputStream(buffer.toByteArray()), edition);
     }
 
     private static void assertTagEquals(
             Tag expected,
             com.github.steveice10.opennbt.tag.builtin.Tag actual) throws IOException {
-        assertEquals(expected, convert(actual, ByteOrder.BIG_ENDIAN));
-        assertEquals(expected, convert(actual, ByteOrder.LITTLE_ENDIAN));
+        assertEquals(expected, convert(actual, MinecraftEdition.JAVA_EDITION));
+        assertEquals(expected, convert(actual, MinecraftEdition.BEDROCK_EDITION));
     }
 
     @Test

@@ -59,7 +59,7 @@ public final class StringTag extends ValueTag<String> {
 
     @Override
     public void setValue(String value) {
-        this.value = value;
+        this.value = Objects.requireNonNull(value);
     }
 
     @Override

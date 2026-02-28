@@ -111,6 +111,8 @@ public final class ListTag<T extends Tag> extends ParentTag<T> {
     /// {@inheritDoc}
     ///
     /// The name of the tag will be set to empty.
+    ///
+    /// @throws IllegalArgumentException if the type of the tag is not the same as the element type of this list.
     @Override
     public void add(T tag) {
         if (tag.getType() != elementType) {

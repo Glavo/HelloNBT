@@ -22,10 +22,9 @@ import org.jetbrains.annotations.Nullable;
 
 import java.io.Closeable;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.IdentityHashMap;
 import java.util.Map;
-import java.util.Objects;
-import java.util.function.Supplier;
 
 public final class InputContext implements Closeable {
     // Used for reading UTF-8 strings
@@ -37,7 +36,7 @@ public final class InputContext implements Closeable {
     public final InputSource source;
     public final MinecraftEdition edition;
 
-    public final DataReader rawReader;
+    public final RawDataReader rawReader;
 
     public final StringCache stringCache = DEFAULT_CACHE;
     @Nullable StringBuilder charsBuffer;
@@ -69,26 +68,46 @@ public final class InputContext implements Closeable {
     }
 
     @Override
+    @SuppressWarnings({"rawtypes", "unchecked"})
     public void close() throws IOException {
         source.close();
+        if (cacheMap != null) {
+            for (var entry : new ArrayList<>(cacheMap.entrySet())) {
+                ((CacheKey) entry.getKey()).close(entry.getValue());
+            }
+
+            cacheMap.clear();
+        }
     }
 
     @SuppressWarnings("unchecked")
-    public static final class CacheKey<T> {
+    public static abstract class CacheKey<T> {
 
-        public @Nullable T get(InputContext context) {
-            return context.cacheMap != null ? (T) context.cacheMap.remove(this) : null;
+        public T get(InputContext context) {
+            if (context.cacheMap != null) {
+                T value = (T) context.cacheMap.remove(this);
+                if (value != null) {
+                    return value;
+                }
+            }
+
+            return create(context);
         }
 
-        public T getOrCreate(InputContext context, Supplier<? extends T> supplier) {
-            return Objects.requireNonNullElseGet(get(context), supplier);
-        }
-
-        public void put(InputContext context, T value) {
+        public void release(InputContext context, T value) {
             if (context.cacheMap == null) {
                 context.cacheMap = new IdentityHashMap<>();
             }
-            context.cacheMap.put(this, value);
+
+            T oldValue = (T) context.cacheMap.put(this, value);
+            if (oldValue != null) {
+                close(oldValue);
+            }
+        }
+
+        protected abstract T create(InputContext context);
+
+        public void close(T value) {
         }
     }
 }

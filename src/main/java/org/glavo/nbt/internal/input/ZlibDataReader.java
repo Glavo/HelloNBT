@@ -18,15 +18,27 @@ package org.glavo.nbt.internal.input;
 import java.io.EOFException;
 import java.io.IOException;
 import java.nio.ByteBuffer;
+import java.util.zip.DataFormatException;
 import java.util.zip.Inflater;
 
 public final class ZlibDataReader extends DataReader {
-    static final InputContext.CacheKey<Inflater> INFLATER_CACHE_KEY = new InputContext.CacheKey<>();
+    static final InputContext.CacheKey<Inflater> INFLATER_CACHE_KEY = new InputContext.CacheKey<>() {
+
+        @Override
+        protected Inflater create(InputContext context) {
+            return new Inflater();
+        }
+
+        @Override
+        public void close(Inflater value) {
+            value.end();
+        }
+    };
     private final Inflater inflater;
 
     ZlibDataReader(InputContext context, long compressedSize) {
         super(context, context.getDecompressBuffer());
-        this.inflater = INFLATER_CACHE_KEY.getOrCreate(context, Inflater::new);
+        this.inflater = INFLATER_CACHE_KEY.get(context);
         this.remainingInput = compressedSize;
     }
 
@@ -36,23 +48,46 @@ public final class ZlibDataReader extends DataReader {
             return;
         }
 
+        if (inflater.finished() || inflater.needsDictionary()) {
+            throw new EOFException("Inflater finished or needs dictionary");
+        }
+
         buffer.ensureCapacity(required);
-        ByteBuffer byteBuffer = this.buffer.getByteBuffer();
+        ByteBuffer output = this.buffer.getByteBuffer();
+        output.compact();
 
-        // TODO
+        do {
+            if (inflater.finished() || inflater.needsDictionary()) {
+                throw new EOFException();
+            }
 
-//        do {
-//            if (inflater.finished() || inflater.needsDictionary()) {
-//                throw new EOFException();
-//            }
-//
-//            if (inflater.needsInput()) {
-//                if (context.rawReader.buffer.remaining() == 0) {
-//                    context.rawReader.ensureBufferRemaining(1);
-//                }
-//
-//                inflater.setInput(context.rawReader.buffer.getByteBuffer());
-//            }
-//        } while ((n = inflater.inflate(b, off, len)) == 0);
+            if (inflater.needsInput()) {
+                if (context.rawReader.buffer.remaining() == 0) {
+                    context.rawReader.ensureBufferRemaining(1);
+                }
+                inflater.setInput(context.rawReader.buffer.getByteBuffer());
+            }
+
+            try {
+                inflater.inflate(output);
+            } catch (DataFormatException exception) {
+                throw new IOException(exception);
+            }
+
+        } while (output.position() < required);
+
+        inflater.setInput(EMPTY_BYTE_ARRAY);
+        output.flip();
     }
+
+    @Override
+    public void close() throws IOException {
+        inflater.end();
+        context.releaseDecompressBuffer(buffer);
+
+        inflater.reset();
+        INFLATER_CACHE_KEY.release(context, inflater);
+    }
+
+    private static final byte[] EMPTY_BYTE_ARRAY = new byte[0];
 }

@@ -18,7 +18,7 @@ package org.glavo.nbt.internal.input;
 import java.io.EOFException;
 import java.io.IOException;
 
-final class RawDataReader extends DataReader {
+public final class RawDataReader extends DataReader {
 
     /// Used for the default reader;
     RawDataReader(InputContext context, InputBuffer buffer) {

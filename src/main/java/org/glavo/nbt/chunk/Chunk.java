@@ -22,18 +22,18 @@ import org.glavo.nbt.internal.ChunkUtils;
 import org.glavo.nbt.tag.CompoundTag;
 import org.jetbrains.annotations.Nullable;
 
-public final class Chunk implements NBTParent<CompoundTag> {
-    @Nullable Region region;
+public final class Chunk implements NBTParent<CompoundTag>, NBTElement {
+    @Nullable ChunkRegion region;
     int localIndex = -1;
 
     CompoundTag rootTag;
 
-    Chunk(Region region, int localIndex) {
+    Chunk(ChunkRegion region, int localIndex) {
         this.region = region;
         this.localIndex = localIndex;
     }
 
-    Chunk(Region region, ChunkMetadata metadata, CompoundTag rootTag) {
+    Chunk(ChunkRegion region, ChunkMetadata metadata, CompoundTag rootTag) {
         this.region = region;
         this.localIndex = metadata.localIndex();
         this.rootTag = rootTag;
@@ -43,7 +43,7 @@ public final class Chunk implements NBTParent<CompoundTag> {
     }
 
     /// Return the region of this chunk, or `null` if this chunk is not in any region.
-    public @Nullable Region getRegion() {
+    public @Nullable ChunkRegion getRegion() {
         return region;
     }
 

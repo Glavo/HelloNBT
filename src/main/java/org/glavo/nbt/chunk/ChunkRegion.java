@@ -29,15 +29,13 @@ import org.glavo.nbt.tag.CompoundTag;
 import org.glavo.nbt.tag.Tag;
 
 import java.io.IOException;
-import java.util.Arrays;
-import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
 
 /// @see <a href="https://minecraft.wiki/w/Region_file_format">Region file format - Minecraft Wiki</a>
 /// @see <a href="https://minecraft.wiki/w/Anvil_file_format">Anvil file format - Minecraft Wiki</a>
-public final class Region implements NBTParent<Chunk> {
-    static Region readRegion(InputContext context) throws IOException {
+public final class ChunkRegion implements NBTParent<Chunk>, NBTElement {
+    static ChunkRegion readRegion(InputContext context) throws IOException {
         if (context.edition != MinecraftEdition.JAVA_EDITION) {
             throw new IllegalArgumentException("Only Java Edition supports region file format");
         }
@@ -63,7 +61,7 @@ public final class Region implements NBTParent<Chunk> {
 
         List<ChunkMetadata> sortedBySectorOffset = table.getSortedBySectorOffset();
 
-        var region = new Region();
+        var region = new ChunkRegion();
 
         long contentStart = context.position();
         for (ChunkMetadata chunkMetadata : sortedBySectorOffset) {
@@ -112,7 +110,7 @@ public final class Region implements NBTParent<Chunk> {
 
     private final Chunk[] chunks;
 
-    public Region() {
+    public ChunkRegion() {
         this.chunks = new Chunk[ChunkUtils.CHUNKS_PRE_REGION];
         for (int i = 0; i < ChunkUtils.CHUNKS_PRE_REGION; i++) {
             chunks[i] = new Chunk(this, i);

@@ -71,6 +71,8 @@ public sealed abstract class InputSource implements Closeable {
 
     protected abstract void fillBufferImpl(ByteBuffer target, int required) throws IOException;
 
+    public abstract void skip(long bytes) throws IOException;
+
     public static final class OfInputStream extends InputSource {
         private final InputStream inputStream;
         private final boolean closeInputStream;
@@ -108,6 +110,11 @@ public sealed abstract class InputSource implements Closeable {
                 target.limit(target.limit() + read);
                 position += read;
             }
+        }
+
+        @Override
+        public void skip(long bytes) throws IOException {
+            inputStream.skipNBytes(bytes);
         }
     }
 }

@@ -30,18 +30,31 @@ public final class InputBuffer {
         return new InputBuffer(bytesBuffer);
     }
 
-    ByteBuffer bytesBuffer;
+    private ByteBuffer bytesBuffer;
 
     public InputBuffer(ByteBuffer bytesBuffer) {
         this.bytesBuffer = bytesBuffer;
     }
 
-    public ByteBuffer bytesBuffer() {
+    public ByteBuffer getByteBuffer() {
         return bytesBuffer;
     }
 
     public ByteOrder order() {
         return bytesBuffer.order();
+    }
+
+    public void ensureCapacity(int required) {
+        if (bytesBuffer.capacity() < required) {
+            ByteBuffer newBuffer = ByteBuffer.allocate(Math.max(required, bytesBuffer.capacity() * 2))
+                    .order(bytesBuffer.order());
+            newBuffer.put(bytesBuffer);
+            newBuffer.flip();
+            bytesBuffer = newBuffer;
+        } else if (bytesBuffer.position() > 0) {
+            bytesBuffer.compact();
+            bytesBuffer.flip();
+        }
     }
 
     public void drop() {

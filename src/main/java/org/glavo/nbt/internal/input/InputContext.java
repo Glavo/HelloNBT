@@ -22,6 +22,10 @@ import org.jetbrains.annotations.Nullable;
 
 import java.io.Closeable;
 import java.io.IOException;
+import java.util.IdentityHashMap;
+import java.util.Map;
+import java.util.Objects;
+import java.util.function.Supplier;
 
 public final class InputContext implements Closeable {
     // Used for reading UTF-8 strings
@@ -33,11 +37,12 @@ public final class InputContext implements Closeable {
     public final InputSource source;
     public final MinecraftEdition edition;
 
-    @Nullable StringBuilder charsBuffer;
-
     public final DataReader rawReader;
 
     public final StringCache stringCache = DEFAULT_CACHE;
+    @Nullable StringBuilder charsBuffer;
+
+    private @Nullable Map<CacheKey<?>, Object> cacheMap;
 
     public InputContext(InputSource source, MinecraftEdition edition) {
         this.source = source;
@@ -47,8 +52,43 @@ public final class InputContext implements Closeable {
                 InputBuffer.allocate(IOUtils.DEFAULT_BUFFER_SIZE, source.supportDirectBuffer(), edition.byteOrder()));
     }
 
+    private @Nullable InputBuffer decompressBuffer;
+
+    public InputBuffer getDecompressBuffer() {
+        if (decompressBuffer == null) {
+            return InputBuffer.allocate(IOUtils.DEFAULT_BUFFER_SIZE, false, edition.byteOrder());
+        } else {
+            decompressBuffer.drop();
+            return decompressBuffer;
+        }
+    }
+
+    public void releaseDecompressBuffer(InputBuffer buffer) {
+        buffer.drop();
+        decompressBuffer = buffer;
+    }
+
     @Override
     public void close() throws IOException {
         source.close();
+    }
+
+    @SuppressWarnings("unchecked")
+    public static final class CacheKey<T> {
+
+        public @Nullable T get(InputContext context) {
+            return context.cacheMap != null ? (T) context.cacheMap.remove(this) : null;
+        }
+
+        public T getOrCreate(InputContext context, Supplier<? extends T> supplier) {
+            return Objects.requireNonNullElseGet(get(context), supplier);
+        }
+
+        public void put(InputContext context, T value) {
+            if (context.cacheMap == null) {
+                context.cacheMap = new IdentityHashMap<>();
+            }
+            context.cacheMap.put(this, value);
+        }
     }
 }

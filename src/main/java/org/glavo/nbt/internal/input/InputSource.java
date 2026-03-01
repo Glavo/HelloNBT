@@ -49,24 +49,12 @@ public sealed abstract class InputSource implements Closeable {
     public final void fillBuffer(InputBuffer buffer, int required) throws IOException {
         ensureOpen();
 
-        ByteBuffer bytesBuffer = buffer.bytesBuffer();
-
-        if (bytesBuffer.remaining() > required) {
+        if (buffer.remaining() > required) {
             return;
         }
 
-        if (buffer.bytesBuffer().capacity() < required) {
-            ByteBuffer newBuffer = ByteBuffer.allocate(Math.max(required, bytesBuffer.capacity() * 2))
-                    .order(bytesBuffer.order());
-            newBuffer.put(bytesBuffer);
-            newBuffer.flip();
-            buffer.bytesBuffer = bytesBuffer = newBuffer;
-        } else if (bytesBuffer.position() > 0) {
-            bytesBuffer.compact();
-            bytesBuffer.flip();
-        }
-
-        fillBufferImpl(bytesBuffer, required);
+        buffer.ensureCapacity(required);
+        fillBufferImpl(buffer.getByteBuffer(), required);
     }
 
     protected abstract void fillBufferImpl(ByteBuffer target, int required) throws IOException;

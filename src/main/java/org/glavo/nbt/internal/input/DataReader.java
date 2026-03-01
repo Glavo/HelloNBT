@@ -155,7 +155,7 @@ public abstract class DataReader implements Closeable {
 
         ensureBufferRemaining(len);
 
-        ByteBuffer bytes = buffer.bytesBuffer();
+        ByteBuffer bytes = buffer.getByteBuffer();
         int offset = bytes.position();
         int limit = offset + len;
 

@@ -16,7 +16,17 @@
 package org.glavo.nbt.chunk;
 
 import org.glavo.nbt.NBTElement;
+import org.jetbrains.annotations.Nullable;
 
 public final class Chunk implements NBTElement {
-    // TODO
+    private int index = -1;
+    private @Nullable Region region;
+
+    public Chunk() {
+    }
+
+    /// Return the region of this chunk, or `null` if this chunk is not in any region.
+    public @Nullable Region getRegion() {
+        return region;
+    }
 }

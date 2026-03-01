@@ -52,12 +52,20 @@ public abstract class DataReader implements Closeable {
             throw new IOException("Array length too large");
         }
 
+        return readBYteArray(len);
+    }
+
+    public byte[] readByteArray(int len) throws IOException {
         ensureBufferRemaining(len);
         return buffer.getByteArray(len);
     }
 
     public int[] readIntArray() throws IOException {
         int len = readInt();
+        return readIntArray(len);
+    }
+
+    public int[] readIntArray(int len) throws IOException {
         if (len < 0 || len > Integer.MAX_VALUE / Integer.BYTES - 8) {
             throw new IOException("Array length too large");
         }
@@ -68,6 +76,15 @@ public abstract class DataReader implements Closeable {
 
     public long[] readLongArray() throws IOException {
         int len = readInt();
+        if (len < 0 || len > Integer.MAX_VALUE / Long.BYTES - 8) {
+            throw new IOException("Array length too large");
+        }
+
+        ensureBufferRemaining(len * Long.BYTES);
+        return buffer.getLongArray(len);
+    }
+
+    public long[] readLongArray(int len) throws IOException {
         if (len < 0 || len > Integer.MAX_VALUE / Long.BYTES - 8) {
             throw new IOException("Array length too large");
         }

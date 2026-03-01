@@ -15,8 +15,11 @@
  */
 package org.glavo.nbt.chunk;
 
+import org.glavo.nbt.MinecraftEdition;
 import org.glavo.nbt.NBTElement;
+import org.glavo.nbt.internal.input.InputContext;
 
+import java.io.IOException;
 import java.util.Objects;
 
 /// @see <a href="https://minecraft.wiki/w/Region_file_format">Region file format - Minecraft Wiki</a>
@@ -24,7 +27,29 @@ import java.util.Objects;
 public final class Region implements NBTElement {
     private static final int CHUNKS_PER_REGION_SIDE = 32;
 
-    // TODO
+    static Region readRegion(InputContext context) throws IOException {
+        if (context.edition != MinecraftEdition.JAVA_EDITION) {
+            throw new IllegalArgumentException("Only Java Edition supports region file format");
+        }
+
+        int[] diskInfo = context.rawReader.readIntArray(CHUNKS_PER_REGION_SIDE * CHUNKS_PER_REGION_SIDE);
+        int[] timestamps = context.rawReader.readIntArray(CHUNKS_PER_REGION_SIDE * CHUNKS_PER_REGION_SIDE);
+
+        for (int y = 0; y < CHUNKS_PER_REGION_SIDE; y++) {
+            for (int x = 0; x < CHUNKS_PER_REGION_SIDE; x++) {
+                int index = x + y * CHUNKS_PER_REGION_SIDE;
+
+                int info = diskInfo[index];
+                int sectorOffset = info >>> 8;
+                int sectorCount = info & 0xFF;
+                int timestamp = timestamps[index];
+
+            }
+        }
+
+        throw new AssertionError("Not implemented yet");
+    }
+
     private final Chunk[] chunks = new Chunk[CHUNKS_PER_REGION_SIDE * CHUNKS_PER_REGION_SIDE];
 
     public Chunk getChunk(int x, int z) {

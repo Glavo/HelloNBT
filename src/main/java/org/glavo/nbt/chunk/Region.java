@@ -17,6 +17,7 @@ package org.glavo.nbt.chunk;
 
 import org.glavo.nbt.MinecraftEdition;
 import org.glavo.nbt.NBTElement;
+import org.glavo.nbt.NBTParent;
 import org.glavo.nbt.internal.ChunkMetadata;
 import org.glavo.nbt.internal.ChunkMetadataTable;
 import org.glavo.nbt.internal.ChunkUtils;
@@ -35,7 +36,7 @@ import java.util.Objects;
 
 /// @see <a href="https://minecraft.wiki/w/Region_file_format">Region file format - Minecraft Wiki</a>
 /// @see <a href="https://minecraft.wiki/w/Anvil_file_format">Anvil file format - Minecraft Wiki</a>
-public final class Region implements NBTElement {
+public final class Region implements NBTParent<Chunk> {
     static Region readRegion(InputContext context) throws IOException {
         if (context.edition != MinecraftEdition.JAVA_EDITION) {
             throw new IllegalArgumentException("Only Java Edition supports region file format");

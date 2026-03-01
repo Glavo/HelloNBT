@@ -16,12 +16,13 @@
 package org.glavo.nbt.chunk;
 
 import org.glavo.nbt.NBTElement;
+import org.glavo.nbt.NBTParent;
 import org.glavo.nbt.internal.ChunkMetadata;
 import org.glavo.nbt.internal.ChunkUtils;
 import org.glavo.nbt.tag.CompoundTag;
 import org.jetbrains.annotations.Nullable;
 
-public final class Chunk implements NBTElement {
+public final class Chunk implements NBTParent<CompoundTag> {
     @Nullable Region region;
     int localIndex = -1;
 

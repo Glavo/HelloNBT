@@ -15,12 +15,14 @@
  */
 package org.glavo.nbt.tag;
 
+import org.glavo.nbt.NBTParent;
+
 import java.util.ArrayList;
 import java.util.Iterator;
 
 /// Base class for tags that can contain other tags as children.
 public sealed abstract class ParentTag<T extends Tag> extends Tag
-        implements Iterable<T>
+        implements NBTParent<T>, Iterable<T>
         permits CompoundTag, ListTag {
 
     final ArrayList<T> subTags = new ArrayList<>();

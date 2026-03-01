@@ -17,7 +17,8 @@ package org.glavo.nbt;
 
 import org.glavo.nbt.chunk.Chunk;
 import org.glavo.nbt.chunk.Region;
-import org.glavo.nbt.tag.Tag;
+import org.glavo.nbt.tag.ParentTag;
 
-public sealed interface NBTElement permits Chunk, Region, Tag, NBTParent {
+public sealed interface NBTParent<E extends NBTElement> extends NBTElement
+        permits ParentTag, Region, Chunk {
 }

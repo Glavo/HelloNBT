@@ -45,7 +45,17 @@ public final class NBTReader implements Closeable {
         this.source = source;
         this.buffer = InputBuffer.allocate(IOUtils.DEFAULT_BUFFER_SIZE, source.supportDirectBuffer(), edition.byteOrder());
         this.edition = edition;
-        this.initialPosition = source.position();
+
+        try {
+            this.initialPosition = source.position();
+        } catch (Throwable e) {
+            try {
+                source.close();
+            } catch (IOException e2) {
+                e.addSuppressed(e2);
+            }
+            throw e;
+        }
     }
 
     public MinecraftEdition getEdition() {

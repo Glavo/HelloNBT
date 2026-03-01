@@ -37,6 +37,7 @@ public final class InputContext implements Closeable {
     public final MinecraftEdition edition;
 
     public final RawDataReader rawReader;
+    private final long startPosition;
 
     public final StringCache stringCache = DEFAULT_CACHE;
     @Nullable StringBuilder charsBuffer;
@@ -49,6 +50,31 @@ public final class InputContext implements Closeable {
         this.rawReader = new RawDataReader(
                 this,
                 InputBuffer.allocate(IOUtils.DEFAULT_BUFFER_SIZE, source.supportDirectBuffer(), edition.byteOrder()));
+        this.startPosition = source.position();
+    }
+
+    public long position() {
+        long position = source.position() - startPosition - rawReader.buffer.remaining();
+        assert position >= 0;
+        return position;
+    }
+
+    public void skip(long bytes) throws IOException {
+        if (bytes < 0) {
+            throw new IllegalArgumentException("bytes must be non-negative");
+        }
+
+        if (bytes == 0L) {
+            return;
+        }
+
+        int bytesDrop = (int) Math.min(rawReader.buffer.remaining(), bytes);
+        rawReader.buffer.drop(bytesDrop);
+
+        bytes -= bytesDrop;
+        if (bytes > 0) {
+            source.skip(bytes);
+        }
     }
 
     private @Nullable InputBuffer decompressBuffer;

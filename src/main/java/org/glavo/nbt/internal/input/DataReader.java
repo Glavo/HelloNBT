@@ -52,7 +52,7 @@ public abstract class DataReader implements Closeable {
             throw new IOException("Array length too large");
         }
 
-        return readBYteArray(len);
+        return readByteArray(len);
     }
 
     public byte[] readByteArray(int len) throws IOException {

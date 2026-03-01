@@ -37,7 +37,7 @@ public final class ZlibDataReader extends DataReader {
 
     private final Inflater inflater;
 
-    ZlibDataReader(InputContext context, long compressedSize) {
+    public ZlibDataReader(InputContext context, long compressedSize) {
         super(context, context.getDecompressBuffer());
         this.inflater = INFLATER_CACHE_KEY.get(context);
         this.remainingInput = compressedSize;

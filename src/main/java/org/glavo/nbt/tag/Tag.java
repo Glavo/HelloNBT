@@ -36,7 +36,7 @@ import java.util.Objects;
 public sealed abstract class Tag implements NBTElement
         permits ValueTag, ArrayTag, ParentTag {
 
-    static @Nullable Tag readTag(DataReader reader) throws IOException {
+    public static @Nullable Tag readTag(DataReader reader) throws IOException {
         byte tagByte = reader.readByte();
         if (tagByte == 0) {
             return null;

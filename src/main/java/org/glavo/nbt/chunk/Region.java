@@ -20,7 +20,12 @@ import org.glavo.nbt.NBTElement;
 import org.glavo.nbt.internal.ChunkMetadata;
 import org.glavo.nbt.internal.ChunkMetadataTable;
 import org.glavo.nbt.internal.ChunkUtils;
+import org.glavo.nbt.internal.input.DataReader;
 import org.glavo.nbt.internal.input.InputContext;
+import org.glavo.nbt.internal.input.RawDataReader;
+import org.glavo.nbt.internal.input.ZlibDataReader;
+import org.glavo.nbt.tag.CompoundTag;
+import org.glavo.nbt.tag.Tag;
 
 import java.io.IOException;
 import java.util.Arrays;
@@ -57,22 +62,72 @@ public final class Region implements NBTElement {
 
         List<ChunkMetadata> sortedBySectorOffset = table.getSortedBySectorOffset();
 
-        long contentStart = context.source.position();
+        var region = new Region();
+
+        long contentStart = context.position();
         for (ChunkMetadata chunkMetadata : sortedBySectorOffset) {
             long sectorStart = contentStart + (long) chunkMetadata.sectorOffset() * ChunkUtils.SECTOR_BYTES;
+            long position = context.position();
+            if (position != sectorStart) {
+                if (position < sectorStart) {
+                    context.skip(sectorStart - position);
+                } else {
+                    throw new IOException("Invalid chunk metadata: sector offset points to a position before the current position");
+                }
+            }
 
+            long chunkRawDataLength = context.rawReader.readUnsignedInt();
+            if (chunkRawDataLength < 1) {
+                throw new IOException("Invalid chunk data length: " + chunkRawDataLength);
+            }
+
+            int compressType = context.rawReader.readUnsignedByte();
+            if (compressType > 128) {
+                if (chunkRawDataLength != 1) {
+                    throw new IOException("Invalid chunk data length: %d (expected 1 for compression type %d)".formatted(chunkRawDataLength, compressType));
+                }
+
+                throw new IOException("The chunk data is stored externally, and reading this data is not currently supported.");
+            }
+
+            DataReader reader = switch (compressType) {
+                case 1 -> throw new IOException("GZip compression is not supported yet.");
+                case 2 -> new ZlibDataReader(context, chunkRawDataLength - 1L);
+                case 3 -> new RawDataReader(context, chunkRawDataLength - 1L);
+                case 4 -> throw new IOException("LZ4 compression is not supported yet.");
+                default -> throw new IOException("Unsupported compression type: " + compressType);
+            };
+
+            var tag = Tag.readTag(reader);
+            if (tag instanceof CompoundTag rootTag) {
+                region.getChunk(chunkMetadata.localIndex()).rootTag = rootTag;
+            } else {
+                throw new IOException("Unexpected tag type: " + tag);
+            }
         }
 
-        // TODO
-        throw new AssertionError("Not implemented yet");
+        return region;
     }
 
-    private final Chunk[] chunks = new Chunk[ChunkUtils.CHUNKS_PRE_REGION];
+    private final Chunk[] chunks;
+
+    public Region() {
+        this.chunks = new Chunk[ChunkUtils.CHUNKS_PRE_REGION];
+        for (int i = 0; i < ChunkUtils.CHUNKS_PRE_REGION; i++) {
+            chunks[i] = new Chunk(this, i);
+        }
+    }
+
+    public Chunk getChunk(int localIndex) {
+        Objects.checkIndex(localIndex, ChunkUtils.CHUNKS_PRE_REGION);
+
+        return chunks[localIndex];
+    }
 
     public Chunk getChunk(int x, int z) {
         Objects.checkIndex(x, ChunkUtils.CHUNKS_PER_REGION_SIDE);
         Objects.checkIndex(z, ChunkUtils.CHUNKS_PER_REGION_SIDE);
 
-        return chunks[x + z * ChunkUtils.CHUNKS_PER_REGION_SIDE];
+        return chunks[ChunkUtils.toLocalIndex(x, z)];
     }
 }

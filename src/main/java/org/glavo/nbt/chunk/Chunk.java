@@ -16,12 +16,27 @@
 package org.glavo.nbt.chunk;
 
 import org.glavo.nbt.NBTElement;
+import org.glavo.nbt.internal.ChunkMetadata;
 import org.glavo.nbt.internal.ChunkUtils;
+import org.glavo.nbt.tag.CompoundTag;
 import org.jetbrains.annotations.Nullable;
 
 public final class Chunk implements NBTElement {
     @Nullable Region region;
     int localIndex = -1;
+
+    CompoundTag rootTag;
+
+    Chunk(Region region, int localIndex) {
+        this.region = region;
+        this.localIndex = localIndex;
+    }
+
+    Chunk(Region region, ChunkMetadata metadata, CompoundTag rootTag) {
+        this.region = region;
+        this.localIndex = metadata.localIndex();
+        this.rootTag = rootTag;
+    }
 
     public Chunk() {
     }
@@ -39,5 +54,9 @@ public final class Chunk implements NBTElement {
     /// Return the local z coordinate of this chunk in its region, or -1 if this chunk is not in any region.
     public int getLocalZ() {
         return localIndex >= 0 ? localIndex / ChunkUtils.CHUNKS_PER_REGION_SIDE : -1;
+    }
+
+    public CompoundTag getRootTag() {
+        return rootTag;
     }
 }

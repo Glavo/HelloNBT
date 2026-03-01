@@ -28,7 +28,7 @@ public sealed abstract class InputSource implements Closeable {
         return false;
     }
 
-    public abstract long position() throws IOException;
+    public abstract long position();
 
     @Override
     public final void close() throws IOException {
@@ -72,7 +72,7 @@ public sealed abstract class InputSource implements Closeable {
         }
 
         @Override
-        public long position() throws IOException {
+        public long position() {
             return position;
         }
 

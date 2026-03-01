@@ -15,7 +15,7 @@
  */
 package org.glavo.nbt.tag;
 
-import org.glavo.nbt.internal.input.NBTReader;
+import org.glavo.nbt.internal.input.DataReader;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.IOException;
@@ -193,7 +193,7 @@ public final class CompoundTag extends ParentTag<Tag> {
     }
 
     @Override
-    protected void readContent(NBTReader reader) throws IOException {
+    protected void readContent(DataReader reader) throws IOException {
         int count = 0;
 
         Tag subTag;

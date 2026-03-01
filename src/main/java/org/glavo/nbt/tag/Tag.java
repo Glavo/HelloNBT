@@ -17,8 +17,10 @@ package org.glavo.nbt.tag;
 
 import org.glavo.nbt.MinecraftEdition;
 import org.glavo.nbt.NBTElement;
+import org.glavo.nbt.internal.input.DataReader;
+import org.glavo.nbt.internal.input.InputContext;
 import org.glavo.nbt.internal.input.InputSource;
-import org.glavo.nbt.internal.input.NBTReader;
+import org.glavo.nbt.internal.input.DataReader;
 import org.glavo.nbt.internal.output.NBTWriter;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.Nullable;
@@ -34,7 +36,7 @@ import java.util.Objects;
 public sealed abstract class Tag implements NBTElement
         permits ValueTag, ArrayTag, ParentTag {
 
-    static @Nullable Tag readTag(NBTReader reader) throws IOException {
+    static @Nullable Tag readTag(DataReader reader) throws IOException {
         byte tagByte = reader.readByte();
         if (tagByte == 0) {
             return null;
@@ -56,8 +58,8 @@ public sealed abstract class Tag implements NBTElement
     }
 
     public static Tag readTag(InputStream inputStream, MinecraftEdition edition) throws IOException {
-        try (var reader = new NBTReader(new InputSource.OfInputStream(inputStream, false), edition)) {
-            Tag tag = readTag(reader);
+        try (var context = new InputContext(new InputSource.OfInputStream(inputStream, false), edition)) {
+            Tag tag = readTag(context.rawReader);
             if (tag == null) {
                 throw new IOException("No tag found");
             }
@@ -134,7 +136,7 @@ public sealed abstract class Tag implements NBTElement
         }
     }
 
-    protected abstract void readContent(NBTReader reader) throws IOException;
+    protected abstract void readContent(DataReader reader) throws IOException;
 
     protected abstract int contentHashCode();
 

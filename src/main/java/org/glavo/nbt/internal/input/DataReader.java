@@ -16,59 +16,34 @@
 package org.glavo.nbt.internal.input;
 
 import org.glavo.nbt.MinecraftEdition;
-import org.glavo.nbt.internal.IOUtils;
-import org.glavo.nbt.internal.StringCache;
-import org.jetbrains.annotations.Nullable;
 
 import java.io.Closeable;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
 
-public final class NBTReader implements Closeable {
+public abstract class DataReader implements Closeable {
+    final InputContext context;
+    final InputBuffer buffer;
+    long remainingInput = -1L;
 
-    // Used for reading UTF-8 strings
-    private static final StringCache CACHE = new StringCache(
-            "data", "Data", "DataVersion"
-            // TODO: More tag names
-    );
-
-    private final InputSource source;
-    private final InputBuffer buffer;
-    private final MinecraftEdition edition;
-    private final long initialPosition;
-
-    /// Used for reading UTF-8 strings
-    private @Nullable StringBuilder charsBuffer;
-
-    public NBTReader(InputSource source, MinecraftEdition edition) throws IOException {
-        this.source = source;
-        this.buffer = InputBuffer.allocate(IOUtils.DEFAULT_BUFFER_SIZE, source.supportDirectBuffer(), edition.byteOrder());
-        this.edition = edition;
-
-        try {
-            this.initialPosition = source.position();
-        } catch (Throwable e) {
-            try {
-                source.close();
-            } catch (IOException e2) {
-                e.addSuppressed(e2);
-            }
-            throw e;
-        }
+    protected DataReader(InputContext context, InputBuffer buffer) {
+        this.context = context;
+        this.buffer = buffer;
     }
 
-    public MinecraftEdition getEdition() {
-        return edition;
-    }
+    public abstract void ensureBufferRemaining(int required) throws IOException;
 
     @Override
     public void close() throws IOException {
-        source.close();
-    }
-
-    private void fillBuffer(int required) throws IOException {
-        source.fillBuffer(buffer, required);
+        if (remainingInput > 0) {
+            int bufferRemaining = context.rawReader.buffer.remaining();
+            if (bufferRemaining > 0) {
+                int bytesDrop = (int) Math.min(bufferRemaining, remainingInput);
+                context.rawReader.buffer.drop(bytesDrop);
+            }
+            this.remainingInput -= bufferRemaining;
+        }
     }
 
     public byte[] readByteArray() throws IOException {
@@ -77,7 +52,7 @@ public final class NBTReader implements Closeable {
             throw new IOException("Array length too large");
         }
 
-        fillBuffer(len);
+        ensureBufferRemaining(len);
         return buffer.getByteArray(len);
     }
 
@@ -87,7 +62,7 @@ public final class NBTReader implements Closeable {
             throw new IOException("Array length too large");
         }
 
-        fillBuffer(len * Integer.BYTES);
+        ensureBufferRemaining(len * Integer.BYTES);
         return buffer.getIntArray(len);
     }
 
@@ -97,13 +72,13 @@ public final class NBTReader implements Closeable {
             throw new IOException("Array length too large");
         }
 
-        fillBuffer(len * Long.BYTES);
+        ensureBufferRemaining(len * Long.BYTES);
         return buffer.getLongArray(len);
     }
 
     /// Read a byte from the input stream.
     public byte readByte() throws IOException {
-        fillBuffer(Byte.BYTES);
+        ensureBufferRemaining(Byte.BYTES);
         return buffer.getByte();
     }
 
@@ -114,7 +89,7 @@ public final class NBTReader implements Closeable {
 
     /// Read a short from the input stream.
     public short readShort() throws IOException {
-        fillBuffer(Short.BYTES);
+        ensureBufferRemaining(Short.BYTES);
         return buffer.getShort();
     }
 
@@ -125,7 +100,7 @@ public final class NBTReader implements Closeable {
 
     /// Read an int from the input stream.
     public int readInt() throws IOException {
-        fillBuffer(Integer.BYTES);
+        ensureBufferRemaining(Integer.BYTES);
         return buffer.getInt();
     }
 
@@ -136,24 +111,24 @@ public final class NBTReader implements Closeable {
 
     /// Read a long from the input stream.
     public long readLong() throws IOException {
-        fillBuffer(Long.BYTES);
+        ensureBufferRemaining(Long.BYTES);
         return buffer.getLong();
     }
 
     /// Read a float from the input stream.
     public float readFloat() throws IOException {
-        fillBuffer(Float.BYTES);
+        ensureBufferRemaining(Float.BYTES);
         return buffer.getFloat();
     }
 
     /// Read a double from the input stream.
     public double readDouble() throws IOException {
-        fillBuffer(Double.BYTES);
+        ensureBufferRemaining(Double.BYTES);
         return buffer.getDouble();
     }
 
     private String getUTF8(ByteBuffer buffer, int offset, int length) {
-        String cached = CACHE.get(buffer, offset, length);
+        String cached = context.stringCache.get(buffer, offset, length);
         if (cached != null) {
             return cached;
         }
@@ -178,7 +153,7 @@ public final class NBTReader implements Closeable {
             return "";
         }
 
-        fillBuffer(len);
+        ensureBufferRemaining(len);
 
         ByteBuffer bytes = buffer.bytesBuffer();
         int offset = bytes.position();
@@ -187,7 +162,7 @@ public final class NBTReader implements Closeable {
         bytes.position(limit);
 
         // For Minecraft Bedrock Edition, the string is encoded in standard UTF-8
-        if (edition == MinecraftEdition.BEDROCK_EDITION) {
+        if (context.edition == MinecraftEdition.BEDROCK_EDITION) {
             return getUTF8(bytes, offset, len);
         }
 
@@ -207,10 +182,13 @@ public final class NBTReader implements Closeable {
         }
 
         // Slow path
-        if (charsBuffer != null) {
-            charsBuffer.setLength(0);
+        StringBuilder charsBuffer;
+        if (context.charsBuffer != null) {
+            charsBuffer = context.charsBuffer;
+            context.charsBuffer.setLength(0);
         } else {
             charsBuffer = new StringBuilder(len);
+            context.charsBuffer = charsBuffer;
         }
 
         int c, char2, char3;
@@ -262,5 +240,4 @@ public final class NBTReader implements Closeable {
         }
         return charsBuffer.toString();
     }
-
 }

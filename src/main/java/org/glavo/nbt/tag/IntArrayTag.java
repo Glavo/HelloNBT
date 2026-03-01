@@ -15,7 +15,7 @@
  */
 package org.glavo.nbt.tag;
 
-import org.glavo.nbt.internal.input.NBTReader;
+import org.glavo.nbt.internal.input.DataReader;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.IOException;
@@ -108,7 +108,7 @@ public final class IntArrayTag extends ArrayTag<Integer> {
     }
 
     @Override
-    protected void readContent(NBTReader reader) throws IOException {
+    protected void readContent(DataReader reader) throws IOException {
         value = reader.readIntArray();
     }
 

@@ -15,6 +15,7 @@
  */
 package org.glavo.nbt.internal.input;
 
+import java.nio.BufferOverflowException;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 
@@ -41,6 +42,26 @@ public final class InputBuffer {
 
     public ByteOrder order() {
         return bytesBuffer.order();
+    }
+
+    public void drop() {
+        bytesBuffer.position(0);
+        bytesBuffer.limit(0);
+    }
+
+    public void drop(int n) {
+        int remaining = this.remaining();
+        if (n < remaining) {
+            bytesBuffer.position(bytesBuffer.position() + n);
+        } else if (n == remaining) {
+            drop();
+        } else {
+            throw new BufferOverflowException();
+        }
+    }
+
+    public int remaining() {
+        return bytesBuffer.remaining();
     }
 
     public byte getByte() {

@@ -15,7 +15,7 @@
  */
 package org.glavo.nbt.tag;
 
-import org.glavo.nbt.internal.input.NBTReader;
+import org.glavo.nbt.internal.input.DataReader;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.IOException;
@@ -181,7 +181,7 @@ public final class ListTag<T extends Tag> extends ParentTag<T> {
     }
 
     @Override
-    protected void readContent(NBTReader reader) throws IOException {
+    protected void readContent(DataReader reader) throws IOException {
         byte elementTypeId = reader.readByte();
 
         TagType elementType;

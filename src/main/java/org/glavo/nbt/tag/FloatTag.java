@@ -15,7 +15,7 @@
  */
 package org.glavo.nbt.tag;
 
-import org.glavo.nbt.internal.input.NBTReader;
+import org.glavo.nbt.internal.input.DataReader;
 
 import java.io.IOException;
 
@@ -62,7 +62,7 @@ public final class FloatTag extends ValueTag<Float> {
     }
 
     @Override
-    protected void readContent(NBTReader reader) throws IOException {
+    protected void readContent(DataReader reader) throws IOException {
         set(reader.readFloat());
     }
 

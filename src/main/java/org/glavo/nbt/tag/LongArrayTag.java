@@ -15,7 +15,7 @@
  */
 package org.glavo.nbt.tag;
 
-import org.glavo.nbt.internal.input.NBTReader;
+import org.glavo.nbt.internal.input.DataReader;
 
 import java.io.IOException;
 import java.util.Arrays;
@@ -109,7 +109,7 @@ public final class LongArrayTag extends ArrayTag<Long> {
     }
 
     @Override
-    protected void readContent(NBTReader reader) throws IOException {
+    protected void readContent(DataReader reader) throws IOException {
         value = reader.readLongArray();
     }
 

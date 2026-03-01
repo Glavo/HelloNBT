@@ -17,45 +17,62 @@ package org.glavo.nbt.chunk;
 
 import org.glavo.nbt.MinecraftEdition;
 import org.glavo.nbt.NBTElement;
+import org.glavo.nbt.internal.ChunkMetadata;
+import org.glavo.nbt.internal.ChunkMetadataTable;
+import org.glavo.nbt.internal.ChunkUtils;
 import org.glavo.nbt.internal.input.InputContext;
 
 import java.io.IOException;
+import java.util.Arrays;
+import java.util.Comparator;
+import java.util.List;
 import java.util.Objects;
 
 /// @see <a href="https://minecraft.wiki/w/Region_file_format">Region file format - Minecraft Wiki</a>
 /// @see <a href="https://minecraft.wiki/w/Anvil_file_format">Anvil file format - Minecraft Wiki</a>
 public final class Region implements NBTElement {
-    private static final int CHUNKS_PER_REGION_SIDE = 32;
-
     static Region readRegion(InputContext context) throws IOException {
         if (context.edition != MinecraftEdition.JAVA_EDITION) {
             throw new IllegalArgumentException("Only Java Edition supports region file format");
         }
 
-        int[] diskInfo = context.rawReader.readIntArray(CHUNKS_PER_REGION_SIDE * CHUNKS_PER_REGION_SIDE);
-        int[] timestamps = context.rawReader.readIntArray(CHUNKS_PER_REGION_SIDE * CHUNKS_PER_REGION_SIDE);
+        var metadata = new ChunkMetadata[ChunkUtils.CHUNKS_PRE_REGION];
 
-        for (int y = 0; y < CHUNKS_PER_REGION_SIDE; y++) {
-            for (int x = 0; x < CHUNKS_PER_REGION_SIDE; x++) {
-                int index = x + y * CHUNKS_PER_REGION_SIDE;
+        int[] diskInfo = context.rawReader.readIntArray(ChunkUtils.CHUNKS_PRE_REGION);
+        int[] timestamps = context.rawReader.readIntArray(ChunkUtils.CHUNKS_PRE_REGION);
+        for (int z = 0; z < ChunkUtils.CHUNKS_PER_REGION_SIDE; z++) {
+            for (int x = 0; x < ChunkUtils.CHUNKS_PER_REGION_SIDE; x++) {
+                int index = x + z * ChunkUtils.CHUNKS_PER_REGION_SIDE;
 
                 int info = diskInfo[index];
                 int sectorOffset = info >>> 8;
                 int sectorCount = info & 0xFF;
                 int timestamp = timestamps[index];
 
+                metadata[index] = new ChunkMetadata(index, sectorOffset, sectorCount, timestamp);
             }
         }
 
+        var table = new ChunkMetadataTable(List.of(metadata));
+
+        List<ChunkMetadata> sortedBySectorOffset = table.getSortedBySectorOffset();
+
+        long contentStart = context.source.position();
+        for (ChunkMetadata chunkMetadata : sortedBySectorOffset) {
+            long sectorStart = contentStart + (long) chunkMetadata.sectorOffset() * ChunkUtils.SECTOR_BYTES;
+
+        }
+
+        // TODO
         throw new AssertionError("Not implemented yet");
     }
 
-    private final Chunk[] chunks = new Chunk[CHUNKS_PER_REGION_SIDE * CHUNKS_PER_REGION_SIDE];
+    private final Chunk[] chunks = new Chunk[ChunkUtils.CHUNKS_PRE_REGION];
 
     public Chunk getChunk(int x, int z) {
-        Objects.checkIndex(x, CHUNKS_PER_REGION_SIDE);
-        Objects.checkIndex(z, CHUNKS_PER_REGION_SIDE);
+        Objects.checkIndex(x, ChunkUtils.CHUNKS_PER_REGION_SIDE);
+        Objects.checkIndex(z, ChunkUtils.CHUNKS_PER_REGION_SIDE);
 
-        return chunks[x + z * CHUNKS_PER_REGION_SIDE];
+        return chunks[x + z * ChunkUtils.CHUNKS_PER_REGION_SIDE];
     }
 }

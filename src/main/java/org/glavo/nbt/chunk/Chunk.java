@@ -16,11 +16,12 @@
 package org.glavo.nbt.chunk;
 
 import org.glavo.nbt.NBTElement;
+import org.glavo.nbt.internal.ChunkUtils;
 import org.jetbrains.annotations.Nullable;
 
 public final class Chunk implements NBTElement {
-    private int index = -1;
-    private @Nullable Region region;
+    @Nullable Region region;
+    int localIndex = -1;
 
     public Chunk() {
     }
@@ -28,5 +29,15 @@ public final class Chunk implements NBTElement {
     /// Return the region of this chunk, or `null` if this chunk is not in any region.
     public @Nullable Region getRegion() {
         return region;
+    }
+
+    /// Return the local x coordinate of this chunk in its region, or -1 if this chunk is not in any region.
+    public int getLocalX() {
+        return localIndex >= 0 ? localIndex % ChunkUtils.CHUNKS_PER_REGION_SIDE : -1;
+    }
+
+    /// Return the local z coordinate of this chunk in its region, or -1 if this chunk is not in any region.
+    public int getLocalZ() {
+        return localIndex >= 0 ? localIndex / ChunkUtils.CHUNKS_PER_REGION_SIDE : -1;
     }
 }

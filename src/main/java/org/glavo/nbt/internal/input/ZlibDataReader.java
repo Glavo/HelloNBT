@@ -34,6 +34,7 @@ public final class ZlibDataReader extends DataReader {
             value.end();
         }
     };
+
     private final Inflater inflater;
 
     ZlibDataReader(InputContext context, long compressedSize) {
@@ -56,28 +57,30 @@ public final class ZlibDataReader extends DataReader {
         ByteBuffer output = this.buffer.getByteBuffer();
         output.compact();
 
-        do {
-            if (inflater.finished() || inflater.needsDictionary()) {
-                throw new EOFException();
-            }
-
-            if (inflater.needsInput()) {
-                if (context.rawReader.buffer.remaining() == 0) {
-                    context.rawReader.ensureBufferRemaining(1);
+        try {
+            do {
+                if (inflater.finished() || inflater.needsDictionary()) {
+                    throw new EOFException();
                 }
-                inflater.setInput(context.rawReader.buffer.getByteBuffer());
-            }
 
-            try {
-                inflater.inflate(output);
-            } catch (DataFormatException exception) {
-                throw new IOException(exception);
-            }
+                if (inflater.needsInput()) {
+                    if (context.rawReader.buffer.remaining() == 0) {
+                        context.rawReader.ensureBufferRemaining(1);
+                    }
+                    inflater.setInput(context.rawReader.buffer.getByteBuffer());
+                }
 
-        } while (output.position() < required);
+                try {
+                    inflater.inflate(output);
+                } catch (DataFormatException exception) {
+                    throw new IOException(exception);
+                }
 
-        inflater.setInput(EMPTY_BYTE_ARRAY);
-        output.flip();
+            } while (output.position() < required);
+        } finally {
+            inflater.setInput(EMPTY_BYTE_ARRAY);
+            output.flip();
+        }
     }
 
     @Override

@@ -23,7 +23,6 @@ import org.jetbrains.annotations.Nullable;
 import java.io.Closeable;
 import java.io.IOException;
 import java.nio.ByteBuffer;
-import java.nio.ByteOrder;
 import java.nio.charset.StandardCharsets;
 
 public final class NBTReader implements Closeable {
@@ -37,14 +36,16 @@ public final class NBTReader implements Closeable {
     private final InputSource source;
     private final InputBuffer buffer;
     private final MinecraftEdition edition;
+    private final long initialPosition;
 
     /// Used for reading UTF-8 strings
     private @Nullable StringBuilder charsBuffer;
 
-    public NBTReader(InputSource source, MinecraftEdition edition) {
+    public NBTReader(InputSource source, MinecraftEdition edition) throws IOException {
         this.source = source;
         this.buffer = InputBuffer.allocate(IOUtils.DEFAULT_BUFFER_SIZE, source.supportDirectBuffer(), edition.byteOrder());
         this.edition = edition;
+        this.initialPosition = source.position();
     }
 
     public MinecraftEdition getEdition() {

@@ -23,11 +23,12 @@ import java.nio.ByteBuffer;
 
 public sealed abstract class InputSource implements Closeable {
     private boolean closed = false;
-    protected long bytesRead = 0L;
 
     public boolean supportDirectBuffer() {
         return false;
     }
+
+    public abstract long position() throws IOException;
 
     @Override
     public final void close() throws IOException {
@@ -73,10 +74,16 @@ public sealed abstract class InputSource implements Closeable {
     public static final class OfInputStream extends InputSource {
         private final InputStream inputStream;
         private final boolean closeInputStream;
+        private long position;
 
         public OfInputStream(InputStream inputStream, boolean closeInputStream) {
             this.inputStream = inputStream;
             this.closeInputStream = closeInputStream;
+        }
+
+        @Override
+        public long position() throws IOException {
+            return position;
         }
 
         @Override
@@ -99,7 +106,7 @@ public sealed abstract class InputSource implements Closeable {
                     throw new EOFException("Unexpected end of stream");
                 }
                 target.limit(target.limit() + read);
-                bytesRead += read;
+                position += read;
             }
         }
     }

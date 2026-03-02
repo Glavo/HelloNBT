@@ -71,6 +71,7 @@ public final class TagTests {
             var tag = new ByteArrayTag();
             assertEquals("", tag.getName());
             assertEquals(0, tag.size());
+            assertArrayEquals(new byte[0], tag.get());
             assertTrue(tag.isEmpty());
         }
 
@@ -78,6 +79,7 @@ public final class TagTests {
             var tag = new IntArrayTag();
             assertEquals("", tag.getName());
             assertEquals(0, tag.size());
+            assertArrayEquals(new int[0], tag.get());
             assertTrue(tag.isEmpty());
         }
 
@@ -85,6 +87,7 @@ public final class TagTests {
             var tag = new LongArrayTag();
             assertEquals("", tag.getName());
             assertEquals(0, tag.size());
+            assertArrayEquals(new long[0], tag.get());
             assertTrue(tag.isEmpty());
         }
     }

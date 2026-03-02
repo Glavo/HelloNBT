@@ -22,6 +22,7 @@ import org.glavo.nbt.internal.input.DataReader;
 import org.glavo.nbt.internal.input.RawDataReader;
 import org.glavo.nbt.internal.input.InputSource;
 import org.glavo.nbt.internal.output.NBTWriter;
+import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.Nullable;
 
@@ -35,6 +36,7 @@ import java.util.Objects;
 public sealed abstract class Tag implements NBTElement
         permits ValueTag, ArrayTag, ParentTag {
 
+    @ApiStatus.Internal
     public static @Nullable Tag readTag(DataReader reader) throws IOException {
         byte tagByte = reader.readByte();
         if (tagByte == 0) {

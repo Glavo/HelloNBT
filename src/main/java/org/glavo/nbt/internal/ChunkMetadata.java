@@ -15,7 +15,16 @@
  */
 package org.glavo.nbt.internal;
 
+import java.util.Comparator;
+
 public record ChunkMetadata(int localIndex, int sectorOffset, int sectorLength, int timestamp) {
+    private static final Comparator<ChunkMetadata> BY_OFFSET = Comparator.comparingInt(ChunkMetadata::sectorOffset).thenComparingInt(ChunkMetadata::localIndex);
+
+    public static ChunkMetadata[] sortedByOffset(ChunkMetadata[] metadata) {
+        ChunkMetadata[] copy = metadata.clone();
+        java.util.Arrays.sort(copy, BY_OFFSET);
+        return copy;
+    }
 
     public ChunkMetadata {
         assert localIndex >= 0 && localIndex < ChunkUtils.CHUNKS_PRE_REGION : "Invalid local index: " + localIndex;

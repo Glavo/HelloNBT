@@ -19,7 +19,6 @@ import org.glavo.nbt.MinecraftEdition;
 import org.glavo.nbt.NBTElement;
 import org.glavo.nbt.NBTParent;
 import org.glavo.nbt.internal.ChunkMetadata;
-import org.glavo.nbt.internal.ChunkMetadataTable;
 import org.glavo.nbt.internal.ChunkUtils;
 import org.glavo.nbt.internal.input.DataReader;
 import org.glavo.nbt.internal.input.RawDataReader;
@@ -29,7 +28,6 @@ import org.glavo.nbt.tag.CompoundTag;
 import org.glavo.nbt.tag.Tag;
 
 import java.io.IOException;
-import java.util.List;
 import java.util.Objects;
 
 /// @see <a href="https://minecraft.wiki/w/Region_file_format">Region file format - Minecraft Wiki</a>
@@ -57,14 +55,10 @@ public final class ChunkRegion implements NBTParent<Chunk>, NBTElement {
             }
         }
 
-        var table = new ChunkMetadataTable(List.of(metadata));
-
-        List<ChunkMetadata> sortedBySectorOffset = table.getSortedBySectorOffset();
-
         var region = new ChunkRegion();
 
         long contentStart = rawReader.position();
-        for (ChunkMetadata chunkMetadata : sortedBySectorOffset) {
+        for (ChunkMetadata chunkMetadata : ChunkMetadata.sortedByOffset(metadata)) {
             long sectorStart = contentStart + (long) chunkMetadata.sectorOffset() * ChunkUtils.SECTOR_BYTES;
             long position = rawReader.position();
             if (position != sectorStart) {

@@ -17,6 +17,8 @@ package org.glavo.nbt.tag;
 
 import org.glavo.nbt.MinecraftEdition;
 import org.glavo.nbt.NBTElement;
+import org.glavo.nbt.NBTParent;
+import org.glavo.nbt.chunk.Chunk;
 import org.glavo.nbt.internal.input.DataReader;
 import org.glavo.nbt.internal.input.InputContext;
 import org.glavo.nbt.internal.input.InputSource;
@@ -78,7 +80,7 @@ public sealed abstract class Tag implements NBTElement
         }
     }
 
-    @Nullable ParentTag<?> parent;
+    @Nullable NBTParent<? extends Tag> parent;
 
     String name;
     int index = -1;
@@ -105,8 +107,8 @@ public sealed abstract class Tag implements NBTElement
             return;
         }
 
-        if (parent != null) {
-            parent.updateSubTagName(this, name);
+        if (parent instanceof ParentTag<?> parentTag) {
+            parentTag.updateSubTagName(this, name);
         } else {
             this.name = name;
         }
@@ -118,10 +120,15 @@ public sealed abstract class Tag implements NBTElement
         return index;
     }
 
+    /// If the tag is a child of a [parent][NBTParent], returns the parent; otherwise, returns `null`.
+    public @Nullable NBTParent<?> getParent() {
+        return parent;
+    }
+
     /// If the tag is a child of a [parent tag][ParentTag], returns the parent tag; otherwise, returns `null`.
     @Contract(pure = true)
     public @Nullable ParentTag<?> getParentTag() {
-        return parent;
+        return parent instanceof ParentTag<?> parentTag ? parentTag : null;
     }
 
     public void writeTo(OutputStream outputStream) throws IOException {

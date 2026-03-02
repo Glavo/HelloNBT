@@ -119,8 +119,8 @@ public final class ListTag<T extends Tag> extends ParentTag<T> {
             throw new IllegalArgumentException("Cannot add a tag of type " + tag.getType() + " to a list of type " + elementType);
         }
 
-        if (tag.getParent() != null) {
-            if (tag.getParent() == this) {
+        if (tag.getParentTag() != null) {
+            if (tag.getParentTag() == this) {
                 int index = tag.getIndex();
 
                 if (tag.getIndex() == this.size() - 1) {
@@ -140,7 +140,7 @@ public final class ListTag<T extends Tag> extends ParentTag<T> {
 
                 return;
             } else {
-                tag.getParent().remove(tag);
+                tag.getParentTag().remove(tag);
             }
         }
 
@@ -157,7 +157,7 @@ public final class ListTag<T extends Tag> extends ParentTag<T> {
 
     @Override
     public void remove(Tag tag) {
-        if (tag.getParent() != this) {
+        if (tag.getParentTag() != this) {
             throw new IllegalArgumentException("The tag is not a child of this tag");
         }
 

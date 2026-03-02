@@ -20,7 +20,6 @@ import org.glavo.nbt.NBTElement;
 import org.glavo.nbt.internal.input.DataReader;
 import org.glavo.nbt.internal.input.InputContext;
 import org.glavo.nbt.internal.input.InputSource;
-import org.glavo.nbt.internal.input.DataReader;
 import org.glavo.nbt.internal.output.NBTWriter;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.Nullable;
@@ -29,7 +28,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.lang.invoke.MethodHandles;
-import java.nio.ByteOrder;
 import java.util.Objects;
 
 /// @author Glavo
@@ -122,7 +120,7 @@ public sealed abstract class Tag implements NBTElement
 
     /// If the tag is a child of a [parent tag][ParentTag], returns the parent tag; otherwise, returns `null`.
     @Contract(pure = true)
-    public @Nullable ParentTag<?> getParent() {
+    public @Nullable ParentTag<?> getParentTag() {
         return parent;
     }
 

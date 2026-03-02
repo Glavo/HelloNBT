@@ -64,8 +64,8 @@ public final class CompoundTag extends ParentTag<Tag> {
     /// If another tag with the same name already exists, the old tag will be removed.
     @Override
     public void add(Tag tag) {
-        if (tag.getParent() != null) {
-            if (tag.getParent() == this) {
+        if (tag.getParentTag() != null) {
+            if (tag.getParentTag() == this) {
                 int index = tag.getIndex();
 
                 if (tag.getIndex() == this.size() - 1) {
@@ -86,7 +86,7 @@ public final class CompoundTag extends ParentTag<Tag> {
                 return;
             } else {
                 // Remove the tag from its old parent.
-                tag.getParent().remove(tag);
+                tag.getParentTag().remove(tag);
             }
         }
 
@@ -157,7 +157,7 @@ public final class CompoundTag extends ParentTag<Tag> {
 
     @Override
     public void remove(Tag tag) {
-        if (tag.getParent() != this) {
+        if (tag.getParentTag() != this) {
             throw new IllegalArgumentException("The tag is not a child of this tag");
         }
 

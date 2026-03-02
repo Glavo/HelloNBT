@@ -171,19 +171,19 @@ public final class TagTests {
             var subTag = new IntTag("", i);
 
             assertEquals(-1, subTag.getIndex());
-            assertNull(subTag.getParent());
+            assertNull(subTag.getParentTag());
 
             listTag.add(subTag);
 
             assertEquals(i, subTag.getIndex());
-            assertSame(listTag, subTag.getParent());
+            assertSame(listTag, subTag.getParentTag());
         }
 
         var sub10 = listTag.get(10);
         listTag.remove(sub10);
 
         assertEquals(-1, sub10.getIndex());
-        assertNull(sub10.getParent());
+        assertNull(sub10.getParentTag());
 
         verifyIndex(listTag);
     }
@@ -196,19 +196,19 @@ public final class TagTests {
             var subTag = new IntTag("Sub" + i, i);
 
             assertEquals(-1, subTag.getIndex());
-            assertNull(subTag.getParent());
+            assertNull(subTag.getParentTag());
 
             compoundTag.add(subTag);
 
             assertEquals(i, subTag.getIndex());
-            assertSame(compoundTag, subTag.getParent());
+            assertSame(compoundTag, subTag.getParentTag());
         }
 
         var sub10 = compoundTag.get(10);
         compoundTag.remove(sub10);
 
         assertEquals(-1, sub10.getIndex());
-        assertNull(sub10.getParent());
+        assertNull(sub10.getParentTag());
 
         verifyIndex(compoundTag);
     }
@@ -223,7 +223,7 @@ public final class TagTests {
         list0.add(subTag);
 
         assertSame(subTag, list0.get(0));
-        assertSame(list0, subTag.getParent());
+        assertSame(list0, subTag.getParentTag());
         assertEquals(0, subTag.getIndex());
 
         // Move subTag to list1
@@ -235,7 +235,7 @@ public final class TagTests {
         assertEquals(0, list0.size());
 
         assertSame(subTag, list1.get(1));
-        assertSame(list1, subTag.getParent());
+        assertSame(list1, subTag.getParentTag());
         assertEquals(1, subTag.getIndex());
     }
 
@@ -250,7 +250,7 @@ public final class TagTests {
 
         assertSame(subTag, compound0.get(0));
         assertSame(subTag, compound0.get("Sub"));
-        assertSame(compound0, subTag.getParent());
+        assertSame(compound0, subTag.getParentTag());
         assertEquals(0, subTag.getIndex());
 
         // Move subTag to compound1
@@ -264,7 +264,7 @@ public final class TagTests {
 
         assertSame(subTag, compound1.get(1));
         assertSame(subTag, compound1.get("Sub"));
-        assertSame(compound1, subTag.getParent());
+        assertSame(compound1, subTag.getParentTag());
         assertEquals(1, subTag.getIndex());
     }
 

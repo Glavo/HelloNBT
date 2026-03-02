@@ -19,7 +19,7 @@ import org.glavo.nbt.MinecraftEdition;
 import org.glavo.nbt.NBTElement;
 import org.glavo.nbt.NBTParent;
 import org.glavo.nbt.internal.input.DataReader;
-import org.glavo.nbt.internal.input.InputContext;
+import org.glavo.nbt.internal.input.RawDataReader;
 import org.glavo.nbt.internal.input.InputSource;
 import org.glavo.nbt.internal.output.NBTWriter;
 import org.jetbrains.annotations.Contract;
@@ -57,8 +57,8 @@ public sealed abstract class Tag implements NBTElement
     }
 
     public static Tag readTag(InputStream inputStream, MinecraftEdition edition) throws IOException {
-        try (var context = new InputContext(new InputSource.OfInputStream(inputStream, false), edition)) {
-            Tag tag = readTag(context.rawReader);
+        try (var reader = new RawDataReader(new InputSource.OfInputStream(inputStream, false), edition)) {
+            Tag tag = readTag(reader);
             if (tag == null) {
                 throw new IOException("No tag found");
             }

@@ -26,7 +26,7 @@ import java.util.ArrayList;
 import java.util.IdentityHashMap;
 import java.util.Map;
 
-public final class InputContext implements Closeable {
+public final class RawDataReader extends DataReader implements Closeable {
     // Used for reading UTF-8 strings
     private static final StringCache DEFAULT_CACHE = new StringCache(
             "data", "Data", "DataVersion"
@@ -36,7 +36,7 @@ public final class InputContext implements Closeable {
     public final InputSource source;
     public final MinecraftEdition edition;
 
-    public final UncompressedDataReader rawReader;
+    private final InputBuffer buffer;
     private final long startPosition;
 
     public final StringCache stringCache = DEFAULT_CACHE;
@@ -44,17 +44,30 @@ public final class InputContext implements Closeable {
 
     private @Nullable Map<CacheKey<?>, Object> cacheMap;
 
-    public InputContext(InputSource source, MinecraftEdition edition) {
+    public RawDataReader(InputSource source, MinecraftEdition edition) {
         this.source = source;
         this.edition = edition;
-        this.rawReader = new UncompressedDataReader(
-                this,
-                InputBuffer.allocate(IOUtils.DEFAULT_BUFFER_SIZE, source.supportDirectBuffer(), edition.byteOrder()));
+        this.buffer = InputBuffer.allocate(IOUtils.DEFAULT_BUFFER_SIZE, source.supportDirectBuffer(), edition.byteOrder());
         this.startPosition = source.position();
     }
 
+    @Override
+    public RawDataReader getRawReader() {
+        return this;
+    }
+
+    @Override
+    public InputBuffer getBuffer() {
+        return buffer;
+    }
+
+    @Override
+    public void ensureBufferRemaining(int required) throws IOException {
+        getRawReader().source.fillBuffer(getBuffer(), required);
+    }
+
     public long position() {
-        long position = source.position() - startPosition - rawReader.buffer.remaining();
+        long position = source.position() - startPosition - buffer.remaining();
         assert position >= 0;
         return position;
     }
@@ -68,8 +81,8 @@ public final class InputContext implements Closeable {
             return;
         }
 
-        int bytesDrop = (int) Math.min(rawReader.buffer.remaining(), bytes);
-        rawReader.buffer.drop(bytesDrop);
+        int bytesDrop = (int) Math.min(buffer.remaining(), bytes);
+        buffer.drop(bytesDrop);
 
         bytes -= bytesDrop;
         if (bytes > 0) {
@@ -109,29 +122,29 @@ public final class InputContext implements Closeable {
     @SuppressWarnings("unchecked")
     public static abstract class CacheKey<T> {
 
-        public T get(InputContext context) {
-            if (context.cacheMap != null) {
-                T value = (T) context.cacheMap.remove(this);
+        public T get(RawDataReader rawReader) {
+            if (rawReader.cacheMap != null) {
+                T value = (T) rawReader.cacheMap.remove(this);
                 if (value != null) {
                     return value;
                 }
             }
 
-            return create(context);
+            return create(rawReader);
         }
 
-        public void release(InputContext context, T value) {
-            if (context.cacheMap == null) {
-                context.cacheMap = new IdentityHashMap<>();
+        public void release(RawDataReader rawReader, T value) {
+            if (rawReader.cacheMap == null) {
+                rawReader.cacheMap = new IdentityHashMap<>();
             }
 
-            T oldValue = (T) context.cacheMap.put(this, value);
+            T oldValue = (T) rawReader.cacheMap.put(this, value);
             if (oldValue != null) {
                 close(oldValue);
             }
         }
 
-        protected abstract T create(InputContext context);
+        protected abstract T create(RawDataReader rawReader);
 
         public void close(T value) {
         }

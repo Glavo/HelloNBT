@@ -23,24 +23,22 @@ import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
 
 public abstract class DataReader implements Closeable {
-    final InputContext context;
-    final InputBuffer buffer;
+    // final InputBuffer buffer;
     long remainingInput = -1L;
 
-    protected DataReader(InputContext context, InputBuffer buffer) {
-        this.context = context;
-        this.buffer = buffer;
-    }
+    protected abstract RawDataReader getRawReader();
+
+    protected abstract InputBuffer getBuffer();
 
     public abstract void ensureBufferRemaining(int required) throws IOException;
 
     @Override
     public void close() throws IOException {
         if (remainingInput > 0) {
-            int bufferRemaining = context.rawReader.buffer.remaining();
+            int bufferRemaining = getRawReader().getBuffer().remaining();
             if (bufferRemaining > 0) {
                 int bytesDrop = (int) Math.min(bufferRemaining, remainingInput);
-                context.rawReader.buffer.drop(bytesDrop);
+                getRawReader().getBuffer().drop(bytesDrop);
             }
             this.remainingInput -= bufferRemaining;
         }
@@ -57,7 +55,7 @@ public abstract class DataReader implements Closeable {
 
     public byte[] readByteArray(int len) throws IOException {
         ensureBufferRemaining(len);
-        return buffer.getByteArray(len);
+        return getBuffer().getByteArray(len);
     }
 
     public int[] readIntArray() throws IOException {
@@ -71,7 +69,7 @@ public abstract class DataReader implements Closeable {
         }
 
         ensureBufferRemaining(len * Integer.BYTES);
-        return buffer.getIntArray(len);
+        return getBuffer().getIntArray(len);
     }
 
     public long[] readLongArray() throws IOException {
@@ -81,7 +79,7 @@ public abstract class DataReader implements Closeable {
         }
 
         ensureBufferRemaining(len * Long.BYTES);
-        return buffer.getLongArray(len);
+        return getBuffer().getLongArray(len);
     }
 
     public long[] readLongArray(int len) throws IOException {
@@ -90,13 +88,13 @@ public abstract class DataReader implements Closeable {
         }
 
         ensureBufferRemaining(len * Long.BYTES);
-        return buffer.getLongArray(len);
+        return getBuffer().getLongArray(len);
     }
 
     /// Read a byte from the input stream.
     public byte readByte() throws IOException {
         ensureBufferRemaining(Byte.BYTES);
-        return buffer.getByte();
+        return getBuffer().getByte();
     }
 
     /// Read an unsigned byte from the input stream.
@@ -107,7 +105,7 @@ public abstract class DataReader implements Closeable {
     /// Read a short from the input stream.
     public short readShort() throws IOException {
         ensureBufferRemaining(Short.BYTES);
-        return buffer.getShort();
+        return getBuffer().getShort();
     }
 
     /// Read an unsigned short from the input stream.
@@ -118,7 +116,7 @@ public abstract class DataReader implements Closeable {
     /// Read an int from the input stream.
     public int readInt() throws IOException {
         ensureBufferRemaining(Integer.BYTES);
-        return buffer.getInt();
+        return getBuffer().getInt();
     }
 
     /// Read an unsigned int from the input stream.
@@ -129,23 +127,23 @@ public abstract class DataReader implements Closeable {
     /// Read a long from the input stream.
     public long readLong() throws IOException {
         ensureBufferRemaining(Long.BYTES);
-        return buffer.getLong();
+        return getBuffer().getLong();
     }
 
     /// Read a float from the input stream.
     public float readFloat() throws IOException {
         ensureBufferRemaining(Float.BYTES);
-        return buffer.getFloat();
+        return getBuffer().getFloat();
     }
 
     /// Read a double from the input stream.
     public double readDouble() throws IOException {
         ensureBufferRemaining(Double.BYTES);
-        return buffer.getDouble();
+        return getBuffer().getDouble();
     }
 
     private String getUTF8(ByteBuffer buffer, int offset, int length) {
-        String cached = context.stringCache.get(buffer, offset, length);
+        String cached = getRawReader().stringCache.get(buffer, offset, length);
         if (cached != null) {
             return cached;
         }
@@ -172,14 +170,14 @@ public abstract class DataReader implements Closeable {
 
         ensureBufferRemaining(len);
 
-        ByteBuffer bytes = buffer.getByteBuffer();
+        ByteBuffer bytes = getBuffer().getByteBuffer();
         int offset = bytes.position();
         int limit = offset + len;
 
         bytes.position(limit);
 
         // For Minecraft Bedrock Edition, the string is encoded in standard UTF-8
-        if (context.edition == MinecraftEdition.BEDROCK_EDITION) {
+        if (getRawReader().edition == MinecraftEdition.BEDROCK_EDITION) {
             return getUTF8(bytes, offset, len);
         }
 
@@ -200,12 +198,12 @@ public abstract class DataReader implements Closeable {
 
         // Slow path
         StringBuilder charsBuffer;
-        if (context.charsBuffer != null) {
-            charsBuffer = context.charsBuffer;
-            context.charsBuffer.setLength(0);
+        if (getRawReader().charsBuffer != null) {
+            charsBuffer = getRawReader().charsBuffer;
+            getRawReader().charsBuffer.setLength(0);
         } else {
             charsBuffer = new StringBuilder(len);
-            context.charsBuffer = charsBuffer;
+            getRawReader().charsBuffer = charsBuffer;
         }
 
         int c, char2, char3;

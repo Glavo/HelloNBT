@@ -20,14 +20,21 @@ import java.io.IOException;
 
 public final class UncompressedDataReader extends DataReader {
 
-    /// Used for the default reader;
-    UncompressedDataReader(InputContext context, InputBuffer buffer) {
-        super(context, buffer);
+    private final RawDataReader rawReader;
+
+    public UncompressedDataReader(RawDataReader rawReader, long limit) {
+        this.rawReader = rawReader;
+        this.remainingInput = limit;
     }
 
-    public UncompressedDataReader(InputContext context, long limit) {
-        super(context, context.rawReader.buffer);
-        this.remainingInput = limit;
+    @Override
+    public RawDataReader getRawReader() {
+        return rawReader;
+    }
+
+    @Override
+    protected InputBuffer getBuffer() {
+        return rawReader.getBuffer();
     }
 
     @Override
@@ -36,6 +43,6 @@ public final class UncompressedDataReader extends DataReader {
             throw new EOFException("Not enough data to read, required: " + required + ", remaining: " + remainingInput);
         }
 
-        context.source.fillBuffer(buffer, required);
+        getRawReader().ensureBufferRemaining(required);
     }
 }

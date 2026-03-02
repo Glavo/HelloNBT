@@ -99,11 +99,13 @@ public final class ChunkRegion implements NBTParent<Chunk>, NBTElement {
                 default -> throw new IOException("Unsupported compression type: " + compressType);
             };
 
-            var tag = Tag.readTag(reader);
-            if (tag instanceof CompoundTag rootTag) {
-                region.getChunk(chunkMetadata.localIndex()).rootTag = rootTag;
-            } else {
-                throw new IOException("Unexpected tag type: " + tag);
+            try (reader) {
+                var tag = Tag.readTag(reader);
+                if (tag instanceof CompoundTag rootTag) {
+                    region.getChunk(chunkMetadata.localIndex()).rootTag = rootTag;
+                } else {
+                    throw new IOException("Unexpected tag type: " + tag);
+                }
             }
         }
 

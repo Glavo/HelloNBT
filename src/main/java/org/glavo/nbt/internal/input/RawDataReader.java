@@ -37,7 +37,7 @@ public final class RawDataReader extends DataReader implements Closeable {
     public final MinecraftEdition edition;
 
     private final InputBuffer buffer;
-    private final long startPosition;
+    private final long sourceStartPosition;
 
     public final StringCache stringCache = DEFAULT_CACHE;
     @Nullable StringBuilder charsBuffer;
@@ -48,7 +48,7 @@ public final class RawDataReader extends DataReader implements Closeable {
         this.source = source;
         this.edition = edition;
         this.buffer = InputBuffer.allocate(IOUtils.DEFAULT_BUFFER_SIZE, source.supportDirectBuffer(), edition.byteOrder());
-        this.startPosition = source.position();
+        this.sourceStartPosition = source.position();
     }
 
     @Override
@@ -67,7 +67,7 @@ public final class RawDataReader extends DataReader implements Closeable {
     }
 
     public long position() {
-        long position = source.position() - startPosition - buffer.remaining();
+        long position = source.position() - sourceStartPosition - buffer.remaining();
         assert position >= 0;
         return position;
     }

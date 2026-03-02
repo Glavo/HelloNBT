@@ -37,6 +37,8 @@ public final class ChunkRegion implements NBTParent<Chunk>, NBTElement {
             throw new IllegalArgumentException("Only Java Edition supports region file format");
         }
 
+        final long fileStart = rawReader.position();
+
         var metadata = new ChunkMetadata[ChunkUtils.CHUNKS_PRE_REGION];
 
         int[] diskInfo = rawReader.readIntArray(ChunkUtils.CHUNKS_PRE_REGION);
@@ -56,9 +58,8 @@ public final class ChunkRegion implements NBTParent<Chunk>, NBTElement {
 
         var region = new ChunkRegion();
 
-        long contentStart = rawReader.position();
         for (ChunkMetadata chunkMetadata : ChunkMetadata.sortedByOffset(metadata)) {
-            long sectorStart = contentStart + (long) chunkMetadata.sectorOffset() * ChunkUtils.SECTOR_BYTES;
+            long sectorStart = fileStart + (long) chunkMetadata.sectorOffset() * ChunkUtils.SECTOR_BYTES;
             long position = rawReader.position();
             if (position != sectorStart) {
                 if (position < sectorStart) {

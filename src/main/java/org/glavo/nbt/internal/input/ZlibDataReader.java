@@ -23,7 +23,6 @@ import java.util.zip.Inflater;
 
 public final class ZlibDataReader extends BoundedDataReader {
     static final RawDataReader.CacheKey<Inflater> INFLATER_CACHE_KEY = new RawDataReader.CacheKey<>() {
-
         @Override
         protected Inflater create(RawDataReader rawReader) {
             return new Inflater();

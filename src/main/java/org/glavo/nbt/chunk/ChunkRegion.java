@@ -43,7 +43,7 @@ public final class ChunkRegion implements NBTParent<Chunk>, NBTElement {
         int[] timestamps = rawReader.readIntArray(ChunkUtils.CHUNKS_PRE_REGION);
         for (int z = 0; z < ChunkUtils.CHUNKS_PER_REGION_SIDE; z++) {
             for (int x = 0; x < ChunkUtils.CHUNKS_PER_REGION_SIDE; x++) {
-                int index = x + z * ChunkUtils.CHUNKS_PER_REGION_SIDE;
+                int index = ChunkUtils.toLocalIndex(x, z);
 
                 int info = diskInfo[index];
                 int sectorOffset = info >>> 8;
@@ -84,7 +84,7 @@ public final class ChunkRegion implements NBTParent<Chunk>, NBTElement {
                 throw new IOException("The chunk data is stored externally, and reading this data is not currently supported.");
             }
 
-            DataReader reader = switch (compressType) {
+            BoundedDataReader reader = switch (compressType) {
                 case 1 -> throw new IOException("GZip compression is not supported yet.");
                 case 2 -> new ZlibDataReader(rawReader, chunkRawContentLength);
                 case 3 -> new UncompressedDataReader(rawReader, chunkRawContentLength);

@@ -17,47 +17,37 @@ package org.glavo.nbt.chunk;
 
 import org.glavo.nbt.NBTElement;
 import org.glavo.nbt.NBTParent;
-import org.glavo.nbt.internal.ChunkMetadata;
 import org.glavo.nbt.internal.ChunkUtils;
 import org.glavo.nbt.tag.CompoundTag;
 import org.jetbrains.annotations.Nullable;
 
 public final class Chunk implements NBTParent<CompoundTag>, NBTElement {
-    @Nullable ChunkRegion region;
-    int localIndex = -1;
+    final ChunkRegion region;
+    final int localIndex;
 
-    CompoundTag rootTag;
+    @Nullable CompoundTag rootTag;
 
     Chunk(ChunkRegion region, int localIndex) {
         this.region = region;
         this.localIndex = localIndex;
     }
 
-    Chunk(ChunkRegion region, ChunkMetadata metadata, CompoundTag rootTag) {
-        this.region = region;
-        this.localIndex = metadata.localIndex();
-        this.rootTag = rootTag;
-    }
-
-    public Chunk() {
-    }
-
     /// Return the region of this chunk, or `null` if this chunk is not in any region.
-    public @Nullable ChunkRegion getRegion() {
+    public ChunkRegion getRegion() {
         return region;
     }
 
     /// Return the local x coordinate of this chunk in its region, or -1 if this chunk is not in any region.
     public int getLocalX() {
-        return localIndex >= 0 ? localIndex % ChunkUtils.CHUNKS_PER_REGION_SIDE : -1;
+        return localIndex >= 0 ? ChunkUtils.getLocalX(localIndex) : -1;
     }
 
     /// Return the local z coordinate of this chunk in its region, or -1 if this chunk is not in any region.
     public int getLocalZ() {
-        return localIndex >= 0 ? localIndex / ChunkUtils.CHUNKS_PER_REGION_SIDE : -1;
+        return localIndex >= 0 ? ChunkUtils.getLocalZ(localIndex) : -1;
     }
 
-    public CompoundTag getRootTag() {
+    public @Nullable CompoundTag getRootTag() {
         return rootTag;
     }
 }

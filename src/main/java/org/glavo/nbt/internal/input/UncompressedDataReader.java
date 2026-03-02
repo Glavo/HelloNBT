@@ -18,14 +18,14 @@ package org.glavo.nbt.internal.input;
 import java.io.EOFException;
 import java.io.IOException;
 
-public final class RawDataReader extends DataReader {
+public final class UncompressedDataReader extends DataReader {
 
     /// Used for the default reader;
-    RawDataReader(InputContext context, InputBuffer buffer) {
+    UncompressedDataReader(InputContext context, InputBuffer buffer) {
         super(context, buffer);
     }
 
-    public RawDataReader(InputContext context, long limit) {
+    public UncompressedDataReader(InputContext context, long limit) {
         super(context, context.rawReader.buffer);
         this.remainingInput = limit;
     }

@@ -23,7 +23,7 @@ import org.glavo.nbt.internal.ChunkMetadataTable;
 import org.glavo.nbt.internal.ChunkUtils;
 import org.glavo.nbt.internal.input.DataReader;
 import org.glavo.nbt.internal.input.InputContext;
-import org.glavo.nbt.internal.input.RawDataReader;
+import org.glavo.nbt.internal.input.UncompressedDataReader;
 import org.glavo.nbt.internal.input.ZlibDataReader;
 import org.glavo.nbt.tag.CompoundTag;
 import org.glavo.nbt.tag.Tag;
@@ -94,7 +94,7 @@ public final class ChunkRegion implements NBTParent<Chunk>, NBTElement {
             DataReader reader = switch (compressType) {
                 case 1 -> throw new IOException("GZip compression is not supported yet.");
                 case 2 -> new ZlibDataReader(context, chunkRawContentLength);
-                case 3 -> new RawDataReader(context, chunkRawContentLength);
+                case 3 -> new UncompressedDataReader(context, chunkRawContentLength);
                 case 4 -> throw new IOException("LZ4 compression is not supported yet.");
                 default -> throw new IOException("Unsupported compression type: " + compressType);
             };

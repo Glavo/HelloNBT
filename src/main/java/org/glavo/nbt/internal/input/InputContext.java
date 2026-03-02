@@ -36,7 +36,7 @@ public final class InputContext implements Closeable {
     public final InputSource source;
     public final MinecraftEdition edition;
 
-    public final RawDataReader rawReader;
+    public final UncompressedDataReader rawReader;
     private final long startPosition;
 
     public final StringCache stringCache = DEFAULT_CACHE;
@@ -47,7 +47,7 @@ public final class InputContext implements Closeable {
     public InputContext(InputSource source, MinecraftEdition edition) {
         this.source = source;
         this.edition = edition;
-        this.rawReader = new RawDataReader(
+        this.rawReader = new UncompressedDataReader(
                 this,
                 InputBuffer.allocate(IOUtils.DEFAULT_BUFFER_SIZE, source.supportDirectBuffer(), edition.byteOrder()));
         this.startPosition = source.position();

@@ -80,9 +80,11 @@ public final class ChunkRegion implements NBTParent<Chunk>, NBTElement {
                 throw new IOException("Invalid chunk data length: " + chunkRawDataLength);
             }
 
+            long chunkRawContentLength = chunkRawDataLength - 1L;
+
             int compressType = context.rawReader.readUnsignedByte();
             if (compressType > 128) {
-                if (chunkRawDataLength != 1) {
+                if (chunkRawContentLength != 0L) {
                     throw new IOException("Invalid chunk data length: %d (expected 1 for compression type %d)".formatted(chunkRawDataLength, compressType));
                 }
 
@@ -91,8 +93,8 @@ public final class ChunkRegion implements NBTParent<Chunk>, NBTElement {
 
             DataReader reader = switch (compressType) {
                 case 1 -> throw new IOException("GZip compression is not supported yet.");
-                case 2 -> new ZlibDataReader(context, chunkRawDataLength - 1L);
-                case 3 -> new RawDataReader(context, chunkRawDataLength - 1L);
+                case 2 -> new ZlibDataReader(context, chunkRawContentLength);
+                case 3 -> new RawDataReader(context, chunkRawContentLength);
                 case 4 -> throw new IOException("LZ4 compression is not supported yet.");
                 default -> throw new IOException("Unsupported compression type: " + compressType);
             };

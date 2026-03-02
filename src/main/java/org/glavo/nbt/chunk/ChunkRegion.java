@@ -35,15 +35,15 @@ import java.util.Objects;
 /// @see <a href="https://minecraft.wiki/w/Region_file_format">Region file format - Minecraft Wiki</a>
 /// @see <a href="https://minecraft.wiki/w/Anvil_file_format">Anvil file format - Minecraft Wiki</a>
 public final class ChunkRegion implements NBTParent<Chunk>, NBTElement {
-    static ChunkRegion readRegion(RawDataReader reader) throws IOException {
-        if (reader.edition != MinecraftEdition.JAVA_EDITION) {
+    static ChunkRegion readRegion(RawDataReader rawReader) throws IOException {
+        if (rawReader.edition != MinecraftEdition.JAVA_EDITION) {
             throw new IllegalArgumentException("Only Java Edition supports region file format");
         }
 
         var metadata = new ChunkMetadata[ChunkUtils.CHUNKS_PRE_REGION];
 
-        int[] diskInfo = reader.readIntArray(ChunkUtils.CHUNKS_PRE_REGION);
-        int[] timestamps = reader.readIntArray(ChunkUtils.CHUNKS_PRE_REGION);
+        int[] diskInfo = rawReader.readIntArray(ChunkUtils.CHUNKS_PRE_REGION);
+        int[] timestamps = rawReader.readIntArray(ChunkUtils.CHUNKS_PRE_REGION);
         for (int z = 0; z < ChunkUtils.CHUNKS_PER_REGION_SIDE; z++) {
             for (int x = 0; x < ChunkUtils.CHUNKS_PER_REGION_SIDE; x++) {
                 int index = x + z * ChunkUtils.CHUNKS_PER_REGION_SIDE;
@@ -63,26 +63,26 @@ public final class ChunkRegion implements NBTParent<Chunk>, NBTElement {
 
         var region = new ChunkRegion();
 
-        long contentStart = reader.position();
+        long contentStart = rawReader.position();
         for (ChunkMetadata chunkMetadata : sortedBySectorOffset) {
             long sectorStart = contentStart + (long) chunkMetadata.sectorOffset() * ChunkUtils.SECTOR_BYTES;
-            long position = reader.position();
+            long position = rawReader.position();
             if (position != sectorStart) {
                 if (position < sectorStart) {
-                    reader.skip(sectorStart - position);
+                    rawReader.skip(sectorStart - position);
                 } else {
                     throw new IOException("Invalid chunk metadata: sector offset points to a position before the current position");
                 }
             }
 
-            long chunkRawDataLength = reader.readUnsignedInt();
+            long chunkRawDataLength = rawReader.readUnsignedInt();
             if (chunkRawDataLength < 1) {
                 throw new IOException("Invalid chunk data length: " + chunkRawDataLength);
             }
 
             long chunkRawContentLength = chunkRawDataLength - 1L;
 
-            int compressType = reader.readUnsignedByte();
+            int compressType = rawReader.readUnsignedByte();
             if (compressType > 128) {
                 if (chunkRawContentLength != 0L) {
                     throw new IOException("Invalid chunk data length: %d (expected 1 for compression type %d)".formatted(chunkRawDataLength, compressType));
@@ -93,8 +93,8 @@ public final class ChunkRegion implements NBTParent<Chunk>, NBTElement {
 
             DataReader reader = switch (compressType) {
                 case 1 -> throw new IOException("GZip compression is not supported yet.");
-                case 2 -> new ZlibDataReader(reader, chunkRawContentLength);
-                case 3 -> new UncompressedDataReader(reader, chunkRawContentLength);
+                case 2 -> new ZlibDataReader(rawReader, chunkRawContentLength);
+                case 3 -> new UncompressedDataReader(rawReader, chunkRawContentLength);
                 case 4 -> throw new IOException("LZ4 compression is not supported yet.");
                 default -> throw new IOException("Unsupported compression type: " + compressType);
             };

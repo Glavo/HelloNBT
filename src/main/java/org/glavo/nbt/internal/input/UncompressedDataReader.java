@@ -18,28 +18,17 @@ package org.glavo.nbt.internal.input;
 import java.io.EOFException;
 import java.io.IOException;
 
-public final class UncompressedDataReader extends DataReader {
-
-    private final RawDataReader rawReader;
+public final class UncompressedDataReader extends BoundedDataReader {
 
     public UncompressedDataReader(RawDataReader rawReader, long limit) {
-        this.rawReader = rawReader;
-        this.remainingInput = limit;
-    }
-
-    @Override
-    public RawDataReader getRawReader() {
-        return rawReader;
-    }
-
-    @Override
-    protected InputBuffer getBuffer() {
-        return rawReader.getBuffer();
+        super(rawReader, rawReader.getBuffer(), limit);
     }
 
     @Override
     public void ensureBufferRemaining(int required) throws IOException {
-        if (remainingInput >= 0 && remainingInput < required) {
+        long remainingInput = endPosition - getRawReader().position();
+
+        if (remainingInput < required) {
             throw new EOFException("Not enough data to read, required: " + required + ", remaining: " + remainingInput);
         }
 

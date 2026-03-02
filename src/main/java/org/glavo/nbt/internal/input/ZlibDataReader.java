@@ -21,7 +21,7 @@ import java.nio.ByteBuffer;
 import java.util.zip.DataFormatException;
 import java.util.zip.Inflater;
 
-public final class ZlibDataReader extends DataReader {
+public final class ZlibDataReader extends BoundedDataReader {
     static final RawDataReader.CacheKey<Inflater> INFLATER_CACHE_KEY = new RawDataReader.CacheKey<>() {
 
         @Override
@@ -35,31 +35,17 @@ public final class ZlibDataReader extends DataReader {
         }
     };
 
-    private final RawDataReader rawReader;
-    private final InputBuffer buffer;
     private final Inflater inflater;
 
-    public ZlibDataReader(RawDataReader rawReader, long compressedSize) {
-        this.rawReader = rawReader;
-        this.buffer = rawReader.getDecompressBuffer();
+    public ZlibDataReader(RawDataReader rawReader, long limit) {
+        super(rawReader, rawReader.getDecompressBuffer(), limit);
 
         this.inflater = INFLATER_CACHE_KEY.get(rawReader);
-        this.remainingInput = compressedSize;
-    }
-
-    @Override
-    public RawDataReader getRawReader() {
-        return rawReader;
-    }
-
-    @Override
-    protected InputBuffer getBuffer() {
-        return buffer;
     }
 
     @Override
     public void ensureBufferRemaining(int required) throws IOException {
-        if (this.buffer.remaining() >= required) {
+        if (getBuffer().remaining() >= required) {
             return;
         }
 
@@ -67,8 +53,8 @@ public final class ZlibDataReader extends DataReader {
             throw new EOFException("Inflater finished or needs dictionary");
         }
 
-        buffer.ensureCapacity(required);
-        ByteBuffer output = this.buffer.getByteBuffer();
+        getBuffer().ensureCapacity(required);
+        ByteBuffer output = getBuffer().getByteBuffer();
         output.compact();
 
         try {
@@ -78,10 +64,10 @@ public final class ZlibDataReader extends DataReader {
                 }
 
                 if (inflater.needsInput()) {
-                    if (rawReader.getBuffer().remaining() == 0) {
-                        rawReader.ensureBufferRemaining(1);
+                    if (getRawReader().getBuffer().remaining() == 0) {
+                        getRawReader().ensureBufferRemaining(1);
                     }
-                    inflater.setInput(rawReader.getBuffer().getByteBuffer());
+                    inflater.setInput(getRawReader().getBuffer().getByteBuffer());
                 }
 
                 try {
@@ -99,11 +85,10 @@ public final class ZlibDataReader extends DataReader {
 
     @Override
     public void close() throws IOException {
-        inflater.end();
-        rawReader.releaseDecompressBuffer(buffer);
-
+        getRawReader().releaseDecompressBuffer(getBuffer());
         inflater.reset();
-        INFLATER_CACHE_KEY.release(rawReader, inflater);
+        INFLATER_CACHE_KEY.release(getRawReader(), inflater);
+        super.close();
     }
 
     private static final byte[] EMPTY_BYTE_ARRAY = new byte[0];

@@ -22,10 +22,8 @@ import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
 
-public abstract class DataReader implements Closeable {
-    // final InputBuffer buffer;
-    long remainingInput = -1L;
-
+public sealed abstract class DataReader implements Closeable
+        permits BoundedDataReader, RawDataReader {
     protected abstract RawDataReader getRawReader();
 
     protected abstract InputBuffer getBuffer();
@@ -33,16 +31,7 @@ public abstract class DataReader implements Closeable {
     public abstract void ensureBufferRemaining(int required) throws IOException;
 
     @Override
-    public void close() throws IOException {
-        if (remainingInput > 0) {
-            int bufferRemaining = getRawReader().getBuffer().remaining();
-            if (bufferRemaining > 0) {
-                int bytesDrop = (int) Math.min(bufferRemaining, remainingInput);
-                getRawReader().getBuffer().drop(bytesDrop);
-            }
-            this.remainingInput -= bufferRemaining;
-        }
-    }
+    public abstract void close() throws IOException;
 
     public byte[] readByteArray() throws IOException {
         int len = readInt();

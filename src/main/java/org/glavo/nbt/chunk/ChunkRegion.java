@@ -20,14 +20,13 @@ import org.glavo.nbt.NBTElement;
 import org.glavo.nbt.NBTParent;
 import org.glavo.nbt.internal.ChunkMetadata;
 import org.glavo.nbt.internal.ChunkUtils;
-import org.glavo.nbt.internal.input.DataReader;
-import org.glavo.nbt.internal.input.RawDataReader;
-import org.glavo.nbt.internal.input.UncompressedDataReader;
-import org.glavo.nbt.internal.input.ZlibDataReader;
+import org.glavo.nbt.internal.input.*;
 import org.glavo.nbt.tag.CompoundTag;
 import org.glavo.nbt.tag.Tag;
 
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.Objects;
 
 /// @see <a href="https://minecraft.wiki/w/Region_file_format">Region file format - Minecraft Wiki</a>
@@ -104,6 +103,14 @@ public final class ChunkRegion implements NBTParent<Chunk>, NBTElement {
         }
 
         return region;
+    }
+
+    public static ChunkRegion readRegion(Path file) throws IOException {
+        try (var reader = new RawDataReader(
+                new InputSource.OfInputStream(Files.newInputStream(file), true), MinecraftEdition
+                .JAVA_EDITION)) {
+            return readRegion(reader);
+        }
     }
 
     private final Chunk[] chunks;

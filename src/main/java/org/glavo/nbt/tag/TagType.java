@@ -96,10 +96,12 @@ public enum TagType {
 
     private final byte id;
     private final Class<? extends Tag> tagClass;
+    private final String fullName;
 
     TagType(int id, Class<? extends Tag> tagClass) {
         this.id = (byte) id;
         this.tagClass = tagClass;
+        this.fullName = "TAG_" + name();
     }
 
     public Tag createTag() {
@@ -122,5 +124,9 @@ public enum TagType {
     /// Returns the tag id.
     public byte id() {
         return id;
+    }
+
+    public String getFullName() {
+        return fullName;
     }
 }

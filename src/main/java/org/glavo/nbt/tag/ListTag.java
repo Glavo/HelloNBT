@@ -226,7 +226,9 @@ public final class ListTag<T extends Tag> extends ParentTag<T> {
 
     @Override
     protected void contentToString(StringBuilder builder) {
-        builder.append('[').append(getElementType()).append(';');
+        builder.append('[');
+        if (getElementType() != null)
+            builder.append(getElementType().getFullName()).append(';');
 
         if (!subTags.isEmpty()) {
             Iterator<T> it = subTags.iterator();

@@ -274,6 +274,11 @@ public final class TagTests {
         assertEquals("TAG_FLOAT[0.0]", new FloatTag().toString());
         assertEquals("TAG_DOUBLE[0.0]", new DoubleTag().toString());
         assertEquals("TAG_STRING[\"\"]", new StringTag().toString());
+        assertEquals("TAG_BYTE_ARRAY[]", new ByteArrayTag().toString());
+        assertEquals("TAG_INT_ARRAY[]", new IntArrayTag().toString());
+        assertEquals("TAG_LONG_ARRAY[]", new LongArrayTag().toString());
+        assertEquals("TAG_LIST[]", new ListTag<>("", (TagType) null).toString());
+        assertEquals("TAG_LIST[TAG_INT;]", new ListTag<>("", IntTag.class).toString());
     }
 
     @Test

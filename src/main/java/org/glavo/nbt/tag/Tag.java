@@ -169,7 +169,7 @@ public sealed abstract class Tag implements NBTElement
     }
 
     protected void toString(StringBuilder builder) {
-        builder.append("TAG_").append(getType());
+        builder.append(getType().getFullName());
         if (!name.isEmpty()) {
             builder.append('(');
             appendString(builder, name);

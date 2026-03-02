@@ -31,6 +31,9 @@ public sealed abstract class ArrayTag<E extends Number> extends Tag implements I
     /// Returns the size of the array.
     public abstract int size();
 
+    /// Returns the clone of the array.
+    public abstract Object get();
+
     /// Returns the element at the given index.
     ///
     /// @throws IndexOutOfBoundsException if the index is out of bounds.

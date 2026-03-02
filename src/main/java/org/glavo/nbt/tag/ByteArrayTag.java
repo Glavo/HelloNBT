@@ -47,7 +47,7 @@ public final class ByteArrayTag extends ArrayTag<Byte> {
         return TagType.BYTE_ARRAY;
     }
 
-    /// Returns the value of the tag.
+    @Override
     public byte[] get() {
         return value.clone();
     }

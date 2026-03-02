@@ -48,7 +48,7 @@ public final class LongArrayTag extends ArrayTag<Long> {
         return TagType.LONG_ARRAY;
     }
 
-    /// Returns the value of the tag.
+    @Override
     public long[] get() {
         return value.clone();
     }

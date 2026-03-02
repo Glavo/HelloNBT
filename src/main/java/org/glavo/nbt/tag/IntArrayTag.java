@@ -47,7 +47,7 @@ public final class IntArrayTag extends ArrayTag<Integer> {
         return TagType.INT_ARRAY;
     }
 
-    /// Returns the value of the tag.
+    @Override
     public int[] get() {
         return value.clone();
     }

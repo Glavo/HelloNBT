@@ -18,7 +18,6 @@ package org.glavo.nbt.tag;
 import org.glavo.nbt.MinecraftEdition;
 import org.glavo.nbt.NBTElement;
 import org.glavo.nbt.NBTParent;
-import org.glavo.nbt.chunk.Chunk;
 import org.glavo.nbt.internal.input.DataReader;
 import org.glavo.nbt.internal.input.InputContext;
 import org.glavo.nbt.internal.input.InputSource;
@@ -199,7 +198,7 @@ public sealed abstract class Tag implements NBTElement
 
     /// Returns a new tag with the same name and content as the current tag.
     ///
-    /// This method always performs a deep copy.
+    /// This method always performs a deep copy, and the returned tag will not have a parent tag.
     @Override
     public abstract Tag clone();
 

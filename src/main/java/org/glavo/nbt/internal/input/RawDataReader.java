@@ -16,7 +16,6 @@
 package org.glavo.nbt.internal.input;
 
 import org.glavo.nbt.MinecraftEdition;
-import org.glavo.nbt.internal.IOUtils;
 import org.glavo.nbt.internal.StringCache;
 import org.jetbrains.annotations.Nullable;
 
@@ -27,6 +26,8 @@ import java.util.IdentityHashMap;
 import java.util.Map;
 
 public final class RawDataReader extends DataReader implements Closeable {
+    public static final int DEFAULT_BUFFER_SIZE = 8192;
+
     // Used for reading UTF-8 strings
     private static final StringCache DEFAULT_CACHE = new StringCache(
             "data", "Data", "DataVersion"
@@ -47,7 +48,7 @@ public final class RawDataReader extends DataReader implements Closeable {
     public RawDataReader(InputSource source, MinecraftEdition edition) {
         this.source = source;
         this.edition = edition;
-        this.buffer = InputBuffer.allocate(IOUtils.DEFAULT_BUFFER_SIZE, source.supportDirectBuffer(), edition.byteOrder());
+        this.buffer = InputBuffer.allocate(DEFAULT_BUFFER_SIZE, source.supportDirectBuffer(), edition.byteOrder());
         this.sourceStartPosition = source.position();
     }
 
@@ -94,7 +95,7 @@ public final class RawDataReader extends DataReader implements Closeable {
 
     public InputBuffer getDecompressBuffer() {
         if (decompressBuffer == null) {
-            return InputBuffer.allocate(IOUtils.DEFAULT_BUFFER_SIZE, false, edition.byteOrder());
+            return InputBuffer.allocate(DEFAULT_BUFFER_SIZE, false, edition.byteOrder());
         } else {
             decompressBuffer.drop();
             return decompressBuffer;

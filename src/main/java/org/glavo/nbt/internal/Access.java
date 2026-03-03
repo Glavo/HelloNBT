@@ -15,15 +15,16 @@
  */
 package org.glavo.nbt.internal;
 
-import org.glavo.nbt.tag.Tag;
+import org.glavo.nbt.tag.TagAccess;
 
 import java.lang.invoke.MethodHandles;
 
-public final class IOUtils {
-    public static final Tag.Unsafe TAG_UNSAFE = Tag.Unsafe.getUnsafe(MethodHandles.lookup());
+public final class Access {
+    public static final TagAccess TAG;
 
-    public static final int DEFAULT_BUFFER_SIZE = 8192;
+    static {
+        MethodHandles.Lookup lookup = MethodHandles.lookup();
 
-    private IOUtils() {
+        TAG = TagAccess.getInstance(lookup);
     }
 }

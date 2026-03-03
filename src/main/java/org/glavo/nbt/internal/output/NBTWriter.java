@@ -16,7 +16,7 @@
 package org.glavo.nbt.internal.output;
 
 import org.glavo.nbt.MinecraftEdition;
-import org.glavo.nbt.internal.IOUtils;
+import org.glavo.nbt.internal.Access;
 import org.glavo.nbt.tag.*;
 
 import java.io.*;
@@ -74,11 +74,11 @@ public final class NBTWriter implements Closeable, Flushable {
         } else if (tag instanceof StringTag stringTag) {
             writeString(stringTag.get());
         } else if (tag instanceof ByteArrayTag byteArrayTag) {
-            writeByteArray(IOUtils.TAG_UNSAFE.getInternalArray(byteArrayTag));
+            writeByteArray(Access.TAG.getInternalArray(byteArrayTag));
         } else if (tag instanceof IntArrayTag intArrayTag) {
-            writeIntArray(IOUtils.TAG_UNSAFE.getInternalArray(intArrayTag));
+            writeIntArray(Access.TAG.getInternalArray(intArrayTag));
         } else if (tag instanceof LongArrayTag longArrayTag) {
-            writeLongArray(IOUtils.TAG_UNSAFE.getInternalArray(longArrayTag));
+            writeLongArray(Access.TAG.getInternalArray(longArrayTag));
         } else if (tag instanceof ListTag<?> listTag) {
             writeByte(listTag.getElementType() != null ? listTag.getElementType().id() : 0);
             writeInt(listTag.size());

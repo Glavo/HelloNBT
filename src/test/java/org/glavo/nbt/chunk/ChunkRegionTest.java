@@ -81,6 +81,12 @@ public final class ChunkRegionTest {
 
     @Test
     public void testReadRegion() throws IOException {
-        ChunkRegion.readRegion(TestResources.getResource("/assets/r.-1.-1.mca"));
+        var region = ChunkRegion.readRegion(TestResources.getResource("/assets/r.-1.-1.mca"));
+        for (int localIndex = 0; localIndex < CHUNKS_PRE_REGION; localIndex++) {
+            var chunk = region.getChunk(localIndex);
+            assertEquals(localIndex, chunk.getLocalIndex());
+
+            // TODO
+        }
     }
 }

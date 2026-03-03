@@ -37,6 +37,11 @@ public final class Chunk implements NBTParent<CompoundTag>, NBTElement {
         return region;
     }
 
+    /// Return the local index of this chunk in its region, or -1 if this chunk is not in any region.
+    public int getLocalIndex() {
+        return localIndex;
+    }
+
     /// Return the local x coordinate of this chunk in its region, or -1 if this chunk is not in any region.
     public int getLocalX() {
         return localIndex >= 0 ? ChunkUtils.getLocalX(localIndex) : -1;

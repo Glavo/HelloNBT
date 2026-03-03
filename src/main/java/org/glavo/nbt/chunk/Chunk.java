@@ -50,4 +50,9 @@ public final class Chunk implements NBTParent<CompoundTag>, NBTElement {
     public @Nullable CompoundTag getRootTag() {
         return rootTag;
     }
+
+    @Override
+    public String toString() {
+        return "Chunk[x=" + getLocalX() + ", z=" + getLocalZ() + ", root=" + rootTag + ']';
+    }
 }

@@ -97,8 +97,6 @@ public final class ChunkRegion implements NBTParent<Chunk>, NBTElement {
                     throw new IOException("Unexpected tag type: " + tag);
                 }
             }
-
-
         }
 
         return region;
@@ -132,5 +130,23 @@ public final class ChunkRegion implements NBTParent<Chunk>, NBTElement {
         Objects.checkIndex(z, ChunkUtils.CHUNKS_PER_REGION_SIDE);
 
         return chunks[ChunkUtils.toLocalIndex(x, z)];
+    }
+
+    @Override
+    public String toString() {
+        StringBuilder builder = new StringBuilder(65536);
+        builder.append("Chunk[");
+
+        for (int i = 0; i < chunks.length; i++) {
+            if (i > 0) {
+                builder.append(", ");
+            }
+
+            builder.append(chunks[i]);
+        }
+
+        builder.append(']');
+
+        return builder.toString();
     }
 }

@@ -20,7 +20,6 @@ import org.glavo.nbt.TestResources;
 import org.glavo.nbt.internal.ChunkRegionHeader;
 import org.glavo.nbt.internal.input.InputSource;
 import org.glavo.nbt.internal.input.RawDataReader;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import java.io.BufferedInputStream;
@@ -81,7 +80,6 @@ public final class ChunkRegionTest {
     }
 
     @Test
-    @Disabled
     public void testReadRegion() throws IOException {
         ChunkRegion.readRegion(TestResources.getResource("/assets/r.-1.-1.mca"));
     }

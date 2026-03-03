@@ -15,13 +15,14 @@
  */
 package org.glavo.nbt.chunk;
 
-import com.github.steveice10.opennbt.NBTIO;
 import org.apache.commons.io.input.BoundedInputStream;
 import org.glavo.nbt.MinecraftEdition;
 import org.glavo.nbt.TestResources;
 import org.glavo.nbt.internal.ChunkRegionHeader;
 import org.glavo.nbt.internal.input.InputSource;
 import org.glavo.nbt.internal.input.RawDataReader;
+import org.glavo.nbt.tag.CompoundTag;
+import org.glavo.nbt.tag.Tag;
 import org.junit.jupiter.api.Test;
 
 import java.io.*;
@@ -81,9 +82,9 @@ public final class ChunkRegionTest {
         }
     }
 
-    private static com.github.steveice10.opennbt.tag.builtin.CompoundTag[] loadChunks(Path file) throws IOException {
+    private static CompoundTag[] loadChunks(Path file) throws IOException {
         try (RandomAccessFile r = new RandomAccessFile(file.toFile(), "r")) {
-            var result = new com.github.steveice10.opennbt.tag.builtin.CompoundTag[CHUNKS_PRE_REGION];
+            var result = new CompoundTag[CHUNKS_PRE_REGION];
 
             byte[] header = new byte[4096];
             byte[] buffer = new byte[1 * 1024 * 1024]; // The maximum size of each chunk is 1MiB
@@ -125,9 +126,9 @@ public final class ChunkRegionTest {
                 }
 
                 try (InputStream in = input) {
-                    var tag = NBTIO.readTag(in);
+                    var tag = Tag.readTag(in);
 
-                    if (tag instanceof com.github.steveice10.opennbt.tag.builtin.CompoundTag chunk) {
+                    if (tag instanceof CompoundTag chunk) {
                         result[i / 4] = chunk;
                     } else {
                         throw new IOException("Unexpected tag: " + tag);
@@ -142,7 +143,7 @@ public final class ChunkRegionTest {
     public void testReadRegion() throws IOException {
         Path resource = TestResources.getResource("/assets/r.-1.-1.mca");
 
-        com.github.steveice10.opennbt.tag.builtin.CompoundTag[] expected = loadChunks(resource);
+        CompoundTag[] expected = loadChunks(resource);
         ChunkRegion actual = ChunkRegion.readRegion(resource);
         for (int localIndex = 0; localIndex < CHUNKS_PRE_REGION; localIndex++) {
             var chunk = actual.getChunk(localIndex);
@@ -150,6 +151,8 @@ public final class ChunkRegionTest {
 
             if (expected[localIndex] == null) {
                 assertNull(chunk.getRootTag());
+            } else {
+                assertEquals(expected[localIndex], chunk.getRootTag());
             }
         }
     }

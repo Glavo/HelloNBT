@@ -83,6 +83,6 @@ public final class ChunkRegionTest {
     @Test
     @Disabled
     public void testReadRegion() throws IOException {
-        ChunkRegion.readRegion(Path.of("/home/glavo/Projects/HelloNBT/src/test/resources/region/r.-1.-1.mca"));
+        ChunkRegion.readRegion(TestResources.getResource("/assets/r.-1.-1.mca"));
     }
 }

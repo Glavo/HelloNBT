@@ -95,8 +95,8 @@ public final class ChunkRegion implements NBTParent<Chunk>, NBTElement {
 
     public static ChunkRegion readRegion(Path file) throws IOException {
         try (var reader = new RawDataReader(
-                new InputSource.OfInputStream(Files.newInputStream(file), true), MinecraftEdition
-                .JAVA_EDITION)) {
+                new InputSource.OfInputStream(Files.newInputStream(file), true),
+                MinecraftEdition.JAVA_EDITION)) {
             return readRegion(reader);
         }
     }

@@ -103,6 +103,7 @@ public sealed abstract class InputSource implements Closeable {
         @Override
         public void skip(long bytes) throws IOException {
             inputStream.skipNBytes(bytes);
+            position += bytes;
         }
     }
 }

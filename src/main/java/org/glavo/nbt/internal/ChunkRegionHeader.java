@@ -37,7 +37,7 @@ public final class ChunkRegionHeader {
 
     public final int[] sectorInfo;
     public final int[] timestamps;
-    public final int[] sortedByOffset;
+    public final int[] localIndexesSortedByOffset;
 
     public ChunkRegionHeader(int[] sectorInfo, int[] timestamps) {
         assert sectorInfo.length == CHUNKS_PRE_REGION;
@@ -45,7 +45,7 @@ public final class ChunkRegionHeader {
 
         this.sectorInfo = sectorInfo;
         this.timestamps = timestamps;
-        this.sortedByOffset = IntStream.range(0, CHUNKS_PRE_REGION)
+        this.localIndexesSortedByOffset = IntStream.range(0, CHUNKS_PRE_REGION)
                 .boxed()
                 .sorted(Comparator.comparingInt(ChunkUtils::getSectorOffset).thenComparingInt(Integer::intValue))
                 .mapToInt(Integer::intValue)

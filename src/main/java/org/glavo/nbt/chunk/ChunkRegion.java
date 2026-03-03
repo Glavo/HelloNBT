@@ -43,7 +43,7 @@ public final class ChunkRegion implements NBTParent<Chunk>, NBTElement {
         var region = new ChunkRegion();
 
 
-        for (int localIndex : header.sortedByOffset) {
+        for (int localIndex : header.localIndexesSortedByOffset) {
             long sectorStart = fileStart + (long) header.getSectorOffset(localIndex) * ChunkUtils.SECTOR_BYTES;
             long position = rawReader.position();
             if (position != sectorStart) {

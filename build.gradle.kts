@@ -46,6 +46,7 @@ tasks.javadoc {
 
 tasks.test {
     useJUnitPlatform()
+    testLogging.showStandardStreams = true
 }
 
 val uncompressResources by tasks.registering(UncompressResources::class) {

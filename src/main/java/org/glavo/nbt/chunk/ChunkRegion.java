@@ -42,6 +42,8 @@ public final class ChunkRegion implements NBTParent<Chunk>, NBTElement {
         var header = ChunkRegionHeader.readHeader(rawReader);
         var region = new ChunkRegion();
 
+        assert rawReader.position() == fileStart + 2 * ChunkUtils.SECTOR_BYTES;
+
         for (int localIndex : header.localIndexesSortedByOffset) {
             long sectorStart = fileStart + (long) header.getSectorOffset(localIndex) * ChunkUtils.SECTOR_BYTES;
             long position = rawReader.position();
@@ -52,6 +54,8 @@ public final class ChunkRegion implements NBTParent<Chunk>, NBTElement {
                     throw new IOException("Invalid chunk metadata: sector offset points to a position before the current position");
                 }
             }
+
+            assert rawReader.position() == sectorStart;
 
             long chunkRawDataLength = rawReader.readUnsignedInt();
             if (chunkRawDataLength < 1) {

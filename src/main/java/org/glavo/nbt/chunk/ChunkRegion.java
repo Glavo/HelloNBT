@@ -57,17 +57,15 @@ public final class ChunkRegion implements NBTParent<Chunk>, NBTElement {
 
             assert rawReader.position() == sectorStart;
 
-            long chunkRawDataLength = rawReader.readUnsignedInt();
-            if (chunkRawDataLength < 1) {
-                throw new IOException("Invalid chunk data length: " + chunkRawDataLength);
+            long chunkRawLength = rawReader.readUnsignedInt();
+            if (chunkRawLength < 1) {
+                throw new IOException("Invalid chunk data length: " + chunkRawLength);
             }
-
-            long chunkRawContentLength = chunkRawDataLength - 1L;
 
             int compressType = rawReader.readUnsignedByte();
             if (compressType > 128) {
-                if (chunkRawContentLength != 0L) {
-                    throw new IOException("Invalid chunk data length: %d (expected 1 for compression type %d)".formatted(chunkRawDataLength, compressType));
+                if (chunkRawLength != 1L) {
+                    throw new IOException("Invalid chunk data length: %d (expected 1 for compression type %d)".formatted(chunkRawLength, compressType));
                 }
 
                 throw new IOException("The chunk data is stored externally, and reading this data is not currently supported.");
@@ -75,8 +73,8 @@ public final class ChunkRegion implements NBTParent<Chunk>, NBTElement {
 
             BoundedDataReader reader = switch (compressType) {
                 case 1 -> throw new IOException("GZip compression is not supported yet.");
-                case 2 -> new ZlibDataReader(rawReader, chunkRawContentLength);
-                case 3 -> new UncompressedDataReader(rawReader, chunkRawContentLength);
+                case 2 -> new ZlibDataReader(rawReader, chunkRawLength - 1L);
+                case 3 -> new UncompressedDataReader(rawReader, chunkRawLength - 1L);
                 case 4 -> throw new IOException("LZ4 compression is not supported yet.");
                 default -> throw new IOException("Unsupported compression type: " + compressType);
             };

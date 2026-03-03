@@ -25,6 +25,7 @@ import java.util.Comparator;
 import java.util.stream.IntStream;
 
 import static org.glavo.nbt.internal.ChunkUtils.CHUNKS_PRE_REGION;
+import static org.glavo.nbt.internal.ChunkUtils.SECTOR_BYTES;
 
 public final class ChunkRegionHeader {
     public static ChunkRegionHeader readHeader(DataReader reader) throws IOException {
@@ -59,5 +60,13 @@ public final class ChunkRegionHeader {
 
     public int getSectorLength(int index) {
         return ChunkUtils.getSectorLength(sectorInfo[index]);
+    }
+
+    public long getSectorOffsetBytes(int index) {
+        return (long) getSectorOffset(index) * SECTOR_BYTES;
+    }
+
+    public long getSectorLengthBytes(int index) {
+        return (long) getSectorLength(index) * SECTOR_BYTES;
     }
 }

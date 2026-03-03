@@ -45,7 +45,7 @@ public final class ChunkRegion implements NBTParent<Chunk>, NBTElement {
         assert rawReader.position() == fileStart + 2 * ChunkUtils.SECTOR_BYTES;
 
         for (int localIndex : header.localIndexesSortedByOffset) {
-            long sectorStart = fileStart + (long) header.getSectorOffset(localIndex) * ChunkUtils.SECTOR_BYTES;
+            long sectorStart = fileStart + header.getSectorOffsetBytes(localIndex);
             long position = rawReader.position();
             if (position != sectorStart) {
                 if (position < sectorStart) {
@@ -60,6 +60,10 @@ public final class ChunkRegion implements NBTParent<Chunk>, NBTElement {
             long chunkRawLength = rawReader.readUnsignedInt();
             if (chunkRawLength < 1) {
                 throw new IOException("Invalid chunk data length: " + chunkRawLength);
+            }
+
+            if (chunkRawLength + 4L > header.getSectorLengthBytes(localIndex)) {
+                throw new IOException("Invalid chunk data length: " + chunkRawLength + " (expected <= " + header.getSectorLengthBytes(localIndex) + " - 4)");
             }
 
             long chunkRawContentLength = chunkRawLength - 1L;

@@ -1,3 +1,5 @@
+import org.glavo.gradle.UncompressResources
+
 plugins {
     id("java-library")
     id("jacoco")
@@ -20,6 +22,7 @@ dependencies {
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")
     testImplementation(libs.opennbt)
     testImplementation(libs.lz4)
+    testImplementation(libs.xz)
 }
 
 java {
@@ -42,6 +45,16 @@ tasks.javadoc {
 
 tasks.test {
     useJUnitPlatform()
+}
+
+val uncompressResources by tasks.registering(UncompressResources::class) {
+    inputDir.set(project.layout.projectDirectory.dir("src/test/resources-compressed"))
+    outputDir.set(project.layout.buildDirectory.dir("generated/test/resources-uncompressed"))
+}
+
+tasks.processTestResources {
+    dependsOn(uncompressResources)
+    from(uncompressResources.map { it.outputDir })
 }
 
 tasks.jacocoTestReport {

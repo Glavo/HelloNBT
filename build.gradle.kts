@@ -23,6 +23,7 @@ dependencies {
     testImplementation(libs.opennbt)
     testImplementation(libs.lz4)
     testImplementation(libs.xz)
+    testImplementation(libs.commons.io)
 }
 
 java {

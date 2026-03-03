@@ -27,6 +27,8 @@ import static org.glavo.nbt.internal.ChunkUtils.CHUNKS_PRE_REGION;
 
 public final class ChunkRegionHeader {
     public static ChunkRegionHeader readHeader(DataReader reader) throws IOException {
+
+
         int[] sectorInfo = reader.readIntArray(CHUNKS_PRE_REGION);
         int[] timestamps = reader.readIntArray(CHUNKS_PRE_REGION);
 

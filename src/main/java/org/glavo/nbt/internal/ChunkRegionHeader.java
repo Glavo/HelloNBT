@@ -48,7 +48,7 @@ public final class ChunkRegionHeader {
         this.timestamps = timestamps;
         this.localIndexesSortedByOffset = IntStream.range(0, CHUNKS_PRE_REGION)
                 .boxed()
-                .sorted(Comparator.comparingInt(ChunkUtils::getSectorOffset).thenComparingInt(Integer::intValue))
+                .sorted(Comparator.comparingInt(this::getSectorOffset).thenComparingInt(Integer::intValue))
                 .mapToInt(Integer::intValue)
                 .toArray();
     }

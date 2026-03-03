@@ -18,6 +18,7 @@
 package org.glavo.nbt.internal;
 
 import org.glavo.nbt.internal.input.DataReader;
+import org.jetbrains.annotations.Unmodifiable;
 
 import java.io.IOException;
 import java.util.Comparator;
@@ -35,11 +36,11 @@ public final class ChunkRegionHeader {
         return new ChunkRegionHeader(sectorInfo, timestamps);
     }
 
-    public final int[] sectorInfo;
-    public final int[] timestamps;
-    public final int[] localIndexesSortedByOffset;
+    public final int @Unmodifiable [] sectorInfo;
+    public final int @Unmodifiable [] timestamps;
+    public final int @Unmodifiable [] localIndexesSortedByOffset;
 
-    public ChunkRegionHeader(int[] sectorInfo, int[] timestamps) {
+    public ChunkRegionHeader(int @Unmodifiable [] sectorInfo, int @Unmodifiable [] timestamps) {
         assert sectorInfo.length == CHUNKS_PRE_REGION;
         assert timestamps.length == CHUNKS_PRE_REGION;
 

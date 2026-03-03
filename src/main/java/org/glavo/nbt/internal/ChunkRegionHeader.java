@@ -1,0 +1,60 @@
+/*
+ * Hello Minecraft! Launcher
+ * Copyright (C) 2026 huangyuhui <huanghongxun2008@126.com> and contributors
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ */
+package org.glavo.nbt.internal;
+
+import org.glavo.nbt.internal.input.DataReader;
+
+import java.io.IOException;
+import java.util.Comparator;
+import java.util.stream.IntStream;
+
+import static org.glavo.nbt.internal.ChunkUtils.CHUNKS_PRE_REGION;
+
+public final class ChunkRegionHeader {
+    public static ChunkRegionHeader readHeader(DataReader reader) throws IOException {
+        int[] sectorInfo = reader.readIntArray(CHUNKS_PRE_REGION);
+        int[] timestamps = reader.readIntArray(CHUNKS_PRE_REGION);
+
+        return new ChunkRegionHeader(sectorInfo, timestamps);
+    }
+
+    public final int[] sectorInfo;
+    public final int[] timestamps;
+    public final int[] sortedByOffset;
+
+    public ChunkRegionHeader(int[] sectorInfo, int[] timestamps) {
+        assert sectorInfo.length == CHUNKS_PRE_REGION;
+        assert timestamps.length == CHUNKS_PRE_REGION;
+
+        this.sectorInfo = sectorInfo;
+        this.timestamps = timestamps;
+        this.sortedByOffset = IntStream.range(0, CHUNKS_PRE_REGION)
+                .boxed()
+                .sorted(Comparator.comparingInt(ChunkUtils::getSectorOffset).thenComparingInt(Integer::intValue))
+                .mapToInt(Integer::intValue)
+                .toArray();
+    }
+
+    public int getSectorOffset(int index) {
+        return ChunkUtils.getSectorOffset(sectorInfo[index]);
+    }
+
+    public int getSectorLength(int index) {
+        return ChunkUtils.getSectorLength(sectorInfo[index]);
+    }
+}

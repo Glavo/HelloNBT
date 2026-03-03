@@ -18,7 +18,7 @@ package org.glavo.nbt.chunk;
 import org.glavo.nbt.MinecraftEdition;
 import org.glavo.nbt.NBTElement;
 import org.glavo.nbt.NBTParent;
-import org.glavo.nbt.internal.ChunkMetadata;
+import org.glavo.nbt.internal.ChunkRegionHeader;
 import org.glavo.nbt.internal.ChunkUtils;
 import org.glavo.nbt.internal.input.*;
 import org.glavo.nbt.tag.CompoundTag;
@@ -39,27 +39,12 @@ public final class ChunkRegion implements NBTParent<Chunk>, NBTElement {
 
         final long fileStart = rawReader.position();
 
-        var metadata = new ChunkMetadata[ChunkUtils.CHUNKS_PRE_REGION];
-
-        int[] diskInfo = rawReader.readIntArray(ChunkUtils.CHUNKS_PRE_REGION);
-        int[] timestamps = rawReader.readIntArray(ChunkUtils.CHUNKS_PRE_REGION);
-        for (int z = 0; z < ChunkUtils.CHUNKS_PER_REGION_SIDE; z++) {
-            for (int x = 0; x < ChunkUtils.CHUNKS_PER_REGION_SIDE; x++) {
-                int index = ChunkUtils.toLocalIndex(x, z);
-
-                int info = diskInfo[index];
-                int sectorOffset = info >>> 8;
-                int sectorCount = info & 0xFF;
-                int timestamp = timestamps[index];
-
-                metadata[index] = new ChunkMetadata(index, sectorOffset, sectorCount, timestamp);
-            }
-        }
-
+        var header = ChunkRegionHeader.readHeader(rawReader);
         var region = new ChunkRegion();
 
-        for (ChunkMetadata chunkMetadata : ChunkMetadata.sortedByOffset(metadata)) {
-            long sectorStart = fileStart + (long) chunkMetadata.sectorOffset() * ChunkUtils.SECTOR_BYTES;
+
+        for (int localIndex : header.sortedByOffset) {
+            long sectorStart = fileStart + (long) header.getSectorOffset(localIndex) * ChunkUtils.SECTOR_BYTES;
             long position = rawReader.position();
             if (position != sectorStart) {
                 if (position < sectorStart) {
@@ -96,11 +81,13 @@ public final class ChunkRegion implements NBTParent<Chunk>, NBTElement {
             try (reader) {
                 var tag = Tag.readTag(reader);
                 if (tag instanceof CompoundTag rootTag) {
-                    region.getChunk(chunkMetadata.localIndex()).rootTag = rootTag;
+                    region.getChunk(localIndex).rootTag = rootTag;
                 } else {
                     throw new IOException("Unexpected tag type: " + tag);
                 }
             }
+
+
         }
 
         return region;

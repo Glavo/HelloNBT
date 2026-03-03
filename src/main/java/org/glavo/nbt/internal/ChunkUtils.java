@@ -17,8 +17,6 @@ package org.glavo.nbt.internal;
 
 import org.jetbrains.annotations.Range;
 
-import java.util.Comparator;
-
 public final class ChunkUtils {
     public static final int SECTOR_BYTES = 4096;
 
@@ -42,6 +40,22 @@ public final class ChunkUtils {
     @Range(from = 0, to = 31)
     public static int getLocalZ(@Range(from = 0, to = 1023) int localIndex) {
         return localIndex >>> CHUNKS_PER_REGION_SIDE_SHIFT;
+    }
+
+    public static int getSectorOffset(int sectorInfo) {
+        return (sectorInfo >>> 8);
+    }
+
+    public static int getSectorLength(int sectorInfo) {
+        return (sectorInfo & 0xFF);
+    }
+
+    public static int getSectorByteOffset(int sectorInfo) {
+        return getSectorOffset(sectorInfo) * SECTOR_BYTES;
+    }
+
+    public static int getSectorByteLength(int sectorInfo) {
+        return getSectorLength(sectorInfo) * SECTOR_BYTES;
     }
 
     private ChunkUtils() {

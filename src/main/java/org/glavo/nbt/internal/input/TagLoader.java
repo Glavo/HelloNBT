@@ -29,7 +29,7 @@ import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
 import java.util.Objects;
 
-public abstract class TagLoader<T extends Tag, S> implements Tag.Loader<T, S> {
+public sealed abstract class TagLoader<T extends Tag, S> implements Tag.Loader<T, S> {
 
     public static @Nullable Tag readTag(DataReader reader) throws IOException {
         byte tagByte = reader.readByte();
@@ -73,20 +73,30 @@ public abstract class TagLoader<T extends Tag, S> implements Tag.Loader<T, S> {
     protected final boolean autoDecompress;
 
     protected TagLoader(Class<T> tagClass, MinecraftEdition edition, boolean autoDecompress) {
-        this.tagClass = tagClass;
-        this.edition = edition;
+        this.tagClass = Objects.requireNonNull(tagClass, "tagClass");
+        this.edition = Objects.requireNonNull(edition, "edition");
         this.autoDecompress = autoDecompress;
     }
 
     protected final T check(@Nullable Tag tag) throws IOException {
         if (tag == null) {
-            throw new IOException("Unexpected null tag");
+            throw new IOException("Unexpected TAG_END");
         }
         try {
             return tagClass.cast(tag);
         } catch (ClassCastException e) {
             throw new IOException("Unexpected tag type: " + tag);
         }
+    }
+
+    @Override
+    public String toString() {
+        return "Tag.Loader.%s[tagClass=%s, edition=%s, autoDecompress=%s]".formatted(
+                getClass().getSimpleName(),
+                tagClass.getSimpleName(),
+                edition,
+                autoDecompress
+        );
     }
 
     private static abstract class AbstractBuilder<T extends Tag, S> implements Tag.Loader.Builder<T, S> {

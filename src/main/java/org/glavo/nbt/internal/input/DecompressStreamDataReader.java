@@ -26,38 +26,16 @@ import java.nio.ByteBuffer;
 import java.util.zip.GZIPInputStream;
 
 public abstract class DecompressStreamDataReader extends BoundedDataReader {
-    private static final boolean LZ4_AVAILABLE;
-
-    static {
-        boolean lz4Available = false;
-        try {
-            Class.forName("net.jpountz.lz4.LZ4BlockInputStream", false, DecompressStreamDataReader.class.getClassLoader());
-            lz4Available = true;
-        } catch (ClassNotFoundException ignored) {
-        }
-        LZ4_AVAILABLE = lz4Available;
-    }
-
     public static DecompressStreamDataReader newGZipDataReader(RawDataReader rawReader, long limit) throws IOException {
-        return new DecompressStreamDataReader(rawReader, limit) {
-            @Override
-            protected InputStream newDecompressStream(InputStream rawInputStream) throws IOException {
-                return new GZIPInputStream(rawInputStream);
-            }
-        };
+        return new GZipReader(rawReader, limit);
     }
 
     public static DecompressStreamDataReader newLZ4DataReader(RawDataReader rawReader, long limit) throws IOException {
-        if (!LZ4_AVAILABLE) {
+        if (!LZ4Reader.AVAILABLE) {
             throw new IOException("Missing LZ4 library, please add it to your classpath.");
         }
 
-        return new DecompressStreamDataReader(rawReader, limit) {
-            @Override
-            protected InputStream newDecompressStream(InputStream rawInputStream) {
-                return LZ4BlockInputStream.newBuilder().build(rawInputStream);
-            }
-        };
+        return new LZ4Reader(rawReader, limit);
     }
 
     private final InputStream decompressStream;
@@ -105,5 +83,39 @@ public abstract class DecompressStreamDataReader extends BoundedDataReader {
     public void close() throws IOException {
         getRawReader().releaseDecompressBuffer(getBuffer());
         super.close();
+    }
+
+    private static class LZ4Reader extends DecompressStreamDataReader {
+        static final boolean AVAILABLE;
+
+        static {
+            boolean lz4Available = false;
+            try {
+                Class.forName("net.jpountz.lz4.LZ4BlockInputStream", false, DecompressStreamDataReader.class.getClassLoader());
+                lz4Available = true;
+            } catch (ClassNotFoundException ignored) {
+            }
+            AVAILABLE = lz4Available;
+        }
+
+        public LZ4Reader(RawDataReader rawReader, long limit) throws IOException {
+            super(rawReader, limit);
+        }
+
+        @Override
+        protected InputStream newDecompressStream(InputStream rawInputStream) {
+            return LZ4BlockInputStream.newBuilder().build(rawInputStream);
+        }
+    }
+
+    private static class GZipReader extends DecompressStreamDataReader {
+        public GZipReader(RawDataReader rawReader, long limit) throws IOException {
+            super(rawReader, limit);
+        }
+
+        @Override
+        protected InputStream newDecompressStream(InputStream rawInputStream) throws IOException {
+            return new GZIPInputStream(rawInputStream);
+        }
     }
 }

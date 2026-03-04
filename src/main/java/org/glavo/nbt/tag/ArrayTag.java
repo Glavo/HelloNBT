@@ -46,5 +46,6 @@ public sealed abstract class ArrayTag<E extends Number> extends Tag implements I
     public abstract E getValue(int index) throws IndexOutOfBoundsException;
 
     @Override
+    @Contract(value = "-> new", pure = true)
     public abstract ArrayTag<E> clone();
 }

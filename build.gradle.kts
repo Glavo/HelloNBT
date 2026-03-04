@@ -24,6 +24,7 @@ dependencies {
     testImplementation(libs.lz4)
     testImplementation(libs.xz)
     testImplementation(libs.commons.io)
+    testImplementation(libs.jimfs)
 }
 
 java {

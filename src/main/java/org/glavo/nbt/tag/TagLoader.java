@@ -48,12 +48,12 @@ public sealed interface TagLoader permits TagLoaderImpl {
     ///
     /// The default value is `true`.
     @ApiStatus.Experimental
-    boolean autoDecompress();
+    boolean isAutoDecompress();
 
     /// Returns the Minecraft edition of the NBT data.
     ///
     /// The default edition is [MinecraftEdition#JAVA_EDITION].
-    MinecraftEdition edition();
+    MinecraftEdition getEdition();
 
     /// Loads a NBT tag from a byte array.
     Tag load(byte[] array) throws IOException;

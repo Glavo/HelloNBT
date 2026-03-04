@@ -76,6 +76,15 @@ public record TagLoaderImpl(MinecraftEdition edition, boolean autoDecompress) im
         return readTag(reader);
     }
 
+    @Override
+    public boolean isAutoDecompress() {
+        return autoDecompress;
+    }
+
+    @Override
+    public MinecraftEdition getEdition() {
+        return edition;
+    }
 
     private Tag check(@Nullable Tag tag) throws IOException {
         if (tag == null) {

@@ -49,6 +49,16 @@ public sealed interface TagLoader permits TagLoaderImpl {
         return check(load(array), tagClass);
     }
 
+    /// Loads a NBT tag from a byte array with the specified offset and length.
+    default Tag load(byte[] array, int offset, int length) throws IOException {
+        return load(ByteBuffer.wrap(array, offset, length));
+    }
+
+    /// Loads the specified NBT tag from a byte array with the specified offset and length.
+    default <T extends Tag> T load(byte[] array, int offset, int length, Class<T> tagClass) throws IOException {
+        return check(load(array, offset, length), tagClass);
+    }
+
     /// Loads a NBT tag from a byte buffer.
     Tag load(ByteBuffer buffer) throws IOException;
 

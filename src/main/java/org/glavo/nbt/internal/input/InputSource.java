@@ -15,11 +15,15 @@
  */
 package org.glavo.nbt.internal.input;
 
+import org.jetbrains.annotations.Nullable;
+
 import java.io.Closeable;
 import java.io.EOFException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.ByteBuffer;
+import java.nio.channels.ReadableByteChannel;
+import java.nio.channels.SeekableByteChannel;
 
 public sealed abstract class InputSource implements Closeable {
     private boolean closed = false;
@@ -104,6 +108,85 @@ public sealed abstract class InputSource implements Closeable {
         public void skip(long bytes) throws IOException {
             inputStream.skipNBytes(bytes);
             position += bytes;
+        }
+    }
+
+    public static final class OfByteChannel extends InputSource {
+        private final ReadableByteChannel channel;
+        private final boolean closeChannel;
+        private long position;
+
+        private @Nullable ByteBuffer skipBuffer;
+
+        public OfByteChannel(ReadableByteChannel channel, boolean closeChannel) {
+            this.channel = channel;
+            this.closeChannel = closeChannel;
+        }
+
+        @Override
+        public boolean supportDirectBuffer() {
+            return true;
+        }
+
+        @Override
+        public long position() {
+            return position;
+        }
+
+        @Override
+        protected void closeImpl() throws IOException {
+            if (closeChannel) {
+                channel.close();
+            }
+        }
+
+        @Override
+        protected void fillBufferImpl(ByteBuffer target, int required) throws IOException {
+            target.compact();
+            try {
+                while (target.position() < required) {
+                    int n = channel.read(target);
+                    if (n > 0) {
+                        position += n;
+                    } else {
+                        throw new EOFException("Unexpected end of stream");
+                    }
+                }
+            } finally {
+                target.flip();
+            }
+        }
+
+        @Override
+        public void skip(long bytes) throws IOException {
+            if (channel instanceof SeekableByteChannel seekableChannel) {
+                try {
+                    long channelCurrentPosition = seekableChannel.position();
+                    long channelTargetPosition = Math.addExact(channelCurrentPosition, bytes);
+                    seekableChannel.position(channelTargetPosition);
+                    position += bytes;
+                    return;
+                } catch (ArithmeticException e) {
+                    throw new IOException("Overflow when skip " + bytes + " bytes", e);
+                }
+            }
+
+            if (skipBuffer == null) {
+                skipBuffer = ByteBuffer.allocateDirect(1024);
+            }
+
+            long remainingSkip = bytes;
+            while (remainingSkip > 0) {
+                skipBuffer.position(0).limit((int) Math.min(remainingSkip, skipBuffer.capacity()));
+
+                int n = channel.read(skipBuffer);
+                if (n > 0) {
+                    position += n;
+                    remainingSkip -= n;
+                } else {
+                    throw new EOFException("Unexpected end of stream");
+                }
+            }
         }
     }
 }

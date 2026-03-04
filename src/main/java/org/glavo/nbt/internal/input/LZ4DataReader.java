@@ -29,10 +29,9 @@ import java.util.Objects;
 public final class LZ4DataReader extends BoundedDataReader {
     private final LZ4BlockInputStream lz4Stream;
 
-    @SuppressWarnings("deprecation")
     public LZ4DataReader(RawDataReader rawReader, long limit) {
         super(rawReader, rawReader.getDecompressBuffer(), limit);
-        this.lz4Stream = LZ4BlockInputStream.newBuilder().build(new LZ4BlockInputStream(new InputStream() {
+        this.lz4Stream = LZ4BlockInputStream.newBuilder().build(new InputStream() {
             private byte @Nullable [] singleByte;
 
             @Override
@@ -73,7 +72,7 @@ public final class LZ4DataReader extends BoundedDataReader {
                 return n;
             }
 
-        }));
+        });
 
         assert getBuffer().getByteBuffer().hasArray();
     }
@@ -85,7 +84,7 @@ public final class LZ4DataReader extends BoundedDataReader {
         }
 
         long remainingInput = endPosition - getRawReader().position();
-        if (remainingInput < 0) {
+        if (remainingInput <= 0) {
             throw new EOFException("Not enough data to read, required: " + required + ", remaining: " + remainingInput);
         }
 

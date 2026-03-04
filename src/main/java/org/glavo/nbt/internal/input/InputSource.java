@@ -90,7 +90,7 @@ public sealed abstract class InputSource implements Closeable {
         protected void fillBufferImpl(ByteBuffer target, int required) throws IOException {
             assert target.capacity() - target.remaining() >= required;
 
-            if (buffer.remaining() < required) {
+            if (buffer.remaining() < required - target.remaining()) {
                 throw new EOFException("Unexpected end of stream");
             }
 

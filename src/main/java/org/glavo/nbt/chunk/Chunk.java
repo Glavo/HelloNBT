@@ -24,6 +24,9 @@ import org.glavo.nbt.tag.Tag;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.Nullable;
 
+import java.time.Instant;
+import java.util.Objects;
+
 /// Represents a chunk in a region file.
 ///
 ///  A chunk can contain a root tag, which is usually a compound tag containing the chunk data.
@@ -32,13 +35,31 @@ public final class Chunk implements NBTParent<CompoundTag>, NBTElement {
     int localIndex;
 
     @Nullable CompoundTag rootTag;
+    Instant timestamp = Instant.EPOCH;
 
     /// Creates a new empty chunk.
+    ///
+    /// The root tag is initially `null`, and the timestamp is set to the epoch (1970-01-01T00:00:00Z).
     public Chunk() {
     }
 
+    /// Creates a new empty chunk with the given timestamp.
+    ///
+    /// The root tag is initially `null`.
+    public Chunk(Instant timestamp) {
+        this.timestamp = Objects.requireNonNull(timestamp, "timestamp");
+    }
+
     /// Creates a new chunk with the given root tag.
+    ///
+    /// The timestamp is set to the epoch (1970-01-01T00:00:00Z).
     public Chunk(@Nullable CompoundTag rootTag) {
+        setRootTag(rootTag);
+    }
+
+    /// Creates a new chunk with the given timestamp and root tag.
+    public Chunk(Instant timestamp, @Nullable CompoundTag rootTag) {
+        this.timestamp = Objects.requireNonNull(timestamp, "timestamp");
         setRootTag(rootTag);
     }
 
@@ -107,6 +128,20 @@ public final class Chunk implements NBTParent<CompoundTag>, NBTElement {
         }
 
         this.rootTag = rootTag;
+    }
+
+    /// Return the timestamp of this chunk.
+    ///
+    /// The default value is the epoch (1970-01-01T00:00:00Z).
+    @Contract(pure = true)
+    public Instant getTimestamp() {
+        return timestamp;
+    }
+
+    /// Set the timestamp of this chunk.
+    @Contract(mutates = "this")
+    public void setTimestamp(Instant timestamp) {
+        this.timestamp = Objects.requireNonNull(timestamp, "timestamp");
     }
 
     @Override

@@ -31,6 +31,7 @@ import java.nio.file.Path;
 public sealed interface TagLoader permits TagLoaderImpl {
 
     /// Returns the default [TagLoader].
+    @Contract(pure = true)
     static TagLoader getDefault() {
         return TagLoaderImpl.DEFAULT;
     }
@@ -48,14 +49,17 @@ public sealed interface TagLoader permits TagLoaderImpl {
     ///
     /// The default value is `true`.
     @ApiStatus.Experimental
+    @Contract(pure = true)
     boolean isAutoDecompress();
 
     /// Returns the Minecraft edition of the NBT data.
     ///
     /// The default edition is [MinecraftEdition#JAVA_EDITION].
+    @Contract(pure = true)
     MinecraftEdition getEdition();
 
     /// Loads a NBT tag from a byte array.
+    @Contract(pure = true)
     Tag load(byte[] array) throws IOException;
 
     /// Loads the specified NBT tag from a byte array.
@@ -91,7 +95,7 @@ public sealed interface TagLoader permits TagLoaderImpl {
     Tag load(InputStream inputStream) throws IOException;
 
     /// Loads the specified NBT tag from an input stream.
-    @Contract(pure = true)
+    @Contract(mutates = "param1")
     default <T extends Tag> T load(InputStream inputStream, Class<T> tagClass) throws IOException {
         return check(load(inputStream), tagClass);
     }

@@ -147,11 +147,11 @@ public final class ChunkRegionTest {
         ChunkRegion actual = ChunkRegion.readRegion(resource);
         for (int localIndex = 0; localIndex < CHUNKS_PRE_REGION; localIndex++) {
             var chunk = actual.getChunk(localIndex);
-            assertEquals(localIndex, chunk.getLocalIndex());
-
             if (expected[localIndex] == null) {
-                assertNull(chunk.getRootTag());
+                assertTrue(chunk == null || chunk.getRootTag() == null);
             } else {
+                assertNotNull(chunk);
+                assertEquals(localIndex, chunk.getLocalIndex());
                 assertEquals(expected[localIndex], chunk.getRootTag());
             }
         }

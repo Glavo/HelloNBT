@@ -23,6 +23,7 @@ import org.glavo.nbt.internal.ChunkUtils;
 import org.glavo.nbt.internal.input.*;
 import org.glavo.nbt.tag.CompoundTag;
 import org.glavo.nbt.tag.Tag;
+import org.jetbrains.annotations.Nullable;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -92,7 +93,7 @@ public final class ChunkRegion implements NBTParent<Chunk>, NBTElement {
             try (reader) {
                 var tag = Tag.readTag(reader);
                 if (tag instanceof CompoundTag rootTag) {
-                    region.getChunk(localIndex).rootTag = rootTag;
+                    region.setChunk(localIndex, new Chunk(rootTag));
                 } else {
                     throw new IOException("Unexpected tag type: " + tag);
                 }
@@ -110,26 +111,40 @@ public final class ChunkRegion implements NBTParent<Chunk>, NBTElement {
         }
     }
 
-    private final Chunk[] chunks;
+    private final @Nullable Chunk[] chunks = new Chunk[ChunkUtils.CHUNKS_PRE_REGION];
 
     public ChunkRegion() {
-        this.chunks = new Chunk[ChunkUtils.CHUNKS_PRE_REGION];
-        for (int i = 0; i < ChunkUtils.CHUNKS_PRE_REGION; i++) {
-            chunks[i] = new Chunk(this, i);
-        }
     }
 
-    public Chunk getChunk(int localIndex) {
+    public @Nullable Chunk getChunk(int localIndex) {
         Objects.checkIndex(localIndex, ChunkUtils.CHUNKS_PRE_REGION);
 
         return chunks[localIndex];
     }
 
-    public Chunk getChunk(int x, int z) {
+    public @Nullable Chunk getChunk(int x, int z) {
         Objects.checkIndex(x, ChunkUtils.CHUNKS_PER_REGION_SIDE);
         Objects.checkIndex(z, ChunkUtils.CHUNKS_PER_REGION_SIDE);
 
         return chunks[ChunkUtils.toLocalIndex(x, z)];
+    }
+
+    public void setChunk(int localIndex, @Nullable Chunk chunk) {
+        Objects.checkIndex(localIndex, ChunkUtils.CHUNKS_PRE_REGION);
+
+        Chunk old = chunks[localIndex];
+        if (old != null) {
+            old.setRegion(null, -1);
+        }
+
+        if (chunk != null) {
+            if (chunk.getRegion() != null) {
+                // TODO: remove chunk from its old region
+            }
+
+            chunk.setRegion(this, localIndex);
+        }
+        chunks[localIndex] = chunk;
     }
 
     @Override

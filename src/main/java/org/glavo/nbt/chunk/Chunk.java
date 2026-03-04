@@ -22,19 +22,26 @@ import org.glavo.nbt.tag.CompoundTag;
 import org.jetbrains.annotations.Nullable;
 
 public final class Chunk implements NBTParent<CompoundTag>, NBTElement {
-    final ChunkRegion region;
-    final int localIndex;
+    @Nullable ChunkRegion region;
+    int localIndex;
 
     @Nullable CompoundTag rootTag;
 
-    Chunk(ChunkRegion region, int localIndex) {
-        this.region = region;
-        this.localIndex = localIndex;
+    public Chunk() {
+    }
+
+    public Chunk(@Nullable CompoundTag rootTag) {
+        setRootTag(rootTag);
     }
 
     /// Return the region of this chunk, or `null` if this chunk is not in any region.
-    public ChunkRegion getRegion() {
+    public @Nullable ChunkRegion getRegion() {
         return region;
+    }
+
+    void setRegion(@Nullable ChunkRegion region, int localIndex) {
+        this.region = region;
+        this.localIndex = localIndex;
     }
 
     /// Return the local index of this chunk in its region, or -1 if this chunk is not in any region.
@@ -54,6 +61,11 @@ public final class Chunk implements NBTParent<CompoundTag>, NBTElement {
 
     public @Nullable CompoundTag getRootTag() {
         return rootTag;
+    }
+
+    public void setRootTag(@Nullable CompoundTag rootTag) {
+        // TODO: remove old root tag from its parent
+        this.rootTag = rootTag;
     }
 
     @Override

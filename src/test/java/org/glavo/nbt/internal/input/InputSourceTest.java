@@ -24,6 +24,7 @@ import java.io.ByteArrayInputStream;
 import java.io.EOFException;
 import java.io.IOException;
 import java.nio.ByteOrder;
+import java.nio.channels.Channels;
 import java.nio.channels.FileChannel;
 import java.nio.file.FileSystem;
 import java.nio.file.Files;
@@ -39,7 +40,7 @@ public final class InputSourceTest {
                 return new InputSource.OfInputStream(new ByteArrayInputStream(bytes), false);
             }
         },
-        BYTE_CHANNEL {
+        FILE_CHANNEL {
             static final FileSystem memoryFS = Jimfs.newFileSystem(Configuration.unix());
             static final Path tempDir = memoryFS.getPath("/tmp");
 
@@ -48,6 +49,11 @@ public final class InputSourceTest {
                 Path tempFile = Files.createTempFile(tempDir, "test", ".tmp");
                 Files.write(tempFile, bytes);
                 return new InputSource.OfByteChannel(FileChannel.open(tempFile, StandardOpenOption.READ, StandardOpenOption.DELETE_ON_CLOSE), true);
+            }
+        },
+        READABLE_BYTE_CHANNEL {
+            InputSource createSource(byte[] bytes) {
+                return new InputSource.OfByteChannel(Channels.newChannel(new ByteArrayInputStream(bytes)), false);
             }
         };
 

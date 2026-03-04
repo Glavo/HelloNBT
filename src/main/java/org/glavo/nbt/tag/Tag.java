@@ -235,4 +235,7 @@ public sealed abstract class Tag implements NBTElement
                 && this.contentEquals(that);
     }
 
+    @FunctionalInterface
+    public interface Loader<T extends Tag, S> extends NBTElement.Loader<T, S> {
+    }
 }

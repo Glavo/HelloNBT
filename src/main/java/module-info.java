@@ -19,7 +19,6 @@ module org.glavo.nbt {
     requires static org.lz4.java;
 
     exports org.glavo.nbt;
-    exports org.glavo.nbt.io;
     exports org.glavo.nbt.chunk;
     exports org.glavo.nbt.tag;
 }

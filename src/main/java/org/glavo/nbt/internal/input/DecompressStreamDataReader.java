@@ -18,23 +18,58 @@
 package org.glavo.nbt.internal.input;
 
 import net.jpountz.lz4.LZ4BlockInputStream;
-import org.jetbrains.annotations.Nullable;
 
 import java.io.EOFException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.ByteBuffer;
-import java.util.Objects;
+import java.util.zip.GZIPInputStream;
 
-public final class LZ4DataReader extends BoundedDataReader {
-    private final LZ4BlockInputStream lz4Stream;
+public abstract class DecompressStreamDataReader extends BoundedDataReader {
+    private static final boolean LZ4_AVAILABLE;
 
-    public LZ4DataReader(RawDataReader rawReader, long limit) {
+    static {
+        boolean lz4Available = false;
+        try {
+            Class.forName("net.jpountz.lz4.LZ4BlockInputStream", false, DecompressStreamDataReader.class.getClassLoader());
+            lz4Available = true;
+        } catch (ClassNotFoundException ignored) {
+        }
+        LZ4_AVAILABLE = lz4Available;
+    }
+
+    public static DecompressStreamDataReader newGZipDataReader(RawDataReader rawReader, long limit) throws IOException {
+        return new DecompressStreamDataReader(rawReader, limit) {
+            @Override
+            protected InputStream newDecompressStream(InputStream rawInputStream) throws IOException {
+                return new GZIPInputStream(rawInputStream);
+            }
+        };
+    }
+
+    public static DecompressStreamDataReader newLZ4DataReader(RawDataReader rawReader, long limit) throws IOException {
+        if (!LZ4_AVAILABLE) {
+            throw new IOException("Missing LZ4 library, please add it to your classpath.");
+        }
+
+        return new DecompressStreamDataReader(rawReader, limit) {
+            @Override
+            protected InputStream newDecompressStream(InputStream rawInputStream) {
+                return LZ4BlockInputStream.newBuilder().build(rawInputStream);
+            }
+        };
+    }
+
+    private final InputStream decompressStream;
+
+    public DecompressStreamDataReader(RawDataReader rawReader, long limit) throws IOException {
         super(rawReader, rawReader.getDecompressBuffer(), limit);
-        this.lz4Stream = LZ4BlockInputStream.newBuilder().build(asInputStream());
+        this.decompressStream = newDecompressStream(asInputStream());
 
         assert getBuffer().getByteBuffer().hasArray();
     }
+
+    protected abstract InputStream newDecompressStream(InputStream rawInputStream) throws IOException;
 
     @Override
     public void ensureBufferRemaining(int required) throws IOException {
@@ -54,7 +89,7 @@ public final class LZ4DataReader extends BoundedDataReader {
         byte[] array = output.array();
         try {
             while (output.position() < required) {
-                int n = lz4Stream.read(array, output.arrayOffset() + output.position(), output.remaining());
+                int n = decompressStream.read(array, output.arrayOffset() + output.position(), output.remaining());
                 if (n <= 0) {
                     throw new EOFException("Not enough data to read, required: " + required + ", remaining: " + (endPosition - getRawReader().position()));
                 }

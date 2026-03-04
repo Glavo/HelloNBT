@@ -28,8 +28,7 @@ import java.nio.channels.ReadableByteChannel;
 import java.nio.file.Path;
 
 /// The loader for reading NBT tags.
-public sealed interface TagLoader
-        permits TagLoaderImpl {
+public sealed interface TagLoader permits TagLoaderImpl {
 
     /// Returns the default [TagLoader].
     static TagLoader getDefault() {
@@ -94,7 +93,7 @@ public sealed interface TagLoader
     }
 
     /// The builder for creating a [TagLoader].
-    interface Builder {
+    sealed interface Builder permits TagLoaderImpl.BuilderImpl {
 
         /// Sets the Minecraft edition of the NBT data.
         ///

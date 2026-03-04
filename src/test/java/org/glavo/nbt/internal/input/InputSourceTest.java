@@ -30,7 +30,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
 
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.*;
 
 public final class InputSourceTest {
     enum SourceType {
@@ -61,9 +61,28 @@ public final class InputSourceTest {
         byte[] bytes = new byte[0];
 
         try (InputSource source = sourceType.createSource(bytes)) {
-            InputBuffer buffer = InputBuffer.allocate(1024, false, ByteOrder.LITTLE_ENDIAN);
+            InputBuffer buffer = InputBuffer.allocate(1024, source.supportDirectBuffer(), ByteOrder.LITTLE_ENDIAN);
 
             assertThrows(EOFException.class, () -> source.fillBuffer(buffer, 1));
+        }
+    }
+
+    @ParameterizedTest
+    @EnumSource
+    void testSimpleRead(SourceType sourceType) throws IOException {
+        byte[] bytes = new byte[]{1, 2, 3, 4};
+
+        try (InputSource source = sourceType.createSource(bytes)) {
+            InputBuffer buffer = InputBuffer.allocate(1024, source.supportDirectBuffer(), ByteOrder.LITTLE_ENDIAN);
+
+            assertEquals(0, source.position());
+
+            source.fillBuffer(buffer, 4);
+            assertArrayEquals(bytes, buffer.getByteArray(4));
+            assertEquals(4, source.position());
+
+            assertThrows(EOFException.class, () -> source.fillBuffer(buffer, 1));
+            assertEquals(4, source.position());
         }
     }
 }

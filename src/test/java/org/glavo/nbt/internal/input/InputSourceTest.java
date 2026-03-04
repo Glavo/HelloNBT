@@ -31,6 +31,8 @@ import java.nio.file.FileSystem;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
+import java.util.Arrays;
+import java.util.Random;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -102,4 +104,28 @@ public final class InputSourceTest {
             assertEquals(4, source.position());
         }
     }
+
+    @ParameterizedTest
+    @EnumSource
+    void testMix(SourceType sourceType) throws IOException {
+        var random = new Random(0);
+
+        byte[] bytes = new byte[128];
+        random.nextBytes(bytes);
+
+        try (InputSource source = sourceType.createSource(bytes)) {
+            InputBuffer buffer = InputBuffer.allocate(1024, source.supportDirectBuffer(), ByteOrder.LITTLE_ENDIAN);
+
+            assertEquals(0, source.position());
+
+            source.skip(32);
+            assertEquals(32, source.position());
+
+            source.fillBuffer(buffer, 32);
+            assertTrue(source.position() >= 64);
+            assertArrayEquals(Arrays.copyOfRange(bytes, 32, 64), buffer.getByteArray(32));
+        }
+    }
 }
+
+

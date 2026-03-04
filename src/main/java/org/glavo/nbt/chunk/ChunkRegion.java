@@ -94,7 +94,13 @@ public final class ChunkRegion implements NBTParent<Chunk>, NBTElement {
                 case 1 -> throw new IOException("GZip compression is not supported yet.");
                 case 2 -> new ZlibDataReader(rawReader, chunkRawContentLength);
                 case 3 -> new UncompressedDataReader(rawReader, chunkRawContentLength);
-                case 4 -> throw new IOException("LZ4 compression is not supported yet.");
+                case 4 -> {
+                    try {
+                        yield new LZ4DataReader(rawReader, chunkRawContentLength);
+                    } catch (NoClassDefFoundError e) {
+                        throw new IOException("Missing dependency for LZ4 compression: " + e.getMessage(), e);
+                    }
+                }
                 default -> throw new IOException("Unsupported compression type: " + compressType);
             };
 

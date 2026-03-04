@@ -101,6 +101,10 @@ public final class InputBuffer {
         return bytesBuffer.getDouble();
     }
 
+    public void getBytes(byte[] dst, int offset, int length) {
+        bytesBuffer.get(dst, offset, length);
+    }
+
     public byte[] getByteArray(int len) {
         var array = new byte[len];
         bytesBuffer.get(array);

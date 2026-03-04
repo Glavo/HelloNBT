@@ -51,6 +51,8 @@ public sealed interface TagLoader permits TagLoaderImpl {
     boolean autoDecompress();
 
     /// Returns the Minecraft edition of the NBT data.
+    ///
+    /// The default edition is [MinecraftEdition#JAVA_EDITION].
     MinecraftEdition edition();
 
     /// Loads a NBT tag from a byte array.

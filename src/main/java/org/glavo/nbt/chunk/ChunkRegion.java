@@ -165,9 +165,9 @@ public final class ChunkRegion implements NBTParent<Chunk>, NBTElement {
         }
 
         if (chunk != null) {
-            if (chunk.getRegion() != null) {
+            if (chunk.getParent() != null) {
                 // The chunk is already in another region, so we need to remove it from its old region first.
-                ChunkRegion oldRegion = chunk.getRegion();
+                ChunkRegion oldRegion = chunk.getParent();
                 oldRegion.remove(chunk);
             }
 
@@ -179,7 +179,7 @@ public final class ChunkRegion implements NBTParent<Chunk>, NBTElement {
     @Override
     @Contract(mutates = "this,param1")
     public void remove(Chunk chunk) throws IllegalArgumentException {
-        if (chunk.getRegion() != this) {
+        if (chunk.getParent() != this) {
             throw new IllegalArgumentException("The chunk is not in this region");
         }
 

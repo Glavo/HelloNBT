@@ -60,6 +60,7 @@ public sealed abstract class Tag implements NBTElement
     /// Set the name of the tag.
     ///
     /// @throws IllegalStateException if this tag is a child of a parent tag and the name is not valid for the parent tag.
+    @Contract(mutates = "this")
     public void setName(String name) throws IllegalStateException {
         // If the name is the same as the current name, do nothing.
         if (name.equals(this.name)) { // implicit null check
@@ -86,6 +87,7 @@ public sealed abstract class Tag implements NBTElement
 
     /// If the tag is a child of a [parent][NBTParent], returns the parent; otherwise, returns `null`.
     @Override
+    @Contract(pure = true)
     public @Nullable NBTParent<? extends Tag> getParent() {
         return parent;
     }
@@ -176,6 +178,7 @@ public sealed abstract class Tag implements NBTElement
     ///
     /// This method always performs a deep copy, and the returned tag will not have a parent tag.
     @Override
+    @Contract(pure = true)
     public abstract Tag clone();
 
     /// Returns a hash code for this tag.

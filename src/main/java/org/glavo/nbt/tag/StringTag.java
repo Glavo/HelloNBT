@@ -16,6 +16,7 @@
 package org.glavo.nbt.tag;
 
 import org.glavo.nbt.internal.input.DataReader;
+import org.jetbrains.annotations.Contract;
 
 import java.io.IOException;
 import java.util.Objects;
@@ -38,26 +39,31 @@ public final class StringTag extends ValueTag<String> {
     }
 
     @Override
+    @Contract(pure = true)
     public TagType getType() {
         return TagType.STRING;
     }
 
     /// Returns the value of the tag.
+    @Contract(pure = true)
     public String get() {
         return value;
     }
 
     @Override
+    @Contract(pure = true)
     public String getValue() {
         return value;
     }
 
     /// Sets the value of the tag.
+    @Contract(mutates = "this")
     public void set(String value) {
         this.value = Objects.requireNonNull(value);
     }
 
     @Override
+    @Contract(mutates = "this")
     public void setValue(String value) {
         this.value = Objects.requireNonNull(value);
     }
@@ -85,6 +91,7 @@ public final class StringTag extends ValueTag<String> {
     }
 
     @Override
+    @Contract(value = "-> new", pure = true)
     public StringTag clone() {
         return new StringTag(name, value);
     }

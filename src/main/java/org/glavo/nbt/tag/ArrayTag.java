@@ -15,6 +15,8 @@
  */
 package org.glavo.nbt.tag;
 
+import org.jetbrains.annotations.Contract;
+
 /// Base class for array tags.
 public sealed abstract class ArrayTag<E extends Number> extends Tag implements Iterable<E>
         permits ByteArrayTag, IntArrayTag, LongArrayTag {
@@ -24,19 +26,23 @@ public sealed abstract class ArrayTag<E extends Number> extends Tag implements I
     }
 
     /// Returns `true` if the array is empty; otherwise, returns `false`.
+    @Contract(pure = true)
     public final boolean isEmpty() {
         return size() == 0;
     }
 
     /// Returns the size of the array.
+    @Contract(pure = true)
     public abstract int size();
 
     /// Returns the clone of the array.
+    @Contract(pure = true)
     public abstract Object get();
 
     /// Returns the element at the given index.
     ///
     /// @throws IndexOutOfBoundsException if the index is out of bounds.
+    @Contract(pure = true)
     public abstract E getValue(int index) throws IndexOutOfBoundsException;
 
     @Override

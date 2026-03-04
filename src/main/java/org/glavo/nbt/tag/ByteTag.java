@@ -16,6 +16,7 @@
 package org.glavo.nbt.tag;
 
 import org.glavo.nbt.internal.input.DataReader;
+import org.jetbrains.annotations.Contract;
 
 import java.io.IOException;
 
@@ -37,32 +38,38 @@ public final class ByteTag extends ValueTag<Byte> {
     }
 
     @Override
+    @Contract(pure = true)
     public TagType getType() {
         return TagType.BYTE;
     }
 
     /// Returns the value of the tag.
+    @Contract(pure = true)
     public byte get() {
         return value;
     }
 
     @Override
+    @Contract(pure = true)
     public Byte getValue() {
         return value;
     }
 
     /// Returns the value of the tag as a boolean.
+    @Contract(pure = true)
     public boolean getBoolean() {
         // Should stricter checks be performed?
         return value != 0;
     }
 
     /// Sets the value of the tag.
+    @Contract(mutates = "this")
     public void set(byte value) {
         this.value = value;
     }
 
     @Override
+    @Contract(mutates = "this")
     public void setValue(Byte value) {
         this.value = value;
     }
@@ -70,6 +77,7 @@ public final class ByteTag extends ValueTag<Byte> {
     /// Sets the boolean value of the tag.
     ///
     /// If the `value` is `true`, the tag will be set to `1`; otherwise, it will be set to `0`.
+    @Contract(mutates = "this")
     public void setBoolean(boolean value) {
         this.value = (byte) (value ? 1 : 0);
     }
@@ -95,6 +103,7 @@ public final class ByteTag extends ValueTag<Byte> {
     }
 
     @Override
+    @Contract(value = "-> new", pure = true)
     public ByteTag clone() {
         return new ByteTag(name, value);
     }

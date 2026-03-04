@@ -16,6 +16,7 @@
 package org.glavo.nbt.tag;
 
 import org.glavo.nbt.internal.input.DataReader;
+import org.jetbrains.annotations.Contract;
 
 import java.io.IOException;
 
@@ -37,26 +38,31 @@ public final class ShortTag extends ValueTag<Short> {
     }
 
     @Override
+    @Contract(pure = true)
     public TagType getType() {
         return TagType.SHORT;
     }
 
     /// Returns the value of the tag.
+    @Contract(pure = true)
     public short get() {
         return value;
     }
 
     @Override
+    @Contract(pure = true)
     public Short getValue() {
         return value;
     }
 
     /// Sets the value of the tag.
+    @Contract(mutates = "this")
     public void set(short value) {
         this.value = value;
     }
 
     @Override
+    @Contract(mutates = "this")
     public void setValue(Short value) {
         this.value = value;
     }
@@ -82,6 +88,7 @@ public final class ShortTag extends ValueTag<Short> {
     }
 
     @Override
+    @Contract(value = "-> new", pure = true)
     public ShortTag clone() {
         return new ShortTag(getName(), value);
     }

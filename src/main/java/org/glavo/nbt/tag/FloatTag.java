@@ -16,6 +16,7 @@
 package org.glavo.nbt.tag;
 
 import org.glavo.nbt.internal.input.DataReader;
+import org.jetbrains.annotations.Contract;
 
 import java.io.IOException;
 
@@ -37,26 +38,31 @@ public final class FloatTag extends ValueTag<Float> {
     }
 
     @Override
+    @Contract(pure = true)
     public TagType getType() {
         return TagType.FLOAT;
     }
 
     /// Returns the value of the tag.
+    @Contract(pure = true)
     public float get() {
         return value;
     }
 
     @Override
+    @Contract(pure = true)
     public Float getValue() {
         return value;
     }
 
     /// Sets the value of the tag.
+    @Contract(mutates = "this")
     public void set(float value) {
         this.value = value;
     }
 
     @Override
+    @Contract(mutates = "this")
     public void setValue(Float value) {
         this.value = value;
     }
@@ -82,6 +88,7 @@ public final class FloatTag extends ValueTag<Float> {
     }
 
     @Override
+    @Contract(value = "-> new", pure = true)
     public FloatTag clone() {
         return new FloatTag(getName(), value);
     }

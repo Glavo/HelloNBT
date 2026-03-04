@@ -17,6 +17,7 @@ package org.glavo.nbt.tag;
 
 import org.glavo.nbt.internal.input.DataReader;
 import org.glavo.nbt.internal.input.TagLoader;
+import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.IOException;
@@ -51,11 +52,13 @@ public final class CompoundTag extends ParentTag<Tag> {
     }
 
     @Override
+    @Contract(pure = true)
     public TagType getType() {
         return TagType.COMPOUND;
     }
 
     /// Returns the subtag with the given name, or `null` if no such subtag exists.
+    @Contract(pure = true)
     public @Nullable Tag get(String name) {
         return subTagsByName.get(name);
     }
@@ -64,6 +67,7 @@ public final class CompoundTag extends ParentTag<Tag> {
     ///
     /// If another tag with the same name already exists, the old tag will be removed.
     @Override
+    @Contract(mutates = "this,param1")
     public void add(Tag tag) {
         if (tag.getParentTag() != null) {
             if (tag.getParentTag() == this) {
@@ -106,56 +110,67 @@ public final class CompoundTag extends ParentTag<Tag> {
     }
 
     /// Adds a byte tag with the given name and value to this compound tag.
+    @Contract(mutates = "this")
     public void putByte(String name, byte value) {
         add(new ByteTag(name, value));
     }
 
     /// Adds a short tag with the given name and value to this compound tag.
+    @Contract(mutates = "this")
     public void putShort(String name, short value) {
         add(new ShortTag(name, value));
     }
 
     /// Adds an int tag with the given name and value to this compound tag.
+    @Contract(mutates = "this")
     public void putInt(String name, int value) {
         add(new IntTag(name, value));
     }
 
     /// Adds a long tag with the given name and value to this compound tag.
+    @Contract(mutates = "this")
     public void putLong(String name, long value) {
         add(new LongTag(name, value));
     }
 
     /// Adds a float tag with the given name and value to this compound tag.
+    @Contract(mutates = "this")
     public void putFloat(String name, float value) {
         add(new FloatTag(name, value));
     }
 
     /// Adds a double tag with the given name and value to this compound tag.
+    @Contract(mutates = "this")
     public void putDouble(String name, double value) {
         add(new DoubleTag(name, value));
     }
 
     /// Adds a string tag with the given name and value to this compound tag.
+    @Contract(mutates = "this")
     public void putString(String name, String value) {
         add(new StringTag(name, value));
     }
 
     /// Adds a byte array tag with the given name and value to this compound tag.
+    @Contract(mutates = "this")
     public void putByteArray(String name, byte[] value) {
         add(new ByteArrayTag(name, value));
     }
 
     /// Adds an int array tag with the given name and value to this compound tag.
+    @Contract(mutates = "this")
     public void putIntArray(String name, int[] value) {
         add(new IntArrayTag(name, value));
     }
 
     /// Adds a long array tag with the given name and value to this compound tag.
+    @Contract(mutates = "this")
     public void putLongArray(String name, long[] value) {
         add(new LongArrayTag(name, value));
     }
 
     @Override
+    @Contract(mutates = "this,param1")
     public void remove(Tag tag) {
         if (tag.getParentTag() != this) {
             throw new IllegalArgumentException("The tag is not a child of this tag");
@@ -186,6 +201,7 @@ public final class CompoundTag extends ParentTag<Tag> {
     }
 
     @Override
+    @Contract(mutates = "this")
     public void clear() {
         super.clear();
         subTagsByName.clear();
@@ -233,6 +249,7 @@ public final class CompoundTag extends ParentTag<Tag> {
     }
 
     @Override
+    @Contract(value = "-> new", pure = true)
     public CompoundTag clone() {
         var newTag = new CompoundTag(this.name);
         newTag.subTags.ensureCapacity(this.size());

@@ -16,6 +16,8 @@
 package org.glavo.nbt.tag;
 
 import org.glavo.nbt.internal.input.DataReader;
+import org.intellij.lang.annotations.Flow;
+import org.jetbrains.annotations.Contract;
 
 import java.io.IOException;
 import java.util.Arrays;
@@ -53,6 +55,7 @@ public final class ByteArrayTag extends ArrayTag<Byte> {
     }
 
     /// Sets the value of the tag.
+    @Contract(mutates = "this")
     public void set(byte[] value) {
         this.value = value.clone();
     }
@@ -60,11 +63,13 @@ public final class ByteArrayTag extends ArrayTag<Byte> {
     /// Returns the element at the given index.
     ///
     /// @throws IndexOutOfBoundsException if the index is out of bounds.
+    @Contract(pure = true)
     public byte get(int index) throws IndexOutOfBoundsException {
         return value[index];
     }
 
     @Override
+    @Contract(pure = true)
     public Byte getValue(int index) throws IndexOutOfBoundsException {
         return get(index);
     }
@@ -72,6 +77,7 @@ public final class ByteArrayTag extends ArrayTag<Byte> {
     /// Sets the element at the given index.
     ///
     /// @throws IndexOutOfBoundsException if the index is out of bounds.
+    @Contract(mutates = "this")
     public void set(int index, byte value) throws IndexOutOfBoundsException {
         this.value[index] = value;
     }

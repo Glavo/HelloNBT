@@ -16,6 +16,7 @@
 package org.glavo.nbt.tag;
 
 import org.glavo.nbt.internal.input.DataReader;
+import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.IOException;
@@ -78,6 +79,7 @@ public final class ListTag<T extends Tag> extends ParentTag<T> {
     }
 
     @Override
+    @Contract(pure = true)
     public TagType getType() {
         return TagType.LIST;
     }
@@ -85,6 +87,7 @@ public final class ListTag<T extends Tag> extends ParentTag<T> {
     /// Returns the type of the elements in the list.
     ///
     /// If the element type is `null`, the list is empty.
+    @Contract(pure = true)
     public @Nullable TagType getElementType() {
         return elementType;
     }
@@ -92,6 +95,7 @@ public final class ListTag<T extends Tag> extends ParentTag<T> {
     /// Sets the type of the elements in the list.
     ///
     /// If the list is not empty, the element type must match the type of all elements in the list.
+    @Contract(mutates = "this")
     public void setElementType(@Nullable TagType elementType) throws IllegalStateException {
         if (!isEmpty()) {
             if (elementType == null) {
@@ -114,6 +118,7 @@ public final class ListTag<T extends Tag> extends ParentTag<T> {
     ///
     /// @throws IllegalArgumentException if the type of the tag is not the same as the element type of this list.
     @Override
+    @Contract(mutates = "this,param1")
     public void add(T tag) {
         if (tag.getType() != elementType) {
             throw new IllegalArgumentException("Cannot add a tag of type " + tag.getType() + " to a list of type " + elementType);
@@ -155,6 +160,7 @@ public final class ListTag<T extends Tag> extends ParentTag<T> {
     }
 
     @Override
+    @Contract(mutates = "this,param1")
     public void remove(Tag tag) {
         if (tag.getParentTag() != this) {
             throw new IllegalArgumentException("The tag is not a child of this tag");
@@ -241,6 +247,7 @@ public final class ListTag<T extends Tag> extends ParentTag<T> {
     }
 
     @Override
+    @Contract(value = "-> new", pure = true)
     @SuppressWarnings("unchecked")
     public ListTag<T> clone() {
         var newTag = new ListTag<T>(this.name, this.elementType);

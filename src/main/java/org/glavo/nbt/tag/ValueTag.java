@@ -15,6 +15,8 @@
  */
 package org.glavo.nbt.tag;
 
+import org.jetbrains.annotations.Contract;
+
 /// Base class for tags that hold a single simple value.
 public sealed abstract class ValueTag<V> extends Tag
         permits ByteTag, ShortTag, IntTag, LongTag, DoubleTag, FloatTag, StringTag {
@@ -23,11 +25,14 @@ public sealed abstract class ValueTag<V> extends Tag
     }
 
     /// Returns the value of the tag.
+    @Contract(pure = true)
     public abstract V getValue();
 
     /// Sets the value of the tag.
+    @Contract(mutates = "this")
     public abstract void setValue(V value);
 
     @Override
+    @Contract(pure = true)
     public abstract ValueTag<V> clone();
 }

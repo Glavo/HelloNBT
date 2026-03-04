@@ -16,6 +16,7 @@
 package org.glavo.nbt.tag;
 
 import org.glavo.nbt.internal.input.DataReader;
+import org.jetbrains.annotations.Contract;
 
 import java.io.IOException;
 import java.util.Arrays;
@@ -44,16 +45,19 @@ public final class LongArrayTag extends ArrayTag<Long> {
     }
 
     @Override
+    @Contract(pure = true)
     public TagType getType() {
         return TagType.LONG_ARRAY;
     }
 
     @Override
+    @Contract(pure = true)
     public long[] get() {
         return value.clone();
     }
 
     /// Sets the value of the tag.
+    @Contract(mutates = "this")
     public void set(long[] value) {
         this.value = value.clone();
     }
@@ -61,11 +65,13 @@ public final class LongArrayTag extends ArrayTag<Long> {
     /// Returns the element at the given index.
     ///
     /// @throws IndexOutOfBoundsException if the index is out of bounds.
+    @Contract(pure = true)
     public long get(int index) throws IndexOutOfBoundsException {
         return value[index];
     }
 
     @Override
+    @Contract(pure = true)
     public Long getValue(int index) throws IndexOutOfBoundsException {
         return get(index);
     }
@@ -73,11 +79,13 @@ public final class LongArrayTag extends ArrayTag<Long> {
     /// Sets the element at the given index.
     ///
     /// @throws IndexOutOfBoundsException if the index is out of bounds.
+    @Contract(mutates = "this")
     public void set(int index, long value) throws IndexOutOfBoundsException {
         this.value[index] = value;
     }
 
     @Override
+    @Contract(pure = true)
     public int size() {
         return value.length;
     }
@@ -137,6 +145,7 @@ public final class LongArrayTag extends ArrayTag<Long> {
     }
 
     @Override
+    @Contract(value = "-> new", pure = true)
     public LongArrayTag clone() {
         return new LongArrayTag(name, value);
     }

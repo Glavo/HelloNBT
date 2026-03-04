@@ -16,7 +16,7 @@
 package org.glavo.nbt.tag;
 
 import org.glavo.nbt.internal.input.DataReader;
-import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Contract;
 
 import java.io.IOException;
 import java.util.*;
@@ -48,11 +48,13 @@ public final class IntArrayTag extends ArrayTag<Integer> {
     }
 
     @Override
+    @Contract(pure = true)
     public int[] get() {
         return value.clone();
     }
 
     /// Sets the value of the tag.
+    @Contract(mutates = "this")
     public void set(int[] value) {
         this.value = value.clone();
     }
@@ -60,11 +62,13 @@ public final class IntArrayTag extends ArrayTag<Integer> {
     /// Returns the element at the given index.
     ///
     /// @throws IndexOutOfBoundsException if the index is out of bounds.
+    @Contract(pure = true)
     public int get(int index) throws IndexOutOfBoundsException {
         return value[index];
     }
 
     @Override
+    @Contract(pure = true)
     public Integer getValue(int index) throws IndexOutOfBoundsException {
         return get(index);
     }
@@ -72,11 +76,13 @@ public final class IntArrayTag extends ArrayTag<Integer> {
     /// Sets the element at the given index.
     ///
     /// @throws IndexOutOfBoundsException if the index is out of bounds.
+    @Contract(mutates = "this")
     public void set(int index, int value) throws IndexOutOfBoundsException {
         this.value[index] = value;
     }
 
     @Override
+    @Contract(pure = true)
     public int size() {
         return value.length;
     }
@@ -103,6 +109,7 @@ public final class IntArrayTag extends ArrayTag<Integer> {
     }
 
     /// Returns a sequential [IntStream] with this value as its source.
+    @Contract(pure = true)
     public IntStream stream() {
         return Arrays.stream(value);
     }

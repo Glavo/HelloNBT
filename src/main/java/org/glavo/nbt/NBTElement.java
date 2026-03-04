@@ -41,6 +41,15 @@ public sealed interface NBTElement permits ChunkRegion, Chunk, Tag, NBTParent {
     @FunctionalInterface
     interface Loader<E extends NBTElement, S> {
         E load(S source) throws IOException;
+
+        /// The interface for building loaders for NBT elements.
+        ///
+        /// @param <E> The type of NBT element to load.
+        /// @param <S> The type of the source of the NBT element.
+        @FunctionalInterface
+        interface Builder<E extends NBTElement, S> {
+            Loader<E, S> build();
+        }
     }
 
 }

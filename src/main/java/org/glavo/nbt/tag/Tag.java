@@ -237,5 +237,14 @@ public sealed abstract class Tag implements NBTElement
 
     @FunctionalInterface
     public interface Loader<T extends Tag, S> extends NBTElement.Loader<T, S> {
+
+        @Override
+        T load(S source) throws IOException;
+
+        interface Builder<T extends Tag, S>
+                extends NBTElement.Loader.Builder<T, S> {
+            @Override
+            Loader<T, S> build();
+        }
     }
 }

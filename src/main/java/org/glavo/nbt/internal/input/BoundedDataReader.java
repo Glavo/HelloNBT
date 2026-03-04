@@ -15,7 +15,12 @@
  */
 package org.glavo.nbt.internal.input;
 
+import org.jetbrains.annotations.Nullable;
+
+import java.io.EOFException;
 import java.io.IOException;
+import java.io.InputStream;
+import java.util.Objects;
 
 public abstract non-sealed class BoundedDataReader extends DataReader {
     private final RawDataReader rawReader;
@@ -50,5 +55,50 @@ public abstract non-sealed class BoundedDataReader extends DataReader {
         }
 
         getRawReader().skip(endPosition - currentPosition);
+    }
+
+    protected final InputStream asInputStream() {
+        return new InputStream() {
+            private byte @Nullable [] singleByte;
+
+            @Override
+            public int read() throws IOException {
+                if (singleByte == null) {
+                    singleByte = new byte[1];
+                }
+
+                if (read(singleByte) < 1) {
+                    return -1;
+                } else {
+                    return Byte.toUnsignedInt(singleByte[0]);
+                }
+            }
+
+            @Override
+            public int read(byte[] b, int off, int len) throws IOException {
+                Objects.checkFromIndexSize(off, len, b.length);
+                if (len == 0) {
+                    return 0;
+                }
+
+                long rawRemaining = endPosition - rawReader.position();
+                if (rawRemaining <= 0) {
+                    return -1;
+                }
+
+                if (rawReader.getBuffer().remaining() == 0) {
+                    try {
+                        rawReader.ensureBufferRemaining(1);
+                    } catch (EOFException e) {
+                        return -1;
+                    }
+                }
+
+                int n = (int) Math.min(Math.min(len, rawReader.getBuffer().remaining()), rawRemaining);
+                rawReader.getBuffer().getBytes(b, off, n);
+                return n;
+            }
+
+        };
     }
 }

@@ -41,6 +41,18 @@ public sealed interface TagLoader permits TagLoaderImpl {
         return new TagLoaderImpl.BuilderImpl();
     }
 
+    /// Returns whether the loader automatically decompresses the NBT data.
+    ///
+    /// If set to `true`, the loader will automatically decompress the NBT data if it is compressed by gzip or LZ4;
+    /// otherwise, it will throw an exception if the data is compressed.
+    ///
+    /// The default value is `true`.
+    @ApiStatus.Experimental
+    boolean autoDecompress();
+
+    /// Returns the Minecraft edition of the NBT data.
+    MinecraftEdition edition();
+
     /// Loads a NBT tag from a byte array.
     Tag load(byte[] array) throws IOException;
 

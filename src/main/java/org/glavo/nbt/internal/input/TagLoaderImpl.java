@@ -31,7 +31,11 @@ import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
 import java.util.Objects;
 
-public final class TagLoaderImpl implements TagLoader {
+public record TagLoaderImpl(MinecraftEdition edition, boolean autoDecompress) implements TagLoader {
+
+    public TagLoaderImpl {
+        Objects.requireNonNull(edition, "edition");
+    }
 
     public static final TagLoaderImpl DEFAULT = new TagLoaderImpl(MinecraftEdition.JAVA_EDITION, true);
 
@@ -72,13 +76,6 @@ public final class TagLoaderImpl implements TagLoader {
         return readTag(reader);
     }
 
-    private final MinecraftEdition edition;
-    private final boolean autoDecompress;
-
-    public TagLoaderImpl(MinecraftEdition edition, boolean autoDecompress) {
-        this.edition = Objects.requireNonNull(edition, "edition");
-        this.autoDecompress = autoDecompress;
-    }
 
     private Tag check(@Nullable Tag tag) throws IOException {
         if (tag == null) {
@@ -122,15 +119,7 @@ public final class TagLoaderImpl implements TagLoader {
         }
     }
 
-    @Override
-    public String toString() {
-        return "TagLoader[edition=%s, autoDecompress=%s]".formatted(
-                edition,
-                autoDecompress
-        );
-    }
-
-    public static final class BuilderImpl implements TagLoader.Builder {
+    public static final class BuilderImpl implements Builder {
         private MinecraftEdition edition = MinecraftEdition.JAVA_EDITION;
         private boolean autoDecompress = true;
 

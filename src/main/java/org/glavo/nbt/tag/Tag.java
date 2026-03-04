@@ -33,7 +33,7 @@ public sealed abstract class Tag implements NBTElement
         permits ValueTag, ArrayTag, ParentTag {
 
     public static Tag readTag(InputStream inputStream) throws IOException {
-        return TagLoader.ofInputStream().load(inputStream);
+        return TagLoader.getDefault().load(inputStream);
     }
 
     String name;

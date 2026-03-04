@@ -31,7 +31,9 @@ import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
 import java.util.Objects;
 
-public sealed abstract class TagLoaderImpl<T extends Tag, S> implements TagLoader<T, S> {
+public final class TagLoaderImpl implements TagLoader {
+
+    public static final TagLoaderImpl DEFAULT = new TagLoaderImpl(MinecraftEdition.JAVA_EDITION, true);
 
     public static @Nullable Tag readTag(DataReader reader) throws IOException {
         byte tagByte = reader.readByte();
@@ -70,190 +72,83 @@ public sealed abstract class TagLoaderImpl<T extends Tag, S> implements TagLoade
         return readTag(reader);
     }
 
-    protected final Class<T> tagClass;
-    protected final MinecraftEdition edition;
-    protected final boolean autoDecompress;
+    private final MinecraftEdition edition;
+    private final boolean autoDecompress;
 
-    protected TagLoaderImpl(Class<T> tagClass, MinecraftEdition edition, boolean autoDecompress) {
-        this.tagClass = Objects.requireNonNull(tagClass, "tagClass");
+    public TagLoaderImpl(MinecraftEdition edition, boolean autoDecompress) {
         this.edition = Objects.requireNonNull(edition, "edition");
         this.autoDecompress = autoDecompress;
     }
 
-    protected final T check(@Nullable Tag tag) throws IOException {
+    private Tag check(@Nullable Tag tag) throws IOException {
         if (tag == null) {
             throw new IOException("Unexpected TAG_END");
         }
-        try {
-            return tagClass.cast(tag);
-        } catch (ClassCastException e) {
-            throw new IOException("Unexpected tag type: " + tag);
+        return tag;
+    }
+
+    public Tag load(byte[] array) throws IOException {
+        try (var reader = new RawDataReader(new InputSource.OfByteBuffer(array), edition)) {
+            return check(autoDecompress ? readTagAutoDecompress(reader) : readTag(reader));
+        }
+    }
+
+    @Override
+    public Tag load(ByteBuffer buffer) throws IOException {
+        try (var reader = new RawDataReader(new InputSource.OfByteBuffer(buffer), edition)) {
+            return check(autoDecompress ? readTagAutoDecompress(reader) : readTag(reader));
+        }
+    }
+
+    @Override
+    public Tag load(InputStream inputStream) throws IOException {
+        try (var reader = new RawDataReader(new InputSource.OfInputStream(inputStream, false), edition)) {
+            return check(autoDecompress ? readTagAutoDecompress(reader) : readTag(reader));
+        }
+    }
+
+    @Override
+    public Tag load(ReadableByteChannel channel) throws IOException {
+        try (var reader = new RawDataReader(new InputSource.OfByteChannel(channel, false), edition)) {
+            return check(autoDecompress ? readTagAutoDecompress(reader) : readTag(reader));
+        }
+    }
+
+    @Override
+    public Tag load(Path path) throws IOException {
+        try (var channel = Files.newByteChannel(path, StandardOpenOption.READ);
+             var reader = new RawDataReader(new InputSource.OfByteChannel(channel, false), edition)) {
+            return check(autoDecompress ? readTagAutoDecompress(reader) : readTag(reader));
         }
     }
 
     @Override
     public String toString() {
-        return "TagLoader.%s[tagClass=%s, edition=%s, autoDecompress=%s]".formatted(
-                getClass().getSimpleName(),
-                tagClass.getSimpleName(),
+        return "TagLoader[edition=%s, autoDecompress=%s]".formatted(
                 edition,
                 autoDecompress
         );
     }
 
-    private static abstract class AbstractBuilder<T extends Tag, S> implements TagLoader.Builder<T, S> {
-        protected final Class<T> tagClass;
-        protected MinecraftEdition edition = MinecraftEdition.JAVA_EDITION;
-        protected boolean autoDecompress = true;
-
-        private AbstractBuilder(Class<T> tagClass) {
-            this.tagClass = tagClass;
-        }
+    public static final class BuilderImpl implements TagLoader.Builder {
+        private MinecraftEdition edition = MinecraftEdition.JAVA_EDITION;
+        private boolean autoDecompress = true;
 
         @Override
-        public AbstractBuilder<T, S> setEdition(MinecraftEdition edition) {
+        public BuilderImpl setEdition(MinecraftEdition edition) {
             this.edition = Objects.requireNonNull(edition, "edition");
             return this;
         }
 
         @Override
-        public AbstractBuilder<T, S> setAutoDecompress(boolean autoDecompress) {
+        public BuilderImpl setAutoDecompress(boolean autoDecompress) {
             this.autoDecompress = autoDecompress;
             return this;
         }
-    }
-
-    public static final class OfByteArray<T extends Tag> extends TagLoaderImpl<T, byte[]> {
-        public static final OfByteArray<Tag> DEFAULT = new OfByteArray<>(Tag.class, MinecraftEdition.JAVA_EDITION, true);
-
-        public OfByteArray(Class<T> tagClass, MinecraftEdition edition, boolean autoDecompress) {
-            super(tagClass, edition, autoDecompress);
-        }
 
         @Override
-        public T load(byte[] source) throws IOException {
-            try (var reader = new RawDataReader(new InputSource.OfByteBuffer(source), edition)) {
-                return check(autoDecompress ? readTagAutoDecompress(reader) : readTag(reader));
-            }
-        }
-
-        public static final class Builder<T extends Tag> extends AbstractBuilder<T, byte[]> {
-            public Builder(Class<T> tagClass) {
-                super(tagClass);
-            }
-
-            @Override
-            public OfByteArray<T> build() {
-                return new OfByteArray<>(tagClass, edition, autoDecompress);
-            }
-        }
-    }
-
-    public static final class OfByteBuffer<T extends Tag> extends TagLoaderImpl<T, ByteBuffer> {
-        public static final OfByteBuffer<Tag> DEFAULT = new OfByteBuffer<>(Tag.class, MinecraftEdition.JAVA_EDITION, true);
-
-        public OfByteBuffer(Class<T> tagClass, MinecraftEdition edition, boolean autoDecompress) {
-            super(tagClass, edition, autoDecompress);
-        }
-
-        @Override
-        public T load(ByteBuffer source) throws IOException {
-            try (var reader = new RawDataReader(new InputSource.OfByteBuffer(source), edition)) {
-                return check(autoDecompress ? readTagAutoDecompress(reader) : readTag(reader));
-            }
-        }
-
-        public static final class Builder<T extends Tag> extends AbstractBuilder<T, ByteBuffer> {
-            public Builder(Class<T> tagClass) {
-                super(tagClass);
-            }
-
-            @Override
-            public OfByteBuffer<T> build() {
-                return new OfByteBuffer<>(tagClass, edition, autoDecompress);
-            }
-        }
-    }
-
-    public static final class OfInputStream<T extends Tag> extends TagLoaderImpl<T, InputStream> {
-
-        public static final OfInputStream<Tag> DEFAULT = new OfInputStream<>(Tag.class, MinecraftEdition.JAVA_EDITION, true);
-
-        public OfInputStream(Class<T> tagClass, MinecraftEdition edition, boolean autoDecompress) {
-            super(tagClass, edition, autoDecompress);
-        }
-
-        @Override
-        public T load(InputStream source) throws IOException {
-            try (var reader = new RawDataReader(new InputSource.OfInputStream(source, false), edition)) {
-                return check(autoDecompress ? readTagAutoDecompress(reader) : readTag(reader));
-            }
-        }
-
-        public static final class Builder<T extends Tag> extends AbstractBuilder<T, InputStream> {
-            public Builder(Class<T> tagClass) {
-                super(tagClass);
-            }
-
-            @Override
-            public OfInputStream<T> build() {
-                return new OfInputStream<>(tagClass, edition, autoDecompress);
-            }
-        }
-    }
-
-    public static final class OfByteChannel<T extends Tag> extends TagLoaderImpl<T, ReadableByteChannel> {
-
-        public static final OfByteChannel<Tag> DEFAULT = new OfByteChannel<>(Tag.class, MinecraftEdition.JAVA_EDITION, true);
-
-        public OfByteChannel(Class<T> tagClass, MinecraftEdition edition, boolean autoDecompress) {
-            super(tagClass, edition, autoDecompress);
-        }
-
-        @Override
-        public T load(ReadableByteChannel source) throws IOException {
-            try (var reader = new RawDataReader(new InputSource.OfByteChannel(source, false), edition)) {
-                return check(autoDecompress ? readTagAutoDecompress(reader) : readTag(reader));
-            }
-        }
-
-        public static final class Builder<T extends Tag> extends AbstractBuilder<T, ReadableByteChannel> {
-            public Builder(Class<T> tagClass) {
-                super(tagClass);
-            }
-
-            @Override
-            public OfByteChannel<T> build() {
-                return new OfByteChannel<>(tagClass, edition, autoDecompress);
-            }
-        }
-    }
-
-    public static final class OfPath<T extends Tag> extends TagLoaderImpl<T, Path> {
-
-        public static final OfPath<Tag> DEFAULT = new OfPath<>(Tag.class, MinecraftEdition.JAVA_EDITION, true);
-
-        public OfPath(Class<T> tagClass, MinecraftEdition edition, boolean autoDecompress) {
-            super(tagClass, edition, autoDecompress);
-        }
-
-        @Override
-        public T load(Path source) throws IOException {
-            try (var channel = Files.newByteChannel(source, StandardOpenOption.READ);
-                 var reader = new RawDataReader(new InputSource.OfByteChannel(channel, false), edition)) {
-                return check(autoDecompress ? readTagAutoDecompress(reader) : readTag(reader));
-            }
-        }
-
-        public static final class Builder<T extends Tag> extends AbstractBuilder<T, Path> {
-            public Builder(Class<T> tagClass) {
-                super(tagClass);
-            }
-
-            @Override
-            public OfPath<T> build() {
-                return new OfPath<>(tagClass, edition, autoDecompress);
-            }
+        public TagLoader build() {
+            return new TagLoaderImpl(edition, autoDecompress);
         }
     }
 }

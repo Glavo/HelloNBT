@@ -16,10 +16,10 @@
 package org.glavo.nbt.tag;
 
 import org.glavo.nbt.MinecraftEdition;
-import org.glavo.nbt.NBTLoader;
 import org.glavo.nbt.internal.input.TagLoaderImpl;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Contract;
+import org.jetbrains.annotations.Nullable;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -28,131 +28,79 @@ import java.nio.channels.ReadableByteChannel;
 import java.nio.file.Path;
 
 /// The loader for reading NBT tags.
-@FunctionalInterface
-public interface TagLoader<T extends Tag, S> extends NBTLoader<T, S> {
+public sealed interface TagLoader
+        permits TagLoaderImpl {
 
-    /// The loader for reading NBT tags from a byte array.
-    static TagLoader<Tag, byte[]> ofByteArray() {
-        return TagLoaderImpl.OfByteArray.DEFAULT;
+    /// Returns the default [TagLoader].
+    static TagLoader getDefault() {
+        return TagLoaderImpl.DEFAULT;
     }
 
-    /// The loader for reading NBT tags from a byte array.
-    static <T extends Tag> TagLoader<T, byte[]> ofByteArray(Class<T> tagClass) {
-        return new TagLoaderImpl.OfByteArray<>(tagClass, MinecraftEdition.JAVA_EDITION, true);
+    /// Returns a new [TagLoader.Builder].
+    @Contract("-> new")
+    static TagLoader.Builder newBuilder() {
+        return new TagLoaderImpl.BuilderImpl();
     }
 
-    /// The loader for reading NBT tags from a [ByteBuffer].
-    static TagLoader<Tag, ByteBuffer> ofByteBuffer() {
-        return TagLoaderImpl.OfByteBuffer.DEFAULT;
+    /// Loads a NBT tag from a byte array.
+    Tag load(byte[] array) throws IOException;
+
+    /// Loads the specified NBT tag from a byte array.
+    default <T extends Tag> T load(byte[] array, Class<T> tagClass) throws IOException {
+        return check(load(array), tagClass);
     }
 
-    /// The loader for reading NBT tags from a [ByteBuffer].
-    static <T extends Tag> TagLoader<T, ByteBuffer> ofByteBuffer(Class<T> tagClass) {
-        return new TagLoaderImpl.OfByteBuffer<>(tagClass, MinecraftEdition.JAVA_EDITION, true);
+    /// Loads a NBT tag from a byte buffer.
+    Tag load(ByteBuffer buffer) throws IOException;
+
+    /// Loads the specified NBT tag from a byte buffer.
+    default <T extends Tag> T load(ByteBuffer buffer, Class<T> tagClass) throws IOException {
+        return check(load(buffer), tagClass);
     }
 
-    /// The loader for reading NBT tags from an [InputStream].
-    static TagLoader<Tag, InputStream> ofInputStream() {
-        return TagLoaderImpl.OfInputStream.DEFAULT;
+    /// Loads a NBT tag from an input stream.
+    Tag load(InputStream inputStream) throws IOException;
+
+    /// Loads the specified NBT tag from an input stream.
+    default <T extends Tag> T load(InputStream inputStream, Class<T> tagClass) throws IOException {
+        return check(load(inputStream), tagClass);
     }
 
-    /// The loader for reading NBT tags from an [InputStream].
-    static <T extends Tag> TagLoader<T, InputStream> ofInputStream(Class<T> tagClass) {
-        return new TagLoaderImpl.OfInputStream<>(tagClass, MinecraftEdition.JAVA_EDITION, true);
+    /// Loads a NBT tag from a readable byte channel.
+    Tag load(ReadableByteChannel channel) throws IOException;
+
+    /// Loads the specified NBT tag from a readable byte channel.
+    default <T extends Tag> T load(ReadableByteChannel channel, Class<T> tagClass) throws IOException {
+        return check(load(channel), tagClass);
     }
 
-    /// The loader for reading NBT tags from a [ReadableByteChannel].
-    static TagLoader<Tag, ReadableByteChannel> ofByteChannel() {
-        return TagLoaderImpl.OfByteChannel.DEFAULT;
+    /// Loads a NBT tag from a file path.
+    Tag load(Path path) throws IOException;
+
+    /// Loads the specified NBT tag from a file path.
+    default <T extends Tag> T load(Path path, Class<T> tagClass) throws IOException {
+        return check(load(path), tagClass);
     }
 
-    /// The loader for reading NBT tags from a [ReadableByteChannel].
-    static <T extends Tag> TagLoader<T, ReadableByteChannel> ofByteChannel(Class<T> tagClass) {
-        return new TagLoaderImpl.OfByteChannel<>(tagClass, MinecraftEdition.JAVA_EDITION, true);
+    private static <T extends Tag> T check(@Nullable Tag tag, Class<T> tagClass) throws IOException {
+        if (tag == null) {
+            throw new IOException("Unexpected TAG_END");
+        }
+        try {
+            return tagClass.cast(tag);
+        } catch (ClassCastException e) {
+            throw new IOException("Unexpected tag type: " + tag);
+        }
     }
-
-    /// The loader for reading NBT tags from a [Path].
-    static TagLoader<Tag, Path> ofPath() {
-        return TagLoaderImpl.OfPath.DEFAULT;
-    }
-
-    /// The loader for reading NBT tags from a [Path].
-    static <T extends Tag> TagLoader<T, Path> ofPath(Class<T> tagClass) {
-        return new TagLoaderImpl.OfPath<>(tagClass, MinecraftEdition.JAVA_EDITION, true);
-    }
-
-    @Override
-    T load(S source) throws IOException;
 
     /// The builder for creating a [TagLoader].
-    interface Builder<T extends Tag, S>
-            extends NBTLoader.Builder<T, S> {
-
-        /// Creates a builder for creating a [TagLoader] for reading NBT tags from a `byte[]`.
-        @Contract(value = "-> new")
-        static Builder<Tag, byte[]> ofByteArray() {
-            return Builder.ofByteArray(Tag.class);
-        }
-
-        /// Creates a builder for creating a [TagLoader] for reading NBT tags from a `byte[]`.
-        @Contract(value = "_ -> new")
-        static <T extends Tag> Builder<T, byte[]> ofByteArray(Class<T> tagClass) {
-            return new TagLoaderImpl.OfByteArray.Builder<>(tagClass);
-        }
-
-        /// Creates a builder for creating a [TagLoader] for reading NBT tags from a [ByteBuffer].
-        @Contract(value = "-> new")
-        static Builder<Tag, ByteBuffer> ofByteBuffer() {
-            return Builder.ofByteBuffer(Tag.class);
-        }
-
-        /// Creates a builder for creating a [TagLoader] for reading NBT tags from a [ByteBuffer].
-        @Contract(value = "_ -> new")
-        static <T extends Tag> Builder<T, ByteBuffer> ofByteBuffer(Class<T> tagClass) {
-            return new TagLoaderImpl.OfByteBuffer.Builder<>(tagClass);
-        }
-
-        /// Creates a builder for creating a [TagLoader] for reading NBT tags from an [InputStream].
-        @Contract(value = "-> new")
-        static Builder<Tag, InputStream> ofInputStream() {
-            return Builder.ofInputStream(Tag.class);
-        }
-
-        /// Creates a builder for creating a [TagLoader] for reading NBT tags from an [InputStream].
-        @Contract(value = "_ -> new")
-        static <T extends Tag> Builder<T, InputStream> ofInputStream(Class<T> tagClass) {
-            return new TagLoaderImpl.OfInputStream.Builder<>(tagClass);
-        }
-
-        /// Creates a builder for creating a [TagLoader] for reading NBT tags from a [ReadableByteChannel].
-        @Contract(value = "-> new")
-        static Builder<Tag, ReadableByteChannel> ofByteChannel() {
-            return Builder.ofByteChannel(Tag.class);
-        }
-
-        /// Creates a builder for creating a [TagLoader] for reading NBT tags from a [ReadableByteChannel].
-        @Contract(value = "_ -> new")
-        static <T extends Tag> Builder<T, ReadableByteChannel> ofByteChannel(Class<T> tagClass) {
-            return new TagLoaderImpl.OfByteChannel.Builder<>(tagClass);
-        }
-
-        /// Creates a builder for creating a [TagLoader] for reading NBT tags from a [Path].
-        @Contract(value = "-> new")
-        static Builder<Tag, Path> ofPath() {
-            return Builder.ofPath(Tag.class);
-        }
-
-        /// Creates a builder for creating a [TagLoader] for reading NBT tags from a [Path].
-        @Contract(value = "_ -> new")
-        static <T extends Tag> Builder<T, Path> ofPath(Class<T> tagClass) {
-            return new TagLoaderImpl.OfPath.Builder<>(tagClass);
-        }
+    interface Builder {
 
         /// Sets the Minecraft edition of the NBT data.
         ///
         /// The default edition is [MinecraftEdition#JAVA_EDITION].
         @Contract(value = "_ -> this", mutates = "this")
-        Builder<T, S> setEdition(MinecraftEdition edition);
+        Builder setEdition(MinecraftEdition edition);
 
         /// Sets whether to automatically decompress the NBT data.
         ///
@@ -162,9 +110,9 @@ public interface TagLoader<T extends Tag, S> extends NBTLoader<T, S> {
         /// The default value is `true`.
         @ApiStatus.Experimental
         @Contract(value = "_ -> this", mutates = "this")
-        Builder<T, S> setAutoDecompress(boolean autoDecompress);
+        Builder setAutoDecompress(boolean autoDecompress);
 
-        @Override
-        TagLoader<T, S> build();
+        /// Builds a new [TagLoader] with the specified configuration.
+        TagLoader build();
     }
 }

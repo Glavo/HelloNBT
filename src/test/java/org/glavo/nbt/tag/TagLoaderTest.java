@@ -36,32 +36,32 @@ public final class TagLoaderTest {
         BYTE_ARRAY {
             @Override
             <T extends Tag> T load(Path file, Class<T> tagClass) throws IOException {
-                return TagLoader.ofByteArray(tagClass).load(Files.readAllBytes(file));
+                return TagLoader.getDefault().load(Files.readAllBytes(file), tagClass);
             }
         },
         HEAP_BYTE_BUFFER {
             @Override
             <T extends Tag> T load(Path file, Class<T> tagClass) throws IOException {
-                return TagLoader.ofByteBuffer(tagClass).load(ByteBuffer.wrap(Files.readAllBytes(file)));
+                return TagLoader.getDefault().load(ByteBuffer.wrap(Files.readAllBytes(file)), tagClass);
             }
         },
         DIRECT_BYTE_BUFFER {
             @Override
             <T extends Tag> T load(Path file, Class<T> tagClass) throws IOException {
-                return TagLoader.ofByteBuffer(tagClass).load(ByteBuffer.allocateDirect((int) Files.size(file)).put(Files.readAllBytes(file)).flip());
+                return TagLoader.getDefault().load(ByteBuffer.allocateDirect((int) Files.size(file)).put(Files.readAllBytes(file)).flip(), tagClass);
             }
         },
         INPUT_STREAM {
             @Override
             <T extends Tag> T load(Path file, Class<T> tagClass) throws IOException {
-                return TagLoader.ofPath(tagClass).load(file);
+                return TagLoader.getDefault().load(file, tagClass);
             }
         },
         FILE_CHANNEL {
             @Override
             <T extends Tag> T load(Path file, Class<T> tagClass) throws IOException {
                 try (FileChannel channel = FileChannel.open(file, StandardOpenOption.READ)) {
-                    return TagLoader.ofByteChannel(tagClass).load(channel);
+                    return TagLoader.getDefault().load(channel, tagClass);
                 }
             }
         },
@@ -69,14 +69,14 @@ public final class TagLoaderTest {
             @Override
             <T extends Tag> T load(Path file, Class<T> tagClass) throws IOException {
                 try (ReadableByteChannel channel = Channels.newChannel(Files.newInputStream(file))) {
-                    return TagLoader.ofByteChannel(tagClass).load(channel);
+                    return TagLoader.getDefault().load(channel, tagClass);
                 }
             }
         },
         PATH {
             @Override
             <T extends Tag> T load(Path file, Class<T> tagClass) throws IOException {
-                return TagLoader.ofPath(tagClass).load(file);
+                return TagLoader.getDefault().load(file, tagClass);
             }
         };
 

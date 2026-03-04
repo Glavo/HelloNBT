@@ -69,4 +69,8 @@ public final class ChunkRegionHeader {
     public long getSectorLengthBytes(int index) {
         return (long) getSectorLength(index) * SECTOR_BYTES;
     }
+
+    public long getTimestampEpochSeconds(int index) {
+        return Integer.toUnsignedLong(timestamps[index]);
+    }
 }

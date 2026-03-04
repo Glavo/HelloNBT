@@ -24,10 +24,14 @@ import org.glavo.nbt.internal.input.RawDataReader;
 import org.glavo.nbt.tag.CompoundTag;
 import org.glavo.nbt.tag.Tag;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.shadow.de.siegmar.fastcsv.util.Nullable;
 
 import java.io.*;
+import java.nio.ByteBuffer;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.time.Instant;
+import java.util.Optional;
 import java.util.zip.GZIPInputStream;
 import java.util.zip.Inflater;
 import java.util.zip.InflaterInputStream;
@@ -82,60 +86,74 @@ public final class ChunkRegionTest {
         }
     }
 
-    private static CompoundTag[] loadChunks(Path file) throws IOException {
-        try (RandomAccessFile r = new RandomAccessFile(file.toFile(), "r")) {
-            var result = new CompoundTag[CHUNKS_PRE_REGION];
+    private static final class RefChunkRegion {
+        private final @Nullable CompoundTag[] chunks = new CompoundTag[CHUNKS_PRE_REGION];
+        private final Instant[] timestamps = new Instant[CHUNKS_PRE_REGION];
 
-            byte[] header = new byte[4096];
-            byte[] buffer = new byte[1 * 1024 * 1024]; // The maximum size of each chunk is 1MiB
-            Inflater inflater = new Inflater();
+        static RefChunkRegion load(Path file) throws IOException {
+            try (RandomAccessFile r = new RandomAccessFile(file.toFile(), "r")) {
+                var result = new RefChunkRegion();
 
-            r.readFully(header);
-            for (int i = 0; i < 4096; i += 4) {
-                int offset = ((header[i] & 0xff) << 16) + ((header[i + 1] & 0xff) << 8) + (header[i + 2] & 0xff);
-                int length = header[i + 3] & 0xff;
+                byte[] header = new byte[4096];
+                byte[] timestamps = new byte[4096];
+                byte[] buffer = new byte[1 * 1024 * 1024]; // The maximum size of each chunk is 1MiB
+                Inflater inflater = new Inflater();
 
-                if (offset == 0 || length == 0) {
-                    continue;
+                r.readFully(header);
+
+                r.readFully(timestamps);
+                ByteBuffer timestampsBuffer = ByteBuffer.wrap(timestamps);
+
+                for (int i = 0; i < CHUNKS_PRE_REGION; i++) {
+                    result.timestamps[i] = Instant.ofEpochSecond(Integer.toUnsignedLong(timestampsBuffer.getInt()));
                 }
 
-                r.seek(offset * 4096L);
-                r.readFully(buffer, 0, length * 4096);
+                for (int i = 0; i < 4096; i += 4) {
+                    int offset = ((header[i] & 0xff) << 16) + ((header[i + 1] & 0xff) << 8) + (header[i + 2] & 0xff);
+                    int length = header[i + 3] & 0xff;
 
-                int chunkLength = ((buffer[0] & 0xff) << 24) + ((buffer[1] & 0xff) << 16) + ((buffer[2] & 0xff) << 8) + (buffer[3] & 0xff);
+                    if (offset == 0 || length == 0) {
+                        continue;
+                    }
 
-                InputStream input = new ByteArrayInputStream(buffer);
-                input.skip(5);
-                input = BoundedInputStream.builder().setCount(chunkLength - 1).setInputStream(input).get();
+                    r.seek(offset * 4096L);
+                    r.readFully(buffer, 0, length * 4096);
 
-                switch (buffer[4]) {
-                    case 0x01:
-                        // GZip
-                        input = new GZIPInputStream(input);
-                        break;
-                    case 0x02:
-                        // Zlib
-                        inflater.reset();
-                        input = new InflaterInputStream(input, inflater);
-                        break;
-                    case 0x03:
-                        // Uncompressed
-                        break;
-                    default:
-                        throw new IOException("Unsupported compression method: " + Integer.toHexString(buffer[4] & 0xff));
-                }
+                    int chunkLength = ((buffer[0] & 0xff) << 24) + ((buffer[1] & 0xff) << 16) + ((buffer[2] & 0xff) << 8) + (buffer[3] & 0xff);
 
-                try (InputStream in = input) {
-                    var tag = Tag.readTag(in);
+                    InputStream input = new ByteArrayInputStream(buffer);
+                    input.skip(5);
+                    input = BoundedInputStream.builder().setCount(chunkLength - 1).setInputStream(input).get();
 
-                    if (tag instanceof CompoundTag chunk) {
-                        result[i / 4] = chunk;
-                    } else {
-                        throw new IOException("Unexpected tag: " + tag);
+                    switch (buffer[4]) {
+                        case 0x01:
+                            // GZip
+                            input = new GZIPInputStream(input);
+                            break;
+                        case 0x02:
+                            // Zlib
+                            inflater.reset();
+                            input = new InflaterInputStream(input, inflater);
+                            break;
+                        case 0x03:
+                            // Uncompressed
+                            break;
+                        default:
+                            throw new IOException("Unsupported compression method: " + Integer.toHexString(buffer[4] & 0xff));
+                    }
+
+                    try (InputStream in = input) {
+                        var tag = Tag.readTag(in);
+
+                        if (tag instanceof CompoundTag chunk) {
+                            result.chunks[i / 4] = chunk;
+                        } else {
+                            throw new IOException("Unexpected tag: " + tag);
+                        }
                     }
                 }
+                return result;
             }
-            return result;
         }
     }
 
@@ -143,16 +161,19 @@ public final class ChunkRegionTest {
     public void testReadRegion() throws IOException {
         Path resource = TestResources.getResource("/assets/r.-1.-1.mca");
 
-        CompoundTag[] expected = loadChunks(resource);
+        RefChunkRegion expected = RefChunkRegion.load(resource);
         ChunkRegion actual = ChunkRegion.readRegion(resource);
         for (int localIndex = 0; localIndex < CHUNKS_PRE_REGION; localIndex++) {
             var chunk = actual.getChunk(localIndex);
-            if (expected[localIndex] == null) {
+
+            assertEquals(expected.timestamps[localIndex], chunk != null ? chunk.getTimestamp() : Instant.EPOCH);
+
+            if (expected.chunks[localIndex] == null) {
                 assertTrue(chunk == null || chunk.getRootTag() == null);
             } else {
                 assertNotNull(chunk);
                 assertEquals(localIndex, chunk.getLocalIndex());
-                assertEquals(expected[localIndex], chunk.getRootTag());
+                assertEquals(expected.chunks[localIndex], chunk.getRootTag());
             }
         }
     }

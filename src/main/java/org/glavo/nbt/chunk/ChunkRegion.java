@@ -29,6 +29,7 @@ import org.jetbrains.annotations.Nullable;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.time.Instant;
 import java.util.Objects;
 
 /// @see <a href="https://minecraft.wiki/w/Region_file_format">Region file format - Minecraft Wiki</a>
@@ -48,6 +49,12 @@ public final class ChunkRegion implements NBTParent<Chunk>, NBTElement {
 
         for (int localIndex : header.localIndexesSortedByOffset) {
             if (header.getSectorLength(localIndex) == 0) {
+                if (header.getTimestampEpochSeconds(localIndex) != 0L) {
+                    region.setChunk(
+                            localIndex,
+                            new Chunk(Instant.ofEpochSecond(header.getTimestampEpochSeconds(localIndex))));
+                }
+
                 continue;
             }
 
@@ -94,7 +101,10 @@ public final class ChunkRegion implements NBTParent<Chunk>, NBTElement {
             try (reader) {
                 var tag = Tag.readTag(reader);
                 if (tag instanceof CompoundTag rootTag) {
-                    region.setChunk(localIndex, new Chunk(rootTag));
+                    region.setChunk(localIndex, new Chunk(
+                            Instant.ofEpochSecond(header.getTimestampEpochSeconds(localIndex)),
+                            rootTag)
+                    );
                 } else {
                     throw new IOException("Unexpected tag type: " + tag);
                 }

@@ -35,14 +35,14 @@ public final class TagLoaderTest {
         INPUT_STREAM {
             @Override
             <T extends Tag> T load(Path file, Class<T> tagClass) throws IOException {
-                return Tag.Loader.ofPath(tagClass).load(file);
+                return TagLoader.ofPath(tagClass).load(file);
             }
         },
         FILE_CHANNEL {
             @Override
             <T extends Tag> T load(Path file, Class<T> tagClass) throws IOException {
                 try (FileChannel channel = FileChannel.open(file, StandardOpenOption.READ)) {
-                    return Tag.Loader.ofByteChannel(tagClass).load(channel);
+                    return TagLoader.ofByteChannel(tagClass).load(channel);
                 }
             }
         },
@@ -50,14 +50,14 @@ public final class TagLoaderTest {
             @Override
             <T extends Tag> T load(Path file, Class<T> tagClass) throws IOException {
                 try (ReadableByteChannel channel = Channels.newChannel(Files.newInputStream(file))) {
-                    return Tag.Loader.ofByteChannel(tagClass).load(channel);
+                    return TagLoader.ofByteChannel(tagClass).load(channel);
                 }
             }
         },
         PATH {
             @Override
             <T extends Tag> T load(Path file, Class<T> tagClass) throws IOException {
-                return Tag.Loader.ofPath(tagClass).load(file);
+                return TagLoader.ofPath(tagClass).load(file);
             }
         };
 

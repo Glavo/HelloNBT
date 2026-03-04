@@ -18,6 +18,7 @@ package org.glavo.nbt.internal.input;
 import org.glavo.nbt.MinecraftEdition;
 import org.glavo.nbt.internal.Access;
 import org.glavo.nbt.tag.Tag;
+import org.glavo.nbt.tag.TagLoader;
 import org.glavo.nbt.tag.TagType;
 import org.jetbrains.annotations.Nullable;
 
@@ -29,7 +30,7 @@ import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
 import java.util.Objects;
 
-public sealed abstract class TagLoader<T extends Tag, S> implements Tag.Loader<T, S> {
+public sealed abstract class TagLoaderImpl<T extends Tag, S> implements TagLoader<T, S> {
 
     public static @Nullable Tag readTag(DataReader reader) throws IOException {
         byte tagByte = reader.readByte();
@@ -72,7 +73,7 @@ public sealed abstract class TagLoader<T extends Tag, S> implements Tag.Loader<T
     protected final MinecraftEdition edition;
     protected final boolean autoDecompress;
 
-    protected TagLoader(Class<T> tagClass, MinecraftEdition edition, boolean autoDecompress) {
+    protected TagLoaderImpl(Class<T> tagClass, MinecraftEdition edition, boolean autoDecompress) {
         this.tagClass = Objects.requireNonNull(tagClass, "tagClass");
         this.edition = Objects.requireNonNull(edition, "edition");
         this.autoDecompress = autoDecompress;
@@ -91,7 +92,7 @@ public sealed abstract class TagLoader<T extends Tag, S> implements Tag.Loader<T
 
     @Override
     public String toString() {
-        return "Tag.Loader.%s[tagClass=%s, edition=%s, autoDecompress=%s]".formatted(
+        return "TagLoader.%s[tagClass=%s, edition=%s, autoDecompress=%s]".formatted(
                 getClass().getSimpleName(),
                 tagClass.getSimpleName(),
                 edition,
@@ -99,7 +100,7 @@ public sealed abstract class TagLoader<T extends Tag, S> implements Tag.Loader<T
         );
     }
 
-    private static abstract class AbstractBuilder<T extends Tag, S> implements Tag.Loader.Builder<T, S> {
+    private static abstract class AbstractBuilder<T extends Tag, S> implements TagLoader.Builder<T, S> {
         protected final Class<T> tagClass;
         protected MinecraftEdition edition = MinecraftEdition.JAVA_EDITION;
         protected boolean autoDecompress = true;
@@ -121,7 +122,7 @@ public sealed abstract class TagLoader<T extends Tag, S> implements Tag.Loader<T
         }
     }
 
-    public static final class OfInputStream<T extends Tag> extends TagLoader<T, InputStream> {
+    public static final class OfInputStream<T extends Tag> extends TagLoaderImpl<T, InputStream> {
 
         public static final OfInputStream<Tag> DEFAULT = new OfInputStream<>(Tag.class, MinecraftEdition.JAVA_EDITION, true);
 
@@ -148,7 +149,7 @@ public sealed abstract class TagLoader<T extends Tag, S> implements Tag.Loader<T
         }
     }
 
-    public static final class OfByteChannel<T extends Tag> extends TagLoader<T, ReadableByteChannel> {
+    public static final class OfByteChannel<T extends Tag> extends TagLoaderImpl<T, ReadableByteChannel> {
 
         public static final OfByteChannel<Tag> DEFAULT = new OfByteChannel<>(Tag.class, MinecraftEdition.JAVA_EDITION, true);
 
@@ -175,7 +176,7 @@ public sealed abstract class TagLoader<T extends Tag, S> implements Tag.Loader<T
         }
     }
 
-    public static final class OfPath<T extends Tag> extends TagLoader<T, Path> {
+    public static final class OfPath<T extends Tag> extends TagLoaderImpl<T, Path> {
 
         public static final OfPath<Tag> DEFAULT = new OfPath<>(Tag.class, MinecraftEdition.JAVA_EDITION, true);
 

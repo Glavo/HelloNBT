@@ -23,7 +23,6 @@ import org.junit.jupiter.api.Test;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.nio.ByteOrder;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
@@ -36,7 +35,7 @@ public final class NBTReaderTest {
         var buffer = new ByteArrayOutputStream();
         NBTIO.writeTag(buffer, tag, edition == MinecraftEdition.BEDROCK_EDITION);
 
-        return Tag.Loader.Builder
+        return TagLoader.Builder
                 .ofInputStream()
                 .setEdition(edition)
                 .build()

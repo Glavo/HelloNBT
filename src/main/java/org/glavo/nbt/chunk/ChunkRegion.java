@@ -22,7 +22,6 @@ import org.glavo.nbt.internal.ChunkRegionHeader;
 import org.glavo.nbt.internal.ChunkUtils;
 import org.glavo.nbt.internal.input.*;
 import org.glavo.nbt.tag.CompoundTag;
-import org.glavo.nbt.tag.Tag;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.Nullable;
 
@@ -99,7 +98,7 @@ public final class ChunkRegion implements NBTParent<Chunk>, NBTElement {
             };
 
             try (reader) {
-                var tag = TagLoader.readTag(reader);
+                var tag = TagLoaderImpl.readTag(reader);
                 if (tag instanceof CompoundTag rootTag) {
                     region.setChunk(localIndex, new Chunk(
                             Instant.ofEpochSecond(header.getTimestampEpochSeconds(localIndex)),

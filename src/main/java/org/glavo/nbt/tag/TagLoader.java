@@ -59,48 +59,57 @@ public sealed interface TagLoader permits TagLoaderImpl {
     Tag load(byte[] array) throws IOException;
 
     /// Loads the specified NBT tag from a byte array.
+    @Contract(pure = true)
     default <T extends Tag> T load(byte[] array, Class<T> tagClass) throws IOException {
         return check(load(array), tagClass);
     }
 
     /// Loads a NBT tag from a byte array with the specified offset and length.
+    @Contract(pure = true)
     default Tag load(byte[] array, int offset, int length) throws IOException {
         return load(ByteBuffer.wrap(array, offset, length));
     }
 
     /// Loads the specified NBT tag from a byte array with the specified offset and length.
+    @Contract(pure = true)
     default <T extends Tag> T load(byte[] array, int offset, int length, Class<T> tagClass) throws IOException {
         return check(load(array, offset, length), tagClass);
     }
 
     /// Loads a NBT tag from a byte buffer.
+    @Contract(pure = true)
     Tag load(ByteBuffer buffer) throws IOException;
 
     /// Loads the specified NBT tag from a byte buffer.
+    @Contract(pure = true)
     default <T extends Tag> T load(ByteBuffer buffer, Class<T> tagClass) throws IOException {
         return check(load(buffer), tagClass);
     }
 
     /// Loads a NBT tag from an input stream.
+    @Contract(mutates = "param1")
     Tag load(InputStream inputStream) throws IOException;
 
     /// Loads the specified NBT tag from an input stream.
+    @Contract(pure = true)
     default <T extends Tag> T load(InputStream inputStream, Class<T> tagClass) throws IOException {
         return check(load(inputStream), tagClass);
     }
 
     /// Loads a NBT tag from a readable byte channel.
+    @Contract(mutates = "param1")
     Tag load(ReadableByteChannel channel) throws IOException;
 
     /// Loads the specified NBT tag from a readable byte channel.
+    @Contract(mutates = "param1")
     default <T extends Tag> T load(ReadableByteChannel channel, Class<T> tagClass) throws IOException {
         return check(load(channel), tagClass);
     }
 
-    /// Loads a NBT tag from a file path.
+    /// Loads a NBT tag from a file.
     Tag load(Path path) throws IOException;
 
-    /// Loads the specified NBT tag from a file path.
+    /// Loads the specified NBT tag from a file.
     default <T extends Tag> T load(Path path, Class<T> tagClass) throws IOException {
         return check(load(path), tagClass);
     }

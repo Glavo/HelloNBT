@@ -77,4 +77,18 @@ public final class TagLoaderTest {
         assertNotNull(dataTag);
         assertInstanceOf(CompoundTag.class, dataTag);
     }
+
+    /// Loads an uncompressed level.dat file
+    @ParameterizedTest
+    @EnumSource
+    void testLoadLevelDatRaw(Loader loader) throws IOException {
+        Path levelDatPath = TestResources.getResource("/assets/nbt/level.dat.raw");
+        CompoundTag levelDat = loader.load(levelDatPath, CompoundTag.class);
+        assertEquals("", levelDat.getName());
+        assertEquals(1, levelDat.size());
+
+        Tag dataTag = levelDat.get("Data");
+        assertNotNull(dataTag);
+        assertInstanceOf(CompoundTag.class, dataTag);
+    }
 }

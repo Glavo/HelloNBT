@@ -17,6 +17,7 @@ package org.glavo.nbt.tag;
 
 import org.glavo.nbt.MinecraftEdition;
 import org.glavo.nbt.NBTElement;
+import org.glavo.nbt.NBTLoader;
 import org.glavo.nbt.NBTParent;
 import org.glavo.nbt.internal.input.DataReader;
 import org.glavo.nbt.internal.input.RawDataReader;
@@ -236,13 +237,13 @@ public sealed abstract class Tag implements NBTElement
     }
 
     @FunctionalInterface
-    public interface Loader<T extends Tag, S> extends NBTElement.Loader<T, S> {
+    public interface Loader<T extends Tag, S> extends NBTLoader<T, S> {
 
         @Override
         T load(S source) throws IOException;
 
         interface Builder<T extends Tag, S>
-                extends NBTElement.Loader.Builder<T, S> {
+                extends NBTLoader.Builder<T, S> {
             @Override
             Loader<T, S> build();
         }

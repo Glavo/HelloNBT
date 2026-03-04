@@ -15,23 +15,23 @@
  */
 package org.glavo.nbt;
 
-import org.glavo.nbt.chunk.Chunk;
-import org.glavo.nbt.chunk.ChunkRegion;
-import org.glavo.nbt.tag.Tag;
-import org.jetbrains.annotations.Contract;
-import org.jetbrains.annotations.Nullable;
-
 import java.io.IOException;
 
-public sealed interface NBTElement permits ChunkRegion, Chunk, Tag, NBTParent {
-    /// Returns the parent of this element, or `null` if this element is not a child of any parent.
-    @Contract(pure = true)
-    @Nullable NBTParent<?> getParent();
+/// The interface for loading NBT elements.
+///
+/// @param <E> The type of NBT element to load.
+/// @param <S> The type of the source of the NBT element.
+@FunctionalInterface
+public
+interface NBTLoader<E extends NBTElement, S> {
+    E load(S source) throws IOException;
 
-    /// Returns `true` if this element is the root element of an NBT structure, i.e. it has no parent.
-    @Contract(pure = true)
-    default boolean isRoot() {
-        return getParent() == null;
+    /// The interface for building loaders for NBT elements.
+    ///
+    /// @param <E> The type of NBT element to load.
+    /// @param <S> The type of the source of the NBT element.
+    @FunctionalInterface
+    interface Builder<E extends NBTElement, S> {
+        NBTLoader<E, S> build();
     }
-
 }

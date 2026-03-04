@@ -24,6 +24,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.ByteBuffer;
 import java.nio.channels.ReadableByteChannel;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -119,6 +120,58 @@ public sealed abstract class TagLoaderImpl<T extends Tag, S> implements TagLoade
         public AbstractBuilder<T, S> setAutoDecompress(boolean autoDecompress) {
             this.autoDecompress = autoDecompress;
             return this;
+        }
+    }
+
+    public static final class OfByteArray<T extends Tag> extends TagLoaderImpl<T, byte[]> {
+        public static final OfByteArray<Tag> DEFAULT = new OfByteArray<>(Tag.class, MinecraftEdition.JAVA_EDITION, true);
+
+        public OfByteArray(Class<T> tagClass, MinecraftEdition edition, boolean autoDecompress) {
+            super(tagClass, edition, autoDecompress);
+        }
+
+        @Override
+        public T load(byte[] source) throws IOException {
+            try (var reader = new RawDataReader(new InputSource.OfByteBuffer(source), edition)) {
+                return check(autoDecompress ? readTagAutoDecompress(reader) : readTag(reader));
+            }
+        }
+
+        public static final class Builder<T extends Tag> extends AbstractBuilder<T, byte[]> {
+            public Builder(Class<T> tagClass) {
+                super(tagClass);
+            }
+
+            @Override
+            public OfByteArray<T> build() {
+                return new OfByteArray<>(tagClass, edition, autoDecompress);
+            }
+        }
+    }
+
+    public static final class OfByteBuffer<T extends Tag> extends TagLoaderImpl<T, ByteBuffer> {
+        public static final OfByteBuffer<Tag> DEFAULT = new OfByteBuffer<>(Tag.class, MinecraftEdition.JAVA_EDITION, true);
+
+        public OfByteBuffer(Class<T> tagClass, MinecraftEdition edition, boolean autoDecompress) {
+            super(tagClass, edition, autoDecompress);
+        }
+
+        @Override
+        public T load(ByteBuffer source) throws IOException {
+            try (var reader = new RawDataReader(new InputSource.OfByteBuffer(source), edition)) {
+                return check(autoDecompress ? readTagAutoDecompress(reader) : readTag(reader));
+            }
+        }
+
+        public static final class Builder<T extends Tag> extends AbstractBuilder<T, ByteBuffer> {
+            public Builder(Class<T> tagClass) {
+                super(tagClass);
+            }
+
+            @Override
+            public OfByteBuffer<T> build() {
+                return new OfByteBuffer<>(tagClass, edition, autoDecompress);
+            }
         }
     }
 

@@ -65,6 +65,58 @@ public sealed abstract class InputSource implements Closeable {
 
     public abstract void skip(long bytes) throws IOException;
 
+    public static final class OfByteBuffer extends InputSource {
+
+        private final ByteBuffer buffer;
+
+        public OfByteBuffer(ByteBuffer byteBuffer) {
+            this.buffer = byteBuffer.slice();
+        }
+
+        public OfByteBuffer(byte[] array) {
+            this.buffer = ByteBuffer.wrap(array);
+        }
+
+        @Override
+        public long position() {
+            return buffer.position();
+        }
+
+        @Override
+        protected void closeImpl() throws IOException {
+        }
+
+        @Override
+        protected void fillBufferImpl(ByteBuffer target, int required) throws IOException {
+            assert target.capacity() - target.remaining() >= required;
+
+            if (buffer.remaining() < required) {
+                throw new EOFException("Unexpected end of stream");
+            }
+
+            target.compact();
+            if (buffer.remaining() <= target.remaining()) {
+                target.put(buffer);
+            } else {
+                buffer.limit(buffer.position() + target.remaining());
+                target.put(buffer);
+                buffer.limit(buffer.capacity());
+            }
+            target.flip();
+
+            assert target.remaining() >= required;
+        }
+
+        @Override
+        public void skip(long bytes) throws IOException {
+            if (buffer.remaining() < bytes) {
+                throw new EOFException("Unexpected end of stream");
+            }
+
+            buffer.position(buffer.position() + (int) bytes);
+        }
+    }
+
     public static final class OfInputStream extends InputSource {
         private final InputStream inputStream;
         private final boolean closeInputStream;

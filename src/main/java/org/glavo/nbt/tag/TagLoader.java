@@ -23,12 +23,33 @@ import org.jetbrains.annotations.Contract;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.ByteBuffer;
 import java.nio.channels.ReadableByteChannel;
 import java.nio.file.Path;
 
 /// The loader for reading NBT tags.
 @FunctionalInterface
 public interface TagLoader<T extends Tag, S> extends NBTLoader<T, S> {
+
+    /// The loader for reading NBT tags from a byte array.
+    static TagLoader<Tag, byte[]> ofByteArray() {
+        return TagLoaderImpl.OfByteArray.DEFAULT;
+    }
+
+    /// The loader for reading NBT tags from a byte array.
+    static <T extends Tag> TagLoader<T, byte[]> ofByteArray(Class<T> tagClass) {
+        return new TagLoaderImpl.OfByteArray<>(tagClass, MinecraftEdition.JAVA_EDITION, true);
+    }
+
+    /// The loader for reading NBT tags from a [ByteBuffer].
+    static TagLoader<Tag, ByteBuffer> ofByteBuffer() {
+        return TagLoaderImpl.OfByteBuffer.DEFAULT;
+    }
+
+    /// The loader for reading NBT tags from a [ByteBuffer].
+    static <T extends Tag> TagLoader<T, ByteBuffer> ofByteBuffer(Class<T> tagClass) {
+        return new TagLoaderImpl.OfByteBuffer<>(tagClass, MinecraftEdition.JAVA_EDITION, true);
+    }
 
     /// The loader for reading NBT tags from an [InputStream].
     static TagLoader<Tag, InputStream> ofInputStream() {
@@ -66,6 +87,30 @@ public interface TagLoader<T extends Tag, S> extends NBTLoader<T, S> {
     /// The builder for creating a [TagLoader].
     interface Builder<T extends Tag, S>
             extends NBTLoader.Builder<T, S> {
+
+        /// Creates a builder for creating a [TagLoader] for reading NBT tags from a `byte[]`.
+        @Contract(value = "-> new")
+        static Builder<Tag, byte[]> ofByteArray() {
+            return Builder.ofByteArray(Tag.class);
+        }
+
+        /// Creates a builder for creating a [TagLoader] for reading NBT tags from a `byte[]`.
+        @Contract(value = "_ -> new")
+        static <T extends Tag> Builder<T, byte[]> ofByteArray(Class<T> tagClass) {
+            return new TagLoaderImpl.OfByteArray.Builder<>(tagClass);
+        }
+
+        /// Creates a builder for creating a [TagLoader] for reading NBT tags from a [ByteBuffer].
+        @Contract(value = "-> new")
+        static Builder<Tag, ByteBuffer> ofByteBuffer() {
+            return Builder.ofByteBuffer(Tag.class);
+        }
+
+        /// Creates a builder for creating a [TagLoader] for reading NBT tags from a [ByteBuffer].
+        @Contract(value = "_ -> new")
+        static <T extends Tag> Builder<T, ByteBuffer> ofByteBuffer(Class<T> tagClass) {
+            return new TagLoaderImpl.OfByteBuffer.Builder<>(tagClass);
+        }
 
         /// Creates a builder for creating a [TagLoader] for reading NBT tags from an [InputStream].
         @Contract(value = "-> new")

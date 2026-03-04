@@ -20,6 +20,7 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.EnumSource;
 
 import java.io.IOException;
+import java.nio.ByteBuffer;
 import java.nio.channels.Channels;
 import java.nio.channels.FileChannel;
 import java.nio.channels.ReadableByteChannel;
@@ -32,6 +33,24 @@ import static org.junit.jupiter.api.Assertions.*;
 public final class TagLoaderTest {
 
     enum Loader {
+        BYTE_ARRAY {
+            @Override
+            <T extends Tag> T load(Path file, Class<T> tagClass) throws IOException {
+                return TagLoader.ofByteArray(tagClass).load(Files.readAllBytes(file));
+            }
+        },
+        HEAP_BYTE_BUFFER {
+            @Override
+            <T extends Tag> T load(Path file, Class<T> tagClass) throws IOException {
+                return TagLoader.ofByteBuffer(tagClass).load(ByteBuffer.wrap(Files.readAllBytes(file)));
+            }
+        },
+        DIRECT_BYTE_BUFFER {
+            @Override
+            <T extends Tag> T load(Path file, Class<T> tagClass) throws IOException {
+                return TagLoader.ofByteBuffer(tagClass).load(ByteBuffer.allocateDirect((int) Files.size(file)).put(Files.readAllBytes(file)).flip());
+            }
+        },
         INPUT_STREAM {
             @Override
             <T extends Tag> T load(Path file, Class<T> tagClass) throws IOException {

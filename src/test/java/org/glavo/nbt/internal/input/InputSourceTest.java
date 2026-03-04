@@ -23,6 +23,7 @@ import org.junit.jupiter.params.provider.EnumSource;
 import java.io.ByteArrayInputStream;
 import java.io.EOFException;
 import java.io.IOException;
+import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.channels.Channels;
 import java.nio.channels.FileChannel;
@@ -35,6 +36,16 @@ import static org.junit.jupiter.api.Assertions.*;
 
 public final class InputSourceTest {
     enum SourceType {
+        HEAP_BYTE_BUFFER {
+            InputSource createSource(byte[] bytes) {
+                return new InputSource.OfByteBuffer(bytes);
+            }
+        },
+        DIRECT_BYTE_BUFFER {
+            InputSource createSource(byte[] bytes) {
+                return new InputSource.OfByteBuffer(ByteBuffer.allocateDirect(bytes.length).put(bytes).flip());
+            }
+        },
         INPUT_STREAM {
             InputSource createSource(byte[] bytes) {
                 return new InputSource.OfInputStream(new ByteArrayInputStream(bytes), false);

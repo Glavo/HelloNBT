@@ -15,6 +15,8 @@
  */
 package org.glavo.nbt.internal.input;
 
+import com.google.common.jimfs.Configuration;
+import com.google.common.jimfs.Jimfs;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.EnumSource;
 
@@ -22,6 +24,11 @@ import java.io.ByteArrayInputStream;
 import java.io.EOFException;
 import java.io.IOException;
 import java.nio.ByteOrder;
+import java.nio.channels.FileChannel;
+import java.nio.file.FileSystem;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.StandardOpenOption;
 
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
@@ -31,9 +38,20 @@ public final class InputSourceTest {
             InputSource createSource(byte[] bytes) {
                 return new InputSource.OfInputStream(new ByteArrayInputStream(bytes), false);
             }
+        },
+        BYTE_CHANNEL {
+            static final FileSystem memoryFS = Jimfs.newFileSystem(Configuration.unix());
+            static final Path tempDir = memoryFS.getPath("/tmp");
+
+            InputSource createSource(byte[] bytes) throws IOException {
+                Files.createDirectories(tempDir);
+                Path tempFile = Files.createTempFile(tempDir, "test", ".tmp");
+                Files.write(tempFile, bytes);
+                return new InputSource.OfByteChannel(FileChannel.open(tempFile, StandardOpenOption.READ, StandardOpenOption.DELETE_ON_CLOSE), true);
+            }
         };
 
-        abstract InputSource createSource(byte[] bytes);
+        abstract InputSource createSource(byte[] bytes) throws IOException;
     }
 
 

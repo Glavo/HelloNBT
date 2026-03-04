@@ -55,9 +55,8 @@ public abstract class DecompressStreamDataReader extends BoundedDataReader {
             return;
         }
 
-        long remainingInput = endPosition - getRawReader().position();
-        if (remainingInput <= 0) {
-            throw new EOFException("Not enough data to read, required: " + required + ", remaining: " + remainingInput);
+        if (endPosition >= 0 && endPosition - getRawReader().position() <= 0) {
+            throw new EOFException("Not enough data to read, required: " + required + ", remaining: " + (endPosition - getRawReader().position()));
         }
 
         getBuffer().ensureCapacity(required);
@@ -69,7 +68,8 @@ public abstract class DecompressStreamDataReader extends BoundedDataReader {
             while (output.position() < required) {
                 int n = decompressStream.read(array, output.arrayOffset() + output.position(), output.remaining());
                 if (n <= 0) {
-                    throw new EOFException("Not enough data to read, required: " + required + ", remaining: " + (endPosition - getRawReader().position()));
+                    throw new EOFException("Not enough data to read, required: " + required + ", remaining: "
+                            + (endPosition >= 0 ? endPosition - getRawReader().position() : "unknown"));
                 }
 
                 output.position(output.position() + n);

@@ -20,8 +20,7 @@ import org.glavo.nbt.NBTElement;
 import org.glavo.nbt.NBTLoader;
 import org.glavo.nbt.NBTParent;
 import org.glavo.nbt.internal.input.DataReader;
-import org.glavo.nbt.internal.input.RawDataReader;
-import org.glavo.nbt.internal.input.InputSource;
+import org.glavo.nbt.internal.input.TagLoader;
 import org.glavo.nbt.internal.output.NBTWriter;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Contract;
@@ -36,49 +35,8 @@ import java.util.Objects;
 public sealed abstract class Tag implements NBTElement
         permits ValueTag, ArrayTag, ParentTag {
 
-    @ApiStatus.Internal
-    public static @Nullable Tag readTag(DataReader reader) throws IOException {
-        byte tagByte = reader.readByte();
-        if (tagByte == 0) {
-            return null;
-        }
-
-        var type = TagType.getById(tagByte);
-        if (type == null) {
-            throw new IOException("Invalid tag type: %02x".formatted(Byte.toUnsignedInt(tagByte)));
-        }
-
-        Tag tag = type.createTag();
-        tag.setName(reader.readString());
-        tag.readContent(reader);
-        return tag;
-    }
-
     public static Tag readTag(InputStream inputStream) throws IOException {
-        return readTag(inputStream, MinecraftEdition.JAVA_EDITION);
-    }
-
-    public static Tag readTag(InputStream inputStream, MinecraftEdition edition) throws IOException {
-        try (var reader = new RawDataReader(new InputSource.OfInputStream(inputStream, false), edition)) {
-            Tag tag = readTag(reader);
-            if (tag == null) {
-                throw new IOException("No tag found");
-            }
-            return tag;
-        }
-    }
-
-    public static CompoundTag readCompoundTag(InputStream inputStream) throws IOException {
-        return readCompoundTag(inputStream, MinecraftEdition.JAVA_EDITION);
-    }
-
-    public static CompoundTag readCompoundTag(InputStream inputStream, MinecraftEdition edition) throws IOException {
-        Tag rootTag = readTag(inputStream, edition);
-        if (rootTag instanceof CompoundTag compoundTag) {
-            return compoundTag;
-        } else {
-            throw new IOException("Expected a compound tag, but got " + rootTag);
-        }
+        return Tag.Loader.ofInputStream().load(inputStream);
     }
 
     String name;
@@ -239,11 +197,46 @@ public sealed abstract class Tag implements NBTElement
     @FunctionalInterface
     public interface Loader<T extends Tag, S> extends NBTLoader<T, S> {
 
+        static Loader<Tag, InputStream> ofInputStream() {
+            return TagLoader.OfInputStream.DEFAULT;
+        }
+
+        static <T extends Tag> Loader<T, InputStream> ofInputStream(Class<T> tagClass) {
+            return new TagLoader.OfInputStream<>(tagClass, MinecraftEdition.JAVA_EDITION, true);
+        }
+
         @Override
         T load(S source) throws IOException;
 
         interface Builder<T extends Tag, S>
                 extends NBTLoader.Builder<T, S> {
+
+            @Contract(value = "-> new")
+            static Builder<Tag, InputStream> ofInputStream() {
+                return Builder.ofInputStream(Tag.class);
+            }
+
+            @Contract(value = "_ -> new")
+            static <T extends Tag> Builder<T, InputStream> ofInputStream(Class<T> tagClass) {
+                return new TagLoader.OfInputStream.Builder<>(tagClass);
+            }
+
+            /// Sets the Minecraft edition of the NBT data.
+            ///
+            /// The default edition is [MinecraftEdition#JAVA_EDITION].
+            @Contract(value = "_ -> this", mutates = "this")
+            Builder<T, S> setEdition(MinecraftEdition edition);
+
+            /// Sets whether to automatically decompress the NBT data.
+            ///
+            /// If set to `true`, the loader will automatically decompress the NBT data if it is compressed by gzip or LZ4;
+            /// otherwise, it will throw an exception if the data is compressed.
+            ///
+            /// The default value is `true`.
+            @ApiStatus.Experimental
+            @Contract(value = "_ -> this", mutates = "this")
+            Builder<T, S> setAutoDecompress(boolean autoDecompress);
+
             @Override
             Loader<T, S> build();
         }

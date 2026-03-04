@@ -91,6 +91,12 @@ public sealed abstract class DataReader implements Closeable
         return Byte.toUnsignedInt(readByte());
     }
 
+    /// Look ahead a byte from the input stream.
+    public byte lookAheadByte() throws IOException {
+        ensureBufferRemaining(Byte.BYTES);
+        return getBuffer().lookAheadByte();
+    }
+
     /// Read a short from the input stream.
     public short readShort() throws IOException {
         ensureBufferRemaining(Short.BYTES);

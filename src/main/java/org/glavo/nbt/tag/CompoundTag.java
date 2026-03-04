@@ -16,6 +16,7 @@
 package org.glavo.nbt.tag;
 
 import org.glavo.nbt.internal.input.DataReader;
+import org.glavo.nbt.internal.input.TagLoader;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.IOException;
@@ -195,7 +196,7 @@ public final class CompoundTag extends ParentTag<Tag> {
         int count = 0;
 
         Tag subTag;
-        while ((subTag = Tag.readTag(reader)) != null) {
+        while ((subTag = TagLoader.readTag(reader)) != null) {
             count++;
             add(subTag);
         }

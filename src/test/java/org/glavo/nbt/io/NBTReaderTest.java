@@ -36,7 +36,11 @@ public final class NBTReaderTest {
         var buffer = new ByteArrayOutputStream();
         NBTIO.writeTag(buffer, tag, edition == MinecraftEdition.BEDROCK_EDITION);
 
-        return Tag.readTag(new ByteArrayInputStream(buffer.toByteArray()), edition);
+        return Tag.Loader.Builder
+                .ofInputStream()
+                .setEdition(edition)
+                .build()
+                .load(new ByteArrayInputStream(buffer.toByteArray()));
     }
 
     private static void assertTagEquals(

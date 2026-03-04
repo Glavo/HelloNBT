@@ -24,6 +24,8 @@ import java.io.IOException;
 @FunctionalInterface
 public
 interface NBTLoader<E extends NBTElement, S> {
+
+    /// Loads an NBT element from the given source.
     E load(S source) throws IOException;
 
     /// The interface for building loaders for NBT elements.

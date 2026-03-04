@@ -30,7 +30,7 @@ public abstract non-sealed class BoundedDataReader extends DataReader {
     public BoundedDataReader(RawDataReader rawReader, InputBuffer buffer, long limit) {
         this.rawReader = rawReader;
         this.buffer = buffer;
-        this.endPosition = rawReader.position() + limit;
+        this.endPosition = limit >= 0 ? rawReader.position() + limit : -1L;
     }
 
     @Override
@@ -45,16 +45,18 @@ public abstract non-sealed class BoundedDataReader extends DataReader {
 
     @Override
     public void close() throws IOException {
-        long currentPosition = rawReader.position();
-        if (currentPosition == endPosition) {
-            return;
-        }
+        if (endPosition >= 0) {
+            long currentPosition = rawReader.position();
+            if (currentPosition == endPosition) {
+                return;
+            }
 
-        if (currentPosition > endPosition) {
-            throw new IOException("Limit exceeded");
-        }
+            if (currentPosition > endPosition) {
+                throw new IOException("Limit exceeded");
+            }
 
-        getRawReader().skip(endPosition - currentPosition);
+            getRawReader().skip(endPosition - currentPosition);
+        }
     }
 
     protected final InputStream asInputStream() {
@@ -81,7 +83,7 @@ public abstract non-sealed class BoundedDataReader extends DataReader {
                     return 0;
                 }
 
-                long rawRemaining = endPosition - rawReader.position();
+                long rawRemaining = endPosition >= 0 ? endPosition - rawReader.position() : Long.MAX_VALUE;
                 if (rawRemaining <= 0) {
                     return -1;
                 }

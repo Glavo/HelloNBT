@@ -99,7 +99,7 @@ public final class ChunkRegion implements NBTParent<Chunk>, NBTElement {
             };
 
             try (reader) {
-                var tag = Tag.readTag(reader);
+                var tag = TagLoader.readTag(reader);
                 if (tag instanceof CompoundTag rootTag) {
                     region.setChunk(localIndex, new Chunk(
                             Instant.ofEpochSecond(header.getTimestampEpochSeconds(localIndex)),

@@ -124,4 +124,8 @@ public final class InputBuffer {
         bytesBuffer.position(bytesBuffer.position() + len * Long.BYTES);
         return array;
     }
+
+    public byte lookAheadByte() {
+        return bytesBuffer.get(bytesBuffer.position());
+    }
 }

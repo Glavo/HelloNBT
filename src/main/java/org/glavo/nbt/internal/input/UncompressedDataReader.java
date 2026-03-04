@@ -26,10 +26,12 @@ public final class UncompressedDataReader extends BoundedDataReader {
 
     @Override
     public void ensureBufferRemaining(int required) throws IOException {
-        long remainingInput = endPosition - getRawReader().position();
+        if (endPosition >= 0) {
+            long remainingInput = endPosition - getRawReader().position();
 
-        if (remainingInput < required) {
-            throw new EOFException("Not enough data to read, required: " + required + ", remaining: " + remainingInput);
+            if (remainingInput < required) {
+                throw new EOFException("Not enough data to read, required: " + required + ", remaining: " + remainingInput);
+            }
         }
 
         getRawReader().ensureBufferRemaining(required);

@@ -16,9 +16,11 @@
 package org.glavo.nbt.tag;
 
 import org.glavo.nbt.NBTParent;
+import org.glavo.nbt.internal.input.DataReader;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Nullable;
 
+import java.io.IOException;
 import java.lang.invoke.MethodHandles;
 
 /// Internal access to the tag implementation.
@@ -47,6 +49,10 @@ public final class TagAccess {
 
     public void setParent(Tag tag, @Nullable NBTParent<? extends Tag> parent, int index) {
         tag.setParent(parent, index);
+    }
+
+    public void readContent(Tag tag, DataReader reader) throws IOException {
+        tag.readContent(reader);
     }
 
     /// Returns the internal value of the tag without cloning.

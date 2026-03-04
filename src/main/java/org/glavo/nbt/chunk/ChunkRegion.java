@@ -23,6 +23,7 @@ import org.glavo.nbt.internal.ChunkUtils;
 import org.glavo.nbt.internal.input.*;
 import org.glavo.nbt.tag.CompoundTag;
 import org.glavo.nbt.tag.Tag;
+import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.IOException;
@@ -116,12 +117,14 @@ public final class ChunkRegion implements NBTParent<Chunk>, NBTElement {
     public ChunkRegion() {
     }
 
+    @Contract(pure = true)
     public @Nullable Chunk getChunk(int localIndex) {
         Objects.checkIndex(localIndex, ChunkUtils.CHUNKS_PRE_REGION);
 
         return chunks[localIndex];
     }
 
+    @Contract(pure = true)
     public @Nullable Chunk getChunk(int x, int z) {
         Objects.checkIndex(x, ChunkUtils.CHUNKS_PER_REGION_SIDE);
         Objects.checkIndex(z, ChunkUtils.CHUNKS_PER_REGION_SIDE);
@@ -129,6 +132,7 @@ public final class ChunkRegion implements NBTParent<Chunk>, NBTElement {
         return chunks[ChunkUtils.toLocalIndex(x, z)];
     }
 
+    @Contract(mutates = "this,param2")
     public void setChunk(int localIndex, @Nullable Chunk chunk) {
         Objects.checkIndex(localIndex, ChunkUtils.CHUNKS_PRE_REGION);
 
@@ -139,7 +143,9 @@ public final class ChunkRegion implements NBTParent<Chunk>, NBTElement {
 
         if (chunk != null) {
             if (chunk.getRegion() != null) {
-                // TODO: remove chunk from its old region
+                // The chunk is already in another region, so we need to remove it from its old region first.
+                ChunkRegion oldRegion = chunk.getRegion();
+                oldRegion.remove(chunk);
             }
 
             chunk.setRegion(this, localIndex);
@@ -148,6 +154,7 @@ public final class ChunkRegion implements NBTParent<Chunk>, NBTElement {
     }
 
     @Override
+    @Contract(mutates = "this,param1")
     public void remove(Chunk chunk) throws IllegalArgumentException {
         if (chunk.getRegion() != this) {
             throw new IllegalArgumentException("The chunk is not in this region");

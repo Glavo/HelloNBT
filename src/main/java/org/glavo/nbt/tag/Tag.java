@@ -24,17 +24,12 @@ import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.Objects;
 
 /// @author Glavo
 public sealed abstract class Tag implements NBTElement
         permits ValueTag, ArrayTag, ParentTag {
-
-    public static Tag readTag(InputStream inputStream) throws IOException {
-        return TagLoader.getDefault().load(inputStream);
-    }
 
     String name;
 

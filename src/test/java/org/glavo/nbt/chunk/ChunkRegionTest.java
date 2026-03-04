@@ -16,9 +16,6 @@
 package org.glavo.nbt.chunk;
 
 import net.jpountz.lz4.LZ4BlockInputStream;
-import net.jpountz.lz4.LZ4Factory;
-import net.jpountz.lz4.LZ4FastDecompressor;
-import net.jpountz.lz4.LZ4FrameInputStream;
 import org.apache.commons.io.input.BoundedInputStream;
 import org.glavo.nbt.MinecraftEdition;
 import org.glavo.nbt.TestResources;
@@ -26,7 +23,7 @@ import org.glavo.nbt.internal.ChunkRegionHeader;
 import org.glavo.nbt.internal.input.InputSource;
 import org.glavo.nbt.internal.input.RawDataReader;
 import org.glavo.nbt.tag.CompoundTag;
-import org.glavo.nbt.tag.Tag;
+import org.glavo.nbt.tag.TagLoader;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
@@ -153,7 +150,7 @@ public final class ChunkRegionTest {
                     }
 
                     try (InputStream in = input) {
-                        var tag = Tag.readTag(in);
+                        var tag = TagLoader.getDefault().load(in);
 
                         if (tag instanceof CompoundTag chunk) {
                             result.chunks[i / 4] = chunk;

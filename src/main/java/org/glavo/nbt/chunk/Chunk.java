@@ -24,15 +24,20 @@ import org.glavo.nbt.tag.Tag;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.Nullable;
 
+/// Represents a chunk in a region file.
+///
+///  A chunk can contain a root tag, which is usually a compound tag containing the chunk data.
 public final class Chunk implements NBTParent<CompoundTag>, NBTElement {
     @Nullable ChunkRegion region;
     int localIndex;
 
     @Nullable CompoundTag rootTag;
 
+    /// Creates a new empty chunk.
     public Chunk() {
     }
 
+    /// Creates a new chunk with the given root tag.
     public Chunk(@Nullable CompoundTag rootTag) {
         setRootTag(rootTag);
     }

@@ -41,13 +41,8 @@ public sealed abstract class ParentTag<T extends Tag> extends Tag
     /// Updates the indexes of the subtags starting from the given index.
     protected final void updateIndexes(int startIndex) {
         for (int i = startIndex, end = subTags.size(); i < end; i++) {
-            subTags.get(i).index = i;
+            subTags.get(i).setIndex(i);
         }
-    }
-
-    /// Returns `true` if this tag is the root tag, `false` otherwise.
-    public final boolean isRoot() {
-        return parent == null;
     }
 
     /// Returns `true` if this tag has no subtags, `false` otherwise.
@@ -103,8 +98,7 @@ public sealed abstract class ParentTag<T extends Tag> extends Tag
     public void clear() {
         for (T subTag : subTags) {
             // Clear the parent and index of the subtag.
-            subTag.index = -1;
-            subTag.parent = null;
+            subTag.setParent(null, -1);
         }
 
         subTags.clear();

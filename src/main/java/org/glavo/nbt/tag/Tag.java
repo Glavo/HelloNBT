@@ -80,10 +80,10 @@ public sealed abstract class Tag implements NBTElement
         }
     }
 
-    @Nullable NBTParent<? extends Tag> parent;
-
     String name;
-    int index = -1;
+
+    private @Nullable NBTParent<? extends Tag> parent;
+    private int index = -1;
 
     protected Tag(String name) {
         this.name = Objects.requireNonNull(name, "name");
@@ -118,6 +118,11 @@ public sealed abstract class Tag implements NBTElement
     @Contract(pure = true)
     public int getIndex() {
         return index;
+    }
+
+    /// Updates the index of this tag in its parent tag.
+    void setIndex(int index) {
+        this.index = index;
     }
 
     /// If the tag is a child of a [parent][NBTParent], returns the parent; otherwise, returns `null`.

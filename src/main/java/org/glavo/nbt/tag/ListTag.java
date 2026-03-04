@@ -148,8 +148,7 @@ public final class ListTag<T extends Tag> extends ParentTag<T> {
         tag.name = "";
 
         // Set the parent and index of the tag.
-        tag.parent = this;
-        tag.index = subTags.size();
+        tag.setParent(this, subTags.size());
 
         // Add the tag to the subTags list.
         subTags.add(tag);
@@ -173,8 +172,7 @@ public final class ListTag<T extends Tag> extends ParentTag<T> {
         }
 
         // Clear the tag's parent and index.
-        tag.index = -1;
-        tag.parent = null;
+        tag.setParent(null, -1);
 
         // Update the index of the successor tags.
         updateIndexes(subtagIndex);

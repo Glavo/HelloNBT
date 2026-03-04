@@ -18,9 +18,17 @@ package org.glavo.nbt;
 import org.glavo.nbt.chunk.Chunk;
 import org.glavo.nbt.chunk.ChunkRegion;
 import org.glavo.nbt.tag.Tag;
+import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.Nullable;
 
 public sealed interface NBTElement permits ChunkRegion, Chunk, Tag, NBTParent {
     /// Returns the parent of this element, or `null` if this element is not a child of any parent.
+    @Contract(pure = true)
     @Nullable NBTParent<?> getParent();
+
+    /// Returns `true` if this element is the root element of an NBT structure, i.e. it has no parent.
+    @Contract(pure = true)
+    default boolean isRoot() {
+        return getParent() == null;
+    }
 }

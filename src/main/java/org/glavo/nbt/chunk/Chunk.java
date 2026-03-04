@@ -43,6 +43,13 @@ public final class Chunk implements NBTParent<CompoundTag>, NBTElement {
         return region;
     }
 
+    /// Return the region of this chunk, or `null` if this chunk is not in any region.
+    @Override
+    @Contract(pure = true)
+    public @Nullable ChunkRegion getParent() {
+        return getRegion();
+    }
+
     void setRegion(@Nullable ChunkRegion region, int localIndex) {
         this.region = region;
         this.localIndex = localIndex;

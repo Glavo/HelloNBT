@@ -117,6 +117,13 @@ public final class ChunkRegion implements NBTParent<Chunk>, NBTElement {
     public ChunkRegion() {
     }
 
+    /// Always returns `null`. A chunk region is the root of the NBT tree, and it has no parent.
+    @Override
+    @Contract(value = "-> null", pure = true)
+    public @Nullable NBTParent<ChunkRegion> getParent() {
+        return null;
+    }
+
     @Contract(pure = true)
     public @Nullable Chunk getChunk(int localIndex) {
         Objects.checkIndex(localIndex, ChunkUtils.CHUNKS_PRE_REGION);

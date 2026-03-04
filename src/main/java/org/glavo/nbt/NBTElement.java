@@ -18,6 +18,9 @@ package org.glavo.nbt;
 import org.glavo.nbt.chunk.Chunk;
 import org.glavo.nbt.chunk.ChunkRegion;
 import org.glavo.nbt.tag.Tag;
+import org.jetbrains.annotations.Nullable;
 
 public sealed interface NBTElement permits ChunkRegion, Chunk, Tag, NBTParent {
+    /// Returns the parent of this element, or `null` if this element is not a child of any parent.
+    @Nullable NBTParent<?> getParent();
 }

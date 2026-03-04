@@ -121,7 +121,7 @@ public sealed abstract class Tag implements NBTElement
     }
 
     /// If the tag is a child of a [parent][NBTParent], returns the parent; otherwise, returns `null`.
-    public @Nullable NBTParent<?> getParent() {
+    public @Nullable NBTParent<? extends Tag> getParent() {
         return parent;
     }
 

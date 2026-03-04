@@ -20,6 +20,7 @@ import org.glavo.nbt.NBTParent;
 import org.glavo.nbt.internal.Access;
 import org.glavo.nbt.internal.ChunkUtils;
 import org.glavo.nbt.tag.CompoundTag;
+import org.glavo.nbt.tag.Tag;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.Nullable;
 
@@ -72,7 +73,27 @@ public final class Chunk implements NBTParent<CompoundTag>, NBTElement {
 
     @Contract(mutates = "this,param1")
     public void setRootTag(@Nullable CompoundTag rootTag) {
-        // TODO: remove old root tag from its parent
+        if (rootTag == this.rootTag) {
+            return;
+        }
+
+        if (this.rootTag != null) {
+            remove(this.rootTag);
+        }
+
+        if (rootTag != null) {
+            if (rootTag.getParent() != null) {
+                assert rootTag.getParent() != this;
+
+                // The root tag is already a child of another tag, so we need to remove it from its parent first.
+                @SuppressWarnings("unchecked")
+                var oldParent = (NBTParent<Tag>) rootTag.getParent();
+                oldParent.remove(rootTag);
+            }
+
+            Access.TAG.setParent(rootTag, this, 0);
+        }
+
         this.rootTag = rootTag;
     }
 

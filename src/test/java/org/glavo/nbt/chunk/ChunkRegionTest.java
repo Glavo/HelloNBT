@@ -15,6 +15,7 @@
  */
 package org.glavo.nbt.chunk;
 
+import net.jpountz.lz4.LZ4FrameInputStream;
 import org.apache.commons.io.input.BoundedInputStream;
 import org.glavo.nbt.MinecraftEdition;
 import org.glavo.nbt.TestResources;
@@ -43,7 +44,7 @@ public final class ChunkRegionTest {
 
     @Test
     public void testReadHeader() throws Exception {
-        Path resource = TestResources.getResource("/assets/r.-1.-1.mca");
+        Path resource = TestResources.getResource("/assets/region/zlib.mca");
 
         int[] sectorOffsets = new int[CHUNKS_PRE_REGION];
         int[] sectorLengths = new int[CHUNKS_PRE_REGION];
@@ -138,6 +139,10 @@ public final class ChunkRegionTest {
                         case 0x03:
                             // Uncompressed
                             break;
+                        case 0x04:
+                            // LZ4
+                            input = new LZ4FrameInputStream(input);
+                            break;
                         default:
                             throw new IOException("Unsupported compression method: " + Integer.toHexString(buffer[4] & 0xff));
                     }
@@ -159,7 +164,7 @@ public final class ChunkRegionTest {
 
     @Test
     public void testReadRegion() throws IOException {
-        Path resource = TestResources.getResource("/assets/r.-1.-1.mca");
+        Path resource = TestResources.getResource("/assets/region/zlib.mca");
 
         RefChunkRegion expected = RefChunkRegion.load(resource);
         ChunkRegion actual = ChunkRegion.readRegion(resource);

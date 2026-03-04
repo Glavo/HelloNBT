@@ -15,6 +15,9 @@
  */
 package org.glavo.nbt.chunk;
 
+import net.jpountz.lz4.LZ4BlockInputStream;
+import net.jpountz.lz4.LZ4Factory;
+import net.jpountz.lz4.LZ4FastDecompressor;
 import net.jpountz.lz4.LZ4FrameInputStream;
 import org.apache.commons.io.input.BoundedInputStream;
 import org.glavo.nbt.MinecraftEdition;
@@ -25,6 +28,8 @@ import org.glavo.nbt.internal.input.RawDataReader;
 import org.glavo.nbt.tag.CompoundTag;
 import org.glavo.nbt.tag.Tag;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.junit.jupiter.params.shadow.de.siegmar.fastcsv.util.Nullable;
 
 import java.io.*;
@@ -32,7 +37,7 @@ import java.nio.ByteBuffer;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.time.Instant;
-import java.util.Optional;
+import java.util.Arrays;
 import java.util.zip.GZIPInputStream;
 import java.util.zip.Inflater;
 import java.util.zip.InflaterInputStream;
@@ -91,6 +96,7 @@ public final class ChunkRegionTest {
         private final @Nullable CompoundTag[] chunks = new CompoundTag[CHUNKS_PRE_REGION];
         private final Instant[] timestamps = new Instant[CHUNKS_PRE_REGION];
 
+        @SuppressWarnings("deprecation")
         static RefChunkRegion load(Path file) throws IOException {
             try (RandomAccessFile r = new RandomAccessFile(file.toFile(), "r")) {
                 var result = new RefChunkRegion();
@@ -141,7 +147,7 @@ public final class ChunkRegionTest {
                             break;
                         case 0x04:
                             // LZ4
-                            input = new LZ4FrameInputStream(input);
+                            input = new LZ4BlockInputStream(input);
                             break;
                         default:
                             throw new IOException("Unsupported compression method: " + Integer.toHexString(buffer[4] & 0xff));
@@ -162,12 +168,14 @@ public final class ChunkRegionTest {
         }
     }
 
-    @Test
-    public void testReadRegion() throws IOException {
-        Path resource = TestResources.getResource("/assets/region/zlib.mca");
+    @ParameterizedTest
+    @ValueSource(strings = {"/assets/region/zlib.mca", "/assets/region/lz4.mca"})
+    public void testReadRegion(String path) throws IOException {
+        Path resource = TestResources.getResource(path);
 
         RefChunkRegion expected = RefChunkRegion.load(resource);
         ChunkRegion actual = ChunkRegion.readRegion(resource);
+
         for (int localIndex = 0; localIndex < CHUNKS_PRE_REGION; localIndex++) {
             var chunk = actual.getChunk(localIndex);
 

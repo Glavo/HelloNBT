@@ -13,13 +13,17 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+package org.glavo.nbt.io;
 
-module org.glavo.nbt {
-    requires static org.jetbrains.annotations;
-    requires static org.lz4.java;
+import org.glavo.nbt.NBTElement;
 
-    exports org.glavo.nbt;
-    exports org.glavo.nbt.io;
-    exports org.glavo.nbt.chunk;
-    exports org.glavo.nbt.tag;
+import java.io.IOException;
+
+/// The interface for loading NBT elements.
+///
+/// @param <E> The type of NBT element to load.
+/// @param <S> The type of the source of the NBT element.
+@FunctionalInterface
+public interface NBTLoader<E extends NBTElement, S> {
+    E load(S source) throws IOException;
 }

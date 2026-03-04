@@ -81,30 +81,42 @@ public sealed interface TagLoader permits TagLoaderImpl {
     }
 
     /// Loads a NBT tag from a byte buffer.
+    ///
+    /// This method does not change the position and the limit of the buffer.
     @Contract(pure = true)
     Tag load(ByteBuffer buffer) throws IOException;
 
     /// Loads the specified NBT tag from a byte buffer.
+    ///
+    /// This method does not change the position and the limit of the buffer.
     @Contract(pure = true)
     default <T extends Tag> T load(ByteBuffer buffer, Class<T> tagClass) throws IOException {
         return check(load(buffer), tagClass);
     }
 
     /// Loads a NBT tag from an input stream.
+    ///
+    /// After this method is called, the state of the `inputStream` is undefined.
     @Contract(mutates = "param1")
     Tag load(InputStream inputStream) throws IOException;
 
     /// Loads the specified NBT tag from an input stream.
+    ///
+    /// After this method is called, the state of the `inputStream` is undefined.
     @Contract(mutates = "param1")
     default <T extends Tag> T load(InputStream inputStream, Class<T> tagClass) throws IOException {
         return check(load(inputStream), tagClass);
     }
 
     /// Loads a NBT tag from a readable byte channel.
+    ///
+    /// After this method is called, the state of the `channel` is undefined.
     @Contract(mutates = "param1")
     Tag load(ReadableByteChannel channel) throws IOException;
 
     /// Loads the specified NBT tag from a readable byte channel.
+    ///
+    /// After this method is called, the state of the `channel` is undefined.
     @Contract(mutates = "param1")
     default <T extends Tag> T load(ReadableByteChannel channel, Class<T> tagClass) throws IOException {
         return check(load(channel), tagClass);

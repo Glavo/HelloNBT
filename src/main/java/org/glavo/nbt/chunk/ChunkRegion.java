@@ -148,6 +148,23 @@ public final class ChunkRegion implements NBTParent<Chunk>, NBTElement {
     }
 
     @Override
+    public void remove(Chunk chunk) throws IllegalArgumentException {
+        if (chunk.getRegion() != this) {
+            throw new IllegalArgumentException("The chunk is not in this region");
+        }
+
+        int localIndex = chunk.getLocalIndex();
+
+        Chunk old = chunks[localIndex];
+        if (old != chunk) {
+            throw new AssertionError("Expected " + chunk + ", but got " + old);
+        }
+
+        chunks[localIndex] = null;
+        chunk.setRegion(null, -1);
+    }
+
+    @Override
     public String toString() {
         StringBuilder builder = new StringBuilder(65536);
         builder.append("Chunk[");

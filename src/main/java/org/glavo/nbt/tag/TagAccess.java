@@ -15,7 +15,9 @@
  */
 package org.glavo.nbt.tag;
 
+import org.glavo.nbt.NBTParent;
 import org.jetbrains.annotations.ApiStatus;
+import org.jetbrains.annotations.Nullable;
 
 import java.lang.invoke.MethodHandles;
 
@@ -41,6 +43,10 @@ public final class TagAccess {
     }
 
     private TagAccess() {
+    }
+
+    public void setParent(Tag tag, @Nullable NBTParent<? extends Tag> parent, int index) {
+        tag.setParent(parent, index);
     }
 
     /// Returns the internal value of the tag without cloning.

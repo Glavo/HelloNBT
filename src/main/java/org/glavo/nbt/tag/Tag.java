@@ -131,6 +131,16 @@ public sealed abstract class Tag implements NBTElement
         return parent instanceof ParentTag<?> parentTag ? parentTag : null;
     }
 
+    /// Sets the parent of this tag.
+    ///
+    /// Internal method, should only be called by [ParentTag] or [org.glavo.nbt.chunk.Chunk] when adding or removing subtags.
+    @Contract(mutates = "this")
+    void setParent(@Nullable NBTParent<? extends Tag> parent, int index) {
+        assert parent == null ^ index >= 0;
+        this.parent = parent;
+        this.index = index;
+    }
+
     public void writeTo(OutputStream outputStream) throws IOException {
         writeTo(outputStream, MinecraftEdition.JAVA_EDITION);
     }

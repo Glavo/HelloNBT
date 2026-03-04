@@ -96,6 +96,7 @@ public sealed abstract class ParentTag<T extends Tag> extends Tag
     /// Removes the `tag` from this tag.
     ///
     /// @throws IllegalArgumentException if the `tag` is not a child of this tag.
+    @Override
     public abstract void remove(Tag tag) throws IllegalArgumentException;
 
     /// Removes all subtags from this tag.

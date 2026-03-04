@@ -22,4 +22,9 @@ import org.glavo.nbt.tag.ParentTag;
 /// Base interface for NBT elements that can contain other NBT elements as children.
 public sealed interface NBTParent<E extends NBTElement> extends NBTElement
         permits ParentTag, ChunkRegion, Chunk {
+
+    /// Removes the `element` from this parent.
+    ///
+    /// @throws IllegalArgumentException if the `element` is not a child of this parent..
+    void remove(E element) throws IllegalArgumentException;
 }

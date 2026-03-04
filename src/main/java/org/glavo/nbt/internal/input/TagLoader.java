@@ -23,6 +23,10 @@ import org.jetbrains.annotations.Nullable;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.channels.ReadableByteChannel;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.StandardOpenOption;
 import java.util.Objects;
 
 public abstract class TagLoader<T extends Tag, S> implements Tag.Loader<T, S> {
@@ -130,6 +134,61 @@ public abstract class TagLoader<T extends Tag, S> implements Tag.Loader<T, S> {
             @Override
             public OfInputStream<T> build() {
                 return new OfInputStream<>(tagClass, edition, autoDecompress);
+            }
+        }
+    }
+
+    public static final class OfByteChannel<T extends Tag> extends TagLoader<T, ReadableByteChannel> {
+
+        public static final OfByteChannel<Tag> DEFAULT = new OfByteChannel<>(Tag.class, MinecraftEdition.JAVA_EDITION, true);
+
+        public OfByteChannel(Class<T> tagClass, MinecraftEdition edition, boolean autoDecompress) {
+            super(tagClass, edition, autoDecompress);
+        }
+
+        @Override
+        public T load(ReadableByteChannel source) throws IOException {
+            try (var reader = new RawDataReader(new InputSource.OfByteChannel(source, false), edition)) {
+                return check(autoDecompress ? readTagAutoDecompress(reader) : readTag(reader));
+            }
+        }
+
+        public static final class Builder<T extends Tag> extends AbstractBuilder<T, ReadableByteChannel> {
+            public Builder(Class<T> tagClass) {
+                super(tagClass);
+            }
+
+            @Override
+            public OfByteChannel<T> build() {
+                return new OfByteChannel<>(tagClass, edition, autoDecompress);
+            }
+        }
+    }
+
+    public static final class OfPath<T extends Tag> extends TagLoader<T, Path> {
+
+        public static final OfPath<Tag> DEFAULT = new OfPath<>(Tag.class, MinecraftEdition.JAVA_EDITION, true);
+
+        public OfPath(Class<T> tagClass, MinecraftEdition edition, boolean autoDecompress) {
+            super(tagClass, edition, autoDecompress);
+        }
+
+        @Override
+        public T load(Path source) throws IOException {
+            try (var channel = Files.newByteChannel(source, StandardOpenOption.READ);
+                 var reader = new RawDataReader(new InputSource.OfByteChannel(channel, false), edition)) {
+                return check(autoDecompress ? readTagAutoDecompress(reader) : readTag(reader));
+            }
+        }
+
+        public static final class Builder<T extends Tag> extends AbstractBuilder<T, Path> {
+            public Builder(Class<T> tagClass) {
+                super(tagClass);
+            }
+
+            @Override
+            public OfPath<T> build() {
+                return new OfPath<>(tagClass, edition, autoDecompress);
             }
         }
     }

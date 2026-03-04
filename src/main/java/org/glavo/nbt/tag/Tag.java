@@ -29,6 +29,8 @@ import org.jetbrains.annotations.Nullable;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.nio.channels.ReadableByteChannel;
+import java.nio.file.Path;
 import java.util.Objects;
 
 /// @author Glavo
@@ -208,6 +210,22 @@ public sealed abstract class Tag implements NBTElement
             return new TagLoader.OfInputStream<>(tagClass, MinecraftEdition.JAVA_EDITION, true);
         }
 
+        static Loader<Tag, ReadableByteChannel> ofByteChannel() {
+            return TagLoader.OfByteChannel.DEFAULT;
+        }
+
+        static <T extends Tag> Loader<T, ReadableByteChannel> ofByteChannel(Class<T> tagClass) {
+            return new TagLoader.OfByteChannel<>(tagClass, MinecraftEdition.JAVA_EDITION, true);
+        }
+
+        static Loader<Tag, Path> ofPath() {
+            return TagLoader.OfPath.DEFAULT;
+        }
+
+        static <T extends Tag> Loader<T, Path> ofPath(Class<T> tagClass) {
+            return new TagLoader.OfPath<>(tagClass, MinecraftEdition.JAVA_EDITION, true);
+        }
+
         @Override
         T load(S source) throws IOException;
 
@@ -222,6 +240,26 @@ public sealed abstract class Tag implements NBTElement
             @Contract(value = "_ -> new")
             static <T extends Tag> Builder<T, InputStream> ofInputStream(Class<T> tagClass) {
                 return new TagLoader.OfInputStream.Builder<>(tagClass);
+            }
+
+            @Contract(value = "-> new")
+            static Builder<Tag, ReadableByteChannel> ofByteChannel() {
+                return Builder.ofByteChannel(Tag.class);
+            }
+
+            @Contract(value = "_ -> new")
+            static <T extends Tag> Builder<T, ReadableByteChannel> ofByteChannel(Class<T> tagClass) {
+                return new TagLoader.OfByteChannel.Builder<>(tagClass);
+            }
+
+            @Contract(value = "-> new")
+            static Builder<Tag, Path> ofPath() {
+                return Builder.ofPath(Tag.class);
+            }
+
+            @Contract(value = "_ -> new")
+            static <T extends Tag> Builder<T, Path> ofPath(Class<T> tagClass) {
+                return new TagLoader.OfPath.Builder<>(tagClass);
             }
 
             /// Sets the Minecraft edition of the NBT data.

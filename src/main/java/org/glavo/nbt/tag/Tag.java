@@ -199,29 +199,36 @@ public sealed abstract class Tag implements NBTElement
                 && this.contentEquals(that);
     }
 
+    /// The loader for reading NBT tags.
     @FunctionalInterface
     public interface Loader<T extends Tag, S> extends NBTLoader<T, S> {
 
+        /// The loader for reading NBT tags from an [InputStream].
         static Loader<Tag, InputStream> ofInputStream() {
             return TagLoader.OfInputStream.DEFAULT;
         }
 
+        /// The loader for reading NBT tags from an [InputStream].
         static <T extends Tag> Loader<T, InputStream> ofInputStream(Class<T> tagClass) {
             return new TagLoader.OfInputStream<>(tagClass, MinecraftEdition.JAVA_EDITION, true);
         }
 
+        /// The loader for reading NBT tags from a [ReadableByteChannel].
         static Loader<Tag, ReadableByteChannel> ofByteChannel() {
             return TagLoader.OfByteChannel.DEFAULT;
         }
 
+        /// The loader for reading NBT tags from a [ReadableByteChannel].
         static <T extends Tag> Loader<T, ReadableByteChannel> ofByteChannel(Class<T> tagClass) {
             return new TagLoader.OfByteChannel<>(tagClass, MinecraftEdition.JAVA_EDITION, true);
         }
 
+        /// The loader for reading NBT tags from a [Path].
         static Loader<Tag, Path> ofPath() {
             return TagLoader.OfPath.DEFAULT;
         }
 
+        /// The loader for reading NBT tags from a [Path].
         static <T extends Tag> Loader<T, Path> ofPath(Class<T> tagClass) {
             return new TagLoader.OfPath<>(tagClass, MinecraftEdition.JAVA_EDITION, true);
         }
@@ -229,34 +236,41 @@ public sealed abstract class Tag implements NBTElement
         @Override
         T load(S source) throws IOException;
 
+        /// The builder for creating a [Loader].
         interface Builder<T extends Tag, S>
                 extends NBTLoader.Builder<T, S> {
 
+            /// Creates a builder for creating a [Loader] for reading NBT tags from an [InputStream].
             @Contract(value = "-> new")
             static Builder<Tag, InputStream> ofInputStream() {
                 return Builder.ofInputStream(Tag.class);
             }
 
+            /// Creates a builder for creating a [Loader] for reading NBT tags from an [InputStream].
             @Contract(value = "_ -> new")
             static <T extends Tag> Builder<T, InputStream> ofInputStream(Class<T> tagClass) {
                 return new TagLoader.OfInputStream.Builder<>(tagClass);
             }
 
+            /// Creates a builder for creating a [Loader] for reading NBT tags from a [ReadableByteChannel].
             @Contract(value = "-> new")
             static Builder<Tag, ReadableByteChannel> ofByteChannel() {
                 return Builder.ofByteChannel(Tag.class);
             }
 
+            /// Creates a builder for creating a [Loader] for reading NBT tags from a [ReadableByteChannel].
             @Contract(value = "_ -> new")
             static <T extends Tag> Builder<T, ReadableByteChannel> ofByteChannel(Class<T> tagClass) {
                 return new TagLoader.OfByteChannel.Builder<>(tagClass);
             }
 
+            /// Creates a builder for creating a [Loader] for reading NBT tags from a [Path].
             @Contract(value = "-> new")
             static Builder<Tag, Path> ofPath() {
                 return Builder.ofPath(Tag.class);
             }
 
+            /// Creates a builder for creating a [Loader] for reading NBT tags from a [Path].
             @Contract(value = "_ -> new")
             static <T extends Tag> Builder<T, Path> ofPath(Class<T> tagClass) {
                 return new TagLoader.OfPath.Builder<>(tagClass);

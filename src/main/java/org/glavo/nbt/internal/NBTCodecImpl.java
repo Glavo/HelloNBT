@@ -132,31 +132,44 @@ public record NBTCodecImpl(MinecraftEdition edition) implements NBTCodec {
             long chunkRawContentLength = chunkRawLength - 1L;
 
             int compressType = rawReader.readUnsignedByte();
-            if (compressType > 128) {
+            boolean external = compressType > 128;
+
+            if (external) {
                 if (chunkRawContentLength != 0L) {
                     throw new IOException("Invalid chunk content length: %d (expected 0 for compression type %d)".formatted(chunkRawContentLength, compressType));
                 }
 
-                throw new IOException("The chunk data is stored externally, and reading this data is not currently supported.");
+                compressType -= 128;
             }
 
-            BoundedDataReader reader = switch (compressType) {
-                case 1 -> DecompressStreamDataReader.newGZipDataReader(rawReader, chunkRawContentLength);
-                case 2 -> new ZlibDataReader(rawReader, chunkRawContentLength);
-                case 3 -> new UncompressedDataReader(rawReader, chunkRawContentLength);
-                case 4 -> DecompressStreamDataReader.newLZ4DataReader(rawReader, chunkRawContentLength);
-                default -> throw new IOException("Unsupported compression type: " + compressType);
-            };
+            try (var oversizedReader = external ? provider.openChunkData(localIndex) : null) {
+                RawDataReader actualRawReader;
 
-            try (reader) {
-                var tag = NBTCodecImpl.readTag(reader);
-                if (tag instanceof CompoundTag rootTag) {
-                    region.setChunk(localIndex, new Chunk(
-                            Instant.ofEpochSecond(header.getTimestampEpochSeconds(localIndex)),
-                            rootTag)
-                    );
+                if (external) {
+                    actualRawReader = oversizedReader;
+                    oversizedReader.skip(5L);
                 } else {
-                    throw new IOException("Unexpected tag type: " + tag);
+                    actualRawReader = rawReader;
+                }
+
+                BoundedDataReader reader = switch (compressType) {
+                    case 1 -> DecompressStreamDataReader.newGZipDataReader(actualRawReader, chunkRawContentLength);
+                    case 2 -> new ZlibDataReader(actualRawReader, chunkRawContentLength);
+                    case 3 -> new UncompressedDataReader(actualRawReader, chunkRawContentLength);
+                    case 4 -> DecompressStreamDataReader.newLZ4DataReader(actualRawReader, chunkRawContentLength);
+                    default -> throw new IOException("Unsupported compression type: " + compressType);
+                };
+
+                try (reader) {
+                    var tag = NBTCodecImpl.readTag(reader);
+                    if (tag instanceof CompoundTag rootTag) {
+                        region.setChunk(localIndex, new Chunk(
+                                Instant.ofEpochSecond(header.getTimestampEpochSeconds(localIndex)),
+                                rootTag)
+                        );
+                    } else {
+                        throw new IOException("Unexpected tag type: " + tag);
+                    }
                 }
             }
         }
@@ -244,7 +257,7 @@ public record NBTCodecImpl(MinecraftEdition edition) implements NBTCodec {
             return index -> {
                 Path oversizedFile = locator.locate(path, ChunkUtils.getLocalX(index), ChunkUtils.getLocalZ(index));
                 if (oversizedFile == null) {
-                    return null;
+                    throw new IOException("Oversized chunk not found for local index " + index);
                 }
 
                 FileChannel channel = FileChannel.open(oversizedFile, StandardOpenOption.READ);
@@ -261,6 +274,6 @@ public record NBTCodecImpl(MinecraftEdition edition) implements NBTCodec {
             };
         }
 
-        @Nullable RawDataReader openChunkData(int chunkLocalIndex) throws IOException;
+        RawDataReader openChunkData(int chunkLocalIndex) throws IOException;
     }
 }

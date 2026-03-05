@@ -17,7 +17,6 @@ package org.glavo.nbt.io;
 
 import com.github.steveice10.opennbt.NBTIO;
 import org.glavo.nbt.tag.*;
-import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 
@@ -33,40 +32,33 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 public final class NBTWriterTest {
 
     sealed interface Validator {
-        byte[] toByteArray(NBTCodec codec, Tag tag) throws IOException;
+        MinecraftEdition edition();
 
-        default com.github.steveice10.opennbt.tag.builtin.Tag convert(
-                Tag tag,
-                MinecraftEdition edition
-        ) throws IOException {
-
-            return NBTIO.readTag(
-                    new ByteArrayInputStream(toByteArray(NBTCodec.of(edition), tag)),
-                    edition == MinecraftEdition.BEDROCK_EDITION);
-        }
+        byte[] toByteArray(Tag tag) throws IOException;
 
         default void assertTagEquals(
                 com.github.steveice10.opennbt.tag.builtin.Tag expected,
                 Tag actual) throws IOException {
-            assertEquals(expected, convert(actual, MinecraftEdition.JAVA_EDITION));
-            assertEquals(expected, convert(actual, MinecraftEdition.BEDROCK_EDITION));
+            assertEquals(expected, NBTIO.readTag(
+                    new ByteArrayInputStream(toByteArray(actual)),
+                    edition() == MinecraftEdition.BEDROCK_EDITION));
         }
 
         record OutputStream(MinecraftEdition edition) implements Validator {
             @Override
-            public byte[] toByteArray(NBTCodec codec, Tag tag) throws IOException {
+            public byte[] toByteArray(Tag tag) throws IOException {
                 ByteArrayOutputStream buffer = new ByteArrayOutputStream();
-                codec.writeTag(tag, buffer);
+                NBTCodec.of(edition).writeTag(tag, buffer);
                 return buffer.toByteArray();
             }
         }
 
         record ByteChannel(MinecraftEdition edition) implements Validator {
             @Override
-            public byte[] toByteArray(NBTCodec codec, Tag tag) throws IOException {
+            public byte[] toByteArray(Tag tag) throws IOException {
                 ByteArrayOutputStream buffer = new ByteArrayOutputStream();
                 try (WritableByteChannel channel = Channels.newChannel(buffer)) {
-                    codec.writeTag(tag, channel);
+                    NBTCodec.of(edition).writeTag(tag, channel);
                 }
                 return buffer.toByteArray();
             }

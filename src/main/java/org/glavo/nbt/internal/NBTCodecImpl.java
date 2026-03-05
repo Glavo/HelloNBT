@@ -263,7 +263,7 @@ public record NBTCodecImpl(MinecraftEdition edition,
 
     @Override
     public String toString() {
-        return "NBTCodecImpl[edition=%s]".formatted(edition);
+        return "NBTCodec[edition=%s, oversizedChunkLocator=%s]".formatted(edition, oversizedChunkLocator);
     }
 
     @FunctionalInterface

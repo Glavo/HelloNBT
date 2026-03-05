@@ -280,6 +280,22 @@ public record NBTCodecImpl(MinecraftEdition edition,
     }
 
     @Override
+    public ChunkRegion readRegion(InputStream inputStream, OversizedChunkAccessor accessor) throws IOException {
+        Objects.requireNonNull(inputStream, "inputStream");
+        try (var reader = new RawDataReader(new InputSource.OfInputStream(inputStream, false), MinecraftEdition.JAVA_EDITION)) {
+            return readRegion(reader, accessor);
+        }
+    }
+
+    @Override
+    public ChunkRegion readRegion(ReadableByteChannel channel, OversizedChunkAccessor accessor) throws IOException {
+        Objects.requireNonNull(channel, "channel");
+        try (var reader = new RawDataReader(new InputSource.OfByteChannel(channel, false), MinecraftEdition.JAVA_EDITION)) {
+            return readRegion(reader, accessor);
+        }
+    }
+
+    @Override
     public String toString() {
         return "NBTCodec[edition=%s, oversizedChunkAccessorFactory=%s]".formatted(edition, oversizedChunkAccessorFactory);
     }

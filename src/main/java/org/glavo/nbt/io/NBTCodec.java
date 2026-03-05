@@ -158,4 +158,19 @@ public sealed interface NBTCodec permits NBTCodecImpl {
     /// Reads a chunk region from a file.
     ChunkRegion readRegion(Path path) throws IOException;
 
+    /// Reads a chunk region from an input stream.
+    default ChunkRegion readRegion(InputStream inputStream) throws IOException {
+        return readRegion(inputStream, OversizedChunkAccessor.emptyAccessor());
+    }
+
+    /// Reads a chunk region from an input stream.
+    ChunkRegion readRegion(InputStream inputStream, OversizedChunkAccessor accessor) throws IOException;
+
+    /// Reads a chunk region from a readable byte channel.
+    default ChunkRegion readRegion(ReadableByteChannel channel) throws IOException {
+        return readRegion(channel, OversizedChunkAccessor.emptyAccessor());
+    }
+
+    /// Reads a chunk region from a readable byte channel.
+    ChunkRegion readRegion(ReadableByteChannel channel, OversizedChunkAccessor accessor) throws IOException;
 }

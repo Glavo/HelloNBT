@@ -20,6 +20,7 @@ import org.glavo.nbt.chunk.ChunkRegion;
 import org.glavo.nbt.internal.input.*;
 import org.glavo.nbt.internal.output.NBTWriter;
 import org.glavo.nbt.io.MinecraftEdition;
+import org.glavo.nbt.io.OversizedChunkLocator;
 import org.glavo.nbt.tag.CompoundTag;
 import org.glavo.nbt.tag.Tag;
 import org.glavo.nbt.io.NBTCodec;
@@ -84,7 +85,7 @@ public record NBTCodecImpl(MinecraftEdition edition) implements NBTCodec {
         return readTag(reader);
     }
 
-    public static ChunkRegion readRegion(RawDataReader rawReader) throws IOException {
+    public static ChunkRegion readRegion(RawDataReader rawReader, OversizedChunkProvider provider) throws IOException {
         if (rawReader.edition != MinecraftEdition.JAVA_EDITION) {
             throw new IllegalArgumentException("Only Java Edition supports region file format");
         }
@@ -224,15 +225,42 @@ public record NBTCodecImpl(MinecraftEdition edition) implements NBTCodec {
     }
 
     @Override
-    public ChunkRegion readRegion(Path path) throws IOException {
+    public ChunkRegion readRegion(Path path, OversizedChunkLocator<Path> locator) throws IOException {
         try (var channel = FileChannel.open(path, StandardOpenOption.READ);
              var reader = new RawDataReader(new InputSource.OfByteChannel(channel, true), MinecraftEdition.JAVA_EDITION)) {
-            return readRegion(reader);
+            return readRegion(reader, OversizedChunkProvider.of(path, locator));
         }
     }
 
     @Override
     public String toString() {
         return "NBTCodecImpl[edition=%s]".formatted(edition);
+    }
+
+    @FunctionalInterface
+    public interface OversizedChunkProvider {
+
+        static OversizedChunkProvider of(Path path, OversizedChunkLocator<Path> locator) {
+            return index -> {
+                Path oversizedFile = locator.locate(path, ChunkUtils.getLocalX(index), ChunkUtils.getLocalZ(index));
+                if (oversizedFile == null) {
+                    return null;
+                }
+
+                FileChannel channel = FileChannel.open(oversizedFile, StandardOpenOption.READ);
+                try {
+                    return new RawDataReader(new InputSource.OfByteChannel(channel, true), MinecraftEdition.JAVA_EDITION);
+                } catch (Throwable e) {
+                    try {
+                        channel.close();
+                    } catch (IOException ex) {
+                        e.addSuppressed(ex);
+                    }
+                    throw e;
+                }
+            };
+        }
+
+        @Nullable RawDataReader openChunkData(int chunkLocalIndex) throws IOException;
     }
 }

@@ -142,6 +142,9 @@ public sealed interface NBTCodec permits NBTCodecImpl {
     @Contract(mutates = "param1")
     void writeTag(Tag tag, OutputStream outputStream) throws IOException;
 
+    default ChunkRegion readRegion(Path path) throws IOException {
+        return readRegion(path, OversizedChunkLocator.defaultLocator());
+    }
 
-    ChunkRegion readRegion(Path path) throws IOException;
+    ChunkRegion readRegion(Path path, OversizedChunkLocator<Path> locator) throws IOException;
 }

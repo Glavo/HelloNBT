@@ -18,6 +18,7 @@
 package org.glavo.nbt.io;
 
 import org.glavo.nbt.internal.ChunkUtils;
+import org.glavo.nbt.internal.OversizedChunkLocators;
 import org.junit.jupiter.api.Test;
 
 import java.nio.file.Path;
@@ -28,7 +29,7 @@ public final class OversizedChunkLocatorTest {
 
     @Test
     void testEmptyLocator() {
-        OversizedChunkLocator<Path> locator = OversizedChunkLocator.emptyLocator();
+        var locator = assertInstanceOf(OversizedChunkLocators.class, OversizedChunkLocator.emptyLocator());
 
         Path source = Path.of("r.0.0.mca");
         for (int i = 0; i < ChunkUtils.CHUNKS_PER_REGION_SIDE; i++) {
@@ -46,7 +47,7 @@ public final class OversizedChunkLocatorTest {
 
     @Test
     void testDefaultLocator() {
-        OversizedChunkLocator<Path> locator = OversizedChunkLocator.defaultLocator();
+        var locator = assertInstanceOf(OversizedChunkLocators.class, OversizedChunkLocator.defaultLocator());
 
         assertEquals(Path.of("c.0.0.mcc"), locator.locate(Path.of("r.0.0.mca"), 0, 0));
         assertEquals(Path.of("c.31.31.mcc"), locator.locate(Path.of("r.0.0.mca"), 31, 31));

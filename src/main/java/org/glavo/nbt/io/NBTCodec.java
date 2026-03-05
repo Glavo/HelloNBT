@@ -57,11 +57,11 @@ public sealed interface NBTCodec permits NBTCodecImpl {
 
     /// Returns the locator for oversized chunk files.
     @Contract(pure = true)
-    OversizedChunkLocator<Path> getOversizedChunkLocator();
+    OversizedChunkLocator getOversizedChunkLocator();
 
     /// Returns a new [NBTCodec] with the specified locator for oversized chunk files.
     @Contract(pure = true)
-    NBTCodec withOversizedChunkLocator(OversizedChunkLocator<Path> locator);
+    NBTCodec withOversizedChunkLocator(OversizedChunkLocator locator);
 
     private static <T extends Tag> T check(@Nullable Tag tag, Class<T> tagClass) throws IOException {
         if (tag == null) {

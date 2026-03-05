@@ -43,7 +43,7 @@ import java.time.Instant;
 import java.util.Objects;
 
 public record NBTCodecImpl(MinecraftEdition edition,
-                           OversizedChunkLocator<Path> oversizedChunkLocator) implements NBTCodec {
+                           OversizedChunkLocator oversizedChunkLocator) implements NBTCodec {
 
     public static final NBTCodecImpl JE = new NBTCodecImpl(MinecraftEdition.JAVA_EDITION, OversizedChunkLocator.defaultLocator());
     public static final NBTCodecImpl BE = new NBTCodecImpl(MinecraftEdition.BEDROCK_EDITION, OversizedChunkLocator.defaultLocator());
@@ -195,12 +195,12 @@ public record NBTCodecImpl(MinecraftEdition edition,
     }
 
     @Override
-    public OversizedChunkLocator<Path> getOversizedChunkLocator() {
+    public OversizedChunkLocator getOversizedChunkLocator() {
         return oversizedChunkLocator;
     }
 
     @Override
-    public NBTCodec withOversizedChunkLocator(OversizedChunkLocator<Path> locator) {
+    public NBTCodec withOversizedChunkLocator(OversizedChunkLocator locator) {
         Objects.requireNonNull(locator, "locator");
         return new NBTCodecImpl(edition, locator);
     }
@@ -277,23 +277,13 @@ public record NBTCodecImpl(MinecraftEdition edition,
     @FunctionalInterface
     public interface OversizedChunkProvider {
 
-        static OversizedChunkProvider of(Path path, OversizedChunkLocator<Path> locator) {
+        static OversizedChunkProvider of(Path path, OversizedChunkLocator locator) {
             return index -> {
-                Path oversizedFile = locator.locate(path, ChunkUtils.getLocalX(index), ChunkUtils.getLocalZ(index));
-                if (oversizedFile == null) {
+                InputStream input = locator.openInputStream(path, ChunkUtils.getLocalX(index), ChunkUtils.getLocalZ(index));
+                if (input != null) {
+                    return new RawDataReader(new InputSource.OfInputStream(input, true), MinecraftEdition.JAVA_EDITION);
+                } else {
                     throw new IOException("Oversized chunk not found for local index " + index);
-                }
-
-                FileChannel channel = FileChannel.open(oversizedFile, StandardOpenOption.READ);
-                try {
-                    return new RawDataReader(new InputSource.OfByteChannel(channel, true), MinecraftEdition.JAVA_EDITION);
-                } catch (Throwable e) {
-                    try {
-                        channel.close();
-                    } catch (IOException ex) {
-                        e.addSuppressed(ex);
-                    }
-                    throw e;
                 }
             };
         }

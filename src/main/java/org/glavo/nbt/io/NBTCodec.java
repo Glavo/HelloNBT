@@ -47,35 +47,35 @@ public sealed interface NBTCodec permits NBTCodecImpl {
     @Contract(pure = true)
     MinecraftEdition getEdition();
 
-    /// Loads a NBT tag from a byte array.
+    /// Reads a NBT tag from a byte array.
     @Contract(pure = true)
     Tag readTag(byte[] array) throws IOException;
 
-    /// Loads the specified NBT tag from a byte array.
+    /// Reads the specified NBT tag from a byte array.
     @Contract(pure = true)
     default <T extends Tag> T readTag(byte[] array, Class<T> tagClass) throws IOException {
         return check(readTag(array), tagClass);
     }
 
-    /// Loads a NBT tag from a byte array with the specified offset and length.
+    /// Reads a NBT tag from a byte array with the specified offset and length.
     @Contract(pure = true)
     default Tag readTag(byte[] array, int offset, int length) throws IOException {
         return readTag(ByteBuffer.wrap(array, offset, length));
     }
 
-    /// Loads the specified NBT tag from a byte array with the specified offset and length.
+    /// Reads the specified NBT tag from a byte array with the specified offset and length.
     @Contract(pure = true)
     default <T extends Tag> T readTag(byte[] array, int offset, int length, Class<T> tagClass) throws IOException {
         return check(readTag(array, offset, length), tagClass);
     }
 
-    /// Loads a NBT tag from a byte buffer.
+    /// Reads a NBT tag from a byte buffer.
     ///
     /// This method does not change the position and the limit of the buffer.
     @Contract(pure = true)
     Tag readTag(ByteBuffer buffer) throws IOException;
 
-    /// Loads the specified NBT tag from a byte buffer.
+    /// Reads the specified NBT tag from a byte buffer.
     ///
     /// This method does not change the position and the limit of the buffer.
     @Contract(pure = true)
@@ -83,13 +83,13 @@ public sealed interface NBTCodec permits NBTCodecImpl {
         return check(readTag(buffer), tagClass);
     }
 
-    /// Loads a NBT tag from an input stream.
+    /// Reads a NBT tag from an input stream.
     ///
     /// After this method is called, the state of the `inputStream` is undefined.
     @Contract(mutates = "param1")
     Tag readTag(InputStream inputStream) throws IOException;
 
-    /// Loads the specified NBT tag from an input stream.
+    /// Reads the specified NBT tag from an input stream.
     ///
     /// After this method is called, the state of the `inputStream` is undefined.
     @Contract(mutates = "param1")
@@ -97,13 +97,13 @@ public sealed interface NBTCodec permits NBTCodecImpl {
         return check(readTag(inputStream), tagClass);
     }
 
-    /// Loads a NBT tag from a readable byte channel.
+    /// Reads a NBT tag from a readable byte channel.
     ///
     /// After this method is called, the state of the `channel` is undefined.
     @Contract(mutates = "param1")
     Tag readTag(ReadableByteChannel channel) throws IOException;
 
-    /// Loads the specified NBT tag from a readable byte channel.
+    /// Reads the specified NBT tag from a readable byte channel.
     ///
     /// After this method is called, the state of the `channel` is undefined.
     @Contract(mutates = "param1")
@@ -111,10 +111,10 @@ public sealed interface NBTCodec permits NBTCodecImpl {
         return check(readTag(channel), tagClass);
     }
 
-    /// Loads a NBT tag from a file.
+    /// Reads a NBT tag from a file.
     Tag readTag(Path path) throws IOException;
 
-    /// Loads the specified NBT tag from a file.
+    /// Reads the specified NBT tag from a file.
     default <T extends Tag> T readTag(Path path, Class<T> tagClass) throws IOException {
         return check(readTag(path), tagClass);
     }

@@ -16,7 +16,7 @@
 package org.glavo.nbt.tag;
 
 import org.glavo.nbt.internal.input.DataReader;
-import org.glavo.nbt.internal.input.TagLoaderImpl;
+import org.glavo.nbt.internal.NBTCodecImpl;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.Nullable;
 
@@ -212,7 +212,7 @@ public final class CompoundTag extends ParentTag<Tag> {
         int count = 0;
 
         Tag subTag;
-        while ((subTag = TagLoaderImpl.readTag(reader)) != null) {
+        while ((subTag = NBTCodecImpl.readTag(reader)) != null) {
             count++;
             add(subTag);
         }

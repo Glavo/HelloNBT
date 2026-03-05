@@ -13,9 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.glavo.nbt.tag;
+package org.glavo.nbt;
 
-import org.glavo.nbt.TestResources;
+import org.glavo.nbt.tag.CompoundTag;
+import org.glavo.nbt.tag.Tag;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.EnumSource;
 
@@ -30,38 +31,38 @@ import java.nio.file.StandardOpenOption;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-public final class TagLoaderTest {
+public final class NBTCodecTest {
 
     enum Loader {
         BYTE_ARRAY {
             @Override
             <T extends Tag> T load(Path file, Class<T> tagClass) throws IOException {
-                return TagLoader.getDefault().load(Files.readAllBytes(file), tagClass);
+                return NBTCodec.getDefault().readTag(Files.readAllBytes(file), tagClass);
             }
         },
         HEAP_BYTE_BUFFER {
             @Override
             <T extends Tag> T load(Path file, Class<T> tagClass) throws IOException {
-                return TagLoader.getDefault().load(ByteBuffer.wrap(Files.readAllBytes(file)), tagClass);
+                return NBTCodec.getDefault().readTag(ByteBuffer.wrap(Files.readAllBytes(file)), tagClass);
             }
         },
         DIRECT_BYTE_BUFFER {
             @Override
             <T extends Tag> T load(Path file, Class<T> tagClass) throws IOException {
-                return TagLoader.getDefault().load(ByteBuffer.allocateDirect((int) Files.size(file)).put(Files.readAllBytes(file)).flip(), tagClass);
+                return NBTCodec.getDefault().readTag(ByteBuffer.allocateDirect((int) Files.size(file)).put(Files.readAllBytes(file)).flip(), tagClass);
             }
         },
         INPUT_STREAM {
             @Override
             <T extends Tag> T load(Path file, Class<T> tagClass) throws IOException {
-                return TagLoader.getDefault().load(file, tagClass);
+                return NBTCodec.getDefault().readTag(file, tagClass);
             }
         },
         FILE_CHANNEL {
             @Override
             <T extends Tag> T load(Path file, Class<T> tagClass) throws IOException {
                 try (FileChannel channel = FileChannel.open(file, StandardOpenOption.READ)) {
-                    return TagLoader.getDefault().load(channel, tagClass);
+                    return NBTCodec.getDefault().readTag(channel, tagClass);
                 }
             }
         },
@@ -69,14 +70,14 @@ public final class TagLoaderTest {
             @Override
             <T extends Tag> T load(Path file, Class<T> tagClass) throws IOException {
                 try (ReadableByteChannel channel = Channels.newChannel(Files.newInputStream(file))) {
-                    return TagLoader.getDefault().load(channel, tagClass);
+                    return NBTCodec.getDefault().readTag(channel, tagClass);
                 }
             }
         },
         PATH {
             @Override
             <T extends Tag> T load(Path file, Class<T> tagClass) throws IOException {
-                return TagLoader.getDefault().load(file, tagClass);
+                return NBTCodec.getDefault().readTag(file, tagClass);
             }
         };
 
@@ -86,7 +87,7 @@ public final class TagLoaderTest {
     /// Loads a level.dat file (compressed with gzip)
     @ParameterizedTest
     @EnumSource
-    void testLoadLevelDat(Loader loader) throws IOException {
+    void testReadLevelDat(Loader loader) throws IOException {
         Path levelDatPath = TestResources.getResource("/assets/nbt/level.dat");
         CompoundTag levelDat = loader.load(levelDatPath, CompoundTag.class);
         assertEquals("", levelDat.getName());
@@ -100,7 +101,7 @@ public final class TagLoaderTest {
     /// Loads an uncompressed level.dat file
     @ParameterizedTest
     @EnumSource
-    void testLoadLevelDatRaw(Loader loader) throws IOException {
+    void testReadLevelDatRaw(Loader loader) throws IOException {
         Path levelDatPath = TestResources.getResource("/assets/nbt/level.dat.raw");
         CompoundTag levelDat = loader.load(levelDatPath, CompoundTag.class);
         assertEquals("", levelDat.getName());

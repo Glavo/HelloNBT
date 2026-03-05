@@ -13,12 +13,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.glavo.nbt.internal.input;
+package org.glavo.nbt.internal;
 
 import org.glavo.nbt.MinecraftEdition;
-import org.glavo.nbt.internal.Access;
+import org.glavo.nbt.internal.input.DataReader;
+import org.glavo.nbt.internal.input.DecompressStreamDataReader;
+import org.glavo.nbt.internal.input.InputSource;
+import org.glavo.nbt.internal.input.RawDataReader;
 import org.glavo.nbt.tag.Tag;
-import org.glavo.nbt.tag.TagLoader;
+import org.glavo.nbt.NBTCodec;
 import org.glavo.nbt.tag.TagType;
 import org.jetbrains.annotations.Nullable;
 
@@ -31,13 +34,13 @@ import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
 import java.util.Objects;
 
-public record TagLoaderImpl(MinecraftEdition edition, boolean autoDecompress) implements TagLoader {
+public record NBTCodecImpl(MinecraftEdition edition, boolean autoDecompress) implements NBTCodec {
 
-    public TagLoaderImpl {
+    public NBTCodecImpl {
         Objects.requireNonNull(edition, "edition");
     }
 
-    public static final TagLoaderImpl DEFAULT = new TagLoaderImpl(MinecraftEdition.JAVA_EDITION, true);
+    public static final NBTCodecImpl DEFAULT = new NBTCodecImpl(MinecraftEdition.JAVA_EDITION, true);
 
     public static @Nullable Tag readTag(DataReader reader) throws IOException {
         byte tagByte = reader.readByte();
@@ -93,35 +96,35 @@ public record TagLoaderImpl(MinecraftEdition edition, boolean autoDecompress) im
         return tag;
     }
 
-    public Tag load(byte[] array) throws IOException {
+    public Tag readTag(byte[] array) throws IOException {
         try (var reader = new RawDataReader(new InputSource.OfByteBuffer(array), edition)) {
             return check(autoDecompress ? readTagAutoDecompress(reader) : readTag(reader));
         }
     }
 
     @Override
-    public Tag load(ByteBuffer buffer) throws IOException {
+    public Tag readTag(ByteBuffer buffer) throws IOException {
         try (var reader = new RawDataReader(new InputSource.OfByteBuffer(buffer), edition)) {
             return check(autoDecompress ? readTagAutoDecompress(reader) : readTag(reader));
         }
     }
 
     @Override
-    public Tag load(InputStream inputStream) throws IOException {
+    public Tag readTag(InputStream inputStream) throws IOException {
         try (var reader = new RawDataReader(new InputSource.OfInputStream(inputStream, false), edition)) {
             return check(autoDecompress ? readTagAutoDecompress(reader) : readTag(reader));
         }
     }
 
     @Override
-    public Tag load(ReadableByteChannel channel) throws IOException {
+    public Tag readTag(ReadableByteChannel channel) throws IOException {
         try (var reader = new RawDataReader(new InputSource.OfByteChannel(channel, false), edition)) {
             return check(autoDecompress ? readTagAutoDecompress(reader) : readTag(reader));
         }
     }
 
     @Override
-    public Tag load(Path path) throws IOException {
+    public Tag readTag(Path path) throws IOException {
         try (var channel = Files.newByteChannel(path, StandardOpenOption.READ);
              var reader = new RawDataReader(new InputSource.OfByteChannel(channel, false), edition)) {
             return check(autoDecompress ? readTagAutoDecompress(reader) : readTag(reader));
@@ -145,8 +148,8 @@ public record TagLoaderImpl(MinecraftEdition edition, boolean autoDecompress) im
         }
 
         @Override
-        public TagLoader build() {
-            return new TagLoaderImpl(edition, autoDecompress);
+        public NBTCodec build() {
+            return new NBTCodecImpl(edition, autoDecompress);
         }
     }
 }

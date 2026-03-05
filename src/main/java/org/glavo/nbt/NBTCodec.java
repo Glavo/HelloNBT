@@ -13,10 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.glavo.nbt.tag;
+package org.glavo.nbt;
 
-import org.glavo.nbt.MinecraftEdition;
-import org.glavo.nbt.internal.input.TagLoaderImpl;
+import org.glavo.nbt.internal.NBTCodecImpl;
+import org.glavo.nbt.tag.Tag;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.Nullable;
@@ -28,18 +28,18 @@ import java.nio.channels.ReadableByteChannel;
 import java.nio.file.Path;
 
 /// The loader for reading NBT tags.
-public sealed interface TagLoader permits TagLoaderImpl {
+public sealed interface NBTCodec permits NBTCodecImpl {
 
-    /// Returns the default [TagLoader].
+    /// Returns the default [NBTCodec].
     @Contract(pure = true)
-    static TagLoader getDefault() {
-        return TagLoaderImpl.DEFAULT;
+    static NBTCodec getDefault() {
+        return NBTCodecImpl.DEFAULT;
     }
 
-    /// Returns a new [TagLoader.Builder].
+    /// Returns a new [NBTCodec.Builder].
     @Contract("-> new")
-    static TagLoader.Builder newBuilder() {
-        return new TagLoaderImpl.BuilderImpl();
+    static NBTCodec.Builder newBuilder() {
+        return new NBTCodecImpl.BuilderImpl();
     }
 
     /// Returns whether the loader automatically decompresses the NBT data.
@@ -60,74 +60,74 @@ public sealed interface TagLoader permits TagLoaderImpl {
 
     /// Loads a NBT tag from a byte array.
     @Contract(pure = true)
-    Tag load(byte[] array) throws IOException;
+    Tag readTag(byte[] array) throws IOException;
 
     /// Loads the specified NBT tag from a byte array.
     @Contract(pure = true)
-    default <T extends Tag> T load(byte[] array, Class<T> tagClass) throws IOException {
-        return check(load(array), tagClass);
+    default <T extends Tag> T readTag(byte[] array, Class<T> tagClass) throws IOException {
+        return check(readTag(array), tagClass);
     }
 
     /// Loads a NBT tag from a byte array with the specified offset and length.
     @Contract(pure = true)
-    default Tag load(byte[] array, int offset, int length) throws IOException {
-        return load(ByteBuffer.wrap(array, offset, length));
+    default Tag readTag(byte[] array, int offset, int length) throws IOException {
+        return readTag(ByteBuffer.wrap(array, offset, length));
     }
 
     /// Loads the specified NBT tag from a byte array with the specified offset and length.
     @Contract(pure = true)
-    default <T extends Tag> T load(byte[] array, int offset, int length, Class<T> tagClass) throws IOException {
-        return check(load(array, offset, length), tagClass);
+    default <T extends Tag> T readTag(byte[] array, int offset, int length, Class<T> tagClass) throws IOException {
+        return check(readTag(array, offset, length), tagClass);
     }
 
     /// Loads a NBT tag from a byte buffer.
     ///
     /// This method does not change the position and the limit of the buffer.
     @Contract(pure = true)
-    Tag load(ByteBuffer buffer) throws IOException;
+    Tag readTag(ByteBuffer buffer) throws IOException;
 
     /// Loads the specified NBT tag from a byte buffer.
     ///
     /// This method does not change the position and the limit of the buffer.
     @Contract(pure = true)
-    default <T extends Tag> T load(ByteBuffer buffer, Class<T> tagClass) throws IOException {
-        return check(load(buffer), tagClass);
+    default <T extends Tag> T readTag(ByteBuffer buffer, Class<T> tagClass) throws IOException {
+        return check(readTag(buffer), tagClass);
     }
 
     /// Loads a NBT tag from an input stream.
     ///
     /// After this method is called, the state of the `inputStream` is undefined.
     @Contract(mutates = "param1")
-    Tag load(InputStream inputStream) throws IOException;
+    Tag readTag(InputStream inputStream) throws IOException;
 
     /// Loads the specified NBT tag from an input stream.
     ///
     /// After this method is called, the state of the `inputStream` is undefined.
     @Contract(mutates = "param1")
-    default <T extends Tag> T load(InputStream inputStream, Class<T> tagClass) throws IOException {
-        return check(load(inputStream), tagClass);
+    default <T extends Tag> T readTag(InputStream inputStream, Class<T> tagClass) throws IOException {
+        return check(readTag(inputStream), tagClass);
     }
 
     /// Loads a NBT tag from a readable byte channel.
     ///
     /// After this method is called, the state of the `channel` is undefined.
     @Contract(mutates = "param1")
-    Tag load(ReadableByteChannel channel) throws IOException;
+    Tag readTag(ReadableByteChannel channel) throws IOException;
 
     /// Loads the specified NBT tag from a readable byte channel.
     ///
     /// After this method is called, the state of the `channel` is undefined.
     @Contract(mutates = "param1")
-    default <T extends Tag> T load(ReadableByteChannel channel, Class<T> tagClass) throws IOException {
-        return check(load(channel), tagClass);
+    default <T extends Tag> T readTag(ReadableByteChannel channel, Class<T> tagClass) throws IOException {
+        return check(readTag(channel), tagClass);
     }
 
     /// Loads a NBT tag from a file.
-    Tag load(Path path) throws IOException;
+    Tag readTag(Path path) throws IOException;
 
     /// Loads the specified NBT tag from a file.
-    default <T extends Tag> T load(Path path, Class<T> tagClass) throws IOException {
-        return check(load(path), tagClass);
+    default <T extends Tag> T readTag(Path path, Class<T> tagClass) throws IOException {
+        return check(readTag(path), tagClass);
     }
 
     private static <T extends Tag> T check(@Nullable Tag tag, Class<T> tagClass) throws IOException {
@@ -141,8 +141,8 @@ public sealed interface TagLoader permits TagLoaderImpl {
         }
     }
 
-    /// The builder for creating a [TagLoader].
-    sealed interface Builder permits TagLoaderImpl.BuilderImpl {
+    /// The builder for creating a [NBTCodec].
+    sealed interface Builder permits NBTCodecImpl.BuilderImpl {
 
         /// Sets the Minecraft edition of the NBT data.
         ///
@@ -160,7 +160,7 @@ public sealed interface TagLoader permits TagLoaderImpl {
         @Contract(value = "_ -> this", mutates = "this")
         Builder setAutoDecompress(boolean autoDecompress);
 
-        /// Builds a new [TagLoader] with the specified configuration.
-        TagLoader build();
+        /// Builds a new [NBTCodec] with the specified configuration.
+        NBTCodec build();
     }
 }

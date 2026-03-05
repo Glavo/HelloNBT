@@ -15,6 +15,8 @@
  */
 package org.glavo.nbt.io;
 
+import org.glavo.nbt.chunk.ChunkRegion;
+import org.glavo.nbt.internal.ChunkRegionHeader;
 import org.glavo.nbt.internal.NBTCodecImpl;
 import org.glavo.nbt.tag.Tag;
 import org.jetbrains.annotations.Contract;
@@ -139,4 +141,7 @@ public sealed interface NBTCodec permits NBTCodecImpl {
     /// Writes a NBT tag to the output stream.
     @Contract(mutates = "param1")
     void writeTag(Tag tag, OutputStream outputStream) throws IOException;
+
+
+    ChunkRegion readRegion(Path path) throws IOException;
 }

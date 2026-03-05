@@ -15,12 +15,12 @@
  */
 package org.glavo.nbt.internal;
 
+import org.glavo.nbt.chunk.Chunk;
+import org.glavo.nbt.chunk.ChunkRegion;
+import org.glavo.nbt.internal.input.*;
 import org.glavo.nbt.internal.output.NBTWriter;
 import org.glavo.nbt.io.MinecraftEdition;
-import org.glavo.nbt.internal.input.DataReader;
-import org.glavo.nbt.internal.input.DecompressStreamDataReader;
-import org.glavo.nbt.internal.input.InputSource;
-import org.glavo.nbt.internal.input.RawDataReader;
+import org.glavo.nbt.tag.CompoundTag;
 import org.glavo.nbt.tag.Tag;
 import org.glavo.nbt.io.NBTCodec;
 import org.glavo.nbt.tag.TagType;
@@ -30,10 +30,12 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.nio.ByteBuffer;
+import java.nio.channels.FileChannel;
 import java.nio.channels.ReadableByteChannel;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
+import java.time.Instant;
 import java.util.Objects;
 
 public record NBTCodecImpl(MinecraftEdition edition) implements NBTCodec {
@@ -80,6 +82,85 @@ public record NBTCodecImpl(MinecraftEdition edition) implements NBTCodec {
         }
 
         return readTag(reader);
+    }
+
+    public static ChunkRegion readRegion(RawDataReader rawReader) throws IOException {
+        if (rawReader.edition != MinecraftEdition.JAVA_EDITION) {
+            throw new IllegalArgumentException("Only Java Edition supports region file format");
+        }
+
+        final long fileStart = rawReader.position();
+
+        var header = ChunkRegionHeader.readHeader(rawReader);
+        var region = new ChunkRegion();
+
+        assert rawReader.position() == fileStart + 2 * ChunkUtils.SECTOR_BYTES;
+
+        for (int localIndex : header.localIndexesSortedByOffset) {
+            if (header.getSectorLength(localIndex) == 0) {
+                if (header.getTimestampEpochSeconds(localIndex) != 0L) {
+                    region.setChunk(
+                            localIndex,
+                            new Chunk(Instant.ofEpochSecond(header.getTimestampEpochSeconds(localIndex))));
+                }
+
+                continue;
+            }
+
+            long sectorStart = fileStart + header.getSectorOffsetBytes(localIndex);
+            long position = rawReader.position();
+            if (position != sectorStart) {
+                if (position < sectorStart) {
+                    rawReader.skip(sectorStart - position);
+                } else {
+                    throw new IOException("Invalid chunk metadata: sector offset points to a position before the current position");
+                }
+            }
+
+            assert rawReader.position() == sectorStart;
+
+            long chunkRawLength = rawReader.readUnsignedInt();
+            if (chunkRawLength < 1) {
+                throw new IOException("Invalid chunk data length: " + chunkRawLength);
+            }
+
+            if (chunkRawLength + 4L > header.getSectorLengthBytes(localIndex)) {
+                throw new IOException("Invalid chunk data length: " + chunkRawLength + " (expected <= " + header.getSectorLengthBytes(localIndex) + " - 4)");
+            }
+
+            long chunkRawContentLength = chunkRawLength - 1L;
+
+            int compressType = rawReader.readUnsignedByte();
+            if (compressType > 128) {
+                if (chunkRawContentLength != 0L) {
+                    throw new IOException("Invalid chunk content length: %d (expected 0 for compression type %d)".formatted(chunkRawContentLength, compressType));
+                }
+
+                throw new IOException("The chunk data is stored externally, and reading this data is not currently supported.");
+            }
+
+            BoundedDataReader reader = switch (compressType) {
+                case 1 -> DecompressStreamDataReader.newGZipDataReader(rawReader, chunkRawContentLength);
+                case 2 -> new ZlibDataReader(rawReader, chunkRawContentLength);
+                case 3 -> new UncompressedDataReader(rawReader, chunkRawContentLength);
+                case 4 -> DecompressStreamDataReader.newLZ4DataReader(rawReader, chunkRawContentLength);
+                default -> throw new IOException("Unsupported compression type: " + compressType);
+            };
+
+            try (reader) {
+                var tag = NBTCodecImpl.readTag(reader);
+                if (tag instanceof CompoundTag rootTag) {
+                    region.setChunk(localIndex, new Chunk(
+                            Instant.ofEpochSecond(header.getTimestampEpochSeconds(localIndex)),
+                            rootTag)
+                    );
+                } else {
+                    throw new IOException("Unexpected tag type: " + tag);
+                }
+            }
+        }
+
+        return region;
     }
 
     @Override
@@ -139,6 +220,14 @@ public record NBTCodecImpl(MinecraftEdition edition) implements NBTCodec {
     public void writeTag(Tag tag, OutputStream outputStream) throws IOException {
         try (var writer = new NBTWriter(outputStream, edition)) {
             writer.writeTag(tag);
+        }
+    }
+
+    @Override
+    public ChunkRegion readRegion(Path path) throws IOException {
+        try (var channel = FileChannel.open(path, StandardOpenOption.READ);
+             var reader = new RawDataReader(new InputSource.OfByteChannel(channel, true), MinecraftEdition.JAVA_EDITION)) {
+            return readRegion(reader);
         }
     }
 

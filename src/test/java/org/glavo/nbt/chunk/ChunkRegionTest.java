@@ -170,7 +170,7 @@ public final class ChunkRegionTest {
         Path resource = TestResources.getResource(path);
 
         RefChunkRegion expected = RefChunkRegion.load(resource);
-        ChunkRegion actual = ChunkRegion.readRegion(resource);
+        ChunkRegion actual = NBTCodec.of().readRegion(resource);
 
         for (int localIndex = 0; localIndex < CHUNKS_PRE_REGION; localIndex++) {
             var chunk = actual.getChunk(localIndex);

@@ -13,31 +13,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
+@NotNullByDefault
 package org.glavo.nbt.io;
 
-public sealed interface CompressMethod {
-    enum BuiltIn implements CompressMethod {
-        GZIP,
-        ZLIB,
-        UNCOMPRESSED,
-        LZ4
-    }
-
-    // TODO: Add support for custom compression methods
-    final class Custom implements CompressMethod {
-        private final String name;
-
-        public Custom(String name) {
-            this.name = name;
-        }
-
-        public String getName() {
-            return name;
-        }
-
-        @Override
-        public String toString() {
-            return "Custom[" + name + "]";
-        }
-    }
-}
+import org.jetbrains.annotations.NotNullByDefault;

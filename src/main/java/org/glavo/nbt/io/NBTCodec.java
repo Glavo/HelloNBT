@@ -28,6 +28,7 @@ import java.nio.ByteBuffer;
 import java.nio.channels.ReadableByteChannel;
 import java.nio.channels.WritableByteChannel;
 import java.nio.file.Path;
+import java.util.function.Function;
 
 /// The codec for reading and writing NBT data.
 public sealed interface NBTCodec permits NBTCodecImpl {
@@ -55,13 +56,13 @@ public sealed interface NBTCodec permits NBTCodecImpl {
     @Contract(pure = true)
     NBTCodec withEdition(MinecraftEdition edition);
 
-    /// Returns the locator for oversized chunk files.
+    /// Returns the factory for creating [OversizedChunkAccessor] for an Anvil file.
     @Contract(pure = true)
-    OversizedChunkLocator getOversizedChunkLocator();
+    Function<Path, OversizedChunkAccessor> getOversizedChunkAccessorFactory();
 
-    /// Returns a new [NBTCodec] with the specified locator for oversized chunk files.
+    /// Returns a new [NBTCodec] with the specified factory for creating [OversizedChunkAccessor].
     @Contract(pure = true)
-    NBTCodec withOversizedChunkLocator(OversizedChunkLocator locator);
+    NBTCodec withOversizedChunkAccessorFactory(Function<Path, OversizedChunkAccessor> factory);
 
     private static <T extends Tag> T check(@Nullable Tag tag, Class<T> tagClass) throws IOException {
         if (tag == null) {

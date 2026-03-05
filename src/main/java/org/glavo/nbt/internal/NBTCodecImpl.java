@@ -22,7 +22,7 @@ import org.glavo.nbt.internal.output.DataWriter;
 import org.glavo.nbt.internal.output.OutputTarget;
 import org.glavo.nbt.internal.output.RawDataWriter;
 import org.glavo.nbt.io.MinecraftEdition;
-import org.glavo.nbt.io.OversizedChunkLocator;
+import org.glavo.nbt.io.OversizedChunkAccessor;
 import org.glavo.nbt.tag.CompoundTag;
 import org.glavo.nbt.tag.Tag;
 import org.glavo.nbt.io.NBTCodec;
@@ -41,12 +41,13 @@ import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
 import java.time.Instant;
 import java.util.Objects;
+import java.util.function.Function;
 
 public record NBTCodecImpl(MinecraftEdition edition,
-                           OversizedChunkLocator oversizedChunkLocator) implements NBTCodec {
+                           Function<Path, OversizedChunkAccessor> oversizedChunkAccessorFactory) implements NBTCodec {
 
-    public static final NBTCodecImpl JE = new NBTCodecImpl(MinecraftEdition.JAVA_EDITION, OversizedChunkLocator.defaultLocator());
-    public static final NBTCodecImpl BE = new NBTCodecImpl(MinecraftEdition.BEDROCK_EDITION, OversizedChunkLocator.defaultLocator());
+    public static final NBTCodecImpl JE = new NBTCodecImpl(MinecraftEdition.JAVA_EDITION, OversizedChunkAccessor.defaultFactory());
+    public static final NBTCodecImpl BE = new NBTCodecImpl(MinecraftEdition.BEDROCK_EDITION, OversizedChunkAccessor.defaultFactory());
 
     public static @Nullable Tag readTag(DataReader reader) throws IOException {
         byte tagByte = reader.readByte();
@@ -91,7 +92,7 @@ public record NBTCodecImpl(MinecraftEdition edition,
         Access.TAG.writeContent(tag, writer);
     }
 
-    public static ChunkRegion readRegion(RawDataReader rawReader, OversizedChunkProvider provider) throws IOException {
+    public static ChunkRegion readRegion(RawDataReader rawReader, OversizedChunkAccessor accessor) throws IOException {
         if (rawReader.edition != MinecraftEdition.JAVA_EDITION) {
             throw new IllegalArgumentException("Only Java Edition supports region file format");
         }
@@ -140,15 +141,24 @@ public record NBTCodecImpl(MinecraftEdition edition,
             int compressType = rawReader.readUnsignedByte();
             boolean external = compressType > 128;
 
+            RawDataReader oversizedReader;
             if (external) {
                 if (chunkRawContentLength != 0L) {
                     throw new IOException("Invalid chunk content length: %d (expected 0 for compression type %d)".formatted(chunkRawContentLength, compressType));
                 }
 
                 compressType -= 128;
+
+                InputStream oversizedChunkInputStream = accessor.openInputStream(ChunkUtils.getLocalX(localIndex), ChunkUtils.getLocalZ(localIndex));
+                if (oversizedChunkInputStream == null) {
+                    throw new IOException("Failed to open oversized chunk file for chunk (%d, %d)".formatted(ChunkUtils.getLocalX(localIndex), ChunkUtils.getLocalZ(localIndex)));
+                }
+                oversizedReader = new RawDataReader(new InputSource.OfInputStream(oversizedChunkInputStream, true), MinecraftEdition.JAVA_EDITION);
+            } else {
+                oversizedReader = null;
             }
 
-            try (var oversizedReader = external ? provider.openChunkData(localIndex) : null) {
+            try (oversizedReader) {
                 RawDataReader actualRawReader;
 
                 if (external) {
@@ -191,18 +201,18 @@ public record NBTCodecImpl(MinecraftEdition edition,
     @Override
     public NBTCodec withEdition(MinecraftEdition edition) {
         Objects.requireNonNull(edition, "edition");
-        return new NBTCodecImpl(edition, oversizedChunkLocator);
+        return new NBTCodecImpl(edition, oversizedChunkAccessorFactory);
     }
 
     @Override
-    public OversizedChunkLocator getOversizedChunkLocator() {
-        return oversizedChunkLocator;
+    public Function<Path, OversizedChunkAccessor> getOversizedChunkAccessorFactory() {
+        return oversizedChunkAccessorFactory;
     }
 
     @Override
-    public NBTCodec withOversizedChunkLocator(OversizedChunkLocator locator) {
-        Objects.requireNonNull(locator, "locator");
-        return new NBTCodecImpl(edition, locator);
+    public NBTCodec withOversizedChunkAccessorFactory(Function<Path, OversizedChunkAccessor> factory) {
+        Objects.requireNonNull(factory, "factory");
+        return new NBTCodecImpl(edition, factory);
     }
 
     private Tag check(@Nullable Tag tag) throws IOException {
@@ -265,29 +275,12 @@ public record NBTCodecImpl(MinecraftEdition edition,
     public ChunkRegion readRegion(Path path) throws IOException {
         try (var channel = FileChannel.open(path, StandardOpenOption.READ);
              var reader = new RawDataReader(new InputSource.OfByteChannel(channel, true), MinecraftEdition.JAVA_EDITION)) {
-            return readRegion(reader, OversizedChunkProvider.of(path, oversizedChunkLocator));
+            return readRegion(reader, oversizedChunkAccessorFactory.apply(path));
         }
     }
 
     @Override
     public String toString() {
-        return "NBTCodec[edition=%s, oversizedChunkLocator=%s]".formatted(edition, oversizedChunkLocator);
-    }
-
-    @FunctionalInterface
-    public interface OversizedChunkProvider {
-
-        static OversizedChunkProvider of(Path path, OversizedChunkLocator locator) {
-            return index -> {
-                InputStream input = locator.openInputStream(path, ChunkUtils.getLocalX(index), ChunkUtils.getLocalZ(index));
-                if (input != null) {
-                    return new RawDataReader(new InputSource.OfInputStream(input, true), MinecraftEdition.JAVA_EDITION);
-                } else {
-                    throw new IOException("Oversized chunk not found for local index " + index);
-                }
-            };
-        }
-
-        RawDataReader openChunkData(int chunkLocalIndex) throws IOException;
+        return "NBTCodec[edition=%s, oversizedChunkAccessorFactory=%s]".formatted(edition, oversizedChunkAccessorFactory);
     }
 }

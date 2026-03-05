@@ -42,6 +42,10 @@ public final class ChunkUtils {
         return localIndex >>> CHUNKS_PER_REGION_SIDE_SHIFT;
     }
 
+    public static int toGlobalIndex(int regionIndex, @Range(from = 0, to = 31) int chunkLocalIndex) {
+        return (regionIndex << CHUNKS_PER_REGION_SIDE_SHIFT) + chunkLocalIndex;
+    }
+
     private ChunkUtils() {
     }
 }

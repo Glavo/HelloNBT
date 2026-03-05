@@ -90,7 +90,7 @@ public record NBTCodecImpl(MinecraftEdition edition) implements NBTCodec {
     @Override
     public NBTCodec withEdition(MinecraftEdition edition) {
         Objects.requireNonNull(edition, "edition");
-        return edition == this.edition ? this : new NBTCodecImpl(edition);
+        return NBTCodec.of(edition);
     }
 
     private Tag check(@Nullable Tag tag) throws IOException {
@@ -142,4 +142,8 @@ public record NBTCodecImpl(MinecraftEdition edition) implements NBTCodec {
         }
     }
 
+    @Override
+    public String toString() {
+        return "NBTCodecImpl[edition=%s]".formatted(edition);
+    }
 }

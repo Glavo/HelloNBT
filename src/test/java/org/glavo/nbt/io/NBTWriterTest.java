@@ -16,6 +16,7 @@
 package org.glavo.nbt.io;
 
 import com.github.steveice10.opennbt.NBTIO;
+import org.glavo.nbt.internal.NBTCodecImpl;
 import org.glavo.nbt.tag.*;
 import org.junit.jupiter.api.Test;
 
@@ -31,9 +32,10 @@ public final class NBTWriterTest {
             MinecraftEdition edition)
             throws IOException {
 
-        var buffer = new ByteArrayOutputStream();
-        tag.writeTo(buffer, edition);
+        var codec = NBTCodec.newBuilder().setEdition(edition).build();
 
+        var buffer = new ByteArrayOutputStream();
+        codec.writeTag(tag, buffer);
         return NBTIO.readTag(new ByteArrayInputStream(buffer.toByteArray()), edition == MinecraftEdition.BEDROCK_EDITION);
     }
 

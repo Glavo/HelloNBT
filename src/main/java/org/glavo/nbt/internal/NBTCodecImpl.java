@@ -15,6 +15,7 @@
  */
 package org.glavo.nbt.internal;
 
+import org.glavo.nbt.internal.output.NBTWriter;
 import org.glavo.nbt.io.MinecraftEdition;
 import org.glavo.nbt.internal.input.DataReader;
 import org.glavo.nbt.internal.input.DecompressStreamDataReader;
@@ -27,6 +28,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.nio.ByteBuffer;
 import java.nio.channels.ReadableByteChannel;
 import java.nio.file.Files;
@@ -123,6 +125,13 @@ public record NBTCodecImpl(MinecraftEdition edition) implements NBTCodec {
         try (var channel = Files.newByteChannel(path, StandardOpenOption.READ);
              var reader = new RawDataReader(new InputSource.OfByteChannel(channel, false), edition)) {
             return check(readTagAutoDecompress(reader));
+        }
+    }
+
+    @Override
+    public void writeTag(Tag tag, OutputStream outputStream) throws IOException {
+        try (var writer = new NBTWriter(outputStream, edition)) {
+            writer.writeTag(tag);
         }
     }
 

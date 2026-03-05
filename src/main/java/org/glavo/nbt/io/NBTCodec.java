@@ -22,6 +22,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.nio.ByteBuffer;
 import java.nio.channels.ReadableByteChannel;
 import java.nio.file.Path;
@@ -129,6 +130,10 @@ public sealed interface NBTCodec permits NBTCodecImpl {
             throw new IOException("Unexpected tag type: " + tag);
         }
     }
+
+    /// Writes a NBT tag to the output stream.
+    @Contract(mutates = "param1")
+    void writeTag(Tag tag, OutputStream outputStream) throws IOException;
 
     /// The builder for creating a [NBTCodec].
     sealed interface Builder permits NBTCodecImpl.BuilderImpl {

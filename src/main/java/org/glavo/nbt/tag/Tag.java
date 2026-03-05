@@ -15,16 +15,13 @@
  */
 package org.glavo.nbt.tag;
 
-import org.glavo.nbt.io.MinecraftEdition;
 import org.glavo.nbt.NBTElement;
 import org.glavo.nbt.NBTParent;
 import org.glavo.nbt.internal.input.DataReader;
-import org.glavo.nbt.internal.output.NBTWriter;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.IOException;
-import java.io.OutputStream;
 import java.util.Objects;
 
 /// @author Glavo
@@ -98,16 +95,6 @@ public sealed abstract class Tag implements NBTElement
         assert parent == null ^ index >= 0;
         this.parent = parent;
         this.index = index;
-    }
-
-    public void writeTo(OutputStream outputStream) throws IOException {
-        writeTo(outputStream, MinecraftEdition.JAVA_EDITION);
-    }
-
-    public void writeTo(OutputStream outputStream, MinecraftEdition edition) throws IOException {
-        try (var writer = new NBTWriter(outputStream, edition)) {
-            writer.writeTag(this);
-        }
     }
 
     protected abstract void readContent(DataReader reader) throws IOException;

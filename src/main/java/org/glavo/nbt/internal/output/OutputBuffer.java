@@ -29,6 +29,12 @@ public final class OutputBuffer {
         return new OutputBuffer(bytesBuffer);
     }
 
+    public static void assertStatus(OutputBuffer buffer) {
+        if (buffer.bytesBuffer.limit() != buffer.bytesBuffer.capacity()) {
+            throw new AssertionError("Buffer limit should equal capacity");
+        }
+    }
+
     /// The pending bytes.
     ///
     /// Typically, its limit should equal capacity, and position should equal the number of bytes already written.
@@ -44,12 +50,6 @@ public final class OutputBuffer {
 
     public ByteOrder order() {
         return bytesBuffer.order();
-    }
-
-    public void assertStatus() {
-        if (bytesBuffer.limit() != bytesBuffer.capacity()) {
-            throw new AssertionError("Buffer limit should equal capacity");
-        }
     }
 
     public void ensureCapacity(int required) {

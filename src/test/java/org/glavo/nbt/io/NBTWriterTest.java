@@ -16,46 +16,83 @@
 package org.glavo.nbt.io;
 
 import com.github.steveice10.opennbt.NBTIO;
-import org.glavo.nbt.internal.NBTCodecImpl;
 import org.glavo.nbt.tag.*;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.MethodSource;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.nio.channels.Channels;
+import java.nio.channels.WritableByteChannel;
+import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public final class NBTWriterTest {
-    private static com.github.steveice10.opennbt.tag.builtin.Tag convert(
-            Tag tag,
-            MinecraftEdition edition)
-            throws IOException {
 
-        var buffer = new ByteArrayOutputStream();
-        NBTCodec.of(edition).writeTag(tag, buffer);
-        return NBTIO.readTag(new ByteArrayInputStream(buffer.toByteArray()), edition == MinecraftEdition.BEDROCK_EDITION);
+    sealed interface Validator {
+        byte[] toByteArray(NBTCodec codec, Tag tag) throws IOException;
+
+        default com.github.steveice10.opennbt.tag.builtin.Tag convert(
+                Tag tag,
+                MinecraftEdition edition
+        ) throws IOException {
+
+            return NBTIO.readTag(
+                    new ByteArrayInputStream(toByteArray(NBTCodec.of(edition), tag)),
+                    edition == MinecraftEdition.BEDROCK_EDITION);
+        }
+
+        default void assertTagEquals(
+                com.github.steveice10.opennbt.tag.builtin.Tag expected,
+                Tag actual) throws IOException {
+            assertEquals(expected, convert(actual, MinecraftEdition.JAVA_EDITION));
+            assertEquals(expected, convert(actual, MinecraftEdition.BEDROCK_EDITION));
+        }
+
+        record OutputStream(MinecraftEdition edition) implements Validator {
+            @Override
+            public byte[] toByteArray(NBTCodec codec, Tag tag) throws IOException {
+                ByteArrayOutputStream buffer = new ByteArrayOutputStream();
+                codec.writeTag(tag, buffer);
+                return buffer.toByteArray();
+            }
+        }
+
+        record ByteChannel(MinecraftEdition edition) implements Validator {
+            @Override
+            public byte[] toByteArray(NBTCodec codec, Tag tag) throws IOException {
+                ByteArrayOutputStream buffer = new ByteArrayOutputStream();
+                try (WritableByteChannel channel = Channels.newChannel(buffer)) {
+                    codec.writeTag(tag, channel);
+                }
+                return buffer.toByteArray();
+            }
+        }
     }
 
-    private static void assertTagEquals(
-            com.github.steveice10.opennbt.tag.builtin.Tag expected,
-            Tag actual) throws IOException {
-        assertEquals(expected, convert(actual, MinecraftEdition.JAVA_EDITION));
-        assertEquals(expected, convert(actual, MinecraftEdition.BEDROCK_EDITION));
+    static Stream<Validator> validators() {
+        return Stream.of(MinecraftEdition.values()).flatMap(edition -> Stream.of(
+                new Validator.OutputStream(edition),
+                new Validator.ByteChannel(edition)
+        ));
     }
 
-    @Test
-    public void testWriteSimpleTag() throws IOException {
-        assertTagEquals(new com.github.steveice10.opennbt.tag.builtin.ByteTag("Meow", (byte) 42), new ByteTag("Meow", (byte) 42));
-        assertTagEquals(new com.github.steveice10.opennbt.tag.builtin.ShortTag("Meow", (short) 42), new ShortTag("Meow", (short) 42));
-        assertTagEquals(new com.github.steveice10.opennbt.tag.builtin.IntTag("Meow", 42), new IntTag("Meow", 42));
-        assertTagEquals(new com.github.steveice10.opennbt.tag.builtin.LongTag("Meow", 42L), new LongTag("Meow", 42L));
-        assertTagEquals(new com.github.steveice10.opennbt.tag.builtin.FloatTag("Meow", 42.0f), new FloatTag("Meow", 42.0f));
-        assertTagEquals(new com.github.steveice10.opennbt.tag.builtin.DoubleTag("Meow", 42.0), new DoubleTag("Meow", 42.0));
-        assertTagEquals(new com.github.steveice10.opennbt.tag.builtin.StringTag("Meow", "Glavo"), new StringTag("Meow", "Glavo"));
-        assertTagEquals(new com.github.steveice10.opennbt.tag.builtin.ByteArrayTag("Meow", new byte[]{1, 2, 3}), new ByteArrayTag("Meow", new byte[]{1, 2, 3}));
-        assertTagEquals(new com.github.steveice10.opennbt.tag.builtin.IntArrayTag("Meow", new int[]{1, 2, 3}), new IntArrayTag("Meow", new int[]{1, 2, 3}));
-        assertTagEquals(new com.github.steveice10.opennbt.tag.builtin.LongArrayTag("Meow", new long[]{1, 2, 3}), new LongArrayTag("Meow", new long[]{1, 2, 3}));
+    @ParameterizedTest
+    @MethodSource("validators")
+    void testWriteSimpleTag(Validator validator) throws IOException {
+        validator.assertTagEquals(new com.github.steveice10.opennbt.tag.builtin.ByteTag("Meow", (byte) 42), new ByteTag("Meow", (byte) 42));
+        validator.assertTagEquals(new com.github.steveice10.opennbt.tag.builtin.ShortTag("Meow", (short) 42), new ShortTag("Meow", (short) 42));
+        validator.assertTagEquals(new com.github.steveice10.opennbt.tag.builtin.IntTag("Meow", 42), new IntTag("Meow", 42));
+        validator.assertTagEquals(new com.github.steveice10.opennbt.tag.builtin.LongTag("Meow", 42L), new LongTag("Meow", 42L));
+        validator.assertTagEquals(new com.github.steveice10.opennbt.tag.builtin.FloatTag("Meow", 42.0f), new FloatTag("Meow", 42.0f));
+        validator.assertTagEquals(new com.github.steveice10.opennbt.tag.builtin.DoubleTag("Meow", 42.0), new DoubleTag("Meow", 42.0));
+        validator.assertTagEquals(new com.github.steveice10.opennbt.tag.builtin.StringTag("Meow", "Glavo"), new StringTag("Meow", "Glavo"));
+        validator.assertTagEquals(new com.github.steveice10.opennbt.tag.builtin.ByteArrayTag("Meow", new byte[]{1, 2, 3}), new ByteArrayTag("Meow", new byte[]{1, 2, 3}));
+        validator.assertTagEquals(new com.github.steveice10.opennbt.tag.builtin.IntArrayTag("Meow", new int[]{1, 2, 3}), new IntArrayTag("Meow", new int[]{1, 2, 3}));
+        validator.assertTagEquals(new com.github.steveice10.opennbt.tag.builtin.LongArrayTag("Meow", new long[]{1, 2, 3}), new LongArrayTag("Meow", new long[]{1, 2, 3}));
 
         {
             var expected = new com.github.steveice10.opennbt.tag.builtin.ListTag("Meow", com.github.steveice10.opennbt.tag.builtin.IntTag.class);
@@ -66,7 +103,7 @@ public final class NBTWriterTest {
                 actual.add(new IntTag("", i));
             }
 
-            assertTagEquals(expected, actual);
+            validator.assertTagEquals(expected, actual);
         }
 
         {
@@ -118,16 +155,17 @@ public final class NBTWriterTest {
                 actual.add(sub11);
             }
 
-            assertTagEquals(expected, actual);
+            validator.assertTagEquals(expected, actual);
         }
     }
 
-    @Test
-    public void testWriteModifiedUTF8String() throws IOException {
+    @ParameterizedTest
+    @MethodSource("validators")
+    void testWriteModifiedUTF8String(Validator validator) throws IOException {
         String value = "ABCǾ喵喵喵🐱ABC123";
 
         var expected = new com.github.steveice10.opennbt.tag.builtin.StringTag("Meow", value);
         var actual = new StringTag("Meow", value);
-        assertTagEquals(expected, actual);
+        validator.assertTagEquals(expected, actual);
     }
 }

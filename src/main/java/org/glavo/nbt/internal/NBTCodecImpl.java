@@ -35,6 +35,7 @@ import java.io.OutputStream;
 import java.nio.ByteBuffer;
 import java.nio.channels.FileChannel;
 import java.nio.channels.ReadableByteChannel;
+import java.nio.channels.WritableByteChannel;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
@@ -249,6 +250,13 @@ public record NBTCodecImpl(MinecraftEdition edition,
     @Override
     public void writeTag(Tag tag, OutputStream outputStream) throws IOException {
         try (var writer = new RawDataWriter(new OutputTarget.OfOutputStream(outputStream, false), edition)) {
+            writeTag(writer, tag);
+        }
+    }
+
+    @Override
+    public void writeTag(Tag tag, WritableByteChannel channel) throws IOException {
+        try (var writer = new RawDataWriter(new OutputTarget.OfByteChannel(channel, false), edition)) {
             writeTag(writer, tag);
         }
     }

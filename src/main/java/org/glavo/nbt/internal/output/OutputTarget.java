@@ -19,10 +19,10 @@ package org.glavo.nbt.internal.output;
 
 import org.jetbrains.annotations.Nullable;
 
-import java.io.Closeable;
-import java.io.Flushable;
-import java.io.IOException;
-import java.io.OutputStream;
+import java.io.*;
+import java.nio.ByteBuffer;
+import java.nio.channels.SeekableByteChannel;
+import java.nio.channels.WritableByteChannel;
 
 public abstract class OutputTarget implements Closeable, Flushable {
     private boolean closed = false;
@@ -89,7 +89,7 @@ public abstract class OutputTarget implements Closeable, Flushable {
         @Override
         public void write(OutputBuffer buffer) throws IOException {
             ensureOpen();
-            buffer.assertStatus();
+            OutputBuffer.assertStatus(buffer);
 
             outputStream.write(
                     buffer.getByteBuffer().array(),
@@ -115,7 +115,7 @@ public abstract class OutputTarget implements Closeable, Flushable {
 
 
             if (skipBuffer == null) {
-                skipBuffer = new byte[512];
+                skipBuffer = new byte[1024];
             }
 
             long count = 0;
@@ -124,6 +124,97 @@ public abstract class OutputTarget implements Closeable, Flushable {
                 outputStream.write(skipBuffer, 0, toWrite);
                 position += toWrite;
                 count += toWrite;
+            }
+        }
+    }
+
+    public static final class OfByteChannel extends OutputTarget {
+        private final WritableByteChannel channel;
+        private final boolean closeChannel;
+        private long position;
+
+        private @Nullable ByteBuffer skipBuffer;
+
+        public OfByteChannel(WritableByteChannel channel, boolean closeChannel) {
+            this.channel = channel;
+            this.closeChannel = closeChannel;
+        }
+
+        @Override
+        public boolean supportDirectBuffer() {
+            return true;
+        }
+
+        @Override
+        public long position() {
+            return position;
+        }
+
+        @Override
+        protected void closeImpl() throws IOException {
+            if (closeChannel) {
+                channel.close();
+            }
+        }
+
+        @Override
+        public void write(OutputBuffer buffer) throws IOException {
+            ensureOpen();
+            OutputBuffer.assertStatus(buffer);
+
+            ByteBuffer byteBuffer = buffer.getByteBuffer();
+            byteBuffer.flip();
+            try {
+                while (byteBuffer.hasRemaining()) {
+                    int n = channel.write(byteBuffer);
+                    if (n == 0) {
+                        throw new IOException("No bytes written");
+                    }
+                    position += n;
+                }
+            } finally {
+                byteBuffer.compact();
+                OutputBuffer.assertStatus(buffer);
+            }
+        }
+
+        @Override
+        public void skip(long bytes) throws IOException {
+            ensureOpen();
+            if (bytes < 0) {
+                throw new IllegalArgumentException("Negative skip length: " + bytes);
+            }
+            if (bytes == 0) {
+                return;
+            }
+
+            if (channel instanceof SeekableByteChannel seekableChannel) {
+                try {
+                    long channelCurrentPosition = seekableChannel.position();
+                    long channelTargetPosition = Math.addExact(channelCurrentPosition, bytes);
+                    seekableChannel.position(channelTargetPosition);
+                    position += bytes;
+                    return;
+                } catch (ArithmeticException e) {
+                    throw new IOException("Overflow when skip " + bytes + " bytes", e);
+                }
+            }
+
+            if (skipBuffer == null) {
+                skipBuffer = ByteBuffer.allocateDirect(1024);
+            }
+
+            long remainingSkip = bytes;
+            while (remainingSkip > 0) {
+                skipBuffer.position(0).limit((int) Math.min(remainingSkip, skipBuffer.capacity()));
+
+                int n = channel.write(skipBuffer);
+                if (n > 0) {
+                    position += n;
+                    remainingSkip -= n;
+                } else {
+                    throw new EOFException("No bytes written");
+                }
             }
         }
     }

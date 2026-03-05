@@ -25,8 +25,13 @@ import java.util.Objects;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-@FunctionalInterface
+/// Locator for oversized chunk files.
+///
+/// Since Minecraft 19w34a, if a chunk is larger than 1 MiB, it will be stored in a separate file named `c.<chunkX>.<chunkZ>.mcc` in the same directory as the region file.
+/// This interface provides a way to locate the oversized chunk file for a given chunk in an Anvil file.
 public interface OversizedChunkLocator<T> {
+
+    /// Returns an empty locator that always returns null.
     static <T> OversizedChunkLocator<T> emptyLocator() {
         return (source, chunkLocalX, chunkLocalZ) -> {
             Objects.requireNonNull(source);
@@ -36,6 +41,7 @@ public interface OversizedChunkLocator<T> {
         };
     }
 
+    /// Returns a default locator that locates the oversized chunk file based on the region file name and chunk local coordinates.
     static OversizedChunkLocator<Path> defaultLocator() {
         final class Holder {
             static final Pattern FILE_NAME_PATTERN = Pattern.compile("r\\.(?<regionX>-?\\d+)\\.(?<regionZ>-?\\d+)\\.mca");
@@ -73,5 +79,10 @@ public interface OversizedChunkLocator<T> {
         };
     }
 
+    /// Locates the oversized chunk file for a given chunk in an Anvil file.
+    ///
+    /// @param source      The source file path of the Anvil file.
+    /// @param chunkLocalX The local X coordinate of the chunk in the region file.
+    /// @param chunkLocalZ The local Z coordinate of the chunk in the region file.
     @Nullable T locate(T source, int chunkLocalX, int chunkLocalZ);
 }

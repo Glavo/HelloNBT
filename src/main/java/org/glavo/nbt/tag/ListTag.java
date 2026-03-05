@@ -16,6 +16,7 @@
 package org.glavo.nbt.tag;
 
 import org.glavo.nbt.internal.input.DataReader;
+import org.glavo.nbt.internal.output.DataWriter;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.Nullable;
 
@@ -215,6 +216,16 @@ public final class ListTag<T extends Tag> extends ParentTag<T> {
             Tag subTag = elementType.createTag();
             subTag.readContent(reader);
             uncheckedListTag.add(subTag);
+        }
+    }
+
+    @Override
+    protected void writeContent(DataWriter writer) throws IOException {
+        writer.writeByte(getElementType() != null ? getElementType().id() : 0);
+        writer.writeInt(size());
+
+        for (Tag subTag : subTags) {
+            subTag.writeContent(writer);
         }
     }
 

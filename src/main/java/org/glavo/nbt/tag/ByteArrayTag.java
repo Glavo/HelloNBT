@@ -16,6 +16,7 @@
 package org.glavo.nbt.tag;
 
 import org.glavo.nbt.internal.input.DataReader;
+import org.glavo.nbt.internal.output.DataWriter;
 import org.intellij.lang.annotations.Flow;
 import org.jetbrains.annotations.Contract;
 
@@ -111,6 +112,11 @@ public final class ByteArrayTag extends ArrayTag<Byte> {
     @Override
     protected void readContent(DataReader reader) throws IOException {
         value = reader.readByteArray();
+    }
+
+    @Override
+    protected void writeContent(DataWriter writer) throws IOException {
+        writer.writeByteArray(value);
     }
 
     @Override

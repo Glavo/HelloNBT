@@ -18,7 +18,9 @@ package org.glavo.nbt.internal;
 import org.glavo.nbt.chunk.Chunk;
 import org.glavo.nbt.chunk.ChunkRegion;
 import org.glavo.nbt.internal.input.*;
-import org.glavo.nbt.internal.output.NBTWriter;
+import org.glavo.nbt.internal.output.DataWriter;
+import org.glavo.nbt.internal.output.OutputTarget;
+import org.glavo.nbt.internal.output.RawDataWriter;
 import org.glavo.nbt.io.MinecraftEdition;
 import org.glavo.nbt.io.OversizedChunkLocator;
 import org.glavo.nbt.tag.CompoundTag;
@@ -80,6 +82,12 @@ public record NBTCodecImpl(MinecraftEdition edition,
         }
 
         return readTag(reader);
+    }
+
+    public static void writeTag(DataWriter writer, Tag tag) throws IOException {
+        writer.writeByte(tag.getType().id()); // implicit null check
+        writer.writeString(tag.getName());
+        Access.TAG.writeContent(tag, writer);
     }
 
     public static ChunkRegion readRegion(RawDataReader rawReader, OversizedChunkProvider provider) throws IOException {
@@ -240,8 +248,8 @@ public record NBTCodecImpl(MinecraftEdition edition,
 
     @Override
     public void writeTag(Tag tag, OutputStream outputStream) throws IOException {
-        try (var writer = new NBTWriter(outputStream, edition)) {
-            writer.writeTag(tag);
+        try (var writer = new RawDataWriter(new OutputTarget.OfOutputStream(outputStream, false), edition)) {
+            writeTag(writer, tag);
         }
     }
 

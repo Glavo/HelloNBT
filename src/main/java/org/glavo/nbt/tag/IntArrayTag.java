@@ -16,6 +16,7 @@
 package org.glavo.nbt.tag;
 
 import org.glavo.nbt.internal.input.DataReader;
+import org.glavo.nbt.internal.output.DataWriter;
 import org.jetbrains.annotations.Contract;
 
 import java.io.IOException;
@@ -117,6 +118,11 @@ public final class IntArrayTag extends ArrayTag<Integer> {
     @Override
     protected void readContent(DataReader reader) throws IOException {
         value = reader.readIntArray();
+    }
+
+    @Override
+    protected void writeContent(DataWriter writer) throws IOException {
+        writer.writeIntArray(value);
     }
 
     @Override

@@ -16,6 +16,7 @@
 package org.glavo.nbt.tag;
 
 import org.glavo.nbt.internal.input.DataReader;
+import org.glavo.nbt.internal.output.DataWriter;
 import org.jetbrains.annotations.Contract;
 
 import java.io.IOException;
@@ -70,6 +71,11 @@ public final class ShortTag extends ValueTag<Short> {
     @Override
     protected void readContent(DataReader reader) throws IOException {
         set(reader.readShort());
+    }
+
+    @Override
+    protected void writeContent(DataWriter writer) throws IOException {
+        writer.writeShort(value);
     }
 
     @Override

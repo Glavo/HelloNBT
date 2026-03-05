@@ -16,6 +16,7 @@
 package org.glavo.nbt.tag;
 
 import org.glavo.nbt.internal.input.DataReader;
+import org.glavo.nbt.internal.output.DataWriter;
 import org.jetbrains.annotations.Contract;
 
 import java.io.IOException;
@@ -119,6 +120,11 @@ public final class LongArrayTag extends ArrayTag<Long> {
     @Override
     protected void readContent(DataReader reader) throws IOException {
         value = reader.readLongArray();
+    }
+
+    @Override
+    protected void writeContent(DataWriter writer) throws IOException {
+        writer.writeLongArray(value);
     }
 
     @Override

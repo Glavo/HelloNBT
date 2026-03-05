@@ -18,6 +18,7 @@ package org.glavo.nbt.tag;
 import org.glavo.nbt.NBTElement;
 import org.glavo.nbt.NBTParent;
 import org.glavo.nbt.internal.input.DataReader;
+import org.glavo.nbt.internal.output.DataWriter;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.Nullable;
 
@@ -97,7 +98,11 @@ public sealed abstract class Tag implements NBTElement
         this.index = index;
     }
 
+    /// Internal method for reading the content of the tag.
     protected abstract void readContent(DataReader reader) throws IOException;
+
+    /// Internal method for writing the content of the tag.
+    protected abstract void writeContent(DataWriter writer) throws IOException;
 
     protected abstract int contentHashCode();
 

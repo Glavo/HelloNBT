@@ -17,6 +17,7 @@ package org.glavo.nbt.tag;
 
 import org.glavo.nbt.NBTParent;
 import org.glavo.nbt.internal.input.DataReader;
+import org.glavo.nbt.internal.output.DataWriter;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Nullable;
 
@@ -53,6 +54,10 @@ public final class TagAccess {
 
     public void readContent(Tag tag, DataReader reader) throws IOException {
         tag.readContent(reader);
+    }
+
+    public void writeContent(Tag tag, DataWriter writer) throws IOException {
+        tag.writeContent(writer);
     }
 
     /// Returns the internal value of the tag without cloning.

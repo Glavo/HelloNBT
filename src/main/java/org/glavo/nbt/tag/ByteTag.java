@@ -16,6 +16,7 @@
 package org.glavo.nbt.tag;
 
 import org.glavo.nbt.internal.input.DataReader;
+import org.glavo.nbt.internal.output.DataWriter;
 import org.jetbrains.annotations.Contract;
 
 import java.io.IOException;
@@ -85,6 +86,11 @@ public final class ByteTag extends ValueTag<Byte> {
     @Override
     protected void readContent(DataReader reader) throws IOException {
         set(reader.readByte());
+    }
+
+    @Override
+    protected void writeContent(DataWriter writer) throws IOException {
+        writer.writeByte(value);
     }
 
     @Override

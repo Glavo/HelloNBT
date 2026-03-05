@@ -17,6 +17,7 @@ package org.glavo.nbt.tag;
 
 import org.glavo.nbt.internal.input.DataReader;
 import org.glavo.nbt.internal.NBTCodecImpl;
+import org.glavo.nbt.internal.output.DataWriter;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.Nullable;
 
@@ -220,6 +221,15 @@ public final class CompoundTag extends ParentTag<Tag> {
         if (count != this.size()) {
             throw new IOException("Duplicate subtags found in compound tag");
         }
+    }
+
+    @Override
+    protected void writeContent(DataWriter writer) throws IOException {
+        for (Tag subTag : subTags) {
+            NBTCodecImpl.writeTag(writer, subTag);
+        }
+
+        writer.writeByte((byte) 0x00);
     }
 
     @Override

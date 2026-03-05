@@ -63,6 +63,11 @@ public final class Chunk implements NBTParent<CompoundTag>, NBTElement {
         setRootTag(rootTag);
     }
 
+    Chunk(ChunkRegion region, int localIndex) {
+        this.region = region;
+        this.localIndex = localIndex;
+    }
+
     /// Return the region of this chunk, or `null` if this chunk is not in any region.
     @Override
     @Contract(pure = true)
@@ -154,6 +159,18 @@ public final class Chunk implements NBTParent<CompoundTag>, NBTElement {
 
         Access.TAG.setParent(rootTag, null, -1);
         rootTag = null;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(timestamp, rootTag);
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        return this == obj || obj instanceof Chunk that
+                && this.timestamp.equals(that.timestamp)
+                && Objects.equals(this.rootTag, that.rootTag);
     }
 
     @Override

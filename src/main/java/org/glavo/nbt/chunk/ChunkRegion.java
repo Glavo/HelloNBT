@@ -134,39 +134,48 @@ public final class ChunkRegion implements NBTParent<Chunk>, NBTElement {
     }
 
     @Contract(pure = true)
-    public @Nullable Chunk getChunk(int localIndex) {
+    public Chunk getChunk(int localIndex) {
         Objects.checkIndex(localIndex, ChunkUtils.CHUNKS_PRE_REGION);
-
-        return chunks[localIndex];
+        Chunk chunk = chunks[localIndex];
+        if (chunk == null) {
+            chunks[localIndex] = chunk = new Chunk(this, localIndex);
+        }
+        return chunk;
     }
 
     @Contract(pure = true)
-    public @Nullable Chunk getChunk(int x, int z) {
+    public Chunk getChunk(int x, int z) {
         Objects.checkIndex(x, ChunkUtils.CHUNKS_PER_REGION_SIDE);
         Objects.checkIndex(z, ChunkUtils.CHUNKS_PER_REGION_SIDE);
 
-        return chunks[ChunkUtils.toLocalIndex(x, z)];
+        return getChunk(ChunkUtils.toLocalIndex(x, z));
     }
 
     @Contract(mutates = "this,param2")
-    public void setChunk(int localIndex, @Nullable Chunk chunk) {
+    public void setChunk(int localIndex, Chunk chunk) {
         Objects.checkIndex(localIndex, ChunkUtils.CHUNKS_PRE_REGION);
+        Objects.requireNonNull(chunk);
 
         Chunk old = chunks[localIndex];
         if (old != null) {
             old.setRegion(null, -1);
         }
 
-        if (chunk != null) {
-            if (chunk.getParent() != null) {
-                // The chunk is already in another region, so we need to remove it from its old region first.
-                ChunkRegion oldRegion = chunk.getParent();
-                oldRegion.remove(chunk);
-            }
-
-            chunk.setRegion(this, localIndex);
+        if (chunk.getParent() != null) {
+            // The chunk is already in another region, so we need to remove it from its old region first.
+            ChunkRegion oldRegion = chunk.getParent();
+            oldRegion.remove(chunk);
         }
+
+        chunk.setRegion(this, localIndex);
         chunks[localIndex] = chunk;
+    }
+
+    @Contract(mutates = "this,param3")
+    public void setChunk(int x, int z, Chunk chunk) {
+        Objects.checkIndex(x, ChunkUtils.CHUNKS_PER_REGION_SIDE);
+        Objects.checkIndex(z, ChunkUtils.CHUNKS_PER_REGION_SIDE);
+        setChunk(ChunkUtils.toLocalIndex(x, z), chunk);
     }
 
     @Override
@@ -182,9 +191,8 @@ public final class ChunkRegion implements NBTParent<Chunk>, NBTElement {
         if (old != chunk) {
             throw new AssertionError("Expected " + chunk + ", but got " + old);
         }
-
-        chunks[localIndex] = null;
         chunk.setRegion(null, -1);
+        chunks[localIndex] = null;
     }
 
     @Override

@@ -175,12 +175,11 @@ public final class ChunkRegionTest {
         for (int localIndex = 0; localIndex < CHUNKS_PRE_REGION; localIndex++) {
             var chunk = actual.getChunk(localIndex);
 
-            assertEquals(expected.timestamps[localIndex], chunk != null ? chunk.getTimestamp() : Instant.EPOCH);
+            assertEquals(expected.timestamps[localIndex], chunk.getTimestamp());
 
             if (expected.chunks[localIndex] == null) {
-                assertTrue(chunk == null || chunk.getRootTag() == null);
+                assertNull(chunk.getRootTag());
             } else {
-                assertNotNull(chunk);
                 assertEquals(localIndex, chunk.getLocalIndex());
                 assertEquals(expected.chunks[localIndex], chunk.getRootTag());
             }

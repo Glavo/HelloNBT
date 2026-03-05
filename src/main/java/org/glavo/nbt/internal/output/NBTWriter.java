@@ -15,7 +15,7 @@
  */
 package org.glavo.nbt.internal.output;
 
-import org.glavo.nbt.MinecraftEdition;
+import org.glavo.nbt.io.MinecraftEdition;
 import org.glavo.nbt.internal.Access;
 import org.glavo.nbt.tag.*;
 

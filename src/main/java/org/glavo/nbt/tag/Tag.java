@@ -15,7 +15,7 @@
  */
 package org.glavo.nbt.tag;
 
-import org.glavo.nbt.MinecraftEdition;
+import org.glavo.nbt.io.MinecraftEdition;
 import org.glavo.nbt.NBTElement;
 import org.glavo.nbt.NBTParent;
 import org.glavo.nbt.internal.input.DataReader;

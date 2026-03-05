@@ -15,13 +15,13 @@
  */
 package org.glavo.nbt.internal;
 
-import org.glavo.nbt.MinecraftEdition;
+import org.glavo.nbt.io.MinecraftEdition;
 import org.glavo.nbt.internal.input.DataReader;
 import org.glavo.nbt.internal.input.DecompressStreamDataReader;
 import org.glavo.nbt.internal.input.InputSource;
 import org.glavo.nbt.internal.input.RawDataReader;
 import org.glavo.nbt.tag.Tag;
-import org.glavo.nbt.NBTCodec;
+import org.glavo.nbt.io.NBTCodec;
 import org.glavo.nbt.tag.TagType;
 import org.jetbrains.annotations.Nullable;
 

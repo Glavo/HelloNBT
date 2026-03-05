@@ -16,8 +16,6 @@
 package org.glavo.nbt.io;
 
 import com.github.steveice10.opennbt.NBTIO;
-import org.glavo.nbt.MinecraftEdition;
-import org.glavo.nbt.NBTCodec;
 import org.glavo.nbt.tag.*;
 import org.junit.jupiter.api.Test;
 

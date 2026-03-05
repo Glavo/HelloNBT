@@ -21,4 +21,5 @@ module org.glavo.nbt {
     exports org.glavo.nbt;
     exports org.glavo.nbt.chunk;
     exports org.glavo.nbt.tag;
+    exports org.glavo.nbt.io;
 }

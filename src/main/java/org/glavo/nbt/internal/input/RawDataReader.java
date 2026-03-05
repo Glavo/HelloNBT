@@ -15,7 +15,7 @@
  */
 package org.glavo.nbt.internal.input;
 
-import org.glavo.nbt.MinecraftEdition;
+import org.glavo.nbt.io.MinecraftEdition;
 import org.glavo.nbt.internal.StringCache;
 import org.jetbrains.annotations.Nullable;
 

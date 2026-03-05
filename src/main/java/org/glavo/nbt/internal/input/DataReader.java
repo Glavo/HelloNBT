@@ -15,7 +15,7 @@
  */
 package org.glavo.nbt.internal.input;
 
-import org.glavo.nbt.MinecraftEdition;
+import org.glavo.nbt.io.MinecraftEdition;
 
 import java.io.Closeable;
 import java.io.IOException;

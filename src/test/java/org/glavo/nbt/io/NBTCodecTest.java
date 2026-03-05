@@ -38,32 +38,32 @@ public final class NBTCodecTest {
         BYTE_ARRAY {
             @Override
             <T extends Tag> T load(Path file, Class<T> tagClass) throws IOException {
-                return NBTCodec.getDefault().readTag(Files.readAllBytes(file), tagClass);
+                return NBTCodec.of().readTag(Files.readAllBytes(file), tagClass);
             }
         },
         HEAP_BYTE_BUFFER {
             @Override
             <T extends Tag> T load(Path file, Class<T> tagClass) throws IOException {
-                return NBTCodec.getDefault().readTag(ByteBuffer.wrap(Files.readAllBytes(file)), tagClass);
+                return NBTCodec.of().readTag(ByteBuffer.wrap(Files.readAllBytes(file)), tagClass);
             }
         },
         DIRECT_BYTE_BUFFER {
             @Override
             <T extends Tag> T load(Path file, Class<T> tagClass) throws IOException {
-                return NBTCodec.getDefault().readTag(ByteBuffer.allocateDirect((int) Files.size(file)).put(Files.readAllBytes(file)).flip(), tagClass);
+                return NBTCodec.of().readTag(ByteBuffer.allocateDirect((int) Files.size(file)).put(Files.readAllBytes(file)).flip(), tagClass);
             }
         },
         INPUT_STREAM {
             @Override
             <T extends Tag> T load(Path file, Class<T> tagClass) throws IOException {
-                return NBTCodec.getDefault().readTag(file, tagClass);
+                return NBTCodec.of().readTag(file, tagClass);
             }
         },
         FILE_CHANNEL {
             @Override
             <T extends Tag> T load(Path file, Class<T> tagClass) throws IOException {
                 try (FileChannel channel = FileChannel.open(file, StandardOpenOption.READ)) {
-                    return NBTCodec.getDefault().readTag(channel, tagClass);
+                    return NBTCodec.of().readTag(channel, tagClass);
                 }
             }
         },
@@ -71,14 +71,14 @@ public final class NBTCodecTest {
             @Override
             <T extends Tag> T load(Path file, Class<T> tagClass) throws IOException {
                 try (ReadableByteChannel channel = Channels.newChannel(Files.newInputStream(file))) {
-                    return NBTCodec.getDefault().readTag(channel, tagClass);
+                    return NBTCodec.of().readTag(channel, tagClass);
                 }
             }
         },
         PATH {
             @Override
             <T extends Tag> T load(Path file, Class<T> tagClass) throws IOException {
-                return NBTCodec.getDefault().readTag(file, tagClass);
+                return NBTCodec.of().readTag(file, tagClass);
             }
         };
 

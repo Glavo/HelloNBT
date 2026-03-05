@@ -150,7 +150,7 @@ public final class ChunkRegionTest {
                     }
 
                     try (InputStream in = input) {
-                        var tag = NBTCodec.getDefault().readTag(in);
+                        var tag = NBTCodec.of().readTag(in);
 
                         if (tag instanceof CompoundTag chunk) {
                             result.chunks[i / 4] = chunk;

@@ -32,14 +32,15 @@ public sealed interface NBTCodec permits NBTCodecImpl {
 
     /// Returns the default [NBTCodec].
     @Contract(pure = true)
-    static NBTCodec getDefault() {
-        return NBTCodecImpl.DEFAULT;
+    static NBTCodec of() {
+        return NBTCodecImpl.JE;
     }
 
-    /// Returns a new [NBTCodec.Builder].
-    @Contract("-> new")
-    static NBTCodec.Builder newBuilder() {
-        return new NBTCodecImpl.BuilderImpl();
+    @Contract(pure = true)
+    static NBTCodec of(MinecraftEdition edition) {
+        return edition == MinecraftEdition.JAVA_EDITION
+                ? NBTCodecImpl.JE
+                : NBTCodecImpl.BE;
     }
 
     /// Returns the Minecraft edition of the NBT data.
@@ -47,6 +48,10 @@ public sealed interface NBTCodec permits NBTCodecImpl {
     /// The default edition is [MinecraftEdition#JAVA_EDITION].
     @Contract(pure = true)
     MinecraftEdition getEdition();
+
+    /// Returns a new [NBTCodec] with the specified edition.
+    @Contract(pure = true)
+    NBTCodec withEdition(MinecraftEdition edition);
 
     /// Reads a NBT tag from a byte array.
     @Contract(pure = true)
@@ -134,17 +139,4 @@ public sealed interface NBTCodec permits NBTCodecImpl {
     /// Writes a NBT tag to the output stream.
     @Contract(mutates = "param1")
     void writeTag(Tag tag, OutputStream outputStream) throws IOException;
-
-    /// The builder for creating a [NBTCodec].
-    sealed interface Builder permits NBTCodecImpl.BuilderImpl {
-
-        /// Sets the Minecraft edition of the NBT data.
-        ///
-        /// The default edition is [MinecraftEdition#JAVA_EDITION].
-        @Contract(value = "_ -> this", mutates = "this")
-        Builder setEdition(MinecraftEdition edition);
-
-        /// Builds a new [NBTCodec] with the specified configuration.
-        NBTCodec build();
-    }
 }

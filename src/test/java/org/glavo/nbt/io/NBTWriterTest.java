@@ -32,10 +32,8 @@ public final class NBTWriterTest {
             MinecraftEdition edition)
             throws IOException {
 
-        var codec = NBTCodec.newBuilder().setEdition(edition).build();
-
         var buffer = new ByteArrayOutputStream();
-        codec.writeTag(tag, buffer);
+        NBTCodec.of(edition).writeTag(tag, buffer);
         return NBTIO.readTag(new ByteArrayInputStream(buffer.toByteArray()), edition == MinecraftEdition.BEDROCK_EDITION);
     }
 

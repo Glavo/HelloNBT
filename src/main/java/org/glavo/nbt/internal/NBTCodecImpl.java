@@ -42,7 +42,8 @@ public record NBTCodecImpl(MinecraftEdition edition) implements NBTCodec {
         Objects.requireNonNull(edition, "edition");
     }
 
-    public static final NBTCodecImpl DEFAULT = new NBTCodecImpl(MinecraftEdition.JAVA_EDITION);
+    public static final NBTCodecImpl JE = new NBTCodecImpl(MinecraftEdition.JAVA_EDITION);
+    public static final NBTCodecImpl BE = new NBTCodecImpl(MinecraftEdition.BEDROCK_EDITION);
 
     public static @Nullable Tag readTag(DataReader reader) throws IOException {
         byte tagByte = reader.readByte();
@@ -84,6 +85,12 @@ public record NBTCodecImpl(MinecraftEdition edition) implements NBTCodec {
     @Override
     public MinecraftEdition getEdition() {
         return edition;
+    }
+
+    @Override
+    public NBTCodec withEdition(MinecraftEdition edition) {
+        Objects.requireNonNull(edition, "edition");
+        return edition == this.edition ? this : new NBTCodecImpl(edition);
     }
 
     private Tag check(@Nullable Tag tag) throws IOException {
@@ -135,18 +142,4 @@ public record NBTCodecImpl(MinecraftEdition edition) implements NBTCodec {
         }
     }
 
-    public static final class BuilderImpl implements Builder {
-        private MinecraftEdition edition = MinecraftEdition.JAVA_EDITION;
-
-        @Override
-        public BuilderImpl setEdition(MinecraftEdition edition) {
-            this.edition = Objects.requireNonNull(edition, "edition");
-            return this;
-        }
-
-        @Override
-        public NBTCodec build() {
-            return new NBTCodecImpl(edition);
-        }
-    }
 }

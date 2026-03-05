@@ -27,7 +27,7 @@ import java.nio.ByteBuffer;
 import java.nio.channels.ReadableByteChannel;
 import java.nio.file.Path;
 
-/// The loader for reading NBT tags.
+/// The codec for reading and writing NBT data.
 public sealed interface NBTCodec permits NBTCodecImpl {
 
     /// Returns the default [NBTCodec].

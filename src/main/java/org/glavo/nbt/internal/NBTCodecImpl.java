@@ -34,13 +34,13 @@ import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
 import java.util.Objects;
 
-public record NBTCodecImpl(MinecraftEdition edition, boolean autoDecompress) implements NBTCodec {
+public record NBTCodecImpl(MinecraftEdition edition) implements NBTCodec {
 
     public NBTCodecImpl {
         Objects.requireNonNull(edition, "edition");
     }
 
-    public static final NBTCodecImpl DEFAULT = new NBTCodecImpl(MinecraftEdition.JAVA_EDITION, true);
+    public static final NBTCodecImpl DEFAULT = new NBTCodecImpl(MinecraftEdition.JAVA_EDITION);
 
     public static @Nullable Tag readTag(DataReader reader) throws IOException {
         byte tagByte = reader.readByte();
@@ -80,11 +80,6 @@ public record NBTCodecImpl(MinecraftEdition edition, boolean autoDecompress) imp
     }
 
     @Override
-    public boolean isAutoDecompress() {
-        return autoDecompress;
-    }
-
-    @Override
     public MinecraftEdition getEdition() {
         return edition;
     }
@@ -98,28 +93,28 @@ public record NBTCodecImpl(MinecraftEdition edition, boolean autoDecompress) imp
 
     public Tag readTag(byte[] array) throws IOException {
         try (var reader = new RawDataReader(new InputSource.OfByteBuffer(array), edition)) {
-            return check(autoDecompress ? readTagAutoDecompress(reader) : readTag(reader));
+            return check(readTagAutoDecompress(reader));
         }
     }
 
     @Override
     public Tag readTag(ByteBuffer buffer) throws IOException {
         try (var reader = new RawDataReader(new InputSource.OfByteBuffer(buffer), edition)) {
-            return check(autoDecompress ? readTagAutoDecompress(reader) : readTag(reader));
+            return check(readTagAutoDecompress(reader));
         }
     }
 
     @Override
     public Tag readTag(InputStream inputStream) throws IOException {
         try (var reader = new RawDataReader(new InputSource.OfInputStream(inputStream, false), edition)) {
-            return check(autoDecompress ? readTagAutoDecompress(reader) : readTag(reader));
+            return check(readTagAutoDecompress(reader));
         }
     }
 
     @Override
     public Tag readTag(ReadableByteChannel channel) throws IOException {
         try (var reader = new RawDataReader(new InputSource.OfByteChannel(channel, false), edition)) {
-            return check(autoDecompress ? readTagAutoDecompress(reader) : readTag(reader));
+            return check(readTagAutoDecompress(reader));
         }
     }
 
@@ -127,13 +122,12 @@ public record NBTCodecImpl(MinecraftEdition edition, boolean autoDecompress) imp
     public Tag readTag(Path path) throws IOException {
         try (var channel = Files.newByteChannel(path, StandardOpenOption.READ);
              var reader = new RawDataReader(new InputSource.OfByteChannel(channel, false), edition)) {
-            return check(autoDecompress ? readTagAutoDecompress(reader) : readTag(reader));
+            return check(readTagAutoDecompress(reader));
         }
     }
 
     public static final class BuilderImpl implements Builder {
         private MinecraftEdition edition = MinecraftEdition.JAVA_EDITION;
-        private boolean autoDecompress = true;
 
         @Override
         public BuilderImpl setEdition(MinecraftEdition edition) {
@@ -142,14 +136,8 @@ public record NBTCodecImpl(MinecraftEdition edition, boolean autoDecompress) imp
         }
 
         @Override
-        public BuilderImpl setAutoDecompress(boolean autoDecompress) {
-            this.autoDecompress = autoDecompress;
-            return this;
-        }
-
-        @Override
         public NBTCodec build() {
-            return new NBTCodecImpl(edition, autoDecompress);
+            return new NBTCodecImpl(edition);
         }
     }
 }

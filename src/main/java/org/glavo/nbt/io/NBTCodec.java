@@ -17,7 +17,6 @@ package org.glavo.nbt.io;
 
 import org.glavo.nbt.internal.NBTCodecImpl;
 import org.glavo.nbt.tag.Tag;
-import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.Nullable;
 
@@ -41,16 +40,6 @@ public sealed interface NBTCodec permits NBTCodecImpl {
     static NBTCodec.Builder newBuilder() {
         return new NBTCodecImpl.BuilderImpl();
     }
-
-    /// Returns whether the loader automatically decompresses the NBT data.
-    ///
-    /// If set to `true`, the loader will automatically decompress the NBT data if it is compressed by gzip or LZ4;
-    /// otherwise, it will throw an exception if the data is compressed.
-    ///
-    /// The default value is `true`.
-    @ApiStatus.Experimental
-    @Contract(pure = true)
-    boolean isAutoDecompress();
 
     /// Returns the Minecraft edition of the NBT data.
     ///
@@ -149,16 +138,6 @@ public sealed interface NBTCodec permits NBTCodecImpl {
         /// The default edition is [MinecraftEdition#JAVA_EDITION].
         @Contract(value = "_ -> this", mutates = "this")
         Builder setEdition(MinecraftEdition edition);
-
-        /// Sets whether to automatically decompress the NBT data.
-        ///
-        /// If set to `true`, the loader will automatically decompress the NBT data if it is compressed by gzip or LZ4;
-        /// otherwise, it will throw an exception if the data is compressed.
-        ///
-        /// The default value is `true`.
-        @ApiStatus.Experimental
-        @Contract(value = "_ -> this", mutates = "this")
-        Builder setAutoDecompress(boolean autoDecompress);
 
         /// Builds a new [NBTCodec] with the specified configuration.
         NBTCodec build();

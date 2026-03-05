@@ -28,7 +28,12 @@ import java.util.regex.Pattern;
 @FunctionalInterface
 public interface OversizedChunkLocator<T> {
     static <T> OversizedChunkLocator<T> emptyLocator() {
-        return (source, localX, localZ) -> null;
+        return (source, chunkLocalX, chunkLocalZ) -> {
+            Objects.requireNonNull(source);
+            Objects.checkIndex(chunkLocalX, ChunkUtils.CHUNKS_PER_REGION_SIDE);
+            Objects.checkIndex(chunkLocalZ, ChunkUtils.CHUNKS_PER_REGION_SIDE);
+            return null;
+        };
     }
 
     static OversizedChunkLocator<Path> defaultLocator() {
@@ -39,7 +44,6 @@ public interface OversizedChunkLocator<T> {
         return (source, chunkLocalX, chunkLocalZ) -> {
             Objects.checkIndex(chunkLocalX, ChunkUtils.CHUNKS_PER_REGION_SIDE);
             Objects.checkIndex(chunkLocalZ, ChunkUtils.CHUNKS_PER_REGION_SIDE);
-
 
             Path fileName = source.getFileName();
             if (fileName == null) {

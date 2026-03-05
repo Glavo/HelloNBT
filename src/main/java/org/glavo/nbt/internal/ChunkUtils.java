@@ -42,22 +42,6 @@ public final class ChunkUtils {
         return localIndex >>> CHUNKS_PER_REGION_SIDE_SHIFT;
     }
 
-    public static int getSectorOffset(int sectorInfo) {
-        return (sectorInfo >>> 8);
-    }
-
-    public static int getSectorLength(int sectorInfo) {
-        return (sectorInfo & 0xFF);
-    }
-
-    public static int getSectorByteOffset(int sectorInfo) {
-        return getSectorOffset(sectorInfo) * SECTOR_BYTES;
-    }
-
-    public static int getSectorByteLength(int sectorInfo) {
-        return getSectorLength(sectorInfo) * SECTOR_BYTES;
-    }
-
     private ChunkUtils() {
     }
 }

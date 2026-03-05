@@ -29,8 +29,6 @@ import static org.glavo.nbt.internal.ChunkUtils.SECTOR_BYTES;
 
 public final class ChunkRegionHeader {
     public static ChunkRegionHeader readHeader(DataReader reader) throws IOException {
-
-
         int[] sectorInfo = reader.readIntArray(CHUNKS_PRE_REGION);
         int[] timestamps = reader.readIntArray(CHUNKS_PRE_REGION);
 
@@ -55,11 +53,11 @@ public final class ChunkRegionHeader {
     }
 
     public int getSectorOffset(int index) {
-        return ChunkUtils.getSectorOffset(sectorInfo[index]);
+        return sectorInfo[index] >>> 8;
     }
 
     public int getSectorLength(int index) {
-        return ChunkUtils.getSectorLength(sectorInfo[index]);
+        return sectorInfo[index] & 0xFF;
     }
 
     public long getSectorOffsetBytes(int index) {

@@ -178,6 +178,11 @@ public final class ChunkRegion implements NBTParent<Chunk>, NBTElement {
         setChunk(ChunkUtils.toLocalIndex(x, z), chunk);
     }
 
+    /// Remove the chunk at the given local index from this region.
+    ///
+    /// After removing the chunk, the original local index of the chunk will point to a new blank chunk.
+    ///
+    /// @throws IllegalArgumentException if the chunk is not in this region.
     @Override
     @Contract(mutates = "this,param1")
     public void remove(Chunk chunk) throws IllegalArgumentException {

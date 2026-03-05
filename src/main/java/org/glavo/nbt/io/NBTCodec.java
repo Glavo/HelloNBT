@@ -55,6 +55,14 @@ public sealed interface NBTCodec permits NBTCodecImpl {
     @Contract(pure = true)
     NBTCodec withEdition(MinecraftEdition edition);
 
+    /// Returns the locator for oversized chunk files.
+    @Contract(pure = true)
+    OversizedChunkLocator<Path> getOversizedChunkLocator();
+
+    /// Returns a new [NBTCodec] with the specified locator for oversized chunk files.
+    @Contract(pure = true)
+    NBTCodec withOversizedChunkLocator(OversizedChunkLocator<Path> locator);
+
     private static <T extends Tag> T check(@Nullable Tag tag, Class<T> tagClass) throws IOException {
         if (tag == null) {
             throw new IOException("Unexpected TAG_END");
@@ -142,9 +150,7 @@ public sealed interface NBTCodec permits NBTCodecImpl {
     @Contract(mutates = "param1")
     void writeTag(Tag tag, OutputStream outputStream) throws IOException;
 
-    default ChunkRegion readRegion(Path path) throws IOException {
-        return readRegion(path, OversizedChunkLocator.defaultLocator());
-    }
+    /// Reads a chunk region from a file.
+    ChunkRegion readRegion(Path path) throws IOException;
 
-    ChunkRegion readRegion(Path path, OversizedChunkLocator<Path> locator) throws IOException;
 }

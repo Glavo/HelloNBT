@@ -39,14 +39,11 @@ import java.nio.file.StandardOpenOption;
 import java.time.Instant;
 import java.util.Objects;
 
-public record NBTCodecImpl(MinecraftEdition edition) implements NBTCodec {
+public record NBTCodecImpl(MinecraftEdition edition,
+                           OversizedChunkLocator<Path> oversizedChunkLocator) implements NBTCodec {
 
-    public NBTCodecImpl {
-        Objects.requireNonNull(edition, "edition");
-    }
-
-    public static final NBTCodecImpl JE = new NBTCodecImpl(MinecraftEdition.JAVA_EDITION);
-    public static final NBTCodecImpl BE = new NBTCodecImpl(MinecraftEdition.BEDROCK_EDITION);
+    public static final NBTCodecImpl JE = new NBTCodecImpl(MinecraftEdition.JAVA_EDITION, OversizedChunkLocator.defaultLocator());
+    public static final NBTCodecImpl BE = new NBTCodecImpl(MinecraftEdition.BEDROCK_EDITION, OversizedChunkLocator.defaultLocator());
 
     public static @Nullable Tag readTag(DataReader reader) throws IOException {
         byte tagByte = reader.readByte();
@@ -185,7 +182,18 @@ public record NBTCodecImpl(MinecraftEdition edition) implements NBTCodec {
     @Override
     public NBTCodec withEdition(MinecraftEdition edition) {
         Objects.requireNonNull(edition, "edition");
-        return NBTCodec.of(edition);
+        return new NBTCodecImpl(edition, oversizedChunkLocator);
+    }
+
+    @Override
+    public OversizedChunkLocator<Path> getOversizedChunkLocator() {
+        return oversizedChunkLocator;
+    }
+
+    @Override
+    public NBTCodec withOversizedChunkLocator(OversizedChunkLocator<Path> locator) {
+        Objects.requireNonNull(locator, "locator");
+        return new NBTCodecImpl(edition, locator);
     }
 
     private Tag check(@Nullable Tag tag) throws IOException {
@@ -238,10 +246,10 @@ public record NBTCodecImpl(MinecraftEdition edition) implements NBTCodec {
     }
 
     @Override
-    public ChunkRegion readRegion(Path path, OversizedChunkLocator<Path> locator) throws IOException {
+    public ChunkRegion readRegion(Path path) throws IOException {
         try (var channel = FileChannel.open(path, StandardOpenOption.READ);
              var reader = new RawDataReader(new InputSource.OfByteChannel(channel, true), MinecraftEdition.JAVA_EDITION)) {
-            return readRegion(reader, OversizedChunkProvider.of(path, locator));
+            return readRegion(reader, OversizedChunkProvider.of(path, oversizedChunkLocator));
         }
     }
 

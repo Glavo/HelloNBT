@@ -53,6 +53,17 @@ public sealed interface NBTCodec permits NBTCodecImpl {
     @Contract(pure = true)
     NBTCodec withEdition(MinecraftEdition edition);
 
+    private static <T extends Tag> T check(@Nullable Tag tag, Class<T> tagClass) throws IOException {
+        if (tag == null) {
+            throw new IOException("Unexpected TAG_END");
+        }
+        try {
+            return tagClass.cast(tag);
+        } catch (ClassCastException e) {
+            throw new IOException("Unexpected tag type: " + tag);
+        }
+    }
+
     /// Reads a NBT tag from a byte array.
     @Contract(pure = true)
     Tag readTag(byte[] array) throws IOException;
@@ -123,17 +134,6 @@ public sealed interface NBTCodec permits NBTCodecImpl {
     /// Reads the specified NBT tag from a file.
     default <T extends Tag> T readTag(Path path, Class<T> tagClass) throws IOException {
         return check(readTag(path), tagClass);
-    }
-
-    private static <T extends Tag> T check(@Nullable Tag tag, Class<T> tagClass) throws IOException {
-        if (tag == null) {
-            throw new IOException("Unexpected TAG_END");
-        }
-        try {
-            return tagClass.cast(tag);
-        } catch (ClassCastException e) {
-            throw new IOException("Unexpected tag type: " + tag);
-        }
     }
 
     /// Writes a NBT tag to the output stream.

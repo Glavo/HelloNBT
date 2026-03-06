@@ -167,7 +167,7 @@ public final class ChunkRegion implements NBTParent<Chunk>, NBTElement, Iterable
                 builder.append(", ");
             }
 
-            builder.append(chunks[i]);
+            builder.append(getChunk(i));
         }
 
         builder.append(']');

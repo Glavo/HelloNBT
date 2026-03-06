@@ -261,11 +261,17 @@ public record NBTCodecImpl(MinecraftEdition edition,
         writer.writeIntArray(header.sectorInfo);
         writer.writeIntArray(header.timestamps);
 
+        currentSector = 2;
         for (int i = 0; i < ChunkUtils.CHUNKS_PRE_REGION; i++) {
             ByteBuffer buffer = buffers[i];
             if (buffer == null) {
                 continue;
             }
+
+            if (currentSector != header.getSectorOffset(i)) {
+                throw new AssertionError("Sector offset mismatch for chunk " + i + ": expected " + header.getSectorOffset(i) + ", got " + currentSector);
+            }
+            currentSector += header.getSectorLength(i);
 
             int bytesRawContent = buffer.remaining();
             long bytesContent = bytesRawContent + 1;

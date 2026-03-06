@@ -27,7 +27,7 @@ import java.util.Objects;
 
 /// @author Glavo
 public sealed abstract class Tag implements NBTElement
-        permits ValueTag, ArrayTag, ParentTag {
+        permits ValueTag, ParentTag {
 
     String name;
 

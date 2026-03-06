@@ -54,10 +54,27 @@ public final class IntArrayTag extends ArrayTag<Integer> {
         return value.clone();
     }
 
+    @Override
+    @Contract(pure = true)
+    public int[] getValue() {
+        return value;
+    }
+
+    @Override
+    public String getAsString() {
+        return Arrays.toString(value);
+    }
+
     /// Sets the value of the tag.
     @Contract(mutates = "this")
     public void set(int[] value) {
         this.value = value.clone();
+    }
+
+    @Override
+    @Contract(mutates = "this")
+    public void setValue(Object value) {
+        set((int[]) value);
     }
 
     /// Returns the element at the given index.

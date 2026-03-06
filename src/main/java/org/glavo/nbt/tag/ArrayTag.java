@@ -18,7 +18,7 @@ package org.glavo.nbt.tag;
 import org.jetbrains.annotations.Contract;
 
 /// Base class for array tags.
-public sealed abstract class ArrayTag<E extends Number> extends Tag implements Iterable<E>
+public sealed abstract class ArrayTag<E extends Number> extends ValueTag<Object> implements Iterable<E>
         permits ByteArrayTag, IntArrayTag, LongArrayTag {
 
     protected ArrayTag(String name) {

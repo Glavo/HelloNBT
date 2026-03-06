@@ -17,9 +17,9 @@ package org.glavo.nbt.tag;
 
 import org.jetbrains.annotations.Contract;
 
-/// Base class for tags that hold a single simple value.
+/// Base class for tags that hold a single value.
 public sealed abstract class ValueTag<V> extends Tag
-        permits ByteTag, ShortTag, IntTag, LongTag, FloatTag, DoubleTag, StringTag {
+        permits ByteTag, ShortTag, IntTag, LongTag, FloatTag, DoubleTag, StringTag, ArrayTag {
     protected ValueTag(String name) {
         super(name);
     }

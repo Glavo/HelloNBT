@@ -46,8 +46,12 @@ import java.util.function.Function;
 public record NBTCodecImpl(MinecraftEdition edition,
                            Function<Path, OversizedChunkAccessor> oversizedChunkAccessorFactory) implements NBTCodec {
 
-    public static final NBTCodecImpl JE = new NBTCodecImpl(MinecraftEdition.JAVA_EDITION, OversizedChunkAccessor.defaultFactory());
-    public static final NBTCodecImpl BE = new NBTCodecImpl(MinecraftEdition.BEDROCK_EDITION, OversizedChunkAccessor.defaultFactory());
+    private NBTCodecImpl(MinecraftEdition edition) {
+        this(edition, OversizedChunkAccessor.defaultFactory());
+    }
+
+    public static final NBTCodecImpl JE = new NBTCodecImpl(MinecraftEdition.JAVA_EDITION);
+    public static final NBTCodecImpl BE = new NBTCodecImpl(MinecraftEdition.BEDROCK_EDITION);
 
     public static @Nullable Tag readTag(DataReader reader) throws IOException {
         byte tagByte = reader.readByte();

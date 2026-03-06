@@ -19,6 +19,7 @@ import org.glavo.nbt.NBTParent;
 
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.stream.Stream;
 
 /// Base class for tags that can contain other tags as children.
 public sealed abstract class ParentTag<T extends Tag> extends Tag
@@ -120,6 +121,11 @@ public sealed abstract class ParentTag<T extends Tag> extends Tag
                 return iterator.next();
             }
         };
+    }
+
+    /// Returns a stream of subtags.
+    public Stream<T> stream() {
+        return subTags.stream();
     }
 
     @Override

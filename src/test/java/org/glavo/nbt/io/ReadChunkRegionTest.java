@@ -13,17 +13,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.glavo.nbt.chunk;
+package org.glavo.nbt.io;
 
 import net.jpountz.lz4.LZ4BlockInputStream;
 import org.apache.commons.io.input.BoundedInputStream;
-import org.glavo.nbt.io.MinecraftEdition;
+import org.glavo.nbt.chunk.ChunkRegion;
 import org.glavo.nbt.TestResources;
 import org.glavo.nbt.internal.ChunkRegionHeader;
 import org.glavo.nbt.internal.input.InputSource;
 import org.glavo.nbt.internal.input.RawDataReader;
 import org.glavo.nbt.tag.CompoundTag;
-import org.glavo.nbt.io.NBTCodec;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
@@ -41,7 +40,7 @@ import java.util.zip.InflaterInputStream;
 import static org.glavo.nbt.internal.ChunkUtils.CHUNKS_PRE_REGION;
 import static org.junit.jupiter.api.Assertions.*;
 
-public final class ChunkRegionTest {
+public final class ReadChunkRegionTest {
 
     @Test
     public void testReadHeader() throws Exception {
@@ -99,7 +98,7 @@ public final class ChunkRegionTest {
 
                 byte[] header = new byte[4096];
                 byte[] timestamps = new byte[4096];
-                byte[] buffer = new byte[1 * 1024 * 1024]; // The maximum size of each chunk is 1MiB
+                byte[] buffer = new byte[1024 * 1024]; // The maximum size of each chunk is 1MiB
                 Inflater inflater = new Inflater();
 
                 r.readFully(header);

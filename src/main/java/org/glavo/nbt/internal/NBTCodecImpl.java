@@ -240,9 +240,9 @@ public record NBTCodecImpl(MinecraftEdition edition,
             header.setTimestampEpochSeconds(i, (int) epochSeconds);
 
             ByteBuffer buffer = buffers[i];
-            if (buffer != null) {
+            if (buffer != null && buffer.hasRemaining()) {
                 long bytes = buffer.remaining() + 5L;
-                int sectors = (int) (bytes / ChunkUtils.SECTOR_BYTES);
+                int sectors = (int) ((bytes + ChunkUtils.SECTOR_BYTES - 1) / ChunkUtils.SECTOR_BYTES);
                 if (sectors <= 0xFF) {
                     header.setSectorInfo(i, currentSector, sectors);
                     currentSector += sectors;

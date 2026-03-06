@@ -52,6 +52,10 @@ public final class RawDataWriter extends DataWriter {
         return buffer;
     }
 
+    public long position() {
+        return target.position() - targetStartPosition + buffer.pending();
+    }
+
     @Override
     public void flush() throws IOException {
         flushBuffer();

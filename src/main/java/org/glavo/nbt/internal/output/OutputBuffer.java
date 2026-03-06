@@ -61,6 +61,10 @@ public final class OutputBuffer {
         }
     }
 
+    public int pending() {
+        return bytesBuffer.position();
+    }
+
     public int remaining() {
         return bytesBuffer.remaining();
     }

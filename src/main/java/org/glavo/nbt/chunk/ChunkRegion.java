@@ -27,12 +27,17 @@ import java.util.Iterator;
 import java.util.NoSuchElementException;
 import java.util.Objects;
 
-/// @see <a href="https://minecraft.wiki/w/Region_file_format">Region file format - Minecraft Wiki</a>
+/// Represents a chunk region in an Anvil file (`.mca`) or region file (`.mcr`).
+///
+/// Each chunk region contains 32 chunks in the x direction and 32 chunks in the z direction, totaling 1024 chunks.
+///
 /// @see <a href="https://minecraft.wiki/w/Anvil_file_format">Anvil file format - Minecraft Wiki</a>
+/// @see <a href="https://minecraft.wiki/w/Region_file_format">Region file format - Minecraft Wiki</a>
 public final class ChunkRegion implements NBTParent<Chunk>, NBTElement, Iterable<Chunk> {
 
     private final @Nullable Chunk[] chunks = new Chunk[ChunkUtils.CHUNKS_PRE_REGION];
 
+    /// Creates a new empty chunk region.
     public ChunkRegion() {
     }
 
@@ -43,6 +48,9 @@ public final class ChunkRegion implements NBTParent<Chunk>, NBTElement, Iterable
         return null;
     }
 
+    /// Returns the chunk at the given local index.
+    ///
+    /// @throws IndexOutOfBoundsException if the local index is out of range.
     @Contract(pure = true)
     public Chunk getChunk(int localIndex) {
         Objects.checkIndex(localIndex, ChunkUtils.CHUNKS_PRE_REGION);
@@ -53,14 +61,20 @@ public final class ChunkRegion implements NBTParent<Chunk>, NBTElement, Iterable
         return chunk;
     }
 
+    /// Returns the chunk at the given local coordinates.
+    ///
+    /// @throws IndexOutOfBoundsException if the local coordinates are out of range.
     @Contract(pure = true)
-    public Chunk getChunk(int x, int z) {
-        Objects.checkIndex(x, ChunkUtils.CHUNKS_PER_REGION_SIDE);
-        Objects.checkIndex(z, ChunkUtils.CHUNKS_PER_REGION_SIDE);
+    public Chunk getChunk(int localX, int localZ) {
+        Objects.checkIndex(localX, ChunkUtils.CHUNKS_PER_REGION_SIDE);
+        Objects.checkIndex(localZ, ChunkUtils.CHUNKS_PER_REGION_SIDE);
 
-        return getChunk(ChunkUtils.toLocalIndex(x, z));
+        return getChunk(ChunkUtils.toLocalIndex(localX, localZ));
     }
 
+    /// Sets the chunk at the given local index.
+    ///
+    /// @throws IndexOutOfBoundsException if the local index is out of range.
     @Contract(mutates = "this,param2")
     public void setChunk(int localIndex, Chunk chunk) {
         Objects.checkIndex(localIndex, ChunkUtils.CHUNKS_PRE_REGION);
@@ -81,11 +95,14 @@ public final class ChunkRegion implements NBTParent<Chunk>, NBTElement, Iterable
         chunks[localIndex] = chunk;
     }
 
+    /// Sets the chunk at the given local coordinates.
+    ///
+    /// @throws IndexOutOfBoundsException if the local coordinates are out of range.
     @Contract(mutates = "this,param3")
-    public void setChunk(int x, int z, Chunk chunk) {
-        Objects.checkIndex(x, ChunkUtils.CHUNKS_PER_REGION_SIDE);
-        Objects.checkIndex(z, ChunkUtils.CHUNKS_PER_REGION_SIDE);
-        setChunk(ChunkUtils.toLocalIndex(x, z), chunk);
+    public void setChunk(int localX, int localZ, Chunk chunk) {
+        Objects.checkIndex(localX, ChunkUtils.CHUNKS_PER_REGION_SIDE);
+        Objects.checkIndex(localZ, ChunkUtils.CHUNKS_PER_REGION_SIDE);
+        setChunk(ChunkUtils.toLocalIndex(localX, localZ), chunk);
     }
 
     @Override

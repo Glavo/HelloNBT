@@ -27,9 +27,9 @@ public final class ChunkUtils {
 
     @Range(from = 0, to = 1023)
     public static int toLocalIndex(
-            @Range(from = 0, to = 31) int x,
-            @Range(from = 0, to = 31) int z) {
-        return x + (z << CHUNKS_PER_REGION_SIDE_SHIFT);
+            @Range(from = 0, to = 31) int localX,
+            @Range(from = 0, to = 31) int localZ) {
+        return localX + (localZ << CHUNKS_PER_REGION_SIDE_SHIFT);
     }
 
     @Range(from = 0, to = 31)

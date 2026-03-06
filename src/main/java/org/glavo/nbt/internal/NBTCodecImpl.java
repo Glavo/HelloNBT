@@ -289,6 +289,8 @@ public record NBTCodecImpl(MinecraftEdition edition,
                 writer.writeByte((byte) 2); // Zlib
                 writer.writeByteBufferDirect(buffer);
             } else {
+                // External chunk
+
                 assert header.getSectorLength(i) == 1 : "Sector length mismatch for chunk " + i;
                 writer.writeByte((byte) (2 + 128)); // Zlib + External
 
@@ -296,6 +298,7 @@ public record NBTCodecImpl(MinecraftEdition edition,
                     if (outputStream == null) {
                         throw new IOException("Failed to open external chunk file for chunk (%d, %d)".formatted(ChunkUtils.getLocalX(i), ChunkUtils.getLocalZ(i)));
                     }
+                    outputStream.write(new byte[5]);
                     outputStream.write(buffer.array(), buffer.arrayOffset() + buffer.position(), buffer.limit());
                 }
             }

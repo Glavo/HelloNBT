@@ -20,6 +20,7 @@ package org.glavo.nbt.internal;
 import org.glavo.nbt.internal.input.DataReader;
 
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.Comparator;
 import java.util.stream.IntStream;
 
@@ -90,5 +91,10 @@ public final class ChunkRegionHeader {
                 .sorted(Comparator.comparingInt(this::getSectorOffset).thenComparingInt(Integer::intValue))
                 .mapToInt(Integer::intValue)
                 .toArray();
+    }
+
+    @Override
+    public String toString() {
+        return "ChunkRegionHeader[sectorInfo=%s, timestamps=%s]".formatted(Arrays.toString(sectorInfo), Arrays.toString(timestamps));
     }
 }

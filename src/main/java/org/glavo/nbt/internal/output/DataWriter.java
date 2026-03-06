@@ -74,6 +74,10 @@ public abstract class DataWriter implements Closeable, Flushable {
 
         writeInt(value.length);
 
+        writeIntArrayDirect(value);
+    }
+
+    public void writeIntArrayDirect(int[] value) throws IOException {
         ensureBufferRemaining(value.length * Integer.BYTES);
         getBuffer().putIntArray(value);
     }

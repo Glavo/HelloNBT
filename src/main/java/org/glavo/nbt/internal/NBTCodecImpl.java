@@ -258,20 +258,24 @@ public record NBTCodecImpl(MinecraftEdition edition,
             }
         }
 
-        writer.writeIntArray(header.sectorInfo);
-        writer.writeIntArray(header.timestamps);
+        long startPosition = writer.position();
 
-        currentSector = 2;
+        writer.writeIntArrayDirect(header.sectorInfo);
+        writer.writeIntArrayDirect(header.timestamps);
+
+        if (writer.position() != startPosition + 2 * ChunkUtils.SECTOR_BYTES) {
+            throw new AssertionError("Header size mismatch: expected " + (2 * ChunkUtils.SECTOR_BYTES) + ", got " + (writer.position() - startPosition));
+        }
+
         for (int i = 0; i < ChunkUtils.CHUNKS_PRE_REGION; i++) {
             ByteBuffer buffer = buffers[i];
             if (buffer == null) {
                 continue;
             }
 
-            if (currentSector != header.getSectorOffset(i)) {
-                throw new AssertionError("Sector offset mismatch for chunk " + i + ": expected " + header.getSectorOffset(i) + ", got " + currentSector);
+            if (writer.position() - startPosition != 2 * ChunkUtils.SECTOR_BYTES + header.getSectorOffsetBytes(i)) {
+                throw new AssertionError("Chunk header position mismatch for chunk " + i + ": expected " + (2 * ChunkUtils.SECTOR_BYTES + header.getSectorOffsetBytes(i)) + ", got " + (writer.position() - startPosition));
             }
-            currentSector += header.getSectorLength(i);
 
             int bytesRawContent = buffer.remaining();
             long bytesContent = bytesRawContent + 1;

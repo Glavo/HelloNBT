@@ -24,8 +24,7 @@ import java.util.Arrays;
 import java.util.Comparator;
 import java.util.stream.IntStream;
 
-import static org.glavo.nbt.internal.ChunkUtils.CHUNKS_PRE_REGION;
-import static org.glavo.nbt.internal.ChunkUtils.SECTOR_BYTES;
+import static org.glavo.nbt.internal.ChunkUtils.*;
 
 public final class ChunkRegionHeader {
     public static ChunkRegionHeader readHeader(DataReader reader) throws IOException {
@@ -95,6 +94,21 @@ public final class ChunkRegionHeader {
 
     @Override
     public String toString() {
-        return "ChunkRegionHeader[sectorInfo=%s, timestamps=%s]".formatted(Arrays.toString(sectorInfo), Arrays.toString(timestamps));
+        var builder = new StringBuilder();
+
+        builder.append("ChunkRegionHeader[");
+        for (int i = 0; i < CHUNKS_PRE_REGION; i++) {
+            builder.append("\n    ")
+                    .append(i)
+                    .append("(x=").append(ChunkUtils.getLocalX(i))
+                    .append(", z=").append(ChunkUtils.getLocalZ(i))
+                    .append("): ")
+                    .append("SectorOffset=").append(getSectorOffset(i))
+                    .append(", SectorLength=").append(getSectorLength(i))
+                    .append(", Timestamp=").append(getTimestampEpochSeconds(i));
+        }
+
+        builder.append("\n]");
+        return builder.toString();
     }
 }

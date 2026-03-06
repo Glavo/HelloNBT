@@ -58,7 +58,7 @@ public sealed abstract class ArrayTag<E extends Number> extends ValueTag<Object>
     ///
     /// Each call returns a new buffer, but the underlying implementation may share the same array.
     @Contract(value = "-> new", pure = true)
-    public abstract Buffer getAsBuffer();
+    public abstract Buffer getBuffer();
 
     @Override
     @Contract(value = "-> new", pure = true)

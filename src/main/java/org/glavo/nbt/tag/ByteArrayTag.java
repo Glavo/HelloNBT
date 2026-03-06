@@ -100,7 +100,7 @@ public final class ByteArrayTag extends ArrayTag<Byte> {
 
     @Override
     @Contract(value = "-> new", pure = true)
-    public ByteBuffer getAsBuffer() {
+    public ByteBuffer getBuffer() {
         return ByteBuffer.wrap(value).asReadOnlyBuffer();
     }
 

@@ -20,12 +20,11 @@ import org.glavo.nbt.internal.output.DataWriter;
 import org.jetbrains.annotations.Contract;
 
 import java.io.IOException;
-import java.nio.Buffer;
 import java.nio.IntBuffer;
 import java.util.*;
 import java.util.stream.IntStream;
 
-/// An ordered list of 32-bit integers.
+/// An ordered list of 32-bit integers. Sometimes used for UUIDs.
 public final class IntArrayTag extends ArrayTag<Integer> {
     private static final int[] EMPTY = new int[0];
 
@@ -78,6 +77,17 @@ public final class IntArrayTag extends ArrayTag<Integer> {
         this.value = value.clone();
     }
 
+    /// Sets the value of the tag from a UUID.
+    @Contract(mutates = "this")
+    public void setUUID(UUID uuid) {
+        int[] value = new int[4];
+        value[0] = (int) (uuid.getMostSignificantBits() >>> 32);
+        value[1] = (int) (uuid.getMostSignificantBits() & 0xFFFF_FFFFL);
+        value[2] = (int) (uuid.getLeastSignificantBits() >>> 32);
+        value[3] = (int) (uuid.getLeastSignificantBits() & 0xFFFF_FFFFL);
+        this.value = value;
+    }
+
     @Override
     @Contract(mutates = "this")
     public void setValue(Object value) {
@@ -98,9 +108,19 @@ public final class IntArrayTag extends ArrayTag<Integer> {
         return get(index);
     }
 
+    @Contract(pure = true)
+    public UUID getUUID() {
+        if (value.length != 4) {
+            throw new IllegalStateException("IntArrayTag is not a UUID");
+        }
+        long msb = ((long) value[0] << 32) | (long) value[1] & 0xFFFFFFFFL;
+        long lsb = ((long) value[2] << 32) | (long) value[3] & 0xFFFFFFFFL;
+        return new UUID(msb, lsb);
+    }
+
     @Override
     @Contract(value = "-> new", pure = true)
-    public IntBuffer getAsBuffer() {
+    public IntBuffer getBuffer() {
         return IntBuffer.wrap(value).asReadOnlyBuffer();
     }
 

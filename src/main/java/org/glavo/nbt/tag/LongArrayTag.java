@@ -77,7 +77,7 @@ public final class LongArrayTag extends ArrayTag<Long> {
 
     @Override
     @Contract(value = "-> new", pure = true)
-    public LongBuffer getAsBuffer() {
+    public LongBuffer getBuffer() {
         return LongBuffer.wrap(value).asReadOnlyBuffer();
     }
 

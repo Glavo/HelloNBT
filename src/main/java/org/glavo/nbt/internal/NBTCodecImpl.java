@@ -217,8 +217,8 @@ public record NBTCodecImpl(MinecraftEdition edition,
 
                 deflater.reset();
                 try (var deflaterOutputStream = new DeflaterOutputStream(tempOutputStream, deflater);
-                     var rawWriter = new RawDataWriter(new OutputTarget.OfOutputStream(deflaterOutputStream, false), MinecraftEdition.JAVA_EDITION)) {
-                    writeTag(rawWriter, chunk.getRootTag());
+                     var chunkWriter = new RawDataWriter(new OutputTarget.OfOutputStream(deflaterOutputStream, false), MinecraftEdition.JAVA_EDITION)) {
+                    writeTag(chunkWriter, chunk.getRootTag());
                 }
 
                 buffers[i] = ByteBuffer.wrap(tempOutputStream.getBuffer(), 0, tempOutputStream.size());
@@ -231,10 +231,16 @@ public record NBTCodecImpl(MinecraftEdition edition,
 
         int currentSector = 2; // Skip the header and the timestamp
         for (int i = 0; i < ChunkUtils.CHUNKS_PRE_REGION; i++) {
+            Chunk chunk = region.getChunk(i);
+            long epochSeconds = chunk.getTimestamp().toEpochMilli() / 1000L;
+            if (epochSeconds > Integer.toUnsignedLong(-1)) {
+                throw new IOException("Timestamp too large: " + epochSeconds);
+            }
+
+            header.setTimestampEpochSeconds(i, (int) epochSeconds);
+
             ByteBuffer buffer = buffers[i];
             if (buffer != null) {
-                Chunk chunk = region.getChunk(i);
-
                 long bytes = buffer.remaining() + 5L;
                 int sectors = (int) (bytes / ChunkUtils.SECTOR_BYTES);
                 if (sectors <= 0xFF) {
@@ -245,16 +251,8 @@ public record NBTCodecImpl(MinecraftEdition edition,
                     header.setSectorInfo(i, currentSector, 1);
                     currentSector += 1;
                 }
-
-                long epochSeconds = chunk.getTimestamp().toEpochMilli() / 1000L;
-                if (epochSeconds > Integer.toUnsignedLong(-1)) {
-                    throw new IOException("Timestamp too large: " + epochSeconds);
-                }
-
-                header.setTimestampEpochSeconds(i, (int) epochSeconds);
             } else {
                 header.setSectorInfo(i, 0, 0);
-                header.setTimestampEpochSeconds(i, 0);
             }
         }
 

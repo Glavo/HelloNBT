@@ -124,7 +124,7 @@ public final class ReadChunkRegionTest {
                     int chunkLength = ((buffer[0] & 0xff) << 24) + ((buffer[1] & 0xff) << 16) + ((buffer[2] & 0xff) << 8) + (buffer[3] & 0xff);
 
                     InputStream input = new ByteArrayInputStream(buffer);
-                    input.skip(5);
+                    input.skipNBytes(5);
                     input = BoundedInputStream.builder().setCount(chunkLength - 1).setInputStream(input).get();
 
                     switch (buffer[4]) {

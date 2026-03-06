@@ -38,6 +38,7 @@ public sealed abstract class ArrayTag<E extends Number> extends ValueTag<Object>
     @Contract(pure = true)
     public abstract int size();
 
+    /// Returns a sequential stream with this array as its source.
     @Contract(pure = true)
     public abstract BaseStream<E, ?> stream();
 

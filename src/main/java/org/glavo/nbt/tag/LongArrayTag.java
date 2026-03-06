@@ -33,15 +33,20 @@ public final class LongArrayTag extends ArrayTag<Long> {
 
     long[] value;
 
+    /// Creates a new LongArrayTag with an empty name and an empty array.
     public LongArrayTag() {
         this("");
     }
 
+    /// Creates a new LongArrayTag with the given name and an empty array.
     public LongArrayTag(String name) {
         super(name);
         this.value = EMPTY;
     }
 
+    /// Creates a new LongArrayTag with the given name and value.
+    ///
+    /// The value is cloned to avoid external modifications.
     public LongArrayTag(String name, long[] value) {
         super(name);
         this.value = value.clone();

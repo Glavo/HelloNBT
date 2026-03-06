@@ -31,15 +31,20 @@ public final class IntArrayTag extends ArrayTag<Integer> {
 
     int[] value;
 
+    /// Creates a new IntArrayTag with an empty name and an empty array.
     public IntArrayTag() {
         this("");
     }
 
+    /// Creates a new IntArrayTag with the given name and an empty array.
     public IntArrayTag(String name) {
         super(name);
         this.value = EMPTY;
     }
 
+    /// Creates a new IntArrayTag with the given name and value.
+    ///
+    /// The value is cloned to avoid external modifications.
     public IntArrayTag(String name, int[] value) {
         super(name);
         this.value = value.clone();

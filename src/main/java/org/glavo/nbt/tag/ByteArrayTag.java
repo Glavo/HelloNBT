@@ -20,7 +20,6 @@ import org.glavo.nbt.internal.output.DataWriter;
 import org.jetbrains.annotations.Contract;
 
 import java.io.IOException;
-import java.nio.Buffer;
 import java.nio.ByteBuffer;
 import java.util.*;
 import java.util.stream.Stream;
@@ -32,15 +31,20 @@ public final class ByteArrayTag extends ArrayTag<Byte> {
 
     byte[] value;
 
+    /// Creates a new ByteArrayTag with an empty name and an empty array.
     public ByteArrayTag() {
         this("");
     }
 
+    /// Creates a new ByteArrayTag with the given name and an empty array.
     public ByteArrayTag(String name) {
         super(name);
         this.value = EMPTY;
     }
 
+    /// Creates a new ByteArrayTag with the given name and value.
+    ///
+    /// The value is cloned to avoid external modifications.
     public ByteArrayTag(String name, byte[] value) {
         super(name);
         this.value = value.clone();

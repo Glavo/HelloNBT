@@ -29,7 +29,7 @@ import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-public final class NBTWriterTest {
+public final class WriteTagTest {
 
     sealed interface Validator {
         MinecraftEdition edition();

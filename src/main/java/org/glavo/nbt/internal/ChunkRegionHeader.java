@@ -18,11 +18,8 @@
 package org.glavo.nbt.internal;
 
 import org.glavo.nbt.internal.input.DataReader;
-import org.jetbrains.annotations.Unmodifiable;
 
 import java.io.IOException;
-import java.io.InputStream;
-import java.time.Instant;
 import java.util.Comparator;
 import java.util.stream.IntStream;
 
@@ -37,21 +34,15 @@ public final class ChunkRegionHeader {
         return new ChunkRegionHeader(sectorInfo, timestamps);
     }
 
-    public static int toSectorInfo(int offset, int length) {
-        assert offset >= 0 && offset <= 0xFFFFFF;
-        assert length >= 0 && length <= 0xFF;
-        return (offset << 8) | length;
-    }
-
-    public final int @Unmodifiable [] sectorInfo;
-    public final int @Unmodifiable [] timestamps;
+    public final int[] sectorInfo;
+    public final int[] timestamps;
 
     public ChunkRegionHeader() {
         this.sectorInfo = new int[CHUNKS_PRE_REGION];
         this.timestamps = new int[CHUNKS_PRE_REGION];
     }
 
-    public ChunkRegionHeader(int @Unmodifiable [] sectorInfo, int @Unmodifiable [] timestamps) {
+    public ChunkRegionHeader(int[] sectorInfo, int[] timestamps) {
         assert sectorInfo.length == CHUNKS_PRE_REGION;
         assert timestamps.length == CHUNKS_PRE_REGION;
 
@@ -67,8 +58,14 @@ public final class ChunkRegionHeader {
         return sectorInfo[index] & 0xFF;
     }
 
-    public void setSectorInfo(int index, int offset, int length) {
-        sectorInfo[index] = toSectorInfo(offset, length);
+    public void setSectorInfo(int index, int sectorOffset, int sectorLength) {
+        if (sectorOffset < 0 || sectorOffset > 0xFF_FFFF) {
+            throw new IllegalArgumentException("Sector offset out of range: " + sectorOffset);
+        }
+        if (sectorLength < 0 || sectorLength > 0xFF) {
+            throw new IllegalArgumentException("Sector length out of range: " + sectorLength);
+        }
+        sectorInfo[index] = (sectorOffset << 8) | sectorLength;
     }
 
     public long getSectorOffsetBytes(int index) {

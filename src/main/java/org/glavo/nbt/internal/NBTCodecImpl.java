@@ -229,23 +229,17 @@ public record NBTCodecImpl(MinecraftEdition edition,
 
         var header = new ChunkRegionHeader();
 
-        int[] sectorInfo = new int[ChunkUtils.CHUNKS_PRE_REGION];
-        int[] timestamps = new int[ChunkUtils.CHUNKS_PRE_REGION];
-
         int currentSector = 2; // Skip the header and the timestamp
         for (int i = 0; i < ChunkUtils.CHUNKS_PRE_REGION; i++) {
             ByteBuffer buffer = buffers[i];
-            if (buffer == null) {
-                header.setSectorInfo(i, 0, 0);
-                header.setTimestampEpochSeconds(i, 0);
-            } else {
+            if (buffer != null) {
                 Chunk chunk = region.getChunk(i);
 
                 long bytes = buffer.remaining() + 5L;
-                long sectors = bytes / ChunkUtils.SECTOR_BYTES;
+                int sectors = (int) (bytes / ChunkUtils.SECTOR_BYTES);
                 if (sectors <= 0xFF) {
-                    header.setSectorInfo(i, currentSector, (int) sectors);
-                    currentSector += (int) sectors;
+                    header.setSectorInfo(i, currentSector, sectors);
+                    currentSector += sectors;
                 } else {
                     // Oversized chunk
                     header.setSectorInfo(i, currentSector, 1);
@@ -258,12 +252,14 @@ public record NBTCodecImpl(MinecraftEdition edition,
                 }
 
                 header.setTimestampEpochSeconds(i, (int) epochSeconds);
+            } else {
+                header.setSectorInfo(i, 0, 0);
+                header.setTimestampEpochSeconds(i, 0);
             }
         }
 
-
-        writer.writeIntArray(sectorInfo);
-        writer.writeIntArray(timestamps);
+        writer.writeIntArray(header.sectorInfo);
+        writer.writeIntArray(header.timestamps);
 
         for (int i = 0; i < ChunkUtils.CHUNKS_PRE_REGION; i++) {
             ByteBuffer buffer = buffers[i];
@@ -277,7 +273,7 @@ public record NBTCodecImpl(MinecraftEdition edition,
             long bytesSkip = header.getSectorLengthBytes(i) - bytes;
 
             if (bytesSkip < 0) {
-                throw new AssertionError("Sector length mismatch for chunk " + i);
+                throw new AssertionError("Sector length mismatch for chunk " + i + ": expected less than or equal to " + header.getSectorLengthBytes(i) + ", got " + bytes);
             }
 
             writer.writeInt((int) bytesContent);

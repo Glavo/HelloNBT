@@ -20,13 +20,16 @@ import org.glavo.nbt.NBTParent;
 import org.glavo.nbt.internal.ChunkUtils;
 import org.glavo.nbt.internal.input.*;
 import org.jetbrains.annotations.Contract;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.Iterator;
+import java.util.NoSuchElementException;
 import java.util.Objects;
 
 /// @see <a href="https://minecraft.wiki/w/Region_file_format">Region file format - Minecraft Wiki</a>
 /// @see <a href="https://minecraft.wiki/w/Anvil_file_format">Anvil file format - Minecraft Wiki</a>
-public final class ChunkRegion implements NBTParent<Chunk>, NBTElement {
+public final class ChunkRegion implements NBTParent<Chunk>, NBTElement, Iterable<Chunk> {
 
     private final @Nullable Chunk[] chunks = new Chunk[ChunkUtils.CHUNKS_PRE_REGION];
 
@@ -85,6 +88,26 @@ public final class ChunkRegion implements NBTParent<Chunk>, NBTElement {
         setChunk(ChunkUtils.toLocalIndex(x, z), chunk);
     }
 
+    @Override
+    public Iterator<Chunk> iterator() {
+        return new Iterator<>() {
+            private int cursor;
+
+            @Override
+            public boolean hasNext() {
+                return cursor < ChunkUtils.CHUNKS_PRE_REGION;
+            }
+
+            @Override
+            public Chunk next() {
+                if (cursor >= ChunkUtils.CHUNKS_PRE_REGION) {
+                    throw new NoSuchElementException();
+                }
+                return getChunk(cursor++);
+            }
+        };
+    }
+
     /// Remove the chunk at the given local index from this region.
     ///
     /// After removing the chunk, the original local index of the chunk will point to a new blank chunk.
@@ -105,6 +128,33 @@ public final class ChunkRegion implements NBTParent<Chunk>, NBTElement {
         }
         chunk.setRegion(null, -1);
         chunks[localIndex] = null;
+    }
+
+    @Override
+    public int hashCode() {
+        int hash = 0;
+        for (Chunk chunk : this) {
+            hash = 31 * hash + chunk.hashCode();
+        }
+        return hash;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+
+        if (obj instanceof ChunkRegion that) {
+            for (int i = 0; i < chunks.length; i++) {
+                if (!this.getChunk(i).equals(that.getChunk(i))) {
+                    return false;
+                }
+            }
+            return true;
+        } else {
+            return false;
+        }
     }
 
     @Override

@@ -40,6 +40,11 @@ public interface OversizedChunkAccessor {
         return OversizedChunkAccessors.DEFAULT_FACTORY;
     }
 
+    /// Returns an empty factory. It returns an empty accessor for any Anvil file.
+    static Function<Path, OversizedChunkAccessor> emptyFactory() {
+        return OversizedChunkAccessors.EMPTY_FACTORY;
+    }
+
     /// Returns an accessor for the oversized chunk file for a given chunk in an Anvil file.
     ///
     /// If the file name is matched by the pattern `r.<regionX>.<regionZ>.mca`, where `<regionX>` and `<regionZ>` are integers, returns an accessor for the oversized chunk file;

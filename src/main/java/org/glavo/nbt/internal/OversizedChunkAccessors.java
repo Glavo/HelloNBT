@@ -43,6 +43,18 @@ public final class OversizedChunkAccessors {
         }
     };
 
+    public static final Function<Path, OversizedChunkAccessor> EMPTY_FACTORY = new Function<>() {
+        @Override
+        public OversizedChunkAccessor apply(Path path) {
+            return OversizedChunkAccessor.emptyAccessor();
+        }
+
+        @Override
+        public String toString() {
+            return "OversizedChunkAccessor.emptyFactory()";
+        }
+    };
+
     public static final OversizedChunkAccessor EMPTY = new OversizedChunkAccessor() {
         @Override
         public String toString() {

@@ -27,8 +27,8 @@ import java.util.List;
 public interface NBTSelector {
 
     /// @throws IllegalArgumentException if the input is not a valid NBT selector
-    static NBTSelector parse(CharSequence input) {
-        return new NBTSelectorParser(input, 0, input.length()).parse();
+    static NBTSelector parse(String input) {
+        return new NBTSelectorParser(input).parse();
     }
 
     List<Tag> selectAll(NBTParent<?> parent);
@@ -42,8 +42,4 @@ public interface NBTSelector {
     Tag selectSingle(NBTParent<?> parent);
 
     List<Tag> selectSingle(Collection<NBTParent<?>> parents);
-
-    interface Node {
-
-    }
 }

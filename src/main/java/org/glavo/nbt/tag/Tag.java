@@ -29,6 +29,26 @@ import java.util.Objects;
 ///
 /// A tag is a basic unit of data in NBT, which have [a type][#getType()], [a name][#getName()], and a payload.
 ///
+/// The payload of a tag can be a primitive value, an array of primitive values, or a collection of other tags.
+///
+/// These are the all possible types of tags:
+///
+/// - [ValueTag]: A tag that holds a single value.
+///     - [ByteTag]: A tag that holds a 1 byte signed integer. Sometimes used for booleans.
+///     - [ShortTag]: A tag that holds a 2 byte signed integer.
+///     - [IntTag]: A tag that holds a 4 byte signed integer.
+///     - [LongTag]: A tag that holds an 8 byte signed integer.
+///     - [FloatTag]: A tag that holds a 4 byte floating point number.
+///     - [DoubleTag]: A tag that holds an 8 byte floating point number.
+///     - [StringTag]: A tag that holds a Unicode string.
+///     - [ArrayTag]: A tag that holds an array of primitive values.
+///         - [ByteArrayTag]: A tag that holds an array of 1 byte signed integers.
+///         - [IntArrayTag]: A tag that holds an array of 4 byte signed integers.
+///         - [LongArrayTag]: A tag that holds an array of 8 byte signed integers.
+/// - [ParentTag]: A tag that holds a collection of other tags.
+///     - [CompoundTag]: A tag that holds a collection of named tags.
+///     - [ListTag]: A tag that holds a collection of unnamed tags.
+///
 /// @author Glavo
 /// @see <a href="https://minecraft.wiki/w/NBT_format">NBT format - Minecraft Wiki</a>
 public sealed abstract class Tag implements NBTElement

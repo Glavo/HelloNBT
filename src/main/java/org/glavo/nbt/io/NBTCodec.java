@@ -184,4 +184,12 @@ public sealed interface NBTCodec permits NBTCodecImpl {
 
     /// Reads a chunk region from a readable byte channel.
     ChunkRegion readRegion(ReadableByteChannel channel, OversizedChunkAccessor accessor) throws IOException;
+
+    /// Writes a chunk region to an output stream.
+    default void writeRegion(OutputStream outputStream, ChunkRegion region) throws IOException {
+        writeRegion(outputStream, region, OversizedChunkAccessor.emptyAccessor());
+    }
+
+    /// Writes a chunk region to an output stream.
+    void writeRegion(OutputStream outputStream, ChunkRegion region, OversizedChunkAccessor accessor) throws IOException;
 }

@@ -63,6 +63,19 @@ public final class RawDataWriter extends DataWriter {
         target.write(buffer);
     }
 
+    public void skip(long bytes) throws IOException {
+        if (bytes < 0L) {
+            throw new IllegalArgumentException("bytes must be non-negative");
+        }
+
+        if (bytes == 0L) {
+            return;
+        }
+
+        flushBuffer();
+        target.skip(bytes);
+    }
+
     @Override
     public void close() throws IOException {
         flushBuffer();

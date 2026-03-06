@@ -29,19 +29,20 @@ import org.glavo.nbt.io.NBTCodec;
 import org.glavo.nbt.tag.TagType;
 import org.jetbrains.annotations.Nullable;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.nio.ByteBuffer;
-import java.nio.channels.FileChannel;
-import java.nio.channels.ReadableByteChannel;
-import java.nio.channels.WritableByteChannel;
+import java.nio.channels.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
 import java.time.Instant;
 import java.util.Objects;
 import java.util.function.Function;
+import java.util.zip.Deflater;
+import java.util.zip.DeflaterOutputStream;
 
 public record NBTCodecImpl(MinecraftEdition edition,
                            Function<Path, OversizedChunkAccessor> oversizedChunkAccessorFactory) implements NBTCodec {
@@ -108,7 +109,7 @@ public record NBTCodecImpl(MinecraftEdition edition,
 
         assert rawReader.position() == fileStart + 2 * ChunkUtils.SECTOR_BYTES;
 
-        for (int localIndex : header.localIndexesSortedByOffset) {
+        for (int localIndex : header.getLocalIndexesSortedByOffset()) {
             if (header.getSectorLength(localIndex) == 0) {
                 if (header.getTimestampEpochSeconds(localIndex) != 0L) {
                     region.setChunk(
@@ -195,6 +196,108 @@ public record NBTCodecImpl(MinecraftEdition edition,
         }
 
         return region;
+    }
+
+    public static void writeRegion(RawDataWriter writer, ChunkRegion region, OversizedChunkAccessor accessor) throws IOException {
+        var buffers = new ByteBuffer[ChunkUtils.CHUNKS_PRE_REGION];
+
+        var deflater = new Deflater();
+        try {
+            for (int i = 0; i < ChunkUtils.CHUNKS_PRE_REGION; i++) {
+                Chunk chunk = region.getChunk(i);
+                if (chunk.getRootTag() == null) {
+                    continue;
+                }
+
+                var tempOutputStream = new ByteArrayOutputStream() {
+                    byte[] getBuffer() {
+                        return buf;
+                    }
+                };
+
+                deflater.reset();
+                try (var deflaterOutputStream = new DeflaterOutputStream(tempOutputStream, deflater);
+                     var rawWriter = new RawDataWriter(new OutputTarget.OfOutputStream(deflaterOutputStream, false), MinecraftEdition.JAVA_EDITION)) {
+                    writeTag(rawWriter, chunk.getRootTag());
+                }
+
+                buffers[i] = ByteBuffer.wrap(tempOutputStream.getBuffer(), 0, tempOutputStream.size());
+            }
+        } finally {
+            deflater.end();
+        }
+
+        var header = new ChunkRegionHeader();
+
+        int[] sectorInfo = new int[ChunkUtils.CHUNKS_PRE_REGION];
+        int[] timestamps = new int[ChunkUtils.CHUNKS_PRE_REGION];
+
+        int currentSector = 2; // Skip the header and the timestamp
+        for (int i = 0; i < ChunkUtils.CHUNKS_PRE_REGION; i++) {
+            ByteBuffer buffer = buffers[i];
+            if (buffer == null) {
+                header.setSectorInfo(i, 0, 0);
+                header.setTimestampEpochSeconds(i, 0);
+            } else {
+                Chunk chunk = region.getChunk(i);
+
+                long bytes = buffer.remaining() + 5L;
+                long sectors = bytes / ChunkUtils.SECTOR_BYTES;
+                if (sectors <= 0xFF) {
+                    header.setSectorInfo(i, currentSector, (int) sectors);
+                    currentSector += (int) sectors;
+                } else {
+                    // Oversized chunk
+                    header.setSectorInfo(i, currentSector, 1);
+                    currentSector += 1;
+                }
+
+                long epochSeconds = chunk.getTimestamp().toEpochMilli() / 1000L;
+                if (epochSeconds > Integer.toUnsignedLong(-1)) {
+                    throw new IOException("Timestamp too large: " + epochSeconds);
+                }
+
+                header.setTimestampEpochSeconds(i, (int) epochSeconds);
+            }
+        }
+
+
+        writer.writeIntArray(sectorInfo);
+        writer.writeIntArray(timestamps);
+
+        for (int i = 0; i < ChunkUtils.CHUNKS_PRE_REGION; i++) {
+            ByteBuffer buffer = buffers[i];
+            if (buffer == null) {
+                continue;
+            }
+
+            int bytesRawContent = buffer.remaining();
+            long bytesContent = bytesRawContent + 1;
+            long bytes = bytesContent + 4;
+            long bytesSkip = header.getSectorLengthBytes(i) - bytes;
+
+            if (bytesSkip < 0) {
+                throw new AssertionError("Sector length mismatch for chunk " + i);
+            }
+
+            writer.writeInt((int) bytesContent);
+            if (bytes <= ChunkUtils.SECTOR_BYTES * 0xFF) {
+                writer.writeByte((byte) 2); // Zlib
+                writer.writeByteBuffer(buffer);
+            } else {
+                assert header.getSectorLength(i) == 1 : "Sector length mismatch for chunk " + i;
+                writer.writeByte((byte) (2 + 128)); // Zlib + External
+
+                try (var outputStream = accessor.openOutputStream(ChunkUtils.getLocalX(i), ChunkUtils.getLocalZ(i))) {
+                    if (outputStream == null) {
+                        throw new IOException("Failed to open oversized chunk file for chunk (%d, %d)".formatted(ChunkUtils.getLocalX(i), ChunkUtils.getLocalZ(i)));
+                    }
+                    outputStream.write(buffer.array(), buffer.arrayOffset() + buffer.position(), buffer.limit());
+                }
+            }
+
+            writer.skip(bytesSkip);
+        }
     }
 
     @Override
@@ -296,6 +399,13 @@ public record NBTCodecImpl(MinecraftEdition edition,
         Objects.requireNonNull(channel, "channel");
         try (var reader = new RawDataReader(new InputSource.OfByteChannel(channel, false), MinecraftEdition.JAVA_EDITION)) {
             return readRegion(reader, accessor);
+        }
+    }
+
+    @Override
+    public void writeRegion(OutputStream outputStream, ChunkRegion region, OversizedChunkAccessor accessor) throws IOException {
+        try (var writer = new RawDataWriter(new OutputTarget.OfOutputStream(outputStream, false), MinecraftEdition.JAVA_EDITION)) {
+            writeRegion(writer, region, accessor);
         }
     }
 

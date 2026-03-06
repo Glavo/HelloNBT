@@ -79,7 +79,7 @@ public final class ChunkRegionTest {
         }
 
         int currentSectorOffset = 0;
-        for (int localIndex : header.localIndexesSortedByOffset) {
+        for (int localIndex : header.getLocalIndexesSortedByOffset()) {
             if (header.getSectorOffset(localIndex) < currentSectorOffset) {
                 fail("Sector offset is not sorted for local index %d: %d < %d".formatted(localIndex, header.getSectorOffset(localIndex), currentSectorOffset));
             }

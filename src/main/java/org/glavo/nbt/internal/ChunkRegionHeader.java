@@ -21,6 +21,8 @@ import org.glavo.nbt.internal.input.DataReader;
 import org.jetbrains.annotations.Unmodifiable;
 
 import java.io.IOException;
+import java.io.InputStream;
+import java.time.Instant;
 import java.util.Comparator;
 import java.util.stream.IntStream;
 
@@ -35,9 +37,19 @@ public final class ChunkRegionHeader {
         return new ChunkRegionHeader(sectorInfo, timestamps);
     }
 
+    public static int toSectorInfo(int offset, int length) {
+        assert offset >= 0 && offset <= 0xFFFFFF;
+        assert length >= 0 && length <= 0xFF;
+        return (offset << 8) | length;
+    }
+
     public final int @Unmodifiable [] sectorInfo;
     public final int @Unmodifiable [] timestamps;
-    public final int @Unmodifiable [] localIndexesSortedByOffset;
+
+    public ChunkRegionHeader() {
+        this.sectorInfo = new int[CHUNKS_PRE_REGION];
+        this.timestamps = new int[CHUNKS_PRE_REGION];
+    }
 
     public ChunkRegionHeader(int @Unmodifiable [] sectorInfo, int @Unmodifiable [] timestamps) {
         assert sectorInfo.length == CHUNKS_PRE_REGION;
@@ -45,11 +57,6 @@ public final class ChunkRegionHeader {
 
         this.sectorInfo = sectorInfo;
         this.timestamps = timestamps;
-        this.localIndexesSortedByOffset = IntStream.range(0, CHUNKS_PRE_REGION)
-                .boxed()
-                .sorted(Comparator.comparingInt(this::getSectorOffset).thenComparingInt(Integer::intValue))
-                .mapToInt(Integer::intValue)
-                .toArray();
     }
 
     public int getSectorOffset(int index) {
@@ -58,6 +65,10 @@ public final class ChunkRegionHeader {
 
     public int getSectorLength(int index) {
         return sectorInfo[index] & 0xFF;
+    }
+
+    public void setSectorInfo(int index, int offset, int length) {
+        sectorInfo[index] = toSectorInfo(offset, length);
     }
 
     public long getSectorOffsetBytes(int index) {
@@ -70,5 +81,17 @@ public final class ChunkRegionHeader {
 
     public long getTimestampEpochSeconds(int index) {
         return Integer.toUnsignedLong(timestamps[index]);
+    }
+
+    public void setTimestampEpochSeconds(int index, int epochSeconds) {
+        this.timestamps[index] = epochSeconds;
+    }
+
+    public int[] getLocalIndexesSortedByOffset() {
+        return IntStream.range(0, CHUNKS_PRE_REGION)
+                .boxed()
+                .sorted(Comparator.comparingInt(this::getSectorOffset).thenComparingInt(Integer::intValue))
+                .mapToInt(Integer::intValue)
+                .toArray();
     }
 }

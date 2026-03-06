@@ -53,6 +53,12 @@ public final class IntTag extends ValueTag<Integer> {
         return value;
     }
 
+    /// Returns the value of the tag converted to an unsigned long.
+    @Contract(pure = true)
+    public long getUnsigned() {
+        return Integer.toUnsignedLong(value);
+    }
+
     @Override
     @Contract(pure = true)
     public Integer getValue() {
@@ -69,6 +75,12 @@ public final class IntTag extends ValueTag<Integer> {
     @Contract(mutates = "this")
     public void set(int value) {
         this.value = value;
+    }
+
+    /// Sets the value of the tag from an unsigned long.
+    @Contract(mutates = "this")
+    public void setUnsigned(long value) {
+        this.value = (int) value;
     }
 
     @Override

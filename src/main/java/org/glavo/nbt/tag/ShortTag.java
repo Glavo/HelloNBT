@@ -53,6 +53,12 @@ public final class ShortTag extends ValueTag<Short> {
         return value;
     }
 
+    /// Returns the value of the tag converted to an unsigned integer.
+    @Contract(pure = true)
+    public int getUnsigned() {
+        return Short.toUnsignedInt(value);
+    }
+
     @Override
     @Contract(pure = true)
     public Short getValue() {
@@ -69,6 +75,12 @@ public final class ShortTag extends ValueTag<Short> {
     @Contract(mutates = "this")
     public void set(short value) {
         this.value = value;
+    }
+
+    /// Sets the value of the tag from an unsigned integer.
+    @Contract(mutates = "this")
+    public void setUnsigned(int value) {
+        this.value = (short) value;
     }
 
     @Override

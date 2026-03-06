@@ -53,6 +53,19 @@ public final class ByteTag extends ValueTag<Byte> {
         return value;
     }
 
+    /// Returns the value of the tag converted to an unsigned integer.
+    @Contract(pure = true)
+    public int getUnsigned() {
+        return Byte.toUnsignedInt(value);
+    }
+
+    /// Returns the value of the tag as a boolean.
+    @Contract(pure = true)
+    public boolean getBoolean() {
+        // Should stricter checks be performed?
+        return value != 0;
+    }
+
     @Override
     @Contract(pure = true)
     public Byte getValue() {
@@ -65,17 +78,16 @@ public final class ByteTag extends ValueTag<Byte> {
         return Byte.toString(value);
     }
 
-    /// Returns the value of the tag as a boolean.
-    @Contract(pure = true)
-    public boolean getBoolean() {
-        // Should stricter checks be performed?
-        return value != 0;
-    }
-
     /// Sets the value of the tag.
     @Contract(mutates = "this")
     public void set(byte value) {
         this.value = value;
+    }
+
+    /// Sets the value of the tag from an unsigned integer.
+    @Contract(mutates = "this")
+    public void setUnsigned(int value) {
+        this.value = (byte) value;
     }
 
     @Override

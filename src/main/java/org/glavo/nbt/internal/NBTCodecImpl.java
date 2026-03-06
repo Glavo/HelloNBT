@@ -263,9 +263,8 @@ public record NBTCodecImpl(MinecraftEdition edition,
         writer.writeIntArrayDirect(header.sectorInfo);
         writer.writeIntArrayDirect(header.timestamps);
 
-        if (writer.position() - startPosition != 2 * ChunkUtils.SECTOR_BYTES) {
-            throw new AssertionError("Header size mismatch: expected " + (2 * ChunkUtils.SECTOR_BYTES) + ", got " + (writer.position() - startPosition));
-        }
+        assert writer.position() - startPosition == 2 * ChunkUtils.SECTOR_BYTES
+                : "Header size mismatch: expected " + (2 * ChunkUtils.SECTOR_BYTES) + ", got " + (writer.position() - startPosition);
 
         for (int i = 0; i < ChunkUtils.CHUNKS_PRE_REGION; i++) {
             ByteBuffer buffer = buffers[i];
@@ -275,18 +274,15 @@ public record NBTCodecImpl(MinecraftEdition edition,
 
             long sectorOffsetBytes = header.getSectorOffsetBytes(i);
 
-            if (writer.position() - startPosition != sectorOffsetBytes) {
-                throw new AssertionError("Chunk header position mismatch for chunk " + i + ": expected " + sectorOffsetBytes + ", got " + (writer.position() - startPosition));
-            }
+            assert writer.position() - startPosition == sectorOffsetBytes
+                    : "Chunk header position mismatch for chunk " + i + ": expected " + sectorOffsetBytes + ", got " + (writer.position() - startPosition);
 
             int bytesRawContent = buffer.remaining();
             long bytesContent = bytesRawContent + 1;
             long bytes = bytesContent + 4;
             long bytesSkip = header.getSectorLengthBytes(i) - bytes;
 
-            if (bytesSkip < 0) {
-                throw new AssertionError("Sector length mismatch for chunk " + i + ": expected less than or equal to " + header.getSectorLengthBytes(i) + ", got " + bytes);
-            }
+            assert bytesSkip >= 0 : "Sector length mismatch for chunk " + i + ": expected less than or equal to " + header.getSectorLengthBytes(i) + ", got " + bytes;
 
             writer.writeInt((int) bytesContent);
             if (bytes <= ChunkUtils.SECTOR_BYTES * 0xFF) {
@@ -304,9 +300,7 @@ public record NBTCodecImpl(MinecraftEdition edition,
                 }
             }
 
-            if (writer.position() - startPosition != sectorOffsetBytes + bytes) {
-                throw new AssertionError("Chunk content position mismatch for chunk " + i + ": expected " + (sectorOffsetBytes + bytes) + ", got " + (writer.position() - startPosition));
-            }
+            assert writer.position() - startPosition == sectorOffsetBytes + bytes : "Chunk content position mismatch for chunk " + i + ": expected " + (sectorOffsetBytes + bytes) + ", got " + (writer.position() - startPosition);
 
             writer.skip(bytesSkip);
         }

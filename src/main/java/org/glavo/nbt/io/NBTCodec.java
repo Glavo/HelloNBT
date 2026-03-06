@@ -156,7 +156,11 @@ public sealed interface NBTCodec permits NBTCodecImpl {
     void writeTag(Tag tag, WritableByteChannel channel) throws IOException;
 
     /// Reads a chunk region from a file.
-    ChunkRegion readRegion(Path path) throws IOException;
+    default ChunkRegion readRegion(Path path) throws IOException {
+        return readRegion(path, getOversizedChunkAccessorFactory().apply(path));
+    }
+
+    ChunkRegion readRegion(Path path, OversizedChunkAccessor accessor) throws IOException;
 
     /// Reads a chunk region from an input stream.
     default ChunkRegion readRegion(InputStream inputStream) throws IOException {

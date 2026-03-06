@@ -272,10 +272,10 @@ public record NBTCodecImpl(MinecraftEdition edition,
     }
 
     @Override
-    public ChunkRegion readRegion(Path path) throws IOException {
+    public ChunkRegion readRegion(Path path, OversizedChunkAccessor accessor) throws IOException {
         try (var channel = FileChannel.open(path, StandardOpenOption.READ);
              var reader = new RawDataReader(new InputSource.OfByteChannel(channel, true), MinecraftEdition.JAVA_EDITION)) {
-            return readRegion(reader, oversizedChunkAccessorFactory.apply(path));
+            return readRegion(reader, accessor);
         }
     }
 

@@ -59,6 +59,12 @@ public final class FloatTag extends ValueTag<Float> {
         return value;
     }
 
+    @Override
+    @Contract(pure = true)
+    public String getAsString() {
+        return Float.toString(value);
+    }
+
     /// Sets the value of the tag.
     @Contract(mutates = "this")
     public void set(float value) {

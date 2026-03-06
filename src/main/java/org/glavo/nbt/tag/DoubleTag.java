@@ -59,6 +59,12 @@ public final class DoubleTag extends ValueTag<Double> {
         return value;
     }
 
+    @Override
+    @Contract(pure = true)
+    public String getAsString() {
+        return Double.toString(value);
+    }
+
     /// Sets the value of the tag.
     @Contract(mutates = "this")
     public void set(double value) {

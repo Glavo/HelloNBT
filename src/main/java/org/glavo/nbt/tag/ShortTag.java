@@ -59,6 +59,12 @@ public final class ShortTag extends ValueTag<Short> {
         return value;
     }
 
+    @Override
+    @Contract(pure = true)
+    public String getAsString() {
+        return Short.toString(value);
+    }
+
     /// Sets the value of the tag.
     @Contract(mutates = "this")
     public void set(short value) {

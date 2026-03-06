@@ -59,6 +59,12 @@ public final class ByteTag extends ValueTag<Byte> {
         return value;
     }
 
+    @Override
+    @Contract(pure = true)
+    public String getAsString() {
+        return Byte.toString(value);
+    }
+
     /// Returns the value of the tag as a boolean.
     @Contract(pure = true)
     public boolean getBoolean() {

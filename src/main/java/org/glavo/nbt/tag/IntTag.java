@@ -59,6 +59,12 @@ public final class IntTag extends ValueTag<Integer> {
         return value;
     }
 
+    @Override
+    @Contract(pure = true)
+    public String getAsString() {
+        return Integer.toString(value);
+    }
+
     /// Sets the value of the tag.
     @Contract(mutates = "this")
     public void set(int value) {

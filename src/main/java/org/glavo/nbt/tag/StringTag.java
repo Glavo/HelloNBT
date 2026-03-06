@@ -60,6 +60,12 @@ public final class StringTag extends ValueTag<String> {
         return value;
     }
 
+    @Override
+    @Contract(pure = true)
+    public String getAsString() {
+        return value;
+    }
+
     /// Sets the value of the tag.
     @Contract(mutates = "this")
     public void set(String value) {

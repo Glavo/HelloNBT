@@ -59,6 +59,12 @@ public final class LongTag extends ValueTag<Long> {
         return value;
     }
 
+    @Override
+    @Contract(pure = true)
+    public String getAsString() {
+        return Long.toString(value);
+    }
+
     /// Sets the value of the tag.
     @Contract(mutates = "this")
     public void set(long value) {

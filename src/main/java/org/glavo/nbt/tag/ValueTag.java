@@ -19,7 +19,7 @@ import org.jetbrains.annotations.Contract;
 
 /// Base class for tags that hold a single simple value.
 public sealed abstract class ValueTag<V> extends Tag
-        permits ByteTag, ShortTag, IntTag, LongTag, DoubleTag, FloatTag, StringTag {
+        permits ByteTag, ShortTag, IntTag, LongTag, FloatTag, DoubleTag, StringTag {
     protected ValueTag(String name) {
         super(name);
     }
@@ -27,6 +27,10 @@ public sealed abstract class ValueTag<V> extends Tag
     /// Returns the value of the tag.
     @Contract(pure = true)
     public abstract V getValue();
+
+    /// Returns the value of the tag as a string.
+    @Contract(pure = true)
+    public abstract String getAsString();
 
     /// Sets the value of the tag.
     @Contract(mutates = "this")

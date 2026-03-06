@@ -69,7 +69,7 @@ public sealed abstract class Tag implements NBTElement
         }
     }
 
-    /// If the tag is a child of a [parent tag][ParentTag], returns the index of the tag in its parent; otherwise, returns `-1`.
+    /// If the tag is a child of a [parent][NBTParent], returns the index of the tag in its parent; otherwise, returns `-1`.
     @Contract(pure = true)
     public int getIndex() {
         return index;

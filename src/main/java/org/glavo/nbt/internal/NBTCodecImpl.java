@@ -199,6 +199,8 @@ public record NBTCodecImpl(MinecraftEdition edition,
     }
 
     public static void writeRegion(RawDataWriter writer, ChunkRegion region, ExternalChunkAccessor accessor) throws IOException {
+        assert writer.edition == MinecraftEdition.JAVA_EDITION : "Only Java Edition supports region file format";
+
         var buffers = new ByteBuffer[ChunkUtils.CHUNKS_PRE_REGION];
 
         var deflater = new Deflater();

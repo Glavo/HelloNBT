@@ -34,12 +34,12 @@ import java.nio.file.Path;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-public final class OversizedChunkAccessorTest {
+public final class ExternalChunkAccessorTest {
 
     @Test
     @SuppressWarnings("resource")
     void testEmptyAccessor() throws IOException {
-        var accessor = OversizedChunkAccessor.emptyAccessor();
+        var accessor = ExternalChunkAccessor.emptyAccessor();
 
         for (int i = 0; i < ChunkUtils.CHUNKS_PER_REGION_SIDE; i++) {
             for (int j = 0; j < ChunkUtils.CHUNKS_PER_REGION_SIDE; j++) {
@@ -82,7 +82,7 @@ public final class OversizedChunkAccessorTest {
                 }
             }
 
-            var accessor = OversizedChunkAccessor.of(rootDir.resolve("r.%d.%d.mca".formatted(regionX, regionZ)));
+            var accessor = ExternalChunkAccessor.of(rootDir.resolve("r.%d.%d.mca".formatted(regionX, regionZ)));
             assertNotNull(accessor);
 
             for (int chunkLocalX = 0; chunkLocalX < ChunkUtils.CHUNKS_PER_REGION_SIDE; chunkLocalX++) {

@@ -22,7 +22,7 @@ import org.glavo.nbt.internal.output.DataWriter;
 import org.glavo.nbt.internal.output.OutputTarget;
 import org.glavo.nbt.internal.output.RawDataWriter;
 import org.glavo.nbt.io.MinecraftEdition;
-import org.glavo.nbt.io.OversizedChunkAccessor;
+import org.glavo.nbt.io.ExternalChunkAccessor;
 import org.glavo.nbt.tag.CompoundTag;
 import org.glavo.nbt.tag.Tag;
 import org.glavo.nbt.io.NBTCodec;
@@ -45,10 +45,10 @@ import java.util.zip.Deflater;
 import java.util.zip.DeflaterOutputStream;
 
 public record NBTCodecImpl(MinecraftEdition edition,
-                           Function<Path, OversizedChunkAccessor> oversizedChunkAccessorFactory) implements NBTCodec {
+                           Function<Path, ExternalChunkAccessor> externalChunkAccessorFactory) implements NBTCodec {
 
     private NBTCodecImpl(MinecraftEdition edition) {
-        this(edition, OversizedChunkAccessor.defaultFactory());
+        this(edition, ExternalChunkAccessor.defaultFactory());
     }
 
     public static final NBTCodecImpl JE = new NBTCodecImpl(MinecraftEdition.JAVA_EDITION);
@@ -97,7 +97,7 @@ public record NBTCodecImpl(MinecraftEdition edition,
         Access.TAG.writeContent(tag, writer);
     }
 
-    public static ChunkRegion readRegion(RawDataReader rawReader, OversizedChunkAccessor accessor) throws IOException {
+    public static ChunkRegion readRegion(RawDataReader rawReader, ExternalChunkAccessor accessor) throws IOException {
         if (rawReader.edition != MinecraftEdition.JAVA_EDITION) {
             throw new IllegalArgumentException("Only Java Edition supports region file format");
         }
@@ -146,7 +146,7 @@ public record NBTCodecImpl(MinecraftEdition edition,
             int compressType = rawReader.readUnsignedByte();
             boolean external = compressType > 128;
 
-            RawDataReader oversizedReader;
+            RawDataReader externalReader;
             if (external) {
                 if (chunkRawContentLength != 0L) {
                     throw new IOException("Invalid chunk content length: %d (expected 0 for compression type %d)".formatted(chunkRawContentLength, compressType));
@@ -154,21 +154,21 @@ public record NBTCodecImpl(MinecraftEdition edition,
 
                 compressType -= 128;
 
-                InputStream oversizedChunkInputStream = accessor.openInputStream(ChunkUtils.getLocalX(localIndex), ChunkUtils.getLocalZ(localIndex));
-                if (oversizedChunkInputStream == null) {
-                    throw new IOException("Failed to open oversized chunk file for chunk (%d, %d)".formatted(ChunkUtils.getLocalX(localIndex), ChunkUtils.getLocalZ(localIndex)));
+                InputStream externalChunkInputStream = accessor.openInputStream(ChunkUtils.getLocalX(localIndex), ChunkUtils.getLocalZ(localIndex));
+                if (externalChunkInputStream == null) {
+                    throw new IOException("Failed to open external chunk file for chunk (%d, %d)".formatted(ChunkUtils.getLocalX(localIndex), ChunkUtils.getLocalZ(localIndex)));
                 }
-                oversizedReader = new RawDataReader(new InputSource.OfInputStream(oversizedChunkInputStream, true), MinecraftEdition.JAVA_EDITION);
+                externalReader = new RawDataReader(new InputSource.OfInputStream(externalChunkInputStream, true), MinecraftEdition.JAVA_EDITION);
             } else {
-                oversizedReader = null;
+                externalReader = null;
             }
 
-            try (oversizedReader) {
+            try (externalReader) {
                 RawDataReader actualRawReader;
 
                 if (external) {
-                    actualRawReader = oversizedReader;
-                    oversizedReader.skip(5L);
+                    actualRawReader = externalReader;
+                    externalReader.skip(5L);
                 } else {
                     actualRawReader = rawReader;
                 }
@@ -198,7 +198,7 @@ public record NBTCodecImpl(MinecraftEdition edition,
         return region;
     }
 
-    public static void writeRegion(RawDataWriter writer, ChunkRegion region, OversizedChunkAccessor accessor) throws IOException {
+    public static void writeRegion(RawDataWriter writer, ChunkRegion region, ExternalChunkAccessor accessor) throws IOException {
         var buffers = new ByteBuffer[ChunkUtils.CHUNKS_PRE_REGION];
 
         var deflater = new Deflater();
@@ -290,7 +290,7 @@ public record NBTCodecImpl(MinecraftEdition edition,
 
                 try (var outputStream = accessor.openOutputStream(ChunkUtils.getLocalX(i), ChunkUtils.getLocalZ(i))) {
                     if (outputStream == null) {
-                        throw new IOException("Failed to open oversized chunk file for chunk (%d, %d)".formatted(ChunkUtils.getLocalX(i), ChunkUtils.getLocalZ(i)));
+                        throw new IOException("Failed to open external chunk file for chunk (%d, %d)".formatted(ChunkUtils.getLocalX(i), ChunkUtils.getLocalZ(i)));
                     }
                     outputStream.write(buffer.array(), buffer.arrayOffset() + buffer.position(), buffer.limit());
                 }
@@ -308,18 +308,18 @@ public record NBTCodecImpl(MinecraftEdition edition,
     @Override
     public NBTCodec withEdition(MinecraftEdition edition) {
         Objects.requireNonNull(edition, "edition");
-        return edition == this.edition ? this : new NBTCodecImpl(edition, oversizedChunkAccessorFactory);
+        return edition == this.edition ? this : new NBTCodecImpl(edition, externalChunkAccessorFactory);
     }
 
     @Override
-    public Function<Path, OversizedChunkAccessor> getOversizedChunkAccessorFactory() {
-        return oversizedChunkAccessorFactory;
+    public Function<Path, ExternalChunkAccessor> getExternalChunkAccessorFactory() {
+        return externalChunkAccessorFactory;
     }
 
     @Override
-    public NBTCodec withOversizedChunkAccessorFactory(Function<Path, OversizedChunkAccessor> factory) {
+    public NBTCodec withExternalChunkAccessorFactory(Function<Path, ExternalChunkAccessor> factory) {
         Objects.requireNonNull(factory, "factory");
-        return factory == this.oversizedChunkAccessorFactory ? this : new NBTCodecImpl(edition, factory);
+        return factory == this.externalChunkAccessorFactory ? this : new NBTCodecImpl(edition, factory);
     }
 
     private Tag check(@Nullable Tag tag) throws IOException {
@@ -379,7 +379,7 @@ public record NBTCodecImpl(MinecraftEdition edition,
     }
 
     @Override
-    public ChunkRegion readRegion(Path path, OversizedChunkAccessor accessor) throws IOException {
+    public ChunkRegion readRegion(Path path, ExternalChunkAccessor accessor) throws IOException {
         try (var channel = FileChannel.open(path, StandardOpenOption.READ);
              var reader = new RawDataReader(new InputSource.OfByteChannel(channel, true), MinecraftEdition.JAVA_EDITION)) {
             return readRegion(reader, accessor);
@@ -387,7 +387,7 @@ public record NBTCodecImpl(MinecraftEdition edition,
     }
 
     @Override
-    public ChunkRegion readRegion(InputStream inputStream, OversizedChunkAccessor accessor) throws IOException {
+    public ChunkRegion readRegion(InputStream inputStream, ExternalChunkAccessor accessor) throws IOException {
         Objects.requireNonNull(inputStream, "inputStream");
         try (var reader = new RawDataReader(new InputSource.OfInputStream(inputStream, false), MinecraftEdition.JAVA_EDITION)) {
             return readRegion(reader, accessor);
@@ -395,7 +395,7 @@ public record NBTCodecImpl(MinecraftEdition edition,
     }
 
     @Override
-    public ChunkRegion readRegion(ReadableByteChannel channel, OversizedChunkAccessor accessor) throws IOException {
+    public ChunkRegion readRegion(ReadableByteChannel channel, ExternalChunkAccessor accessor) throws IOException {
         Objects.requireNonNull(channel, "channel");
         try (var reader = new RawDataReader(new InputSource.OfByteChannel(channel, false), MinecraftEdition.JAVA_EDITION)) {
             return readRegion(reader, accessor);
@@ -403,7 +403,7 @@ public record NBTCodecImpl(MinecraftEdition edition,
     }
 
     @Override
-    public void writeRegion(OutputStream outputStream, ChunkRegion region, OversizedChunkAccessor accessor) throws IOException {
+    public void writeRegion(OutputStream outputStream, ChunkRegion region, ExternalChunkAccessor accessor) throws IOException {
         try (var writer = new RawDataWriter(new OutputTarget.OfOutputStream(outputStream, false), MinecraftEdition.JAVA_EDITION)) {
             writeRegion(writer, region, accessor);
         }
@@ -411,6 +411,6 @@ public record NBTCodecImpl(MinecraftEdition edition,
 
     @Override
     public String toString() {
-        return "NBTCodec[edition=%s, oversizedChunkAccessorFactory=%s]".formatted(edition, oversizedChunkAccessorFactory);
+        return "NBTCodec[edition=%s, externalChunkAccessorFactory=%s]".formatted(edition, externalChunkAccessorFactory);
     }
 }

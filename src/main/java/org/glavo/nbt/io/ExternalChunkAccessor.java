@@ -18,7 +18,7 @@
 package org.glavo.nbt.io;
 
 import org.glavo.nbt.internal.ChunkUtils;
-import org.glavo.nbt.internal.OversizedChunkAccessors;
+import org.glavo.nbt.internal.ExternalChunkAccessors;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.IOException;
@@ -29,40 +29,40 @@ import java.util.Objects;
 import java.util.function.Function;
 import java.util.regex.Matcher;
 
-/// Accessor for oversized chunk files.
+/// Accessor for external chunk files.
 ///
 /// Since Minecraft 19w34a, if a chunk is larger than 1 MiB, it will be stored in a separate file named `c.<chunkX>.<chunkZ>.mcc` in the same directory as the region file.
-/// This interface provides a way to locate the oversized chunk file for a given chunk in an Anvil file.
-public interface OversizedChunkAccessor {
+/// This interface provides a way to locate the external chunk file for a given chunk in an Anvil file.
+public interface ExternalChunkAccessor {
 
-    /// Returns a default factory for creating [OversizedChunkAccessor] for an Anvil file.
-    static Function<Path, OversizedChunkAccessor> defaultFactory() {
-        return OversizedChunkAccessors.DEFAULT_FACTORY;
+    /// Returns a default factory for creating [ExternalChunkAccessor] for an Anvil file.
+    static Function<Path, ExternalChunkAccessor> defaultFactory() {
+        return ExternalChunkAccessors.DEFAULT_FACTORY;
     }
 
     /// Returns an empty factory. It returns an empty accessor for any Anvil file.
-    static Function<Path, OversizedChunkAccessor> emptyFactory() {
-        return OversizedChunkAccessors.EMPTY_FACTORY;
+    static Function<Path, ExternalChunkAccessor> emptyFactory() {
+        return ExternalChunkAccessors.EMPTY_FACTORY;
     }
 
-    /// Returns an accessor for the oversized chunk file for a given chunk in an Anvil file.
+    /// Returns an accessor for the external chunk file for a given chunk in an Anvil file.
     ///
-    /// If the file name is matched by the pattern `r.<regionX>.<regionZ>.mca`, where `<regionX>` and `<regionZ>` are integers, returns an accessor for the oversized chunk file;
+    /// If the file name is matched by the pattern `r.<regionX>.<regionZ>.mca`, where `<regionX>` and `<regionZ>` are integers, returns an accessor for the external chunk file;
     /// otherwise, returns an [empty accessor][#emptyAccessor()].
-    static OversizedChunkAccessor of(Path path) {
+    static ExternalChunkAccessor of(Path path) {
         Path fileName = path.getFileName();
         if (fileName == null) {
             return emptyAccessor();
         }
 
         String name = fileName.toString();
-        Matcher matcher = OversizedChunkAccessors.FILE_NAME_PATTERN.matcher(name);
+        Matcher matcher = ExternalChunkAccessors.FILE_NAME_PATTERN.matcher(name);
         if (matcher.matches()) {
             try {
                 int regionX = Integer.parseInt(matcher.group("regionX"));
                 int regionZ = Integer.parseInt(matcher.group("regionZ"));
 
-                return new OversizedChunkAccessors.FileOversizedChunkAccessor(path, regionX, regionZ);
+                return new ExternalChunkAccessors.FileExternalChunkAccessor(path, regionX, regionZ);
             } catch (NumberFormatException e) {
                 return emptyAccessor();
             }
@@ -71,12 +71,12 @@ public interface OversizedChunkAccessor {
         }
     }
 
-    /// Returns an accessor that not support reading or writing oversized chunk files.
-    static OversizedChunkAccessor emptyAccessor() {
-        return OversizedChunkAccessors.EMPTY;
+    /// Returns an accessor that not support reading or writing external chunk files.
+    static ExternalChunkAccessor emptyAccessor() {
+        return ExternalChunkAccessors.EMPTY;
     }
 
-    /// Opens an input stream for reading the oversized chunk file for a given chunk in an Anvil file.
+    /// Opens an input stream for reading the external chunk file for a given chunk in an Anvil file.
     ///
     /// Returns `null` if the accessor does not support reading for the given chunk.
     ///
@@ -90,7 +90,7 @@ public interface OversizedChunkAccessor {
         return null;
     }
 
-    /// Opens an output stream for writing the oversized chunk file for a given chunk in an Anvil file.
+    /// Opens an output stream for writing the external chunk file for a given chunk in an Anvil file.
     ///
     /// Returns `null` if the accessor does not support writing for the given chunk.
     ///

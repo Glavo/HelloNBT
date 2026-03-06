@@ -15,7 +15,7 @@
  */
 package org.glavo.nbt.internal;
 
-import org.glavo.nbt.io.OversizedChunkAccessor;
+import org.glavo.nbt.io.ExternalChunkAccessor;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.IOException;
@@ -28,41 +28,41 @@ import java.util.Objects;
 import java.util.function.Function;
 import java.util.regex.Pattern;
 
-public final class OversizedChunkAccessors {
+public final class ExternalChunkAccessors {
     public static final Pattern FILE_NAME_PATTERN = Pattern.compile("r\\.(?<regionX>-?\\d+)\\.(?<regionZ>-?\\d+)\\.mca");
 
-    public static final Function<Path, OversizedChunkAccessor> DEFAULT_FACTORY = new Function<>() {
+    public static final Function<Path, ExternalChunkAccessor> DEFAULT_FACTORY = new Function<>() {
         @Override
-        public OversizedChunkAccessor apply(Path path) {
-            return OversizedChunkAccessor.of(path);
+        public ExternalChunkAccessor apply(Path path) {
+            return ExternalChunkAccessor.of(path);
         }
 
         @Override
         public String toString() {
-            return "OversizedChunkAccessor.defaultFactory()";
+            return "ExternalChunkAccessor.defaultFactory()";
         }
     };
 
-    public static final Function<Path, OversizedChunkAccessor> EMPTY_FACTORY = new Function<>() {
+    public static final Function<Path, ExternalChunkAccessor> EMPTY_FACTORY = new Function<>() {
         @Override
-        public OversizedChunkAccessor apply(Path path) {
-            return OversizedChunkAccessor.emptyAccessor();
+        public ExternalChunkAccessor apply(Path path) {
+            return ExternalChunkAccessor.emptyAccessor();
         }
 
-        @Override
-        public String toString() {
-            return "OversizedChunkAccessor.emptyFactory()";
-        }
-    };
-
-    public static final OversizedChunkAccessor EMPTY = new OversizedChunkAccessor() {
         @Override
         public String toString() {
-            return "OversizedChunkAccessor.emptyAccessor()";
+            return "ExternalChunkAccessor.emptyFactory()";
         }
     };
 
-    public record FileOversizedChunkAccessor(Path path, int regionX, int regionZ) implements OversizedChunkAccessor {
+    public static final ExternalChunkAccessor EMPTY = new ExternalChunkAccessor() {
+        @Override
+        public String toString() {
+            return "ExternalChunkAccessor.emptyAccessor()";
+        }
+    };
+
+    public record FileExternalChunkAccessor(Path path, int regionX, int regionZ) implements ExternalChunkAccessor {
         public Path locate(Path source, int chunkLocalX, int chunkLocalZ) {
             Objects.checkIndex(chunkLocalX, ChunkUtils.CHUNKS_PER_REGION_SIDE);
             Objects.checkIndex(chunkLocalZ, ChunkUtils.CHUNKS_PER_REGION_SIDE);
@@ -86,6 +86,6 @@ public final class OversizedChunkAccessors {
         }
     }
 
-    private OversizedChunkAccessors() {
+    private ExternalChunkAccessors() {
     }
 }

@@ -56,13 +56,13 @@ public sealed interface NBTCodec permits NBTCodecImpl {
     @Contract(pure = true)
     NBTCodec withEdition(MinecraftEdition edition);
 
-    /// Returns the factory for creating [OversizedChunkAccessor] for an Anvil file.
+    /// Returns the factory for getting [ExternalChunkAccessor] for an Anvil file.
     @Contract(pure = true)
-    Function<Path, OversizedChunkAccessor> getOversizedChunkAccessorFactory();
+    Function<Path, ExternalChunkAccessor> getExternalChunkAccessorFactory();
 
-    /// Returns a new [NBTCodec] with the specified factory for creating [OversizedChunkAccessor].
+    /// Returns a new [NBTCodec] with the specified factory for getting [ExternalChunkAccessor].
     @Contract(pure = true)
-    NBTCodec withOversizedChunkAccessorFactory(Function<Path, OversizedChunkAccessor> factory);
+    NBTCodec withExternalChunkAccessorFactory(Function<Path, ExternalChunkAccessor> factory);
 
     private static <T extends Tag> T check(@Nullable Tag tag, Class<T> tagClass) throws IOException {
         if (tag == null) {
@@ -157,39 +157,39 @@ public sealed interface NBTCodec permits NBTCodecImpl {
 
     /// Reads a chunk region from a file.
     ///
-    /// @see #getOversizedChunkAccessorFactory()
-    /// @see #withOversizedChunkAccessorFactory(Function)
+    /// @see #getExternalChunkAccessorFactory()
+    /// @see #withExternalChunkAccessorFactory(Function)
     default ChunkRegion readRegion(Path path) throws IOException {
-        return readRegion(path, getOversizedChunkAccessorFactory().apply(path));
+        return readRegion(path, getExternalChunkAccessorFactory().apply(path));
     }
 
     /// Reads a chunk region from a file.
     ///
-    /// @see #getOversizedChunkAccessorFactory()
-    /// @see #withOversizedChunkAccessorFactory(Function)
-    ChunkRegion readRegion(Path path, OversizedChunkAccessor accessor) throws IOException;
+    /// @see #getExternalChunkAccessorFactory()
+    /// @see #withExternalChunkAccessorFactory(Function)
+    ChunkRegion readRegion(Path path, ExternalChunkAccessor accessor) throws IOException;
 
     /// Reads a chunk region from an input stream.
     default ChunkRegion readRegion(InputStream inputStream) throws IOException {
-        return readRegion(inputStream, OversizedChunkAccessor.emptyAccessor());
+        return readRegion(inputStream, ExternalChunkAccessor.emptyAccessor());
     }
 
     /// Reads a chunk region from an input stream.
-    ChunkRegion readRegion(InputStream inputStream, OversizedChunkAccessor accessor) throws IOException;
+    ChunkRegion readRegion(InputStream inputStream, ExternalChunkAccessor accessor) throws IOException;
 
     /// Reads a chunk region from a readable byte channel.
     default ChunkRegion readRegion(ReadableByteChannel channel) throws IOException {
-        return readRegion(channel, OversizedChunkAccessor.emptyAccessor());
+        return readRegion(channel, ExternalChunkAccessor.emptyAccessor());
     }
 
     /// Reads a chunk region from a readable byte channel.
-    ChunkRegion readRegion(ReadableByteChannel channel, OversizedChunkAccessor accessor) throws IOException;
+    ChunkRegion readRegion(ReadableByteChannel channel, ExternalChunkAccessor accessor) throws IOException;
 
     /// Writes a chunk region to an output stream.
     default void writeRegion(OutputStream outputStream, ChunkRegion region) throws IOException {
-        writeRegion(outputStream, region, OversizedChunkAccessor.emptyAccessor());
+        writeRegion(outputStream, region, ExternalChunkAccessor.emptyAccessor());
     }
 
     /// Writes a chunk region to an output stream.
-    void writeRegion(OutputStream outputStream, ChunkRegion region, OversizedChunkAccessor accessor) throws IOException;
+    void writeRegion(OutputStream outputStream, ChunkRegion region, ExternalChunkAccessor accessor) throws IOException;
 }

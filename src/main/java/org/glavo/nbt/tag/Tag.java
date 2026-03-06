@@ -25,7 +25,12 @@ import org.jetbrains.annotations.Nullable;
 import java.io.IOException;
 import java.util.Objects;
 
+/// Represents a tag in NBT (Named Binary Tag) format.
+///
+/// A tag is a basic unit of data in NBT, which have [a type][#getType()], [a name][#getName()], and a payload.
+///
 /// @author Glavo
+/// @see <a href="https://minecraft.wiki/w/NBT_format">NBT format - Minecraft Wiki</a>
 public sealed abstract class Tag implements NBTElement
         permits ValueTag, ParentTag {
 

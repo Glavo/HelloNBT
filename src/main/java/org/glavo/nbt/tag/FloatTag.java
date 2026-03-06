@@ -25,14 +25,17 @@ import java.io.IOException;
 public final class FloatTag extends ValueTag<Float> {
     private float value;
 
+    /// Creates a new FloatTag with an empty name and a value of `0.0`.
     public FloatTag() {
         this("", 0.0f);
     }
 
+    /// Creates a new FloatTag with the given name and a value of `0.0`.
     public FloatTag(String name) {
         this(name, 0.0f);
     }
 
+    /// Creates a new FloatTag with the given name and value.
     public FloatTag(String name, float value) {
         super(name);
         this.value = value;

@@ -25,14 +25,17 @@ import java.io.IOException;
 public final class DoubleTag extends ValueTag<Double> {
     private double value;
 
+    /// Creates a new DoubleTag with an empty name and a value of `0.0`.
     public DoubleTag() {
         this("", 0.0);
     }
 
+    /// Creates a new DoubleTag with the given name and a value of `0.0`.
     public DoubleTag(String name) {
         this(name, 0.0);
     }
 
+    /// Creates a new DoubleTag with the given name and value.
     public DoubleTag(String name, double value) {
         super(name);
         this.value = value;

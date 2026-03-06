@@ -25,14 +25,17 @@ import java.io.IOException;
 public final class LongTag extends ValueTag<Long> {
     private long value;
 
+    /// Creates a new LongTag with an empty name and a value of `0`.
     public LongTag() {
         this("", 0L);
     }
 
+    /// Creates a new LongTag with the given name and a value of `0`.
     public LongTag(String name) {
         this(name, 0L);
     }
 
+    /// Creates a new LongTag with the given name and value.
     public LongTag(String name, long value) {
         super(name);
         this.value = value;

@@ -25,14 +25,17 @@ import java.io.IOException;
 public final class ShortTag extends ValueTag<Short> {
     private short value;
 
+    /// Creates a new ShortTag with an empty name and a value of `0`.
     public ShortTag() {
         this("", (short) 0);
     }
 
+    /// Creates a new ShortTag with the given name and a value of `0`.
     public ShortTag(String name) {
         this(name, (short) 0);
     }
 
+    /// Creates a new ShortTag with the given name and value.
     public ShortTag(String name, short value) {
         super(name);
         this.value = value;

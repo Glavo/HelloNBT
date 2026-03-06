@@ -25,14 +25,17 @@ import java.io.IOException;
 public final class IntTag extends ValueTag<Integer> {
     private int value;
 
+    /// Creates a new IntTag with an empty name and a value of `0`.
     public IntTag() {
         this("", 0);
     }
 
+    /// Creates a new IntTag with the given name and a value of `0`.
     public IntTag(String name) {
         this(name, 0);
     }
 
+    /// Creates a new IntTag with the given name and value.
     public IntTag(String name, int value) {
         super(name);
         this.value = value;

@@ -25,14 +25,17 @@ import java.io.IOException;
 public final class ByteTag extends ValueTag<Byte> {
     private byte value;
 
+    /// Creates a new ByteTag with an empty name and a value of `0`.
     public ByteTag() {
         this("", (byte) 0);
     }
 
+    /// Creates a new ByteTag with the given name and a value of `0`.
     public ByteTag(String name) {
         this(name, (byte) 0);
     }
 
+    /// Creates a new ByteTag with the given name and value.
     public ByteTag(String name, byte value) {
         super(name);
         this.value = value;

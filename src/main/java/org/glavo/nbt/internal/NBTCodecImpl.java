@@ -134,11 +134,11 @@ public record NBTCodecImpl(MinecraftEdition edition,
 
             long chunkRawLength = rawReader.readUnsignedInt();
             if (chunkRawLength < 1) {
-                throw new IOException("Invalid chunk data length: " + chunkRawLength);
+                throw new IOException("Invalid chunk data length " + chunkRawLength + " at index " + localIndex);
             }
 
             if (chunkRawLength + 4L > header.getSectorLengthBytes(localIndex)) {
-                throw new IOException("Invalid chunk data length: " + chunkRawLength + " (expected <= " + header.getSectorLengthBytes(localIndex) + " - 4)");
+                throw new IOException("Invalid chunk data length " + chunkRawLength + "at index " + localIndex + " (expected <= " + (header.getSectorLengthBytes(localIndex) - 4) + ")");
             }
 
             long chunkRawContentLength = chunkRawLength - 1L;

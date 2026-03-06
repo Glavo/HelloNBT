@@ -127,6 +127,7 @@ public final class IntArrayTag extends ArrayTag<Integer> {
     }
 
     /// Returns a sequential [IntStream] with this value as its source.
+    @Override
     @Contract(pure = true)
     public IntStream stream() {
         return Arrays.stream(value);

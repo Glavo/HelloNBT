@@ -130,6 +130,8 @@ public final class LongArrayTag extends ArrayTag<Long> {
     }
 
     /// Returns a sequential [LongStream] with this value as its source.
+    @Override
+    @Contract(pure = true)
     public LongStream stream() {
         return Arrays.stream(value);
     }

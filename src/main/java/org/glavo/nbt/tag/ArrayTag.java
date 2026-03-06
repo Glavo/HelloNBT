@@ -17,6 +17,8 @@ package org.glavo.nbt.tag;
 
 import org.jetbrains.annotations.Contract;
 
+import java.util.stream.BaseStream;
+
 /// Base class for array tags.
 public sealed abstract class ArrayTag<E extends Number> extends ValueTag<Object> implements Iterable<E>
         permits ByteArrayTag, IntArrayTag, LongArrayTag {
@@ -34,6 +36,9 @@ public sealed abstract class ArrayTag<E extends Number> extends ValueTag<Object>
     /// Returns the size of the array.
     @Contract(pure = true)
     public abstract int size();
+
+    @Contract(pure = true)
+    public abstract BaseStream<E, ?> stream();
 
     /// Returns the clone of the array.
     @Contract(pure = true)

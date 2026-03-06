@@ -20,9 +20,9 @@ import org.glavo.nbt.internal.output.DataWriter;
 import org.jetbrains.annotations.Contract;
 
 import java.io.IOException;
-import java.util.Arrays;
-import java.util.Iterator;
-import java.util.NoSuchElementException;
+import java.util.*;
+import java.util.stream.Stream;
+import java.util.stream.StreamSupport;
 
 /// An ordered list of 8-bit integers.
 public final class ByteArrayTag extends ArrayTag<Byte> {
@@ -124,6 +124,13 @@ public final class ByteArrayTag extends ArrayTag<Byte> {
                 return array[cursor++];
             }
         };
+    }
+
+    @Override
+    public Stream<Byte> stream() {
+        return isEmpty()
+                ? Stream.empty()
+                : StreamSupport.stream(Spliterators.spliterator(iterator(), size(), 0), false);
     }
 
     @Override

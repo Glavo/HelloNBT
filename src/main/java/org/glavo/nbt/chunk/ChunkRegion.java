@@ -18,9 +18,7 @@ package org.glavo.nbt.chunk;
 import org.glavo.nbt.NBTElement;
 import org.glavo.nbt.NBTParent;
 import org.glavo.nbt.internal.ChunkUtils;
-import org.glavo.nbt.internal.input.*;
 import org.jetbrains.annotations.Contract;
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Iterator;
@@ -47,6 +45,18 @@ public final class ChunkRegion implements NBTParent<Chunk>, NBTElement, Iterable
     @Contract(value = "-> null", pure = true)
     public @Nullable NBTParent<ChunkRegion> getParent() {
         return null;
+    }
+
+    /// Always returns `false`. A chunk region always has 32x32 child chunks.
+    @Override
+    public boolean isEmpty() {
+        return false;
+    }
+
+    /// Always returns 1024. A chunk region always has 32x32 child chunks.
+    @Override
+    public int size() {
+        return ChunkUtils.CHUNKS_PRE_REGION;
     }
 
     /// Returns the chunk at the given local index.
@@ -83,7 +93,7 @@ public final class ChunkRegion implements NBTParent<Chunk>, NBTElement, Iterable
 
         Chunk old = chunks[localIndex];
         if (old != null) {
-            old.setRegion(null, -1);
+            old.setParent(null, -1);
         }
 
         if (chunk.getParent() != null) {
@@ -92,7 +102,7 @@ public final class ChunkRegion implements NBTParent<Chunk>, NBTElement, Iterable
             oldRegion.remove(chunk);
         }
 
-        chunk.setRegion(this, localIndex);
+        chunk.setParent(this, localIndex);
         chunks[localIndex] = chunk;
     }
 
@@ -155,7 +165,7 @@ public final class ChunkRegion implements NBTParent<Chunk>, NBTElement, Iterable
         if (old != chunk) {
             throw new AssertionError("Expected " + chunk + ", but got " + old);
         }
-        chunk.setRegion(null, -1);
+        chunk.setParent(null, -1);
         chunks[localIndex] = null;
     }
 

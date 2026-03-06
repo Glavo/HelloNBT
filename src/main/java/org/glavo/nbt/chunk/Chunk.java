@@ -22,9 +22,13 @@ import org.glavo.nbt.internal.ChunkUtils;
 import org.glavo.nbt.tag.CompoundTag;
 import org.glavo.nbt.tag.Tag;
 import org.jetbrains.annotations.Contract;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.time.Instant;
+import java.util.Collections;
+import java.util.Iterator;
+import java.util.List;
 import java.util.Objects;
 import java.util.stream.Stream;
 
@@ -76,7 +80,7 @@ public final class Chunk implements NBTParent<CompoundTag>, NBTElement {
         return region;
     }
 
-    void setRegion(@Nullable ChunkRegion region, int localIndex) {
+    void setParent(@Nullable ChunkRegion region, int localIndex) {
         this.region = region;
         this.localIndex = localIndex;
     }
@@ -97,6 +101,23 @@ public final class Chunk implements NBTParent<CompoundTag>, NBTElement {
     @Contract(pure = true)
     public int getLocalZ() {
         return localIndex >= 0 ? ChunkUtils.getLocalZ(localIndex) : -1;
+    }
+
+    /// Returns `true` if this chunk has no root tag, `false` otherwise.
+    public boolean isEmpty() {
+        return rootTag == null;
+    }
+
+    /// Returns `1` if this chunk has a root tag, `0` otherwise.
+    @Override
+    public int size() {
+        return rootTag != null ? 1 : 0;
+    }
+
+    @Override
+    public Iterator<CompoundTag> iterator() {
+        //noinspection NullableProblems
+        return rootTag != null ? Collections.singleton(rootTag).iterator() : Collections.emptyIterator();
     }
 
     @Contract(pure = true)

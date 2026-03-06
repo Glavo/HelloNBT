@@ -22,8 +22,14 @@ import org.glavo.nbt.tag.ParentTag;
 import java.util.stream.Stream;
 
 /// Base interface for NBT elements that can contain other NBT elements as children.
-public sealed interface NBTParent<E extends NBTElement> extends NBTElement
+public sealed interface NBTParent<E extends NBTElement> extends NBTElement, Iterable<E>
         permits ParentTag, ChunkRegion, Chunk {
+
+    /// Returns `true` if this parent has no child elements, `false` otherwise.
+    boolean isEmpty();
+
+    /// Returns the number of child elements.
+    int size();
 
     /// Returns a stream of child elements.
     Stream<E> stream();

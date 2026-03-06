@@ -63,6 +63,10 @@ public abstract class DataWriter implements Closeable, Flushable {
 
     public void writeByteBuffer(ByteBuffer buffer) throws IOException {
         writeInt(buffer.remaining());
+        writeByteBufferDirect(buffer);
+    }
+
+    public void writeByteBufferDirect(ByteBuffer buffer) throws IOException {
         ensureBufferRemaining(buffer.remaining());
         getBuffer().putByteBuffer(buffer);
     }

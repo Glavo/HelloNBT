@@ -263,18 +263,20 @@ public record NBTCodecImpl(MinecraftEdition edition,
         writer.writeIntArrayDirect(header.sectorInfo);
         writer.writeIntArrayDirect(header.timestamps);
 
-        if (writer.position() != startPosition + 2 * ChunkUtils.SECTOR_BYTES) {
+        if (writer.position() - startPosition != 2 * ChunkUtils.SECTOR_BYTES) {
             throw new AssertionError("Header size mismatch: expected " + (2 * ChunkUtils.SECTOR_BYTES) + ", got " + (writer.position() - startPosition));
         }
 
         for (int i = 0; i < ChunkUtils.CHUNKS_PRE_REGION; i++) {
             ByteBuffer buffer = buffers[i];
-            if (buffer == null) {
+            if (buffer == null || !buffer.hasRemaining()) {
                 continue;
             }
 
-            if (writer.position() - startPosition != 2 * ChunkUtils.SECTOR_BYTES + header.getSectorOffsetBytes(i)) {
-                throw new AssertionError("Chunk header position mismatch for chunk " + i + ": expected " + (2 * ChunkUtils.SECTOR_BYTES + header.getSectorOffsetBytes(i)) + ", got " + (writer.position() - startPosition));
+            long sectorOffsetBytes = header.getSectorOffsetBytes(i);
+
+            if (writer.position() - startPosition != sectorOffsetBytes) {
+                throw new AssertionError("Chunk header position mismatch for chunk " + i + ": expected " + sectorOffsetBytes + ", got " + (writer.position() - startPosition));
             }
 
             int bytesRawContent = buffer.remaining();
@@ -289,7 +291,7 @@ public record NBTCodecImpl(MinecraftEdition edition,
             writer.writeInt((int) bytesContent);
             if (bytes <= ChunkUtils.SECTOR_BYTES * 0xFF) {
                 writer.writeByte((byte) 2); // Zlib
-                writer.writeByteBuffer(buffer);
+                writer.writeByteBufferDirect(buffer);
             } else {
                 assert header.getSectorLength(i) == 1 : "Sector length mismatch for chunk " + i;
                 writer.writeByte((byte) (2 + 128)); // Zlib + External
@@ -300,6 +302,10 @@ public record NBTCodecImpl(MinecraftEdition edition,
                     }
                     outputStream.write(buffer.array(), buffer.arrayOffset() + buffer.position(), buffer.limit());
                 }
+            }
+
+            if (writer.position() - startPosition != sectorOffsetBytes + bytes) {
+                throw new AssertionError("Chunk content position mismatch for chunk " + i + ": expected " + (sectorOffsetBytes + bytes) + ", got " + (writer.position() - startPosition));
             }
 
             writer.skip(bytesSkip);

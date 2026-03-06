@@ -201,7 +201,7 @@ public record NBTCodecImpl(MinecraftEdition edition,
     @Override
     public NBTCodec withEdition(MinecraftEdition edition) {
         Objects.requireNonNull(edition, "edition");
-        return new NBTCodecImpl(edition, oversizedChunkAccessorFactory);
+        return edition == this.edition ? this : new NBTCodecImpl(edition, oversizedChunkAccessorFactory);
     }
 
     @Override
@@ -212,7 +212,7 @@ public record NBTCodecImpl(MinecraftEdition edition,
     @Override
     public NBTCodec withOversizedChunkAccessorFactory(Function<Path, OversizedChunkAccessor> factory) {
         Objects.requireNonNull(factory, "factory");
-        return new NBTCodecImpl(edition, factory);
+        return factory == this.oversizedChunkAccessorFactory ? this : new NBTCodecImpl(edition, factory);
     }
 
     private Tag check(@Nullable Tag tag) throws IOException {

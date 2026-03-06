@@ -26,6 +26,7 @@ import org.jetbrains.annotations.Nullable;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
 import java.util.Objects;
+import java.util.stream.Stream;
 
 /// Represents a chunk region in an Anvil file (`.mca`) or region file (`.mcr`).
 ///
@@ -123,6 +124,17 @@ public final class ChunkRegion implements NBTParent<Chunk>, NBTElement, Iterable
                 return getChunk(cursor++);
             }
         };
+    }
+
+    @Override
+    public Stream<Chunk> stream() {
+        for (int localIndex = 0; localIndex < ChunkUtils.CHUNKS_PRE_REGION; localIndex++) {
+            if (chunks[localIndex] == null) {
+                chunks[localIndex] = new Chunk(this, localIndex);
+            }
+        }
+        //noinspection NullableProblems
+        return Stream.of(chunks);
     }
 
     /// Remove the chunk at the given local index from this region.

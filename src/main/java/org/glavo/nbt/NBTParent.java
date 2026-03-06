@@ -19,9 +19,14 @@ import org.glavo.nbt.chunk.Chunk;
 import org.glavo.nbt.chunk.ChunkRegion;
 import org.glavo.nbt.tag.ParentTag;
 
+import java.util.stream.Stream;
+
 /// Base interface for NBT elements that can contain other NBT elements as children.
 public sealed interface NBTParent<E extends NBTElement> extends NBTElement
         permits ParentTag, ChunkRegion, Chunk {
+
+    /// Returns a stream of child elements.
+    Stream<E> stream();
 
     /// Removes the `element` from this parent.
     ///

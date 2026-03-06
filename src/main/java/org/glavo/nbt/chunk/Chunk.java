@@ -26,6 +26,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.time.Instant;
 import java.util.Objects;
+import java.util.stream.Stream;
 
 /// Represents a chunk in a region file.
 ///
@@ -159,6 +160,12 @@ public final class Chunk implements NBTParent<CompoundTag>, NBTElement {
 
         Access.TAG.setParent(rootTag, null, -1);
         rootTag = null;
+    }
+
+    @Override
+    public Stream<CompoundTag> stream() {
+        //noinspection NullableProblems
+        return Stream.ofNullable(rootTag);
     }
 
     @Override

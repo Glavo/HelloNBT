@@ -20,6 +20,8 @@ import org.glavo.nbt.internal.output.DataWriter;
 import org.jetbrains.annotations.Contract;
 
 import java.io.IOException;
+import java.nio.Buffer;
+import java.nio.IntBuffer;
 import java.util.*;
 import java.util.stream.IntStream;
 
@@ -89,6 +91,12 @@ public final class IntArrayTag extends ArrayTag<Integer> {
     @Contract(pure = true)
     public Integer getValue(int index) throws IndexOutOfBoundsException {
         return get(index);
+    }
+
+    @Override
+    @Contract(value = "-> new", pure = true)
+    public IntBuffer getAsBuffer() {
+        return IntBuffer.wrap(value).asReadOnlyBuffer();
     }
 
     /// Sets the element at the given index.

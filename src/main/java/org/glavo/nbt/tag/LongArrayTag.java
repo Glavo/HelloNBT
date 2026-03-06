@@ -20,6 +20,8 @@ import org.glavo.nbt.internal.output.DataWriter;
 import org.jetbrains.annotations.Contract;
 
 import java.io.IOException;
+import java.nio.Buffer;
+import java.nio.LongBuffer;
 import java.util.Arrays;
 import java.util.NoSuchElementException;
 import java.util.PrimitiveIterator;
@@ -66,6 +68,12 @@ public final class LongArrayTag extends ArrayTag<Long> {
     @Override
     public String getAsString() {
         return Arrays.toString(value);
+    }
+
+    @Override
+    @Contract(value = "-> new", pure = true)
+    public LongBuffer getAsBuffer() {
+        return LongBuffer.wrap(value).asReadOnlyBuffer();
     }
 
     /// Sets the value of the tag.

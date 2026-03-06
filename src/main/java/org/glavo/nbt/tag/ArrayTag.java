@@ -17,6 +17,7 @@ package org.glavo.nbt.tag;
 
 import org.jetbrains.annotations.Contract;
 
+import java.nio.Buffer;
 import java.util.stream.BaseStream;
 
 /// Base class for array tags.
@@ -49,6 +50,14 @@ public sealed abstract class ArrayTag<E extends Number> extends ValueTag<Object>
     /// @throws IndexOutOfBoundsException if the index is out of bounds.
     @Contract(pure = true)
     public abstract E getValue(int index) throws IndexOutOfBoundsException;
+
+    /// Returns the array as a readonly [Buffer].
+    ///
+    /// The buffer is readonly, the position is set to `0`, and the limit is set to the size of the array.
+    ///
+    /// Each call returns a new buffer, but the underlying implementation may share the same array.
+    @Contract(value = "-> new", pure = true)
+    public abstract Buffer getAsBuffer();
 
     @Override
     @Contract(value = "-> new", pure = true)

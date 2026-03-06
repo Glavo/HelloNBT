@@ -20,6 +20,8 @@ import org.glavo.nbt.internal.output.DataWriter;
 import org.jetbrains.annotations.Contract;
 
 import java.io.IOException;
+import java.nio.Buffer;
+import java.nio.ByteBuffer;
 import java.util.*;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
@@ -90,6 +92,12 @@ public final class ByteArrayTag extends ArrayTag<Byte> {
     @Contract(pure = true)
     public Byte getValue(int index) throws IndexOutOfBoundsException {
         return get(index);
+    }
+
+    @Override
+    @Contract(value = "-> new", pure = true)
+    public ByteBuffer getAsBuffer() {
+        return ByteBuffer.wrap(value).asReadOnlyBuffer();
     }
 
     /// Sets the element at the given index.

@@ -69,7 +69,6 @@ public final class SNBTParser {
                 radix = 10;
             }
 
-
             int endIndex = clean.length();
 
             @Nullable

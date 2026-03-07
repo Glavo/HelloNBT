@@ -15,6 +15,7 @@
  */
 package org.glavo.nbt.internal.snbt;
 
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.EnumSource;
 
@@ -23,11 +24,19 @@ import java.util.Locale;
 import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 public final class SNBTParserTest {
 
     private static void assertIntegral(long expectedValue, SNBTParser.IntegralType expectedType, boolean expectedUnsigned, String value) {
         assertEquals(new SNBTParser.Token.IntegralToken(expectedValue, expectedType, expectedUnsigned), SNBTParser.parseNumberToken(value), value);
+    }
+
+    @Test
+    void testParseNumberToken() {
+        assertThrows(IllegalArgumentException.class, () -> SNBTParser.parseNumberToken(""));
+        assertThrows(IllegalArgumentException.class, () -> SNBTParser.parseNumberToken("_"));
+        assertThrows(IllegalArgumentException.class, () -> SNBTParser.parseNumberToken("123_"));
     }
 
     @ParameterizedTest

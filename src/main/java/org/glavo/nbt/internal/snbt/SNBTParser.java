@@ -101,6 +101,7 @@ public final class SNBTParser {
                 long parsed = unsigned
                         ? Long.parseUnsignedLong(clean, beginIndex, endIndex, radix)
                         : Long.parseLong(clean, beginIndex, endIndex, radix);
+                type.check(parsed, unsigned);
                 return new Token.IntegralToken(parsed, type, unsigned);
             } catch (NumberFormatException e) {
                 throw new IllegalArgumentException("Invalid number literal: " + value, e);
@@ -364,9 +365,28 @@ public final class SNBTParser {
 //        }
 //    }
 
-
     enum IntegralType {
-        BYTE, SHORT, INT, LONG
+        BYTE(Byte.MAX_VALUE, Byte.MIN_VALUE),
+        SHORT(Short.MAX_VALUE, Short.MIN_VALUE),
+        INT(Integer.MAX_VALUE, Integer.MIN_VALUE),
+        LONG(Long.MAX_VALUE, Long.MIN_VALUE);
+
+        final long maxSigned;
+        final long maxUnsigned;
+        final long min;
+
+        IntegralType(long maxSigned, long min) {
+            this.maxSigned = maxSigned;
+            this.maxUnsigned = maxSigned == Long.MAX_VALUE ? Long.MAX_VALUE : maxSigned - min;
+            this.min = min;
+        }
+
+        void check(long value, boolean unsigned) {
+            long max = unsigned ? maxUnsigned : maxSigned;
+            if (value < min || value > max) {
+                throw new IllegalArgumentException("Value out of range: " + value + " (min: " + min + ", max: " + max + ")");
+            }
+        }
     }
 
     enum FloatingType {

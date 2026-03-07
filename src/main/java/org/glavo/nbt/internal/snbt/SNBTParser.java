@@ -18,7 +18,6 @@
 package org.glavo.nbt.internal.snbt;
 
 import org.glavo.nbt.tag.CompoundTag;
-import org.glavo.nbt.tag.Tag;
 import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.Unmodifiable;
 
@@ -27,8 +26,88 @@ import java.util.Objects;
 public final class SNBTParser {
     public static final @Unmodifiable CompoundTag EMPTY_COMPOUND_TAG = new CompoundTag();
 
-    private static boolean isAsciiDigit(int ch) {
+    static boolean isAsciiDigit(int ch) {
         return ch >= '0' && ch <= '9';
+    }
+
+    static Token parseNumberToken(String value) {
+        if (value.endsWith("_")) {
+            throw new IllegalArgumentException("Invalid number literal: " + value);
+        }
+
+        String clean = value.replaceAll("_", ""); // Remove underscores
+        if (clean.isEmpty()) {
+            throw new IllegalArgumentException("Invalid number literal: " + value);
+        }
+
+        if (clean.indexOf('.') >= 0 || clean.indexOf('e') >= 0 || clean.indexOf('E') >= 0) {
+            int endIndex = clean.length();
+
+            FloatingType floatingType;
+            if (clean.endsWith("f") || clean.endsWith("F")) {
+                floatingType = FloatingType.FLOAT;
+                endIndex -= 1;
+            } else if (clean.endsWith("d") || clean.endsWith("D")) {
+                floatingType = FloatingType.DOUBLE;
+                endIndex -= 1;
+            } else {
+                floatingType = FloatingType.DOUBLE;
+            }
+
+            return new Token.FloatingToken(Double.parseDouble(clean.substring(0, endIndex)), floatingType);
+        } else {
+            int beginIndex;
+            int radix;
+            if (clean.startsWith("0x")) {
+                beginIndex = 2;
+                radix = 16;
+            } else if (clean.startsWith("0b")) {
+                beginIndex = 2;
+                radix = 2;
+            } else {
+                beginIndex = 0;
+                radix = 10;
+            }
+
+
+            int endIndex = clean.length();
+
+            @Nullable
+            Boolean unsignedChar = endIndex - beginIndex >= 2 ? switch (clean.charAt(endIndex - 2)) {
+                case 's', 'S' -> false;
+                case 'u', 'U' -> true;
+                default -> null;
+            } : null;
+
+            @Nullable
+            IntegralType typeSuffixChar = endIndex - beginIndex > 1 ? switch (clean.charAt(endIndex - 1)) {
+                case 'b', 'B' -> radix != 16 || unsignedChar != null ? IntegralType.BYTE : null;
+                case 's', 'S' -> IntegralType.SHORT;
+                case 'i', 'I' -> IntegralType.INT;
+                case 'l', 'L' -> IntegralType.LONG;
+                default -> null;
+            } : null;
+
+            if (typeSuffixChar != null) {
+                endIndex -= 1;
+            }
+            if (unsignedChar != null) {
+                endIndex -= 1;
+            }
+
+            boolean unsigned = unsignedChar != null ? unsignedChar : radix != 10;
+            IntegralType type = typeSuffixChar != null ? typeSuffixChar : IntegralType.INT;
+
+            try {
+                long parsed = unsigned
+                        ? Long.parseUnsignedLong(clean, beginIndex, endIndex, radix)
+                        : Long.parseLong(clean, beginIndex, endIndex, radix);
+                return new Token.IntegralToken(parsed, type, unsigned);
+            } catch (NumberFormatException e) {
+                throw new IllegalArgumentException("Invalid number literal: " + value, e);
+            }
+        }
+
     }
 
     private final CharSequence input;
@@ -117,7 +196,22 @@ public final class SNBTParser {
         Token token = switch (firstChar) {
             case '{' -> Token.SimpleToken.LEFT_BRACE;
             case '}' -> Token.SimpleToken.RIGHT_BRACE;
-            case '[' -> Token.SimpleToken.LEFT_BRACKET;
+            case '[' -> {
+                if (cursor < endIndex - 1 && input.charAt(cursor + 1) == ';') {
+                    Token.ArrayBeginToken arrayBeginToken = switch (input.charAt(cursor)) {
+                        case 'B' -> Token.ArrayBeginToken.BYTE_ARRAY;
+                        case 'I' -> Token.ArrayBeginToken.INT_ARRAY;
+                        case 'L' -> Token.ArrayBeginToken.LONG_ARRAY;
+                        default -> null;
+                    };
+                    if (arrayBeginToken != null) {
+                        cursor += 2;
+                        yield arrayBeginToken;
+                    }
+                }
+
+                yield Token.SimpleToken.LEFT_BRACKET;
+            }
             case ']' -> Token.SimpleToken.RIGHT_BRACKET;
             case ',' -> Token.SimpleToken.COMMA;
             case ':' -> Token.SimpleToken.COLON;
@@ -136,8 +230,7 @@ public final class SNBTParser {
                 if (ch == firstChar) {
                     cursor += chCount;
 
-                    String value = input.subSequence(firstCharCursor, cursor - chCount).toString();
-                    return value.isEmpty() ? Token.StringToken.EMPTY : new Token.StringToken(value);
+                    return new Token.StringToken(input.subSequence(firstCharCursor, cursor - chCount).toString());
                 } else if (ch == '\\') {
                     break;
                 } else {
@@ -245,10 +338,7 @@ public final class SNBTParser {
                 }
             }
 
-            String value = input.subSequence(firstCharCursor, cursor).toString()
-                    .replace("_", ""); // Remove underscores
-
-            // TODO
+            return parseNumberToken(input.subSequence(firstCharCursor, cursor).toString());
         }
 
         throw new UnsupportedOperationException("Not implemented"); // TODO
@@ -276,7 +366,15 @@ public final class SNBTParser {
 //    }
 
 
-    private sealed interface Token {
+    enum IntegralType {
+        BYTE, SHORT, INT, LONG
+    }
+
+    enum FloatingType {
+        FLOAT, DOUBLE
+    }
+
+    sealed interface Token {
         enum SimpleToken implements Token {
             LEFT_BRACE,     // {
             RIGHT_BRACE,    // }
@@ -288,8 +386,10 @@ public final class SNBTParser {
             EOF
         }
 
-        record StringToken(String value) implements Token {
-            private static final StringToken EMPTY = new StringToken("");
+        enum ArrayBeginToken implements Token {
+            BYTE_ARRAY,
+            INT_ARRAY,
+            LONG_ARRAY,
         }
 
         enum BooleanToken implements Token {
@@ -301,6 +401,19 @@ public final class SNBTParser {
             BooleanToken(boolean value) {
                 this.value = value;
             }
+        }
+
+        record StringToken(String value) implements Token {
+        }
+
+        record IntegralToken(long value,
+                             IntegralType type,
+                             boolean unsigned) implements Token {
+
+        }
+
+        record FloatingToken(double value, FloatingType type) implements Token {
+
         }
     }
 }

@@ -27,24 +27,26 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 public final class SNBTParserTest {
 
     private static void assertIntegral(long expectedValue, SNBTParser.IntegralType expectedType, boolean expectedUnsigned, String value) {
-        assertEquals(new SNBTParser.Token.IntegralToken(expectedValue, expectedType, expectedUnsigned), SNBTParser.parseNumberToken(value));
+        assertEquals(new SNBTParser.Token.IntegralToken(expectedValue, expectedType, expectedUnsigned), SNBTParser.parseNumberToken(value), value);
     }
 
     @ParameterizedTest
     @EnumSource
     void testParseNumberToken(SNBTParser.IntegralType type) {
         List<String> defaultSuffixes = List.of(type.name().substring(0, 1), type.name().substring(0, 1).toLowerCase(Locale.ROOT));
-        List<String> signedSuffixes = defaultSuffixes.stream().flatMap(suffix -> Stream.of(suffix, "s" + suffix, "S" + suffix)).toList();
+        List<String> signedSuffixes = defaultSuffixes.stream().flatMap(suffix -> Stream.of("s" + suffix, "S" + suffix)).toList();
         List<String> unsignedSuffixes = defaultSuffixes.stream().flatMap(suffix -> Stream.of("u" + suffix, "U" + suffix)).toList();
 
         for (String suffix : defaultSuffixes) {
             if (type != SNBTParser.IntegralType.BYTE) {// 0b is binary integer prefix
                 assertIntegral(0L, type, false, "0" + suffix);
+                assertIntegral(0L, type, true, "0x0" + suffix);
+                assertIntegral(0L, type, true, "0X0" + suffix);
             }
 
             assertIntegral(0L, type, true, "0b0" + suffix);
             assertIntegral(0L, type, true, "0B0" + suffix);
-            assertIntegral(0L, type, true, "0X0" + suffix);
+
         }
 
         for (String signedSuffix : signedSuffixes) {

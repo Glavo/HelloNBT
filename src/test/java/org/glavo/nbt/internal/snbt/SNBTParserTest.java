@@ -20,6 +20,7 @@ import org.junit.jupiter.params.provider.EnumSource;
 
 import java.util.List;
 import java.util.Locale;
+import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
@@ -32,37 +33,34 @@ public final class SNBTParserTest {
     @ParameterizedTest
     @EnumSource
     void testParseNumberToken(SNBTParser.IntegralType type) {
-        String typeChar = type.name().substring(0, 1);
-        String typeCharLower = typeChar.toLowerCase(Locale.ROOT);
+        List<String> defaultSuffixes = List.of(type.name().substring(0, 1), type.name().substring(0, 1).toLowerCase(Locale.ROOT));
+        List<String> signedSuffixes = defaultSuffixes.stream().flatMap(suffix -> Stream.of(suffix, "s" + suffix, "S" + suffix)).toList();
+        List<String> unsignedSuffixes = defaultSuffixes.stream().flatMap(suffix -> Stream.of("u" + suffix, "U" + suffix)).toList();
 
-        List<String> signedSuffixes = List.of(
-                typeChar,
-                typeCharLower,
-                "s" + typeChar,
-                "s" + typeCharLower,
-                "S" + typeChar,
-                "S" + typeCharLower
-        );
-
-        List<String> unsignedSuffixes = List.of(
-                "u" + typeChar,
-                "u" + typeCharLower,
-                "U" + typeChar,
-                "U" + typeCharLower
-        );
-
-
-        for (String signedSuffix : signedSuffixes) {
-            if (signedSuffix.equalsIgnoreCase("b")) {
-                // 0b is binary integer prefix
-                continue;
+        for (String suffix : defaultSuffixes) {
+            if (type != SNBTParser.IntegralType.BYTE) {// 0b is binary integer prefix
+                assertIntegral(0L, type, false, "0" + suffix);
             }
 
+            assertIntegral(0L, type, true, "0b0" + suffix);
+            assertIntegral(0L, type, true, "0B0" + suffix);
+            assertIntegral(0L, type, true, "0X0" + suffix);
+        }
+
+        for (String signedSuffix : signedSuffixes) {
             assertIntegral(0L, type, false, "0" + signedSuffix);
+            assertIntegral(0L, type, false, "0b0" + signedSuffix);
+            assertIntegral(0L, type, false, "0B0" + signedSuffix);
+            assertIntegral(0L, type, false, "0x0" + signedSuffix);
+            assertIntegral(0L, type, false, "0X0" + signedSuffix);
         }
 
         for (String unsignedSuffix : unsignedSuffixes) {
             assertIntegral(0L, type, true, "0" + unsignedSuffix);
+            assertIntegral(0L, type, true, "0b0" + unsignedSuffix);
+            assertIntegral(0L, type, true, "0B0" + unsignedSuffix);
+            assertIntegral(0L, type, true, "0x0" + unsignedSuffix);
+            assertIntegral(0L, type, true, "0X0" + unsignedSuffix);
         }
     }
 }

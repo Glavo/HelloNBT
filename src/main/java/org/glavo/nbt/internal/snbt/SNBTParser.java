@@ -58,10 +58,10 @@ public final class SNBTParser {
         } else {
             int beginIndex;
             int radix;
-            if (clean.startsWith("0x")) {
+            if (clean.startsWith("0x") || clean.startsWith("0X")) {
                 beginIndex = 2;
                 radix = 16;
-            } else if (clean.startsWith("0b")) {
+            } else if (clean.startsWith("0b") || clean.startsWith("0B")) {
                 beginIndex = 2;
                 radix = 2;
             } else {
@@ -72,7 +72,7 @@ public final class SNBTParser {
             int endIndex = clean.length();
 
             @Nullable
-            Boolean unsignedChar = endIndex - beginIndex >= 2 ? switch (clean.charAt(endIndex - 2)) {
+            Boolean unsignedChar = endIndex - beginIndex > 2 ? switch (clean.charAt(endIndex - 2)) {
                 case 's', 'S' -> false;
                 case 'u', 'U' -> true;
                 default -> null;

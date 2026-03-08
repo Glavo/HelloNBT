@@ -64,6 +64,16 @@ public final class SNBTParserTest {
             assertIntegral(0L, type, true, "0b0" + suffix);
             assertIntegral(0L, type, true, "0B0" + suffix);
 
+            assertIntegral(123, type, false, "123" + suffix);
+            assertIntegral(123, type, true, "0b1111011" + suffix);
+            assertIntegral(123, type, true, "0B1111011" + suffix);
+
+            if (type != SNBTParser.IntegralType.BYTE) {
+                assertIntegral(123, type, true, "0x7B" + suffix);
+                assertIntegral(123, type, true, "0X7b" + suffix);
+                assertIntegral(123, type, true, "0x7B" + suffix);
+                assertIntegral(123, type, true, "0X7B" + suffix);
+            }
         }
 
         for (String signedSuffix : signedSuffixes) {

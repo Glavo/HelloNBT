@@ -72,7 +72,7 @@ public final class SNBTParser {
             int endIndex = clean.length();
 
             @Nullable
-            Boolean unsignedChar = endIndex - beginIndex > 2 ? switch (clean.charAt(endIndex - 2)) {
+            Boolean unsignedSuffixChar = endIndex - beginIndex > 2 ? switch (clean.charAt(endIndex - 2)) {
                 case 's', 'S' -> false;
                 case 'u', 'U' -> true;
                 default -> null;
@@ -80,7 +80,7 @@ public final class SNBTParser {
 
             @Nullable
             IntegralType typeSuffixChar = endIndex - beginIndex > 1 ? switch (clean.charAt(endIndex - 1)) {
-                case 'b', 'B' -> radix != 16 || unsignedChar != null ? IntegralType.BYTE : null;
+                case 'b', 'B' -> radix != 16 || unsignedSuffixChar != null ? IntegralType.BYTE : null;
                 case 's', 'S' -> IntegralType.SHORT;
                 case 'i', 'I' -> IntegralType.INT;
                 case 'l', 'L' -> IntegralType.LONG;
@@ -90,11 +90,11 @@ public final class SNBTParser {
             if (typeSuffixChar != null) {
                 endIndex -= 1;
             }
-            if (unsignedChar != null) {
+            if (unsignedSuffixChar != null) {
                 endIndex -= 1;
             }
 
-            boolean unsigned = unsignedChar != null ? unsignedChar : radix != 10;
+            boolean unsigned = unsignedSuffixChar != null ? unsignedSuffixChar : radix != 10;
             IntegralType type = typeSuffixChar != null ? typeSuffixChar : IntegralType.INT;
 
             try {

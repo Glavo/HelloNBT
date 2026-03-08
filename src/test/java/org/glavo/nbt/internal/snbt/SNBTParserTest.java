@@ -37,6 +37,14 @@ public final class SNBTParserTest {
         assertThrows(IllegalArgumentException.class, () -> SNBTParser.parseNumberToken(""));
         assertThrows(IllegalArgumentException.class, () -> SNBTParser.parseNumberToken("_"));
         assertThrows(IllegalArgumentException.class, () -> SNBTParser.parseNumberToken("123_"));
+        assertThrows(IllegalArgumentException.class, () -> SNBTParser.parseNumberToken("0b"));
+        assertThrows(IllegalArgumentException.class, () -> SNBTParser.parseNumberToken("0x"));
+
+        assertIntegral(0x0bL, SNBTParser.IntegralType.INT, true, "0x0b");
+        assertIntegral(0x0bL, SNBTParser.IntegralType.INT, true, "0X0b");
+
+        assertIntegral(123L, SNBTParser.IntegralType.INT, false, "123");
+        assertIntegral(123L, SNBTParser.IntegralType.INT, false, "1_2_3");
     }
 
     @ParameterizedTest
@@ -47,7 +55,7 @@ public final class SNBTParserTest {
         List<String> unsignedSuffixes = defaultSuffixes.stream().flatMap(suffix -> Stream.of("u" + suffix, "U" + suffix)).toList();
 
         for (String suffix : defaultSuffixes) {
-            if (type != SNBTParser.IntegralType.BYTE) {// 0b is binary integer prefix
+            if (type != SNBTParser.IntegralType.BYTE) { // 0b is binary integer prefix, and 'b' is a hex digit
                 assertIntegral(0L, type, false, "0" + suffix);
                 assertIntegral(0L, type, true, "0x0" + suffix);
                 assertIntegral(0L, type, true, "0X0" + suffix);

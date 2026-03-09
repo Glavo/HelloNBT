@@ -24,6 +24,7 @@ import org.jetbrains.annotations.Unmodifiable;
 import org.jetbrains.annotations.VisibleForTesting;
 
 import java.util.Objects;
+import java.util.UUID;
 
 public final class SNBTParser {
     public static final @Unmodifiable CompoundTag EMPTY_COMPOUND_TAG = new CompoundTag();
@@ -115,6 +116,8 @@ public final class SNBTParser {
         cursor += Character.charCount(firstChar);
 
         Token token = switch (firstChar) {
+            case '(' -> Token.SimpleToken.LEFT_PARENTHESES;
+            case ')' -> Token.SimpleToken.RIGHT_PARENTHESES;
             case '{' -> Token.SimpleToken.LEFT_BRACE;
             case '}' -> Token.SimpleToken.RIGHT_BRACE;
             case '[' -> {
@@ -327,6 +330,35 @@ public final class SNBTParser {
             return numberToken.toTag();
         } else if (next instanceof Token.StringToken stringToken) {
             discardPeekedToken(stringToken);
+            if (!stringToken.quoted() && peekToken() == Token.SimpleToken.LEFT_PARENTHESES) {
+                discardPeekedToken(Token.SimpleToken.LEFT_PARENTHESES);
+
+                Token valueToken = nextToken();
+
+                Tag tag;
+                if (stringToken.equals(Token.StringToken.OP_UUID)) {
+                    if (valueToken instanceof Token.StringToken valueStringToken) {
+                        tag = new IntArrayTag("", UUID.fromString(valueStringToken.value()));
+                    } else {
+                        throw new IllegalArgumentException("Unexpected token: " + valueToken);
+                    }
+                } else if (stringToken.equals(Token.StringToken.OP_BOOL)) {
+                    if (valueToken instanceof Token.BooleanToken booleanToken) {
+                        tag = new ByteTag("", booleanToken.value);
+                    } else if (valueToken instanceof Token.IntegralToken integralToken) {
+                        tag = new ByteTag("", integralToken.value() != 0L);
+                    } else {
+                        throw new IllegalArgumentException("Unexpected token: " + valueToken);
+                    }
+                } else {
+                    throw new IllegalArgumentException("Unsupported operator: " + stringToken.value());
+                }
+
+                nextToken(Token.SimpleToken.RIGHT_PARENTHESES);
+
+                return tag;
+            }
+
             return new StringTag("", stringToken.value());
         } else if (next instanceof Token.BooleanToken booleanToken) {
             discardPeekedToken(booleanToken);
@@ -373,7 +405,7 @@ public final class SNBTParser {
     private ListTag<?> nextListTag() throws IllegalArgumentException {
         nextToken(Token.SimpleToken.LEFT_BRACKET);
 
-        var tag = new ListTag<Tag>();
+        var tag = new ListTag<>();
 
         while (true) {
             Token peek = peekToken();

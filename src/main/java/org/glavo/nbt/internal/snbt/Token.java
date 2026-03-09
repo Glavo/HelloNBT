@@ -25,13 +25,15 @@ import static org.glavo.nbt.internal.snbt.IntegralType.*;
 
 sealed interface Token {
     enum SimpleToken implements Token {
-        LEFT_BRACE,     // {
-        RIGHT_BRACE,    // }
-        LEFT_BRACKET,   // [
-        RIGHT_BRACKET,  // ]
-        COMMA,          // ,
-        COLON,          // :
-        DOT,            // .
+        LEFT_PARENTHESES,   // (
+        RIGHT_PARENTHESES,  // )
+        LEFT_BRACE,         // {
+        RIGHT_BRACE,        // }
+        LEFT_BRACKET,       // [
+        RIGHT_BRACKET,      // ]
+        COMMA,              // ,
+        COLON,              // :
+        DOT,                // .
         EOF
     }
 
@@ -53,6 +55,8 @@ sealed interface Token {
     }
 
     record StringToken(String value, boolean quoted) implements Token {
+        public static final StringToken OP_UUID = new StringToken("uuid", false);
+        public static final StringToken OP_BOOL = new StringToken("bool", false);
     }
 
     sealed interface NumberToken extends Token {

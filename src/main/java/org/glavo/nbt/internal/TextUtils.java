@@ -17,7 +17,7 @@ package org.glavo.nbt.internal;
 
 import java.util.Objects;
 
-public final class CharSeqUtils {
+public final class TextUtils {
 
     /// Returns `true` if the specified character is an ASCII digit; `false` otherwise.
     public static boolean isAsciiDigit(int ch) {
@@ -36,6 +36,6 @@ public final class CharSeqUtils {
         return -1;
     }
 
-    private CharSeqUtils() {
+    private TextUtils() {
     }
 }

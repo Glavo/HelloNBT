@@ -65,7 +65,7 @@ public final class TagType<T extends Tag> {
     /// A list of tag payloads, without tag IDs or names, apart from the one before the length.
     ///
     /// @see ListTag
-    public static final TagType<ListTag<?>> LIST = new TagType<>("TAG_List", 0x09, ListTag.class, () -> new ListTag<>(null));
+    public static final TagType<ListTag<?>> LIST = new TagType<>("TAG_List", 0x09, ListTag.class, ListTag::new);
 
     /// A list of fully formed tags, including their IDs, names, and payloads. No two tags may have the same name.
     ///

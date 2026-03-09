@@ -29,11 +29,23 @@ public final class ListTag<T extends Tag> extends ParentTag<T> {
     /// The type of the elements in the list.
     private @Nullable TagType<?> elementType;
 
+    /// Creates a new empty list tag with an empty name and no element type.
+    public ListTag() {
+        this("", null);
+    }
+
     /// Creates a new empty list tag with the given element type.
     ///
     /// @param elementType The type of the elements in the list.
     public ListTag(@Nullable TagType<? super T> elementType) {
         this("", elementType);
+    }
+
+    /// Creates a new empty list tag with the given name and no element type.
+    ///
+    /// @param name The name of the list tag.
+    public ListTag(String name) {
+        this(name, null);
     }
 
     /// Creates a new empty list tag with the given name and element type.

@@ -117,12 +117,19 @@ public final class ListTag<T extends Tag> extends ParentTag<T> {
     ///
     /// The name of the tag will be set to empty.
     ///
+    /// If the [element type](#getElementType) is `null`, the element type will be set to the type of the tag.
+    ///
     /// @throws IllegalArgumentException if the type of the tag is not the same as the element type of this list.
     @Override
     @Contract(mutates = "this,param1")
     public void add(T tag) {
-        if (tag.getType() != elementType) {
-            throw new IllegalArgumentException("Cannot add a tag of type " + tag.getType() + " to a list of type " + elementType);
+        if (tag.getType() != elementType) { // implicit null check
+            if (this.elementType == null) {
+                assert subTags.isEmpty();
+                this.elementType = tag.getType();
+            } else {
+                throw new IllegalArgumentException("Cannot add a tag of type " + tag.getType() + " to a list of type " + elementType);
+            }
         }
 
         if (tag.getParentTag() != null) {

@@ -15,6 +15,7 @@
  */
 package org.glavo.nbt.tag;
 
+import org.glavo.nbt.NBTParent;
 import org.glavo.nbt.internal.input.DataReader;
 import org.glavo.nbt.internal.NBTCodecImpl;
 import org.glavo.nbt.internal.output.DataWriter;
@@ -109,6 +110,23 @@ public final class CompoundTag extends ParentTag<Tag> {
         // Add the tag to the subTags list and subTagsByName map.
         subTags.add(tag);
         subTagsByName.put(tag.getName(), tag);
+    }
+
+    /// Adds a tag with the given name to this compound tag.
+    ///
+    /// If the tag is already a child of another tag, removes it from the old parent and adds it to this tag.
+    ///
+    /// If another tag with the same name already exists, the old tag will be removed.
+    @Contract(mutates = "this,param2")
+    public void put(String name, Tag tag) {
+        @SuppressWarnings("unchecked")
+        var oldParent = (NBTParent<Tag>) tag.getParent();
+        if (oldParent != null) {
+            oldParent.remove(tag);
+        }
+
+        tag.setName(name);
+        add(tag);
     }
 
     /// Adds a byte tag with the given name and value to this compound tag.

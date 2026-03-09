@@ -93,7 +93,7 @@ public final class DoubleTag extends ValueTag<Double> {
     }
 
     @Override
-    protected boolean contentEquals(Tag other) {
+    public boolean contentEquals(Tag other) {
         return other instanceof DoubleTag that && Double.doubleToLongBits(value) == Double.doubleToLongBits(that.value);
     }
 

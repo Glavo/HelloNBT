@@ -93,7 +93,7 @@ public final class LongTag extends ValueTag<Long> {
     }
 
     @Override
-    protected boolean contentEquals(Tag other) {
+    public boolean contentEquals(Tag other) {
         return other instanceof LongTag that && value == that.value;
     }
 

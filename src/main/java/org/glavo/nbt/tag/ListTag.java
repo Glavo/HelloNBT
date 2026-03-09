@@ -235,7 +235,7 @@ public final class ListTag<T extends Tag> extends ParentTag<T> {
     }
 
     @Override
-    protected boolean contentEquals(Tag other) {
+    public boolean contentEquals(Tag other) {
         return other instanceof ListTag<?> that && subTags.equals(that.subTags);
     }
 

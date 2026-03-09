@@ -20,7 +20,6 @@ import org.glavo.nbt.internal.output.DataWriter;
 import org.jetbrains.annotations.Contract;
 
 import java.io.IOException;
-import java.nio.Buffer;
 import java.nio.LongBuffer;
 import java.util.Arrays;
 import java.util.NoSuchElementException;
@@ -165,7 +164,7 @@ public final class LongArrayTag extends ArrayTag<Long> {
     }
 
     @Override
-    protected boolean contentEquals(Tag other) {
+    public boolean contentEquals(Tag other) {
         return other instanceof LongArrayTag that && Arrays.equals(value, that.value);
     }
 

@@ -105,7 +105,7 @@ public final class IntTag extends ValueTag<Integer> {
     }
 
     @Override
-    protected boolean contentEquals(Tag other) {
+    public boolean contentEquals(Tag other) {
         return other instanceof IntTag that && value == that.value;
     }
 

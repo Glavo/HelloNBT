@@ -131,8 +131,6 @@ public sealed abstract class Tag implements NBTElement
 
     protected abstract int contentHashCode();
 
-    protected abstract boolean contentEquals(Tag other);
-
     protected abstract void contentToString(StringBuilder builder);
 
     protected void appendString(StringBuilder builder, String value) {
@@ -195,6 +193,11 @@ public sealed abstract class Tag implements NBTElement
     public int hashCode() {
         return Objects.hash(name, this.getClass(), contentHashCode());
     }
+
+    /// Returns `true` if The content of this tag is equal to the content of the given tag.
+    ///
+    /// The name, parent tag, and index are not considered.
+    public abstract boolean contentEquals(Tag other);
 
     /// Returns `true` if this tag is equal to the given tag.
     ///

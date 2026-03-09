@@ -188,7 +188,7 @@ public final class IntArrayTag extends ArrayTag<Integer> {
     }
 
     @Override
-    protected boolean contentEquals(Tag other) {
+    public boolean contentEquals(Tag other) {
         return other instanceof IntArrayTag that && Arrays.equals(value, that.value);
     }
 

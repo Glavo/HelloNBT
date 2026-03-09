@@ -93,7 +93,7 @@ public final class FloatTag extends ValueTag<Float> {
     }
 
     @Override
-    protected boolean contentEquals(Tag other) {
+    public boolean contentEquals(Tag other) {
         return other instanceof FloatTag that && Float.floatToIntBits(value) == Float.floatToIntBits(that.value);
     }
 

@@ -105,7 +105,7 @@ public final class ShortTag extends ValueTag<Short> {
     }
 
     @Override
-    protected boolean contentEquals(Tag other) {
+    public boolean contentEquals(Tag other) {
         return other instanceof ShortTag that && value == that.value;
     }
 

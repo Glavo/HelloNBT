@@ -245,7 +245,7 @@ public final class CompoundTag extends ParentTag<Tag> {
     }
 
     @Override
-    protected boolean contentEquals(Tag other) {
+    public boolean contentEquals(Tag other) {
         return other instanceof CompoundTag that && subTagsByName.equals(that.subTagsByName);
     }
 

@@ -94,7 +94,7 @@ public final class StringTag extends ValueTag<String> {
     }
 
     @Override
-    protected boolean contentEquals(Tag other) {
+    public boolean contentEquals(Tag other) {
         return other instanceof StringTag that && value.equals(that.value);
     }
 

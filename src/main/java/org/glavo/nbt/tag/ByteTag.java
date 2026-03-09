@@ -126,7 +126,7 @@ public final class ByteTag extends ValueTag<Byte> {
     }
 
     @Override
-    protected boolean contentEquals(Tag other) {
+    public boolean contentEquals(Tag other) {
         return other instanceof ByteTag that && value == that.value;
     }
 

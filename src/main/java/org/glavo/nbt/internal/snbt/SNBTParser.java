@@ -17,12 +17,14 @@
  */
 package org.glavo.nbt.internal.snbt;
 
+import org.glavo.nbt.internal.Access;
 import org.glavo.nbt.internal.TextUtils;
 import org.glavo.nbt.tag.*;
 import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.Unmodifiable;
 import org.jetbrains.annotations.VisibleForTesting;
 
+import java.lang.classfile.instruction.ReturnInstruction;
 import java.util.Objects;
 
 public final class SNBTParser {
@@ -286,6 +288,13 @@ public final class SNBTParser {
         return lookahead;
     }
 
+    void discardPeekedToken(Token token) {
+        if (lookahead != token) {
+            throw new AssertionError("Expected " + token + ", but got " + lookahead);
+        }
+        lookahead = null;
+    }
+
     public @Nullable Tag nextTag() throws IllegalArgumentException {
         Token next = peekToken();
         if (next == Token.SimpleToken.EOF) {
@@ -299,10 +308,13 @@ public final class SNBTParser {
         } else if (next instanceof Token.ArrayBeginToken) {
             return nextArrayTag();
         } else if (next instanceof Token.NumberToken numberToken) {
+            discardPeekedToken(numberToken);
             return numberToken.toTag();
         } else if (next instanceof Token.StringToken stringToken) {
+            discardPeekedToken(stringToken);
             return new StringTag("", stringToken.value());
         } else if (next instanceof Token.BooleanToken booleanToken) {
+            discardPeekedToken(booleanToken);
             return new ByteTag("", booleanToken.value);
         } else {
             throw new IllegalArgumentException("Unexpected token: " + next);
@@ -318,6 +330,40 @@ public final class SNBTParser {
     }
 
     private ArrayTag<?> nextArrayTag() throws IllegalArgumentException {
-        throw new UnsupportedOperationException(); // TODO
+        Token firstToken = nextToken();
+        if (!(firstToken instanceof Token.ArrayBeginToken arrayBeginToken)) {
+            throw new IllegalArgumentException("Unexpected token: " + firstToken);
+        }
+
+        var builder = switch (arrayBeginToken) {
+            case BYTE_ARRAY -> new PrimaryArrayBuilder.OfByte();
+            case INT_ARRAY -> new PrimaryArrayBuilder.OfInt();
+            case LONG_ARRAY -> new PrimaryArrayBuilder.OfLong();
+        };
+
+        while (true) {
+            Token peek = peekToken();
+            if (peek == Token.SimpleToken.RIGHT_BRACKET) {
+                discardPeekedToken(peek);
+                break;
+            } else if (peek instanceof Token.IntegralToken integralToken) {
+                discardPeekedToken(integralToken);
+                builder.add(integralToken);
+
+                peek = peekToken();
+                if (peek == Token.SimpleToken.COMMA) {
+                    discardPeekedToken(peek);
+                } else if (peek == Token.SimpleToken.RIGHT_BRACKET) {
+                    discardPeekedToken(peek);
+                    break;
+                } else {
+                    throw new IllegalArgumentException("Unexpected token: " + peek);
+                }
+            } else {
+                throw new IllegalArgumentException("Unexpected token: " + peek);
+            }
+        }
+
+        return builder.build();
     }
 }

@@ -147,7 +147,7 @@ public final class SNBTParser {
                 if (ch == firstChar) {
                     cursor += chCount;
 
-                    return new Token.StringToken(input.subSequence(firstCharCursor, cursor - chCount).toString());
+                    return new Token.StringToken(input.subSequence(firstCharCursor, cursor - chCount).toString(), true);
                 } else if (ch == '\\') {
                     break;
                 } else {
@@ -162,7 +162,7 @@ public final class SNBTParser {
                 int ch = getCodePoint();
                 if (ch == firstChar) {
                     cursor += Character.charCount(ch);
-                    return new Token.StringToken(builder.toString());
+                    return new Token.StringToken(builder.toString(), true);
                 } else if (ch == '\\') {
                     cursor += 1;
                     ensureNotEOF();

@@ -51,7 +51,7 @@ sealed interface Token {
         }
     }
 
-    record StringToken(String value) implements Token {
+    record StringToken(String value, boolean quoted) implements Token {
     }
 
     sealed interface NumberToken extends Token {

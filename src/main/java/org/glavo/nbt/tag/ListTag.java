@@ -21,7 +21,9 @@ import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.List;
 
 public final class ListTag<T extends Tag> extends ParentTag<T> {
 
@@ -95,22 +97,39 @@ public final class ListTag<T extends Tag> extends ParentTag<T> {
 
     /// Sets the type of the elements in the list.
     ///
-    /// If the list is not empty, the element type must match the type of all elements in the list.
+    /// If the list is empty, the element type will be set to the given type;
+    /// If the new element type is [TagType#COMPOUND], the list will be converted to a list of compound tags,
+    /// every element will be converted to a compound tag with a single subtag.
     @Contract(mutates = "this")
     public void setElementType(@Nullable TagType elementType) throws IllegalStateException {
-        if (!isEmpty()) {
-            if (elementType == null) {
-                throw new IllegalStateException("Cannot set element type to END for a non-empty list");
-            }
-
-            for (T subTag : subTags) {
-                if (subTag.getType() != elementType) {
-                    throw new IllegalStateException("Cannot set element type to " + elementType + " for a list with elements of type " + subTag.getType());
-                }
-            }
+        if (this.elementType == elementType) {
+            return;
         }
 
-        this.elementType = elementType;
+        if (isEmpty()) {
+            this.elementType = elementType;
+        } else if (elementType == null) {
+            throw new IllegalStateException("Cannot set element type to END for a non-empty list");
+        } else if (elementType != TagType.COMPOUND) {
+            throw new IllegalStateException("Cannot set element type to " + elementType + " for a " + this.elementType + " list");
+        } else {
+            var oldSubTags = List.copyOf(subTags);
+            this.clear();
+
+            this.elementType = elementType;
+
+            for (T subTag : oldSubTags) {
+                assert subTag.getName().isEmpty();
+
+                CompoundTag newSubTag = new CompoundTag();
+                newSubTag.add(subTag);
+
+                @SuppressWarnings("unchecked")
+                T castedTag = (T) newSubTag;
+                this.add(castedTag);
+            }
+
+        }
     }
 
     /// {@inheritDoc}

@@ -17,14 +17,12 @@
  */
 package org.glavo.nbt.internal.snbt;
 
-import org.glavo.nbt.internal.Access;
 import org.glavo.nbt.internal.TextUtils;
 import org.glavo.nbt.tag.*;
 import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.Unmodifiable;
 import org.jetbrains.annotations.VisibleForTesting;
 
-import java.lang.classfile.instruction.ReturnInstruction;
 import java.util.Objects;
 
 public final class SNBTParser {
@@ -281,6 +279,23 @@ public final class SNBTParser {
         return readNextToken();
     }
 
+    void nextToken(Token expected) {
+        Token token = nextToken();
+        if (token != expected) {
+            throw new IllegalArgumentException("Expected " + expected + ", but got " + token);
+        }
+    }
+
+    <T extends Token> T nextToken(Class<T> expected) {
+        Token token = nextToken();
+        try {
+            return expected.cast(token);
+        } catch (ClassCastException e) {
+            throw new IllegalArgumentException("Expected " + expected + ", but got " + token, e);
+        }
+    }
+
+
     Token peekToken() {
         if (lookahead == null) {
             lookahead = readNextToken();
@@ -322,7 +337,37 @@ public final class SNBTParser {
     }
 
     private CompoundTag nextCompoundTag() throws IllegalArgumentException {
-        throw new UnsupportedOperationException(); // TODO
+        nextToken(Token.SimpleToken.LEFT_BRACE);
+
+        var tag = new CompoundTag();
+        while (true) {
+            if (peekToken() == Token.SimpleToken.RIGHT_BRACE) {
+                discardPeekedToken(Token.SimpleToken.RIGHT_BRACE);
+                break;
+            }
+
+            Token.StringToken nameToken = nextToken(Token.StringToken.class);
+            nextToken(Token.SimpleToken.COLON);
+
+            Tag value = nextTag();
+            if (value == null) {
+                throw new IllegalArgumentException("Unexpected end of input");
+            }
+
+            tag.put(nameToken.value(), value);
+
+            Token peek = peekToken();
+            if (peek == Token.SimpleToken.COMMA) {
+                discardPeekedToken(peek);
+            } else if (peek == Token.SimpleToken.RIGHT_BRACE) {
+                discardPeekedToken(peek);
+                break;
+            } else {
+                throw new IllegalArgumentException("Unexpected token: " + peek);
+            }
+        }
+
+        return tag;
     }
 
     private ListTag<?> nextListTag() throws IllegalArgumentException {

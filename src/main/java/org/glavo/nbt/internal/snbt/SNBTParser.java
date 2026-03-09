@@ -98,7 +98,7 @@ public final class SNBTParser {
                 || ch == '.';
     }
 
-    private Token readNextToken() {
+    Token readNextToken() {
         skipWhiteSpace();
 
         if (cursor >= endIndex) {
@@ -150,7 +150,7 @@ public final class SNBTParser {
                 if (ch == firstChar) {
                     cursor += chCount;
 
-                    return new Token.StringToken(input.subSequence(firstCharCursor, cursor - chCount).toString(), true);
+                    return new Token.StringToken(input.subSequence(firstCharCursor + 1, cursor - chCount).toString(), true);
                 } else if (ch == '\\') {
                     break;
                 } else {
@@ -234,7 +234,7 @@ public final class SNBTParser {
                             builder.appendCodePoint(cp);
                             cursor = end + 1;
                         }
-                        default -> builder.appendCodePoint(ch);
+                        default -> builder.appendCodePoint(ch0);
 
                     }
                 } else {

@@ -54,7 +54,6 @@ sealed interface Token {
     record StringToken(String value) implements Token {
     }
 
-
     sealed interface NumberToken extends Token {
         private static IllegalArgumentException invalidNumberLiteral(CharSequence value, int beginIndex, int endIndex) {
             return new IllegalArgumentException("Invalid number literal: " + value.subSequence(beginIndex, endIndex));
@@ -105,9 +104,9 @@ sealed interface Token {
 
             checkNotEmpty(cleanBeginIndex, cleanEndIndex, value, beginIndex, endIndex);
 
-            if (TextUtils.indexOf(clean, beginIndex, endIndex, '.') >= 0
-                    || TextUtils.indexOf(clean, beginIndex, endIndex, 'e') >= 0
-                    || TextUtils.indexOf(clean, beginIndex, endIndex, 'E') >= 0) {
+            if (TextUtils.indexOf(clean, cleanBeginIndex, cleanEndIndex, '.') >= 0
+                    || TextUtils.indexOf(clean, cleanBeginIndex, cleanEndIndex, 'e') >= 0
+                    || TextUtils.indexOf(clean, cleanBeginIndex, cleanEndIndex, 'E') >= 0) {
                 char lastChar = clean.charAt(cleanEndIndex - 1);
 
                 FloatingType floatingType;
@@ -193,31 +192,35 @@ sealed interface Token {
                 VALUES = new Suffix[types.length * 3];
 
                 for (IntegralType type : types) {
+                    String suffix = type.name().substring(0, 1);
+
                     //noinspection PointlessArithmeticExpression
-                    VALUES[type.ordinal() * 3 + 0] = new Suffix("", type, null);
-                    VALUES[type.ordinal() * 3 + 1] = new Suffix("S", type, false);
-                    VALUES[type.ordinal() * 3 + 2] = new Suffix("U", type, true);
+                    VALUES[type.ordinal() * 3 + 0] = new Suffix(suffix.intern(), type, null);
+                    VALUES[type.ordinal() * 3 + 1] = new Suffix((suffix + "S").intern(), type, false);
+                    VALUES[type.ordinal() * 3 + 2] = new Suffix((suffix + "U").intern(), type, true);
                 }
             }
 
             static final Suffix EMPTY = new Suffix("", INT, null);
 
-            static Suffix of(IntegralType integralType, @Nullable Boolean unsigned) {
-                return VALUES[integralType.ordinal() * 3 + (unsigned == null ? 0 : unsigned ? 2 : 1)];
+            static Suffix of(IntegralType type, @Nullable Boolean unsigned) {
+                return VALUES[type.ordinal() * 3 + (unsigned == null ? 0 : unsigned ? 2 : 1)];
             }
 
             static Suffix check(CharSequence cs, int beginIndex, int endIndex, Radix radix) {
-                Boolean unsignedSuffixChar = endIndex - beginIndex >= 2 ? switch (cs.charAt(endIndex - 2)) {
+                int len = endIndex - beginIndex;
+
+                Boolean unsignedSuffixChar = len >= 2 ? switch (cs.charAt(endIndex - 2)) {
                     case 's', 'S' -> false;
                     case 'u', 'U' -> true;
                     default -> null;
                 } : null;
 
-                IntegralType typeSuffixChar = endIndex - beginIndex >= 1 ? switch (cs.charAt(endIndex - 1)) {
+                IntegralType typeSuffixChar = len >= 1 ? switch (cs.charAt(endIndex - 1)) {
                     case 'b', 'B' -> radix != Radix.HEX || unsignedSuffixChar != null ? BYTE : null;
                     case 's', 'S' -> SHORT;
                     case 'i', 'I' -> INT;
-                    case 'l', 'L' -> IntegralType.LONG;
+                    case 'l', 'L' -> LONG;
                     default -> null;
                 } : null;
 

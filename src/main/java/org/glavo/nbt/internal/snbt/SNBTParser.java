@@ -317,7 +317,7 @@ public final class SNBTParser {
         }
 
         if (next == Token.SimpleToken.LEFT_BRACE) {
-            return new CompoundTag();
+            return nextCompoundTag();
         } else if (next == Token.SimpleToken.LEFT_BRACKET) {
             return nextListTag();
         } else if (next instanceof Token.ArrayBeginToken) {
@@ -371,7 +371,35 @@ public final class SNBTParser {
     }
 
     private ListTag<?> nextListTag() throws IllegalArgumentException {
-        throw new UnsupportedOperationException(); // TODO
+        nextToken(Token.SimpleToken.LEFT_BRACKET);
+
+        var tag = new ListTag<Tag>();
+
+        while (true) {
+            Token peek = peekToken();
+            if (peek == Token.SimpleToken.RIGHT_BRACKET) {
+                discardPeekedToken(peek);
+                return tag;
+            }
+
+            Tag value = nextTag();
+            if (value == null) {
+                throw new IllegalArgumentException("Unexpected end of input");
+            }
+            tag.addAny(value);
+
+            peek = peekToken();
+            if (peek == Token.SimpleToken.COMMA) {
+                discardPeekedToken(peek);
+            } else if (peek == Token.SimpleToken.RIGHT_BRACKET) {
+                discardPeekedToken(peek);
+                break;
+            } else {
+                throw new IllegalArgumentException("Unexpected token: " + peek);
+            }
+        }
+
+        return tag;
     }
 
     private ArrayTag<?> nextArrayTag() throws IllegalArgumentException {

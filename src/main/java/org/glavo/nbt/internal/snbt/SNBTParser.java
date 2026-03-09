@@ -264,7 +264,7 @@ public final class SNBTParser {
                 return new Token.StringToken(input.subSequence(firstCharCursor, cursor).toString(), false);
             }
         } else {
-            throw new IllegalArgumentException("Unexpected character: " + (char) firstChar);
+            throw new IllegalArgumentException("Unexpected character: " + new String(Character.toChars(firstChar)));
         }
     }
 

@@ -27,6 +27,7 @@ import static org.glavo.nbt.internal.snbt.FloatingType.DOUBLE;
 import static org.glavo.nbt.internal.snbt.FloatingType.FLOAT;
 import static org.glavo.nbt.internal.snbt.IntegralType.*;
 import static org.glavo.nbt.internal.snbt.Token.SimpleToken.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertIterableEquals;
 
 final class SNBTParserTest {
@@ -54,6 +55,8 @@ final class SNBTParserTest {
             builder.append('\n');
             return builder.toString();
         });
+
+        assertEquals(input.length(), parser.cursor);
     }
 
 

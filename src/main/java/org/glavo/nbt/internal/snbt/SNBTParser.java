@@ -21,6 +21,7 @@ import org.glavo.nbt.internal.TextUtils;
 import org.glavo.nbt.tag.CompoundTag;
 import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.Unmodifiable;
+import org.jetbrains.annotations.VisibleForTesting;
 
 import java.util.Objects;
 
@@ -31,7 +32,8 @@ public final class SNBTParser {
     private final int beginIndex;
     private final int endIndex;
 
-    private int cursor;
+    @VisibleForTesting
+    int cursor;
 
     private @Nullable StringBuilder buffer;
 

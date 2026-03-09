@@ -72,35 +72,9 @@ sealed interface Token {
         static NumberToken parse(CharSequence value, int beginIndex, int endIndex) {
             Objects.checkFromToIndex(beginIndex, endIndex, value.length());
 
-            CharSequence clean;
-            int cleanBeginIndex;
-            int cleanEndIndex;
-
-            int underscoreIndex = TextUtils.indexOf(value, beginIndex, endIndex, '_');
-            if (underscoreIndex >= 0) {
-                if (value.charAt(endIndex - 1) == '_') {
-                    throw invalidNumberLiteral(value, beginIndex, endIndex);
-                }
-
-                StringBuilder builder = new StringBuilder(endIndex - beginIndex);
-                for (int i = beginIndex; i < endIndex; i++) {
-                    if (value.charAt(i) != '_') {
-                        builder.append(value.charAt(i));
-                    }
-                }
-
-                if (builder.isEmpty()) {
-                    throw invalidNumberLiteral(value, beginIndex, endIndex);
-                }
-
-                clean = builder.toString();
-                cleanBeginIndex = 0;
-                cleanEndIndex = clean.length();
-            } else {
-                clean = value;
-                cleanBeginIndex = beginIndex;
-                cleanEndIndex = endIndex;
-            }
+            CharSequence clean = value;
+            int cleanBeginIndex = beginIndex;
+            int cleanEndIndex = endIndex;
 
             checkNotEmpty(cleanBeginIndex, cleanEndIndex, value, beginIndex, endIndex);
 
@@ -161,13 +135,20 @@ sealed interface Token {
                     if (radix.isDigit(ch)) {
                         i++;
                     } else if (ch == '_') {
+                        if (i == cleanBeginIndex || i == cleanEndIndex - 1) {
+                            // Underscore cannot be the first or last character
+                            throw invalidNumberLiteral(value, beginIndex, endIndex);
+                        }
+
                         StringBuilder builder = new StringBuilder(cleanEndIndex - cleanBeginIndex);
                         builder.append(clean, cleanBeginIndex, i);
                         for (int j = i + 1; j < cleanEndIndex; j++) {
                             char ch2 = clean.charAt(j);
-                            //noinspection StatementWithEmptyBody
                             if (ch2 == '_') {
-                                // Skip consecutive underscores
+                                if (j == cleanBeginIndex - 1) {
+                                    // Underscore cannot be the last character
+                                    throw invalidNumberLiteral(value, beginIndex, endIndex);
+                                }
                             } else if (radix.isDigit(ch2)) {
                                 builder.append(ch2);
                             } else {

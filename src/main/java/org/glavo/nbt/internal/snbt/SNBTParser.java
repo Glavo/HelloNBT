@@ -263,25 +263,4 @@ public final class SNBTParser {
         throw new UnsupportedOperationException("Not implemented"); // TODO
     }
 
-//    public @Nullable Tag nextTag(boolean immutable) {
-//        skipWhiteSpace();
-//
-//        if (cursor >= endIndex) {
-//            return null;
-//        }
-//
-//        int ch = getCodePoint();
-//        if (ch == '{') {
-//            cursor += 1;
-//            skipWhiteSpace();
-//
-//            if (immutable && getCodePoint() == '}') {
-//                cursor += 1;
-//                return EMPTY_COMPOUND_TAG;
-//            }
-//
-//
-//        }
-//    }
-
 }

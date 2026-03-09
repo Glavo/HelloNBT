@@ -43,7 +43,7 @@ public final class LongTag extends ValueTag<Long> {
 
     @Override
     @Contract(pure = true)
-    public TagType getType() {
+    public TagType<LongTag> getType() {
         return TagType.LONG;
     }
 

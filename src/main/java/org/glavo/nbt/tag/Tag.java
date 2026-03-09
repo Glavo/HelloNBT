@@ -64,7 +64,7 @@ public sealed abstract class Tag implements NBTElement
     }
 
     /// Returns the type of the tag.
-    public abstract TagType getType();
+    public abstract TagType<?> getType();
 
     /// Returns the name of the tag, or an empty string if it has no name.
     @Contract(pure = true)

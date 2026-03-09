@@ -28,12 +28,12 @@ import java.util.List;
 public final class ListTag<T extends Tag> extends ParentTag<T> {
 
     /// The type of the elements in the list.
-    private @Nullable TagType elementType;
+    private @Nullable TagType<?> elementType;
 
     /// Creates a new empty list tag with the given element type.
     ///
     /// @param elementType The type of the elements in the list.
-    public ListTag(@Nullable TagType elementType) {
+    public ListTag(@Nullable TagType<? super T> elementType) {
         this("", elementType);
     }
 
@@ -41,7 +41,7 @@ public final class ListTag<T extends Tag> extends ParentTag<T> {
     ///
     /// @param name        The name of the list tag.
     /// @param elementType The type of the elements in the list.
-    public ListTag(String name, @Nullable TagType elementType) {
+    public ListTag(String name, @Nullable TagType<? super T> elementType) {
         super(name);
         this.elementType = elementType;
     }
@@ -64,7 +64,7 @@ public final class ListTag<T extends Tag> extends ParentTag<T> {
 
         if (elementType != null) {
             @SuppressWarnings("unchecked")
-            TagType tagType = TagType.getByClass((Class<? extends Tag>) elementType);
+            TagType<T> tagType = (TagType<T>) TagType.getByClass((Class<? extends Tag>) elementType);
             if (tagType == null) {
                 throw new IllegalArgumentException("Invalid element type: " + elementType);
             }
@@ -83,7 +83,7 @@ public final class ListTag<T extends Tag> extends ParentTag<T> {
 
     @Override
     @Contract(pure = true)
-    public TagType getType() {
+    public TagType<ListTag<?>> getType() {
         return TagType.LIST;
     }
 
@@ -91,7 +91,7 @@ public final class ListTag<T extends Tag> extends ParentTag<T> {
     ///
     /// If the element type is `null`, the list is empty.
     @Contract(pure = true)
-    public @Nullable TagType getElementType() {
+    public @Nullable TagType<?> getElementType() {
         return elementType;
     }
 
@@ -101,7 +101,7 @@ public final class ListTag<T extends Tag> extends ParentTag<T> {
     /// If the new element type is [TagType#COMPOUND], the list will be converted to a list of compound tags,
     /// every element will be converted to a compound tag with a single subtag.
     @Contract(mutates = "this")
-    public void setElementType(@Nullable TagType elementType) throws IllegalStateException {
+    public void setElementType(@Nullable TagType<? extends T> elementType) throws IllegalStateException {
         if (this.elementType == elementType) {
             return;
         }
@@ -215,7 +215,7 @@ public final class ListTag<T extends Tag> extends ParentTag<T> {
     protected void readContent(DataReader reader) throws IOException {
         byte elementTypeId = reader.readByte();
 
-        TagType elementType;
+        TagType<?> elementType;
         if (elementTypeId != 0) {
             elementType = TagType.getById(elementTypeId);
             if (elementType == null) {
@@ -225,7 +225,8 @@ public final class ListTag<T extends Tag> extends ParentTag<T> {
             elementType = null;
         }
 
-        setElementType(elementType);
+        //noinspection unchecked
+        setElementType((TagType<? extends T>) elementType);
 
         int count = reader.readInt();
         if (count < 0) {
@@ -287,7 +288,7 @@ public final class ListTag<T extends Tag> extends ParentTag<T> {
     @Contract(value = "-> new", pure = true)
     @SuppressWarnings("unchecked")
     public ListTag<T> clone() {
-        var newTag = new ListTag<T>(this.name, this.elementType);
+        var newTag = new ListTag<T>(this.name, (TagType<T>) this.elementType);
         newTag.subTags.ensureCapacity(this.size());
         for (T tag : this) {
             newTag.add((T) tag.clone());

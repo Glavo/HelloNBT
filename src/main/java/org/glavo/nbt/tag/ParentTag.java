@@ -32,6 +32,9 @@ public sealed abstract class ParentTag<T extends Tag> extends Tag
         super(name);
     }
 
+    @Override
+    public abstract TagType<? extends ParentTag<?>> getType();
+
     /// Updates the name of the given subtag.
     ///
     /// Used internally by [Tag#setName(String)].

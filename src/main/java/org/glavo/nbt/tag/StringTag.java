@@ -44,7 +44,7 @@ public final class StringTag extends ValueTag<String> {
 
     @Override
     @Contract(pure = true)
-    public TagType getType() {
+    public TagType<StringTag> getType() {
         return TagType.STRING;
     }
 

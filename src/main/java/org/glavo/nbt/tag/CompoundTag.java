@@ -56,7 +56,7 @@ public final class CompoundTag extends ParentTag<Tag> {
 
     @Override
     @Contract(pure = true)
-    public TagType getType() {
+    public TagType<CompoundTag> getType() {
         return TagType.COMPOUND;
     }
 

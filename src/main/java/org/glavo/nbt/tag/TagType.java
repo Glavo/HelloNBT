@@ -17,116 +17,120 @@ package org.glavo.nbt.tag;
 
 import org.jetbrains.annotations.Nullable;
 
-import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.function.Supplier;
 
-/// @author Glavo
-public enum TagType {
-    // /// Used to mark the end of compound tags.
-    // /// This tag does not have a name, so it is always a single byte 0.
-    // /// It may also be the type of empty List tags.
-    // END(0x00, null),
-
+public final class TagType<T extends Tag> {
     /// 1 byte signed integer type. Sometimes used for booleans.
-    BYTE(0x01, ByteTag.class),
+    public static final TagType<ByteTag> BYTE = new TagType<>("TAG_Byte", (byte) 0x01, ByteTag.class, ByteTag::new);
 
     /// 2 byte signed integer type.
-    SHORT(0x02, ShortTag.class),
+    public static final TagType<ShortTag> SHORT = new TagType<>("TAG_Short", (byte) 0x02, ShortTag.class, ShortTag::new);
 
     /// 4 byte signed integer type.
-    INT(0x03, IntTag.class),
+    public static final TagType<IntTag> INT = new TagType<>("TAG_Int", (byte) 0x03, IntTag.class, IntTag::new);
 
     /// 8 byte signed integer type.
-    LONG(0x04, LongTag.class),
+    public static final TagType<LongTag> LONG = new TagType<>("TAG_Long", (byte) 0x04, LongTag.class, LongTag::new);
 
     /// 4 byte floating point type.
-    FLOAT(0x05, FloatTag.class),
+    public static final TagType<FloatTag> FLOAT = new TagType<>("TAG_Float", (byte) 0x05, FloatTag.class, FloatTag::new);
 
     /// 8 byte floating point type.
-    DOUBLE(0x06, DoubleTag.class),
+    public static final TagType<DoubleTag> DOUBLE = new TagType<>("TAG_Double", (byte) 0x06, DoubleTag.class, DoubleTag::new);
 
     /// An array of bytes.
-    BYTE_ARRAY(0x07, ByteArrayTag.class),
+    public static final TagType<ByteArrayTag> BYTE_ARRAY = new TagType<>("TAG_Byte_Array", (byte) 0x07, ByteArrayTag.class, ByteArrayTag::new);
 
     /// A UTF-8 encoded string. It has a size, rather than being null terminated.
-    STRING(0x08, StringTag.class),
+    public static final TagType<StringTag> STRING = new TagType<>("TAG_String", (byte) 0x08, StringTag.class, StringTag::new);
 
     /// A list of tag payloads, without tag IDs or names, apart from the one before the length.
-    LIST(0x09, ListTag.class),
+    public static final TagType<ListTag<?>> LIST = new TagType<>("TAG_List", (byte) 0x09, ListTag.class, () -> new ListTag<>((TagType<?>) null));
 
     /// A list of fully formed tags, including their IDs, names, and payloads. No two tags may have the same name.
-    COMPOUND(0x0A, CompoundTag.class),
+    public static final TagType<CompoundTag> COMPOUND = new TagType<>("TAG_Compound", (byte) 0x0A, CompoundTag.class, CompoundTag::new);
 
     /// An array of 4 byte signed integers.
-    INT_ARRAY(0x0B, IntArrayTag.class),
+    public static final TagType<IntArrayTag> INT_ARRAY = new TagType<>("TAG_Int_Array", (byte) 0x0B, IntArrayTag.class, IntArrayTag::new);
 
     /// An array of 8 byte signed integers.
-    LONG_ARRAY(0x0C, LongArrayTag.class);
-
-    private static final TagType[] ID_TO_TYPE;
-    private static final Map<Class<? extends Tag>, TagType> CLASS_TO_TYPE;
-
-    static {
-        TagType[] values = values();
-
-        TagType[] idToType = new TagType[values.length + 1];
-        for (TagType type : values) {
-            idToType[Byte.toUnsignedInt(type.id)] = type;
-        }
-        ID_TO_TYPE = idToType;
-
-        var map = new HashMap<Class<? extends Tag>, TagType>();
-        for (TagType type : values) {
-            map.put(type.tagClass, type);
-        }
-        CLASS_TO_TYPE = Map.copyOf(map);
-    }
+    public static final TagType<LongArrayTag> LONG_ARRAY = new TagType<>("TAG_Long_Array", (byte) 0x0C, LongArrayTag.class, LongArrayTag::new);
 
     /// Returns the tag type by its id; returns `null` if the id is invalid.
-    public static @Nullable TagType getById(byte id) {
+    public static @Nullable TagType<?> getById(byte id) {
         return id > 0 && id < ID_TO_TYPE.length ? ID_TO_TYPE[id] : null;
     }
 
     /// Returns the tag type by its class; returns `null` if the class is not found.
     ///
     /// @apiNote Only the final subclasses of `Tag` define `TagType`.
-    public static @Nullable TagType getByClass(Class<? extends Tag> tagClass) {
+    public static @Nullable TagType<?> getByClass(Class<? extends Tag> tagClass) {
         return CLASS_TO_TYPE.get(tagClass);
     }
 
+    private static final List<TagType<?>> VALUES;
+    private static final @Nullable TagType<?>[] ID_TO_TYPE;
+    private static final Map<Class<? extends Tag>, TagType<?>> CLASS_TO_TYPE;
+
+    static {
+        VALUES = List.of(BYTE, SHORT, INT, LONG, FLOAT, DOUBLE, BYTE_ARRAY, STRING, LIST, COMPOUND, INT_ARRAY, LONG_ARRAY);
+
+        ID_TO_TYPE = new TagType<?>[VALUES.size() + 1];
+
+        @SuppressWarnings("unchecked")
+        var classToTypeEntries = (Map.Entry<Class<? extends Tag>, TagType<?>>[]) new Map.Entry<?, ?>[VALUES.size()];
+
+        for (int i = 0; i < VALUES.size(); i++) {
+            TagType<?> type = VALUES.get(i);
+
+            assert i == type.id() - 1 : "Invalid order: " + type.name();
+            assert ID_TO_TYPE[Byte.toUnsignedInt(type.id())] == null : "Duplicate ID: " + type.id();
+
+            ID_TO_TYPE[Byte.toUnsignedInt(type.id())] = type;
+
+            classToTypeEntries[i] = Map.entry(type.tagClass(), type);
+        }
+
+        CLASS_TO_TYPE = Map.ofEntries(classToTypeEntries);
+    }
+
+    private final String name;
     private final byte id;
-    private final Class<? extends Tag> tagClass;
-    private final String fullName;
+    private final Class<T> tagClass;
+    private final Supplier<T> tagSupplier;
 
-    TagType(int id, Class<? extends Tag> tagClass) {
-        this.id = (byte) id;
-        this.tagClass = tagClass;
-        this.fullName = "TAG_" + name();
+    @SuppressWarnings("unchecked")
+    private TagType(String name, byte id, Class<?> tagClass, Supplier<T> tagSupplier) {
+        this.name = name;
+        this.id = id;
+        this.tagClass = (Class<T>) tagClass;
+        this.tagSupplier = tagSupplier;
     }
 
-    public Tag createTag() {
-        return switch (this) {
-            case BYTE -> new ByteTag();
-            case SHORT -> new ShortTag();
-            case INT -> new IntTag();
-            case LONG -> new LongTag();
-            case FLOAT -> new FloatTag();
-            case DOUBLE -> new DoubleTag();
-            case STRING -> new StringTag();
-            case BYTE_ARRAY -> new ByteArrayTag();
-            case INT_ARRAY -> new IntArrayTag();
-            case LONG_ARRAY -> new LongArrayTag();
-            case LIST -> new ListTag<>((TagType) null);
-            case COMPOUND -> new CompoundTag();
-        };
+    public String name() {
+        return name;
     }
 
-    /// Returns the tag id.
+    public String getFullName() {
+        return name;
+    }
+
     public byte id() {
         return id;
     }
 
-    public String getFullName() {
-        return fullName;
+    public Class<T> tagClass() {
+        return tagClass;
+    }
+
+    public T createTag() {
+        return tagSupplier.get();
+    }
+
+    @Override
+    public String toString() {
+        return name;
     }
 }

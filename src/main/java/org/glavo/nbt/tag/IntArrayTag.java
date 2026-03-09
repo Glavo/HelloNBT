@@ -56,7 +56,7 @@ public final class IntArrayTag extends ArrayTag<Integer> {
     }
 
     @Override
-    public TagType getType() {
+    public TagType<IntArrayTag> getType() {
         return TagType.INT_ARRAY;
     }
 

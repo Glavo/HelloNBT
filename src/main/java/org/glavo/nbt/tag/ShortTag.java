@@ -43,7 +43,7 @@ public final class ShortTag extends ValueTag<Short> {
 
     @Override
     @Contract(pure = true)
-    public TagType getType() {
+    public TagType<ShortTag> getType() {
         return TagType.SHORT;
     }
 

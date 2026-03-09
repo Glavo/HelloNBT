@@ -53,7 +53,7 @@ public final class LongArrayTag extends ArrayTag<Long> {
 
     @Override
     @Contract(pure = true)
-    public TagType getType() {
+    public TagType<LongArrayTag> getType() {
         return TagType.LONG_ARRAY;
     }
 

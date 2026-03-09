@@ -43,7 +43,7 @@ public final class DoubleTag extends ValueTag<Double> {
 
     @Override
     @Contract(pure = true)
-    public TagType getType() {
+    public TagType<DoubleTag> getType() {
         return TagType.DOUBLE;
     }
 

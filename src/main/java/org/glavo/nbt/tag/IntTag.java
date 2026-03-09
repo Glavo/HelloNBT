@@ -43,7 +43,7 @@ public final class IntTag extends ValueTag<Integer> {
 
     @Override
     @Contract(pure = true)
-    public TagType getType() {
+    public TagType<IntTag> getType() {
         return TagType.INT;
     }
 

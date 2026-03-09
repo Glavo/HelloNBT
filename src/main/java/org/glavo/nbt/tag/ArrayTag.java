@@ -28,6 +28,9 @@ public sealed abstract class ArrayTag<E extends Number> extends ValueTag<Object>
         super(name);
     }
 
+    @Override
+    public abstract TagType<? extends ArrayTag<E>> getType();
+
     /// Returns `true` if the array is empty; otherwise, returns `false`.
     @Contract(pure = true)
     public final boolean isEmpty() {

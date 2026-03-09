@@ -43,7 +43,7 @@ public final class FloatTag extends ValueTag<Float> {
 
     @Override
     @Contract(pure = true)
-    public TagType getType() {
+    public TagType<FloatTag> getType() {
         return TagType.FLOAT;
     }
 

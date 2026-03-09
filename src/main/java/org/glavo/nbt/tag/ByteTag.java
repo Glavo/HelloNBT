@@ -49,7 +49,7 @@ public final class ByteTag extends ValueTag<Byte> {
 
     @Override
     @Contract(pure = true)
-    public TagType getType() {
+    public TagType<ByteTag> getType() {
         return TagType.BYTE;
     }
 

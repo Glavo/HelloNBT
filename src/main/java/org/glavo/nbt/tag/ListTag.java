@@ -258,7 +258,7 @@ public final class ListTag<T extends Tag> extends ParentTag<T> {
     @Contract(value = "-> new", pure = true)
     @SuppressWarnings("unchecked")
     public ListTag<T> clone() {
-        var newTag = new ListTag<T>(this.name, (TagType<T>) this.elementType);
+        var newTag = new ListTag<>(this.name, (TagType<T>) this.elementType);
         newTag.subTags.ensureCapacity(this.size());
         for (T tag : this) {
             newTag.add((T) tag.clone());

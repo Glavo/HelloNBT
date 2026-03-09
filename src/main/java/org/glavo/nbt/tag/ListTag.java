@@ -72,7 +72,7 @@ public final class ListTag<T extends Tag> extends ParentTag<T> {
     /// If the new element type is [TagType#COMPOUND], the list will be converted to a list of compound tags,
     /// every element will be converted to a compound tag with a single subtag.
     @Contract(mutates = "this")
-    public void setElementType(@Nullable TagType<? extends T> elementType) throws IllegalStateException {
+    public void setElementType(@Nullable TagType<?> elementType) throws IllegalStateException {
         if (this.elementType == elementType) {
             return;
         }
@@ -196,8 +196,7 @@ public final class ListTag<T extends Tag> extends ParentTag<T> {
             elementType = null;
         }
 
-        //noinspection unchecked
-        setElementType((TagType<? extends T>) elementType);
+        setElementType(elementType);
 
         int count = reader.readInt();
         if (count < 0) {

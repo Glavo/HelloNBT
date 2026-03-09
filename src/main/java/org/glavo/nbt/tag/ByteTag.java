@@ -41,6 +41,12 @@ public final class ByteTag extends ValueTag<Byte> {
         this.value = value;
     }
 
+    /// Creates a new ByteTag with the given name and boolean value.
+    public ByteTag(String name, boolean value) {
+        super(name);
+        this.value = (byte) (value ? 1 : 0);
+    }
+
     @Override
     @Contract(pure = true)
     public TagType getType() {

@@ -16,6 +16,7 @@
 package org.glavo.nbt.internal.snbt;
 
 import org.glavo.nbt.internal.TextUtils;
+import org.glavo.nbt.tag.*;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Objects;
@@ -44,7 +45,7 @@ sealed interface Token {
         TRUE(true),
         FALSE(false);
 
-        private final boolean value;
+        public final boolean value;
 
         BooleanToken(boolean value) {
             this.value = value;
@@ -202,6 +203,8 @@ sealed interface Token {
                 }
             }
         }
+
+        ValueTag<? extends Number> toTag();
     }
 
     record IntegralToken(long value,
@@ -285,9 +288,26 @@ sealed interface Token {
 
             abstract boolean isDigit(int ch);
         }
+
+        @Override
+        public ValueTag<? extends Number> toTag() {
+            return switch (type) {
+                case BYTE -> new ByteTag("", (byte) value);
+                case SHORT -> new ShortTag("", (short) value);
+                case INT -> new IntTag("", (int) value);
+                case LONG -> new LongTag("", value);
+            };
+        }
+
     }
 
     record FloatingToken(double value, FloatingType type) implements NumberToken {
-
+        @Override
+        public ValueTag<? extends Number> toTag() {
+            return switch (type) {
+                case FLOAT -> new FloatTag("", (float) value);
+                case DOUBLE -> new DoubleTag("", value);
+            };
+        }
     }
 }

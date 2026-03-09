@@ -18,7 +18,7 @@
 package org.glavo.nbt.internal.snbt;
 
 import org.glavo.nbt.internal.TextUtils;
-import org.glavo.nbt.tag.CompoundTag;
+import org.glavo.nbt.tag.*;
 import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.Unmodifiable;
 import org.jetbrains.annotations.VisibleForTesting;
@@ -35,6 +35,8 @@ public final class SNBTParser {
     int cursor;
 
     private @Nullable StringBuilder buffer;
+
+    private @Nullable Token lookahead;
 
     public SNBTParser(CharSequence input, int beginIndex, int endIndex) {
         Objects.checkFromToIndex(beginIndex, endIndex, input.length());
@@ -268,4 +270,54 @@ public final class SNBTParser {
         }
     }
 
+    Token nextToken() {
+        if (lookahead != null) {
+            Token token = lookahead;
+            lookahead = null;
+            return token;
+        }
+        return readNextToken();
+    }
+
+    Token peekToken() {
+        if (lookahead == null) {
+            lookahead = readNextToken();
+        }
+        return lookahead;
+    }
+
+    public @Nullable Tag nextTag() throws IllegalArgumentException {
+        Token next = peekToken();
+        if (next == Token.SimpleToken.EOF) {
+            return null;
+        }
+
+        if (next == Token.SimpleToken.LEFT_BRACE) {
+            return new CompoundTag();
+        } else if (next == Token.SimpleToken.LEFT_BRACKET) {
+            return nextListTag();
+        } else if (next instanceof Token.ArrayBeginToken) {
+            return nextArrayTag();
+        } else if (next instanceof Token.NumberToken numberToken) {
+            return numberToken.toTag();
+        } else if (next instanceof Token.StringToken stringToken) {
+            return new StringTag("", stringToken.value());
+        } else if (next instanceof Token.BooleanToken booleanToken) {
+            return new ByteTag("", booleanToken.value);
+        } else {
+            throw new IllegalArgumentException("Unexpected token: " + next);
+        }
+    }
+
+    private CompoundTag nextCompoundTag() throws IllegalArgumentException {
+        throw new UnsupportedOperationException(); // TODO
+    }
+
+    private ListTag<?> nextListTag() throws IllegalArgumentException {
+        throw new UnsupportedOperationException(); // TODO
+    }
+
+    private ArrayTag<?> nextArrayTag() throws IllegalArgumentException {
+        throw new UnsupportedOperationException(); // TODO
+    }
 }

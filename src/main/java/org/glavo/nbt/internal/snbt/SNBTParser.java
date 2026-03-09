@@ -108,7 +108,7 @@ public final class SNBTParser {
         int firstChar = getCodePoint();
         int firstCharCursor = cursor;
 
-        cursor += 1;
+        cursor += Character.charCount(firstChar);
 
         Token token = switch (firstChar) {
             case '{' -> Token.SimpleToken.LEFT_BRACE;

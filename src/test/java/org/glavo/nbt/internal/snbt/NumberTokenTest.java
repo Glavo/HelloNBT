@@ -19,6 +19,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.EnumSource;
 
+import java.nio.CharBuffer;
 import java.util.List;
 import java.util.Locale;
 import java.util.stream.Stream;
@@ -33,6 +34,8 @@ final class NumberTokenTest {
         assertEquals(expected, Token.NumberToken.parse(value), value);
         assertEquals(expected, Token.NumberToken.parse(" " + value, 1, value.length() + 1), value);
         assertEquals(expected, Token.NumberToken.parse(value + " ", 0, value.length()), value);
+        assertEquals(expected, Token.NumberToken.parse(CharBuffer.wrap(" " + value), 1, value.length() + 1), value);
+        assertEquals(expected, Token.NumberToken.parse(CharBuffer.wrap(value + " "), 0, value.length()), value);
     }
 
     @Test

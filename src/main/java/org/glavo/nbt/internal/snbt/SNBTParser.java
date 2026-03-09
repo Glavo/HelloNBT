@@ -17,6 +17,7 @@
  */
 package org.glavo.nbt.internal.snbt;
 
+import org.glavo.nbt.internal.CharSeqUtils;
 import org.glavo.nbt.tag.CompoundTag;
 import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.Unmodifiable;
@@ -25,10 +26,6 @@ import java.util.Objects;
 
 public final class SNBTParser {
     public static final @Unmodifiable CompoundTag EMPTY_COMPOUND_TAG = new CompoundTag();
-
-    static boolean isAsciiDigit(int ch) {
-        return ch >= '0' && ch <= '9';
-    }
 
     private final CharSequence input;
     private final int beginIndex;
@@ -242,13 +239,13 @@ public final class SNBTParser {
                     builder.appendCodePoint(ch);
                 }
             }
-        } else if (isAsciiDigit(firstChar)
+        } else if (CharSeqUtils.isAsciiDigit(firstChar)
                 || firstChar == '-' || firstChar == '+'
-                || (firstChar == '.' && cursor < endIndex && isAsciiDigit(input.charAt(cursor)))) {
+                || (firstChar == '.' && cursor < endIndex && CharSeqUtils.isAsciiDigit(input.charAt(cursor)))) {
             // Scan number
             while (cursor < endIndex) {
                 char ch = input.charAt(cursor);
-                if (isAsciiDigit(ch)
+                if (CharSeqUtils.isAsciiDigit(ch)
                         || ch >= 'a' && ch <= 'z'
                         || ch >= 'A' && ch <= 'Z'
                         || ch == '.' || ch == '+' || ch == '-' || ch == '_') {

@@ -29,7 +29,10 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 final class NumberTokenTest {
 
     private static void assertIntegral(long expectedValue, IntegralType expectedType, boolean expectedUnsigned, String value) {
-        assertEquals(new Token.IntegralToken(expectedValue, expectedType, expectedUnsigned), Token.NumberToken.parse(value), value);
+        Token.IntegralToken expected = new Token.IntegralToken(expectedValue, expectedType, expectedUnsigned);
+        assertEquals(expected, Token.NumberToken.parse(value), value);
+        assertEquals(expected, Token.NumberToken.parse(" " + value, 1, value.length() + 1), value);
+        assertEquals(expected, Token.NumberToken.parse(value + " ", 0, value.length()), value);
     }
 
     @Test

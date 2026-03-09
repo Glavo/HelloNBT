@@ -24,6 +24,9 @@ import java.io.IOException;
 import java.util.Iterator;
 import java.util.List;
 
+/// Represents a list of tags in NBT format.
+///
+/// All elements in the list must have the same type.
 public final class ListTag<T extends Tag> extends ParentTag<T> {
 
     /// The type of the elements in the list.
@@ -103,6 +106,8 @@ public final class ListTag<T extends Tag> extends ParentTag<T> {
 
             for (T subTag : oldSubTags) {
                 assert subTag.getName().isEmpty();
+                assert subTag.getParent() == null;
+                assert subTag.getIndex() == -1;
 
                 CompoundTag newSubTag = new CompoundTag();
                 newSubTag.add(subTag);

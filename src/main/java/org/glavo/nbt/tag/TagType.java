@@ -18,7 +18,6 @@ package org.glavo.nbt.tag;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
-import java.util.Map;
 import java.util.function.Supplier;
 
 public final class TagType<T extends Tag> {
@@ -63,24 +62,13 @@ public final class TagType<T extends Tag> {
         return id > 0 && id < ID_TO_TYPE.length ? ID_TO_TYPE[id] : null;
     }
 
-    /// Returns the tag type by its class; returns `null` if the class is not found.
-    ///
-    /// @apiNote Only the final subclasses of `Tag` define `TagType`.
-    public static @Nullable TagType<?> getByClass(Class<? extends Tag> tagClass) {
-        return CLASS_TO_TYPE.get(tagClass);
-    }
-
     private static final List<TagType<?>> VALUES;
     private static final @Nullable TagType<?>[] ID_TO_TYPE;
-    private static final Map<Class<? extends Tag>, TagType<?>> CLASS_TO_TYPE;
 
     static {
         VALUES = List.of(BYTE, SHORT, INT, LONG, FLOAT, DOUBLE, BYTE_ARRAY, STRING, LIST, COMPOUND, INT_ARRAY, LONG_ARRAY);
 
         ID_TO_TYPE = new TagType<?>[VALUES.size() + 1];
-
-        @SuppressWarnings("unchecked")
-        var classToTypeEntries = (Map.Entry<Class<? extends Tag>, TagType<?>>[]) new Map.Entry<?, ?>[VALUES.size()];
 
         for (int i = 0; i < VALUES.size(); i++) {
             TagType<?> type = VALUES.get(i);
@@ -89,11 +77,8 @@ public final class TagType<T extends Tag> {
             assert ID_TO_TYPE[Byte.toUnsignedInt(type.id())] == null : "Duplicate ID: " + type.id();
 
             ID_TO_TYPE[Byte.toUnsignedInt(type.id())] = type;
-
-            classToTypeEntries[i] = Map.entry(type.tagClass(), type);
         }
 
-        CLASS_TO_TYPE = Map.ofEntries(classToTypeEntries);
     }
 
     private final String name;

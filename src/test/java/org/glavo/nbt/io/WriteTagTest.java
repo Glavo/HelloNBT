@@ -88,7 +88,7 @@ public final class WriteTagTest {
 
         {
             var expected = new com.github.steveice10.opennbt.tag.builtin.ListTag("Meow", com.github.steveice10.opennbt.tag.builtin.IntTag.class);
-            var actual = new ListTag<>("Meow", IntTag.class);
+            var actual = new ListTag<>("Meow", TagType.INT);
 
             for (int i = 0; i < 10000; i++) {
                 expected.add(new com.github.steveice10.opennbt.tag.builtin.IntTag("", i));
@@ -140,7 +140,7 @@ public final class WriteTagTest {
                 actual.add(sub10);
             }
             {
-                var sub11 = new ListTag<>("Sub11", IntTag.class);
+                var sub11 = new ListTag<>("Sub11", TagType.INT);
                 for (int i = 0; i < 10000; i++) {
                     sub11.add(new IntTag("", i));
                 }

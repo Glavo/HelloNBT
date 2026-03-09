@@ -21,7 +21,6 @@ import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
@@ -44,34 +43,6 @@ public final class ListTag<T extends Tag> extends ParentTag<T> {
     public ListTag(String name, @Nullable TagType<? super T> elementType) {
         super(name);
         this.elementType = elementType;
-    }
-
-    /// Creates a new empty list tag with the given element type.
-    ///
-    /// @param elementType The type of the elements in the list.
-    /// @throws IllegalArgumentException if the element type is not valid.
-    public ListTag(@Nullable Class<? super T> elementType) {
-        this("", elementType);
-    }
-
-    /// Creates a new empty list tag with the given name and element type.
-    ///
-    /// @param name        The name of the list tag.
-    /// @param elementType The type of the elements in the list.
-    /// @throws IllegalArgumentException if the element type is not valid.
-    public ListTag(String name, @Nullable Class<? super T> elementType) {
-        super(name);
-
-        if (elementType != null) {
-            @SuppressWarnings("unchecked")
-            TagType<T> tagType = (TagType<T>) TagType.getByClass((Class<? extends Tag>) elementType);
-            if (tagType == null) {
-                throw new IllegalArgumentException("Invalid element type: " + elementType);
-            }
-            this.elementType = tagType;
-        } else {
-            this.elementType = null;
-        }
     }
 
     @Override

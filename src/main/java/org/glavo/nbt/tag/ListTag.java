@@ -174,6 +174,31 @@ public final class ListTag<T extends Tag> extends ParentTag<T> {
         subTags.add(tag);
     }
 
+    /// For the heterogeneous list in SNBT, this method can be used to add any tag to the list.
+    ///
+    /// If the tag is of the same type as the element type of this list, it will be added directly.
+    ///
+    /// If the element type is not equal to the type of the tag:
+    /// - If the list is empty, the element type of this list will be set to the type of the tag, and the tag will be added.
+    /// - If the list is not empty, the element type of this list will be set to the [TagType#COMPOUND],
+    /// and all existing tags and the new tag will be converted to compound tags with a single unnamed subtag.
+    @Contract(mutates = "this,param1")
+    @SuppressWarnings("unchecked")
+    public void addAny(T tag) {
+        if (elementType == null || tag.getType() == elementType) {
+            add(tag);
+        } else if (this.isEmpty()) {
+            elementType = tag.getType();
+            add(tag);
+        } else {
+            setElementType(TagType.COMPOUND);
+
+            CompoundTag subTag = new CompoundTag();
+            subTag.put("", tag);
+            add((T) subTag);
+        }
+    }
+
     @Override
     @Contract(mutates = "this,param1")
     public void remove(Tag tag) {

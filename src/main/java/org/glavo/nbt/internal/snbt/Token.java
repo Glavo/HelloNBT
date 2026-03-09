@@ -125,13 +125,18 @@ sealed interface Token {
                     throw invalidNumberLiteral(value, beginIndex, endIndex);
                 }
 
-                double doubleValue = Double.parseDouble(clean.subSequence(cleanBeginIndex, cleanEndIndex).toString().replace("_", ""));
-                if (!Double.isFinite(doubleValue)
-                        || floatingType == FloatingType.FLOAT && (doubleValue < -Float.MAX_VALUE || doubleValue > Float.MAX_VALUE)) {
-                    throw invalidNumberLiteral(value, beginIndex, endIndex);
+                try {
+                    double doubleValue = Double.parseDouble(clean.subSequence(cleanBeginIndex, cleanEndIndex).toString().replace("_", ""));
+                    if (!Double.isFinite(doubleValue)
+                            || floatingType == FloatingType.FLOAT && (doubleValue < -Float.MAX_VALUE || doubleValue > Float.MAX_VALUE)) {
+                        throw new IllegalArgumentException("Invalid floating point number: " + doubleValue);
+                    }
+                    return new Token.FloatingToken(doubleValue, floatingType);
+                } catch (Exception e) {
+                    IllegalArgumentException e2 = invalidNumberLiteral(value, beginIndex, endIndex);
+                    e2.initCause(e);
+                    throw e2;
                 }
-
-                return new Token.FloatingToken(doubleValue, floatingType);
             } else {
                 IntegralToken.Suffix suffix = IntegralToken.Suffix.check(clean, cleanBeginIndex, cleanEndIndex, radix);
                 cleanEndIndex -= suffix.value().length();

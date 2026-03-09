@@ -57,15 +57,6 @@ public final class SNBTParser {
         }
     }
 
-    private int indexOf(char ch) {
-        for (int i = cursor; i < endIndex; i++) {
-            if (input.charAt(i) == ch) {
-                return i;
-            }
-        }
-        return -1;
-    }
-
     private StringBuilder getBuilder() {
         if (buffer == null) {
             buffer = new StringBuilder();
@@ -216,7 +207,7 @@ public final class SNBTParser {
 
                             cursor += 1;
 
-                            int end = indexOf('}');
+                            int end = TextUtils.indexOf(input, cursor, endIndex, '}');
                             if (end < 0) {
                                 throw new IllegalArgumentException("Unexpected end of named Unicode escape sequence: \\N");
                             }

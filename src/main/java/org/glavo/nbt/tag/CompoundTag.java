@@ -25,6 +25,7 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.UUID;
 
 public final class CompoundTag extends ParentTag<Tag> {
 
@@ -168,6 +169,12 @@ public final class CompoundTag extends ParentTag<Tag> {
     @Contract(mutates = "this")
     public void putLongArray(String name, long[] value) {
         add(new LongArrayTag(name, value));
+    }
+
+    /// Adds an int array tag with the given name and UUID value to this compound tag.
+    @Contract(mutates = "this")
+    public void putUUID(String name, UUID value) {
+        add(new IntArrayTag(name, value));
     }
 
     @Override

@@ -89,7 +89,16 @@ public final class SNBTParser {
         }
     }
 
-    private Token nextToken() {
+    private static boolean isUnquotedStringPart(int ch) {
+        return TextUtils.isAsciiDigit(ch)
+                || ch >= 'a' && ch <= 'z'
+                || ch >= 'A' && ch <= 'Z'
+                || ch == '_'
+                || ch == '-' || ch == '+'
+                || ch == '.';
+    }
+
+    private Token readNextToken() {
         skipWhiteSpace();
 
         if (cursor >= endIndex) {
@@ -233,25 +242,28 @@ public final class SNBTParser {
                     builder.appendCodePoint(ch);
                 }
             }
-        } else if (TextUtils.isAsciiDigit(firstChar)
-                || firstChar == '-' || firstChar == '+' || firstChar == '.') {
+
+            throw new IllegalArgumentException("Unexpected end of string literal: " + input.subSequence(firstCharCursor, cursor));
+        } else if (isUnquotedStringPart(firstChar)) {
             // Scan number
             while (cursor < endIndex) {
                 char ch = input.charAt(cursor);
-                if (TextUtils.isAsciiDigit(ch)
-                        || ch >= 'a' && ch <= 'z'
-                        || ch >= 'A' && ch <= 'Z'
-                        || ch == '.' || ch == '+' || ch == '-' || ch == '_') {
+                if (isUnquotedStringPart(ch)) {
                     cursor += 1;
                 } else {
                     break;
                 }
             }
 
-            return Token.NumberToken.parse(input, firstCharCursor, cursor);
+            if (TextUtils.isAsciiDigit(firstChar)
+                    || firstChar == '-' || firstChar == '+' || firstChar == '.') {
+                return Token.NumberToken.parse(input, firstCharCursor, cursor);
+            } else {
+                return new Token.StringToken(input.subSequence(firstCharCursor, cursor).toString(), false);
+            }
+        } else {
+            throw new IllegalArgumentException("Unexpected character: " + (char) firstChar);
         }
-
-        throw new UnsupportedOperationException("Not implemented"); // TODO
     }
 
 }

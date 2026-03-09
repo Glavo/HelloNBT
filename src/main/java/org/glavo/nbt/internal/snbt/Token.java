@@ -131,6 +131,10 @@ sealed interface Token {
                             || floatingType == FloatingType.FLOAT && (doubleValue < -Float.MAX_VALUE || doubleValue > Float.MAX_VALUE)) {
                         throw new IllegalArgumentException("Invalid floating point number: " + doubleValue);
                     }
+                    if (negative) {
+                        doubleValue = -doubleValue;
+                    }
+
                     return new Token.FloatingToken(doubleValue, floatingType);
                 } catch (Exception e) {
                     IllegalArgumentException e2 = invalidNumberLiteral(value, beginIndex, endIndex);

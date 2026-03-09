@@ -134,14 +134,21 @@ final class SNBTParserTest {
         assertEquals(new IntArrayTag(), parseTag("[I;]"));
         assertEquals(new LongArrayTag(), parseTag("[L;]"));
         assertEquals(new ByteArrayTag("", new byte[]{1, 2, 3}), parseTag("[B; 1, 2, 3]"));
+        assertEquals(new ByteArrayTag("", new byte[]{1, 2, 3}), parseTag("[B; 1, 2, 3, ]"));
         assertEquals(new IntArrayTag("", new int[]{1, 2, 3}), parseTag("[I; 1, 2, 3]"));
+        assertEquals(new IntArrayTag("", new int[]{1, 2, 3}), parseTag("[I; 1, 2, 3, ]"));
         assertEquals(new LongArrayTag("", new long[]{1L, 2L, 3L}), parseTag("[L; 1L, 2L, 3L]"));
+        assertEquals(new LongArrayTag("", new long[]{1L, 2L, 3L}), parseTag("[L; 1L, 2L, 3L, ]"));
 
         assertEquals(new ListTag<>(), parseTag("[]"));
         assertEquals(with(new ListTag<>(), l -> {
             l.add(new StringTag("", "Hello"));
             l.add(new StringTag("", "Glavo"));
         }), parseTag("[Hello, 'Glavo']"));
+        assertEquals(with(new ListTag<>(), l -> {
+            l.add(new StringTag("", "Hello"));
+            l.add(new StringTag("", "Glavo"));
+        }), parseTag("[Hello, 'Glavo',]"));
 
         assertEquals(new CompoundTag(), parseTag("{}"));
         assertEquals(with(new CompoundTag(), c -> {

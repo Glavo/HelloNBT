@@ -255,7 +255,7 @@ public final class SNBTParser {
                 }
             }
 
-            return Token.NumberToken.parse(input.subSequence(firstCharCursor, cursor).toString());
+            return Token.NumberToken.parse(input, firstCharCursor, cursor);
         }
 
         throw new UnsupportedOperationException("Not implemented"); // TODO

@@ -15,7 +15,12 @@
  */
 package org.glavo.nbt.internal.snbt;
 
+import org.glavo.nbt.internal.TextUtils;
 import org.jetbrains.annotations.Nullable;
+
+import java.util.Objects;
+
+import static org.glavo.nbt.internal.snbt.IntegralType.*;
 
 sealed interface Token {
     enum SimpleToken implements Token {
@@ -51,92 +56,208 @@ sealed interface Token {
 
 
     sealed interface NumberToken extends Token {
-        static NumberToken parse(String value) {
-            if (value.endsWith("_")) {
-                throw new IllegalArgumentException("Invalid number literal: " + value);
-            }
-
-            String clean = value.replaceAll("_", ""); // Remove underscores
-            if (clean.isEmpty()) {
-                throw new IllegalArgumentException("Invalid number literal: " + value);
-            }
-
-            if (clean.indexOf('.') >= 0 || clean.indexOf('e') >= 0 || clean.indexOf('E') >= 0) {
-                int endIndex = clean.length();
-
-                FloatingType floatingType;
-                if (clean.endsWith("f") || clean.endsWith("F")) {
-                    floatingType = FloatingType.FLOAT;
-                    endIndex -= 1;
-                } else if (clean.endsWith("d") || clean.endsWith("D")) {
-                    floatingType = FloatingType.DOUBLE;
-                    endIndex -= 1;
-                } else {
-                    floatingType = FloatingType.DOUBLE;
-                }
-
-                return new Token.FloatingToken(Double.parseDouble(clean.substring(0, endIndex)), floatingType);
-            } else {
-                int beginIndex;
-                int radix;
-                if (clean.startsWith("0x") || clean.startsWith("0X")) {
-                    beginIndex = 2;
-                    radix = 16;
-                } else if (clean.startsWith("0b") || clean.startsWith("0B")) {
-                    beginIndex = 2;
-                    radix = 2;
-                } else {
-                    beginIndex = 0;
-                    radix = 10;
-                }
-
-                int endIndex = clean.length();
-
-                @Nullable
-                Boolean unsignedSuffixChar = endIndex - beginIndex > 2 ? switch (clean.charAt(endIndex - 2)) {
-                    case 's', 'S' -> false;
-                    case 'u', 'U' -> true;
-                    default -> null;
-                } : null;
-
-                @Nullable
-                IntegralType typeSuffixChar = endIndex - beginIndex > 1 ? switch (clean.charAt(endIndex - 1)) {
-                    case 'b', 'B' -> radix != 16 || unsignedSuffixChar != null ? IntegralType.BYTE : null;
-                    case 's', 'S' -> IntegralType.SHORT;
-                    case 'i', 'I' -> IntegralType.INT;
-                    case 'l', 'L' -> IntegralType.LONG;
-                    default -> null;
-                } : null;
-
-                if (typeSuffixChar != null) {
-                    endIndex -= 1;
-                }
-                if (unsignedSuffixChar != null) {
-                    endIndex -= 1;
-                }
-
-                boolean unsigned = unsignedSuffixChar != null ? unsignedSuffixChar : radix != 10;
-                IntegralType type = typeSuffixChar != null ? typeSuffixChar : IntegralType.INT;
-
-                try {
-                    long parsed = unsigned
-                            ? Long.parseUnsignedLong(clean, beginIndex, endIndex, radix)
-                            : Long.parseLong(clean, beginIndex, endIndex, radix);
-                    type.check(parsed, unsigned);
-                    return new Token.IntegralToken(parsed, type, unsigned);
-                } catch (NumberFormatException e) {
-                    throw new IllegalArgumentException("Invalid number literal: " + value, e);
-                }
-            }
-
+        private static IllegalArgumentException invalidNumberLiteral(CharSequence value, int beginIndex, int endIndex) {
+            return new IllegalArgumentException("Invalid number literal: " + value.subSequence(beginIndex, endIndex));
         }
 
+        private static void checkNotEmpty(int beginIndex, int endIndex, CharSequence rawValue, int rawBeginIndex, int rawEndIndex) {
+            if (beginIndex >= endIndex) {
+                throw invalidNumberLiteral(rawValue, rawBeginIndex, rawEndIndex);
+            }
+        }
+
+        static NumberToken parse(CharSequence value) {
+            return parse(value, 0, value.length());
+        }
+
+        static NumberToken parse(CharSequence value, int beginIndex, int endIndex) {
+            Objects.checkFromToIndex(beginIndex, endIndex, value.length());
+
+            CharSequence clean;
+            int cleanBeginIndex;
+            int cleanEndIndex;
+
+            int underscoreIndex = TextUtils.indexOf(value, beginIndex, endIndex, '_');
+            if (underscoreIndex >= 0) {
+                if (value.charAt(endIndex - 1) == '_') {
+                    throw invalidNumberLiteral(value, beginIndex, endIndex);
+                }
+
+                StringBuilder builder = new StringBuilder(endIndex - beginIndex);
+                for (int i = beginIndex; i < endIndex; i++) {
+                    if (value.charAt(i) != '_') {
+                        builder.append(value.charAt(i));
+                    }
+                }
+
+                if (builder.isEmpty()) {
+                    throw invalidNumberLiteral(value, beginIndex, endIndex);
+                }
+
+                clean = builder.toString();
+                cleanBeginIndex = 0;
+                cleanEndIndex = clean.length();
+            } else {
+                clean = value;
+                cleanBeginIndex = beginIndex;
+                cleanEndIndex = endIndex;
+            }
+
+            checkNotEmpty(cleanBeginIndex, cleanEndIndex, value, beginIndex, endIndex);
+
+            if (TextUtils.indexOf(clean, beginIndex, endIndex, '.') >= 0
+                    || TextUtils.indexOf(clean, beginIndex, endIndex, 'e') >= 0
+                    || TextUtils.indexOf(clean, beginIndex, endIndex, 'E') >= 0) {
+                char lastChar = clean.charAt(cleanEndIndex - 1);
+
+                FloatingType floatingType;
+                if (lastChar == 'f' || lastChar == 'F') {
+                    floatingType = FloatingType.FLOAT;
+                    cleanEndIndex -= 1;
+                } else if (lastChar == 'd' || lastChar == 'D') {
+                    floatingType = FloatingType.DOUBLE;
+                    cleanEndIndex -= 1;
+                } else {
+                    floatingType = FloatingType.DOUBLE;
+                }
+
+                double doubleValue = Double.parseDouble(clean.subSequence(cleanBeginIndex, cleanEndIndex).toString());
+                if (!Double.isFinite(doubleValue) || doubleValue < -floatingType.max || doubleValue > floatingType.max) {
+                    throw invalidNumberLiteral(value, beginIndex, endIndex);
+                }
+
+                return new Token.FloatingToken(doubleValue, floatingType);
+            } else {
+                boolean negative = false;
+                {
+                    char ch = clean.charAt(cleanBeginIndex);
+                    if (ch == '+' || ch == '-') {
+                        negative = ch == '-';
+                        cleanBeginIndex += 1;
+
+                        checkNotEmpty(cleanBeginIndex, cleanEndIndex, value, beginIndex, endIndex);
+                    }
+                }
+
+                IntegralToken.Radix radix;
+                if (TextUtils.startsWithIgnoreCase(clean, cleanBeginIndex, cleanEndIndex, "0x")) {
+                    radix = IntegralToken.Radix.HEX;
+                    cleanBeginIndex += 2;
+                } else if (TextUtils.startsWithIgnoreCase(clean, cleanBeginIndex, cleanEndIndex, "0b")) {
+                    radix = IntegralToken.Radix.BINARY;
+                    cleanBeginIndex += 2;
+                } else {
+                    radix = IntegralToken.Radix.DECIMAL;
+                }
+
+                checkNotEmpty(cleanBeginIndex, cleanEndIndex, value, beginIndex, endIndex);
+
+                IntegralToken.Suffix suffix = IntegralToken.Suffix.check(clean, cleanBeginIndex, cleanEndIndex, radix);
+                cleanEndIndex -= suffix.value().length();
+
+                checkNotEmpty(cleanBeginIndex, cleanEndIndex, value, beginIndex, endIndex);
+
+                for (int i = cleanBeginIndex; i < cleanEndIndex; i++) {
+                    if (!radix.isDigit(clean.charAt(i))) {
+                        throw invalidNumberLiteral(value, beginIndex, endIndex);
+                    }
+                }
+
+                boolean unsigned = suffix.unsigned != null ? suffix.unsigned : radix != IntegralToken.Radix.DECIMAL;
+
+                try {
+                    long parsed = Long.parseUnsignedLong(clean, beginIndex, endIndex, radix.value);
+                    if (negative) {
+                        parsed = -parsed;
+                    }
+                    suffix.type.check(parsed, unsigned);
+                    return new Token.IntegralToken(parsed, suffix.type, unsigned);
+                } catch (NumberFormatException e) {
+                    IllegalArgumentException e2 = invalidNumberLiteral(value, beginIndex, endIndex);
+                    e2.initCause(e);
+                    throw e2;
+                }
+            }
+        }
     }
 
     record IntegralToken(long value,
                          IntegralType type,
                          boolean unsigned) implements NumberToken {
+        record Suffix(String value, IntegralType type, @Nullable Boolean unsigned) {
+            private static final Suffix[] VALUES;
 
+            static {
+                IntegralType[] types = values();
+
+                VALUES = new Suffix[types.length * 3];
+
+                for (IntegralType type : types) {
+                    //noinspection PointlessArithmeticExpression
+                    VALUES[type.ordinal() * 3 + 0] = new Suffix("", type, null);
+                    VALUES[type.ordinal() * 3 + 1] = new Suffix("S", type, false);
+                    VALUES[type.ordinal() * 3 + 2] = new Suffix("U", type, true);
+                }
+            }
+
+            static final Suffix EMPTY = new Suffix("", INT, null);
+
+            static Suffix of(IntegralType integralType, @Nullable Boolean unsigned) {
+                return VALUES[integralType.ordinal() * 3 + (unsigned == null ? 0 : unsigned ? 2 : 1)];
+            }
+
+            static Suffix check(CharSequence cs, int beginIndex, int endIndex, Radix radix) {
+                Boolean unsignedSuffixChar = endIndex - beginIndex >= 2 ? switch (cs.charAt(endIndex - 2)) {
+                    case 's', 'S' -> false;
+                    case 'u', 'U' -> true;
+                    default -> null;
+                } : null;
+
+                IntegralType typeSuffixChar = endIndex - beginIndex >= 1 ? switch (cs.charAt(endIndex - 1)) {
+                    case 'b', 'B' -> radix != Radix.HEX || unsignedSuffixChar != null ? BYTE : null;
+                    case 's', 'S' -> SHORT;
+                    case 'i', 'I' -> INT;
+                    case 'l', 'L' -> IntegralType.LONG;
+                    default -> null;
+                } : null;
+
+                if (typeSuffixChar == null && unsignedSuffixChar != null) {
+                    // Illegal suffix
+                    return EMPTY;
+                }
+
+                return typeSuffixChar != null ? of(typeSuffixChar, unsignedSuffixChar) : EMPTY;
+            }
+        }
+
+        enum Radix {
+            DECIMAL(10) {
+                @Override
+                boolean isDigit(int ch) {
+                    return TextUtils.isAsciiDigit(ch);
+                }
+            },
+            HEX(16) {
+                @Override
+                boolean isDigit(int ch) {
+                    return TextUtils.isAsciiDigit(ch) || (ch >= 'a' && ch <= 'f') || (ch >= 'A' && ch <= 'F');
+                }
+            },
+            BINARY(2) {
+                @Override
+                boolean isDigit(int ch) {
+                    return ch == '0' || ch == '1';
+                }
+            };
+
+            private final int value;
+
+            Radix(int value) {
+                this.value = value;
+            }
+
+            abstract boolean isDigit(int ch);
+        }
     }
 
     record FloatingToken(double value, FloatingType type) implements NumberToken {

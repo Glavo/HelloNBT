@@ -24,7 +24,7 @@ public final class TextUtils {
         return ch >= '0' && ch <= '9';
     }
 
-    /// Returns the index of the first occurrence of the specified character in the given character sequence.
+    /// Returns the index of the first occurrence of the specified character in the given character subsequence.
     public static int indexOf(CharSequence cs, int beginIndex, int endIndex, char ch) {
         Objects.checkFromToIndex(beginIndex, endIndex, cs.length());
 
@@ -34,6 +34,20 @@ public final class TextUtils {
             }
         }
         return -1;
+    }
+
+    /// Returns `true` if the specified character subsequence starts with the specified prefix.
+    public static boolean startsWithIgnoreCase(CharSequence cs, int beginIndex, int endIndex, String prefix) {
+        Objects.checkFromToIndex(beginIndex, endIndex, cs.length());
+        if (prefix.length() > endIndex - beginIndex) {
+            return false;
+        }
+        for (int i = 0; i < prefix.length(); i++) {
+            if (Character.toLowerCase(cs.charAt(beginIndex + i)) != Character.toLowerCase(prefix.charAt(i))) {
+                return false;
+            }
+        }
+        return true;
     }
 
     private TextUtils() {

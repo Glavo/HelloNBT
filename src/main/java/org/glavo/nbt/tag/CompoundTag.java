@@ -135,6 +135,12 @@ public final class CompoundTag extends ParentTag<Tag> {
         add(new ByteTag(name, value));
     }
 
+    /// Adds a byte tag with the given name and value to this compound tag.
+    @Contract(mutates = "this")
+    public void putBoolean(String name, boolean value) {
+        add(new ByteTag(name, value));
+    }
+
     /// Adds a short tag with the given name and value to this compound tag.
     @Contract(mutates = "this")
     public void putShort(String name, short value) {

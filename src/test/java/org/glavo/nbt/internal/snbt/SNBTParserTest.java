@@ -18,17 +18,19 @@ package org.glavo.nbt.internal.snbt;
 import org.glavo.nbt.internal.snbt.Token.IntegralToken;
 import org.glavo.nbt.internal.snbt.Token.SimpleToken;
 import org.glavo.nbt.internal.snbt.Token.StringToken;
+import org.glavo.nbt.tag.*;
 import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
+import java.util.function.Consumer;
 
 import static org.glavo.nbt.internal.snbt.FloatingType.DOUBLE;
 import static org.glavo.nbt.internal.snbt.FloatingType.FLOAT;
 import static org.glavo.nbt.internal.snbt.IntegralType.*;
 import static org.glavo.nbt.internal.snbt.Token.SimpleToken.*;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertIterableEquals;
+import static org.junit.jupiter.api.Assertions.*;
 
 final class SNBTParserTest {
     private static void assertTokens(List<Token> expected, String input) {
@@ -58,7 +60,6 @@ final class SNBTParserTest {
 
         assertEquals(input.length(), parser.cursor);
     }
-
 
     @Test
     void testReadNextToken() {
@@ -104,5 +105,56 @@ final class SNBTParserTest {
                   list_of_strings: ["a", "bb", ccc],
                   nested: {very:{deep:{structure:"ok"}}}
                 }""");
+    }
+
+    private static <T> T with(T value, Consumer<T> consumer) {
+        consumer.accept(value);
+        return value;
+    }
+
+    private static Tag parseTag(String input) {
+        return new SNBTParser(input, 0, input.length()).nextTag();
+    }
+
+    @Test
+    void testNextTag() {
+        assertNull(parseTag(""));
+        assertEquals(new ByteTag("", (byte) 123), parseTag("123b"));
+        assertEquals(new ByteTag("", true), parseTag("true"));
+        assertEquals(new ByteTag("", false), parseTag("false"));
+        assertEquals(new ShortTag("", (short) 123), parseTag("123s"));
+        assertEquals(new IntTag("", 123), parseTag("123"));
+        assertEquals(new LongTag("", 123L), parseTag("123L"));
+        assertEquals(new FloatTag("", 123.0f), parseTag("123.0f"));
+        assertEquals(new DoubleTag("", 123.0), parseTag("123.0d"));
+        assertEquals(new StringTag("", "Hello"), parseTag("Hello"));
+        assertEquals(new StringTag("", "Hello"), parseTag("'Hello'"));
+        assertEquals(new StringTag("", "Hello"), parseTag("\"Hello\""));
+        assertEquals(new ByteArrayTag(), parseTag("[B;]"));
+        assertEquals(new IntArrayTag(), parseTag("[I;]"));
+        assertEquals(new LongArrayTag(), parseTag("[L;]"));
+        assertEquals(new ByteArrayTag("", new byte[]{1, 2, 3}), parseTag("[B; 1, 2, 3]"));
+        assertEquals(new IntArrayTag("", new int[]{1, 2, 3}), parseTag("[I; 1, 2, 3]"));
+        assertEquals(new LongArrayTag("", new long[]{1L, 2L, 3L}), parseTag("[L; 1L, 2L, 3L]"));
+
+        assertEquals(new ListTag<>(), parseTag("[]"));
+        assertEquals(with(new ListTag<>(), l -> {
+            l.add(new StringTag("", "Hello"));
+            l.add(new StringTag("", "Glavo"));
+        }), parseTag("[Hello, 'Glavo']"));
+
+        assertEquals(new CompoundTag(), parseTag("{}"));
+        assertEquals(with(new CompoundTag(), c -> {
+            c.putString("name", "Glavo");
+            c.put("age", new IntTag("", 9));
+            c.putUUID("id", UUID.fromString("01bb64c8-2a2f-4509-931b-366513bfb5a8"));
+            c.putBoolean("bool", true);
+        }), parseTag("""
+                {
+                    name: 'Glavo',
+                    age: 9,
+                    id: uuid('01bb64c8-2a2f-4509-931b-366513bfb5a8'),
+                    bool: true
+                }"""));
     }
 }

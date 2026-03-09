@@ -49,11 +49,9 @@ sealed abstract class PrimaryArrayBuilder<T extends ArrayTag<?>, A> {
 
     public void add(Token.IntegralToken token) {
         prepareForAdd();
-        if (token.type().compareTo(getIntegralType()) <= 0) {
-            setValue(array, length++, token.value());
-        } else {
-            throw new IllegalArgumentException("Invalid " + getIntegralType().name() + " array element: " + token.value());
-        }
+        long value = token.value();
+        getIntegralType().check(value, token.unsigned());
+        setValue(array, length++, value);
     }
 
     public T build() {

@@ -266,7 +266,12 @@ public final class SNBTParser {
                     || firstChar == '-' || firstChar == '+' || firstChar == '.') {
                 return Token.NumberToken.parse(input, firstCharCursor, cursor);
             } else {
-                return new Token.StringToken(input.subSequence(firstCharCursor, cursor).toString(), false);
+                String value = input.subSequence(firstCharCursor, cursor).toString();
+                return switch (value) {
+                    case "true" -> Token.BooleanToken.TRUE;
+                    case "false" -> Token.BooleanToken.FALSE;
+                    default -> new Token.StringToken(value, false);
+                };
             }
         } else {
             throw new IllegalArgumentException("Unexpected character: " + new String(Character.toChars(firstChar)));
@@ -297,7 +302,6 @@ public final class SNBTParser {
             throw new IllegalArgumentException("Expected " + expected + ", but got " + token, e);
         }
     }
-
 
     Token peekToken() {
         if (lookahead == null) {

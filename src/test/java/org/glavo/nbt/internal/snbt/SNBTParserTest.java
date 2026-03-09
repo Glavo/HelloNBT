@@ -61,7 +61,7 @@ final class SNBTParserTest {
 
 
     @Test
-    void testParse() {
+    void testReadNextToken() {
         assertTokens(List.of(), "");
         assertTokens(List.of(
                 LEFT_BRACE,

@@ -78,11 +78,36 @@ sealed interface Token {
 
             checkNotEmpty(cleanBeginIndex, cleanEndIndex, value, beginIndex, endIndex);
 
-            if (TextUtils.indexOf(clean, cleanBeginIndex, cleanEndIndex, '.') >= 0
-                    || TextUtils.indexOf(clean, cleanBeginIndex, cleanEndIndex, 'e') >= 0
-                    || TextUtils.indexOf(clean, cleanBeginIndex, cleanEndIndex, 'E') >= 0) {
-                char lastChar = clean.charAt(cleanEndIndex - 1);
+            boolean negative = false;
+            {
+                char ch = clean.charAt(cleanBeginIndex);
+                if (ch == '+' || ch == '-') {
+                    negative = ch == '-';
+                    cleanBeginIndex += 1;
 
+                    checkNotEmpty(cleanBeginIndex, cleanEndIndex, value, beginIndex, endIndex);
+                }
+            }
+
+            IntegralToken.Radix radix;
+            if (TextUtils.startsWithIgnoreCase(clean, cleanBeginIndex, cleanEndIndex, "0x")) {
+                radix = IntegralToken.Radix.HEX;
+                cleanBeginIndex += 2;
+            } else if (TextUtils.startsWithIgnoreCase(clean, cleanBeginIndex, cleanEndIndex, "0b")) {
+                radix = IntegralToken.Radix.BINARY;
+                cleanBeginIndex += 2;
+            } else {
+                radix = IntegralToken.Radix.DECIMAL;
+            }
+
+            checkNotEmpty(cleanBeginIndex, cleanEndIndex, value, beginIndex, endIndex);
+
+            char lastChar = clean.charAt(cleanEndIndex - 1);
+            if ((radix == IntegralToken.Radix.DECIMAL) && (
+                    lastChar == 'f' || lastChar == 'F' || lastChar == 'd' || lastChar == 'D'
+                            || TextUtils.indexOf(clean, cleanBeginIndex, cleanEndIndex, '.') >= 0
+                            || TextUtils.indexOf(clean, cleanBeginIndex, cleanEndIndex, 'e') >= 0
+                            || TextUtils.indexOf(clean, cleanBeginIndex, cleanEndIndex, 'E') >= 0)) {
                 FloatingType floatingType;
                 if (lastChar == 'f' || lastChar == 'F') {
                     floatingType = FloatingType.FLOAT;
@@ -94,37 +119,20 @@ sealed interface Token {
                     floatingType = FloatingType.DOUBLE;
                 }
 
-                double doubleValue = Double.parseDouble(clean.subSequence(cleanBeginIndex, cleanEndIndex).toString());
-                if (!Double.isFinite(doubleValue) || doubleValue < -floatingType.max || doubleValue > floatingType.max) {
+                checkNotEmpty(cleanBeginIndex, cleanEndIndex, value, beginIndex, endIndex);
+
+                if (clean.charAt(cleanBeginIndex) == '_' || clean.charAt(cleanEndIndex - 1) == '_') {
+                    throw invalidNumberLiteral(value, beginIndex, endIndex);
+                }
+
+                double doubleValue = Double.parseDouble(clean.subSequence(cleanBeginIndex, cleanEndIndex).toString().replace("_", ""));
+                if (!Double.isFinite(doubleValue)
+                        || floatingType == FloatingType.FLOAT && (doubleValue < -Float.MAX_VALUE || doubleValue > Float.MAX_VALUE)) {
                     throw invalidNumberLiteral(value, beginIndex, endIndex);
                 }
 
                 return new Token.FloatingToken(doubleValue, floatingType);
             } else {
-                boolean negative = false;
-                {
-                    char ch = clean.charAt(cleanBeginIndex);
-                    if (ch == '+' || ch == '-') {
-                        negative = ch == '-';
-                        cleanBeginIndex += 1;
-
-                        checkNotEmpty(cleanBeginIndex, cleanEndIndex, value, beginIndex, endIndex);
-                    }
-                }
-
-                IntegralToken.Radix radix;
-                if (TextUtils.startsWithIgnoreCase(clean, cleanBeginIndex, cleanEndIndex, "0x")) {
-                    radix = IntegralToken.Radix.HEX;
-                    cleanBeginIndex += 2;
-                } else if (TextUtils.startsWithIgnoreCase(clean, cleanBeginIndex, cleanEndIndex, "0b")) {
-                    radix = IntegralToken.Radix.BINARY;
-                    cleanBeginIndex += 2;
-                } else {
-                    radix = IntegralToken.Radix.DECIMAL;
-                }
-
-                checkNotEmpty(cleanBeginIndex, cleanEndIndex, value, beginIndex, endIndex);
-
                 IntegralToken.Suffix suffix = IntegralToken.Suffix.check(clean, cleanBeginIndex, cleanEndIndex, radix);
                 cleanEndIndex -= suffix.value().length();
 

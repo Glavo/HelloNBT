@@ -17,12 +17,5 @@ package org.glavo.nbt.internal.snbt;
 
 /// Floating types for SNBT.
 enum FloatingType {
-    FLOAT(Float.MAX_VALUE),
-    DOUBLE(Double.MAX_VALUE);
-
-    final double max;
-
-    FloatingType(double max) {
-        this.max = max;
-    }
+    FLOAT, DOUBLE
 }

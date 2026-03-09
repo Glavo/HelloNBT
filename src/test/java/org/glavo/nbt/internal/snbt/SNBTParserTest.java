@@ -149,12 +149,20 @@ final class SNBTParserTest {
             c.put("age", new IntTag("", 9));
             c.putUUID("id", UUID.fromString("01bb64c8-2a2f-4509-931b-366513bfb5a8"));
             c.putBoolean("bool", true);
+            c.put("nested", with(new CompoundTag(), c2 -> {
+                c2.put("very", with(new CompoundTag(), c3 -> {
+                    c3.put("deep", with(new CompoundTag(), c4 -> {
+                        c4.putString("structure", "ok");
+                    }));
+                }));
+            }));
         }), parseTag("""
                 {
                     name: 'Glavo',
                     age: 9,
                     id: uuid('01bb64c8-2a2f-4509-931b-366513bfb5a8'),
-                    bool: true
+                    bool: true,
+                    nested: {very:{deep:{structure:"ok"}}}
                 }"""));
     }
 }

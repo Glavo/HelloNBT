@@ -26,36 +26,36 @@ import java.util.stream.Stream;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-public final class SNBTParserTest {
+final class NumberTokenTest {
 
-    private static void assertIntegral(long expectedValue, SNBTParser.IntegralType expectedType, boolean expectedUnsigned, String value) {
-        assertEquals(new SNBTParser.Token.IntegralToken(expectedValue, expectedType, expectedUnsigned), SNBTParser.parseNumberToken(value), value);
+    private static void assertIntegral(long expectedValue, IntegralType expectedType, boolean expectedUnsigned, String value) {
+        assertEquals(new Token.IntegralToken(expectedValue, expectedType, expectedUnsigned), Token.NumberToken.parse(value), value);
     }
 
     @Test
     void testParseNumberToken() {
-        assertThrows(IllegalArgumentException.class, () -> SNBTParser.parseNumberToken(""));
-        assertThrows(IllegalArgumentException.class, () -> SNBTParser.parseNumberToken("_"));
-        assertThrows(IllegalArgumentException.class, () -> SNBTParser.parseNumberToken("123_"));
-        assertThrows(IllegalArgumentException.class, () -> SNBTParser.parseNumberToken("0b"));
-        assertThrows(IllegalArgumentException.class, () -> SNBTParser.parseNumberToken("0x"));
+        assertThrows(IllegalArgumentException.class, () -> Token.NumberToken.parse(""));
+        assertThrows(IllegalArgumentException.class, () -> Token.NumberToken.parse("_"));
+        assertThrows(IllegalArgumentException.class, () -> Token.NumberToken.parse("123_"));
+        assertThrows(IllegalArgumentException.class, () -> Token.NumberToken.parse("0b"));
+        assertThrows(IllegalArgumentException.class, () -> Token.NumberToken.parse("0x"));
 
-        assertIntegral(0x0bL, SNBTParser.IntegralType.INT, true, "0x0b");
-        assertIntegral(0x0bL, SNBTParser.IntegralType.INT, true, "0X0b");
+        assertIntegral(0x0bL, IntegralType.INT, true, "0x0b");
+        assertIntegral(0x0bL, IntegralType.INT, true, "0X0b");
 
-        assertIntegral(123L, SNBTParser.IntegralType.INT, false, "123");
-        assertIntegral(123L, SNBTParser.IntegralType.INT, false, "1_2_3");
+        assertIntegral(123L, IntegralType.INT, false, "123");
+        assertIntegral(123L, IntegralType.INT, false, "1_2_3");
     }
 
     @ParameterizedTest
     @EnumSource
-    void testParseNumberToken(SNBTParser.IntegralType type) {
+    void testParseNumberToken(IntegralType type) {
         List<String> defaultSuffixes = List.of(type.name().substring(0, 1), type.name().substring(0, 1).toLowerCase(Locale.ROOT));
         List<String> signedSuffixes = defaultSuffixes.stream().flatMap(suffix -> Stream.of("s" + suffix, "S" + suffix)).toList();
         List<String> unsignedSuffixes = defaultSuffixes.stream().flatMap(suffix -> Stream.of("u" + suffix, "U" + suffix)).toList();
 
         for (String suffix : defaultSuffixes) {
-            if (type != SNBTParser.IntegralType.BYTE) { // 0b is binary integer prefix, and 'b' is a hex digit
+            if (type != IntegralType.BYTE) { // 0b is binary integer prefix, and 'b' is a hex digit
                 assertIntegral(0L, type, false, "0" + suffix);
                 assertIntegral(0L, type, true, "0x0" + suffix);
                 assertIntegral(0L, type, true, "0X0" + suffix);
@@ -68,7 +68,7 @@ public final class SNBTParserTest {
             assertIntegral(123, type, true, "0b1111011" + suffix);
             assertIntegral(123, type, true, "0B1111011" + suffix);
 
-            if (type != SNBTParser.IntegralType.BYTE) {
+            if (type != IntegralType.BYTE) {
                 assertIntegral(123, type, true, "0x7B" + suffix);
                 assertIntegral(123, type, true, "0X7b" + suffix);
                 assertIntegral(123, type, true, "0x7B" + suffix);

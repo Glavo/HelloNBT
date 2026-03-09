@@ -46,7 +46,7 @@ public final class TagType<T extends Tag> {
     public static final TagType<StringTag> STRING = new TagType<>("TAG_String", (byte) 0x08, StringTag.class, StringTag::new);
 
     /// A list of tag payloads, without tag IDs or names, apart from the one before the length.
-    public static final TagType<ListTag<?>> LIST = new TagType<>("TAG_List", (byte) 0x09, ListTag.class, () -> new ListTag<>((TagType<?>) null));
+    public static final TagType<ListTag<?>> LIST = new TagType<>("TAG_List", (byte) 0x09, ListTag.class, () -> new ListTag<>(null));
 
     /// A list of fully formed tags, including their IDs, names, and payloads. No two tags may have the same name.
     public static final TagType<CompoundTag> COMPOUND = new TagType<>("TAG_Compound", (byte) 0x0A, CompoundTag.class, CompoundTag::new);

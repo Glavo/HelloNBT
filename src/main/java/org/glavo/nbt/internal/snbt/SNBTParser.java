@@ -29,7 +29,6 @@ public final class SNBTParser {
     public static final @Unmodifiable CompoundTag EMPTY_COMPOUND_TAG = new CompoundTag();
 
     private final CharSequence input;
-    private final int beginIndex;
     private final int endIndex;
 
     @VisibleForTesting
@@ -40,8 +39,9 @@ public final class SNBTParser {
     public SNBTParser(CharSequence input, int beginIndex, int endIndex) {
         Objects.checkFromToIndex(beginIndex, endIndex, input.length());
         this.input = input;
-        this.beginIndex = beginIndex;
         this.endIndex = endIndex;
+
+        this.cursor = beginIndex;
     }
 
     private int getCodePoint() {

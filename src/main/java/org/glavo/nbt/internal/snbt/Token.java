@@ -156,8 +156,34 @@ sealed interface Token {
 
                 checkNotEmpty(cleanBeginIndex, cleanEndIndex, value, beginIndex, endIndex);
 
-                for (int i = cleanBeginIndex; i < cleanEndIndex; i++) {
-                    if (!radix.isDigit(clean.charAt(i))) {
+                for (int i = cleanBeginIndex; i < cleanEndIndex; ) {
+                    char ch = clean.charAt(i);
+                    if (radix.isDigit(ch)) {
+                        i++;
+                    } else if (ch == '_') {
+                        StringBuilder builder = new StringBuilder(cleanEndIndex - cleanBeginIndex);
+                        builder.append(clean, cleanBeginIndex, i);
+                        for (int j = i + 1; j < cleanEndIndex; j++) {
+                            char ch2 = clean.charAt(j);
+                            //noinspection StatementWithEmptyBody
+                            if (ch2 == '_') {
+                                // Skip consecutive underscores
+                            } else if (radix.isDigit(ch2)) {
+                                builder.append(ch2);
+                            } else {
+                                throw invalidNumberLiteral(value, beginIndex, endIndex);
+                            }
+                        }
+
+                        if (builder.isEmpty()) {
+                            throw invalidNumberLiteral(value, beginIndex, endIndex);
+                        }
+
+                        clean = builder.toString();
+                        cleanBeginIndex = 0;
+                        cleanEndIndex = clean.length();
+                        break;
+                    } else {
                         throw invalidNumberLiteral(value, beginIndex, endIndex);
                     }
                 }

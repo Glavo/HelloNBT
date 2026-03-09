@@ -165,7 +165,7 @@ sealed interface Token {
                 boolean unsigned = suffix.unsigned != null ? suffix.unsigned : radix != IntegralToken.Radix.DECIMAL;
 
                 try {
-                    long parsed = Long.parseUnsignedLong(clean, beginIndex, endIndex, radix.value);
+                    long parsed = Long.parseUnsignedLong(clean, cleanBeginIndex, cleanEndIndex, radix.value);
                     if (negative) {
                         parsed = -parsed;
                     }

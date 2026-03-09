@@ -132,6 +132,9 @@ public final class SNBTParser {
             case ']' -> Token.SimpleToken.RIGHT_BRACKET;
             case ',' -> Token.SimpleToken.COMMA;
             case ':' -> Token.SimpleToken.COLON;
+            case '.' -> cursor >= endIndex || !TextUtils.isAsciiDigit(input.charAt(cursor))
+                    ? Token.SimpleToken.DOT
+                    : null;  // Floating point number
             default -> null;
         };
 
@@ -240,8 +243,7 @@ public final class SNBTParser {
                 }
             }
         } else if (TextUtils.isAsciiDigit(firstChar)
-                || firstChar == '-' || firstChar == '+'
-                || (firstChar == '.' && cursor < endIndex && TextUtils.isAsciiDigit(input.charAt(cursor)))) {
+                || firstChar == '-' || firstChar == '+' || firstChar == '.') {
             // Scan number
             while (cursor < endIndex) {
                 char ch = input.charAt(cursor);

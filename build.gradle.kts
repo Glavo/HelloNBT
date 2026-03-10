@@ -42,9 +42,12 @@ tasks.compileJava {
 tasks.javadoc {
     (options as StandardJavadocDocletOptions).also {
         it.encoding("UTF-8")
-        it.addStringOption("link", "https://docs.oracle.com/en/java/javase/17/docs/api/")
+        it.addStringOption("link", "https://docs.oracle.com/en/java/javase/25/docs/api/")
         it.addBooleanOption("html5", true)
         it.addStringOption("Xdoclint:none", "-quiet")
+        it.addStringOption("tag", "apiNote:a:API Note:")
+        it.addStringOption("tag", "implNote:a:Implementation Note:")
+        it.addStringOption("tag", "implSpec:a:Implementation Specification:")
     }
 }
 

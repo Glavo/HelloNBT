@@ -21,8 +21,10 @@ import org.jetbrains.annotations.Nullable;
 import java.util.List;
 
 /// This class represents the type of [tag][Tag] in NBT (Named Binary Tag) format.
+///
+/// @see Tag
 public abstract class TagType<T extends Tag> {
-    /// 1 byte signed integer type. Sometimes used for booleans.
+    /// A [value tag][ValueTag] that holds a 1 byte integer or a boolean.
     ///
     /// @see ByteTag
     public static final TagType<ByteTag> BYTE = new TagType<>("TAG_Byte", 0x01, ByteTag.class) {
@@ -32,7 +34,7 @@ public abstract class TagType<T extends Tag> {
         }
     };
 
-    /// 2 byte signed integer type.
+    /// A [value tag][ValueTag] that holds a 2 byte integer.
     ///
     /// @see ShortTag
     public static final TagType<ShortTag> SHORT = new TagType<>("TAG_Short", 0x02, ShortTag.class) {
@@ -42,7 +44,7 @@ public abstract class TagType<T extends Tag> {
         }
     };
 
-    /// 4 byte signed integer type.
+    /// A [value tag][ValueTag] that holds a 4 byte integer.
     ///
     /// @see IntTag
     public static final TagType<IntTag> INT = new TagType<>("TAG_Int", 0x03, IntTag.class) {
@@ -52,7 +54,7 @@ public abstract class TagType<T extends Tag> {
         }
     };
 
-    /// 8 byte signed integer type.
+    /// A [value tag][ValueTag] that holds an 8 byte integer.
     ///
     /// @see LongTag
     public static final TagType<LongTag> LONG = new TagType<>("TAG_Long", 0x04, LongTag.class) {
@@ -62,7 +64,7 @@ public abstract class TagType<T extends Tag> {
         }
     };
 
-    /// 4 byte floating point type.
+    /// A [value tag][ValueTag] that holds a 4 byte floating point number.
     ///
     /// @see FloatTag
     public static final TagType<FloatTag> FLOAT = new TagType<>("TAG_Float", 0x05, FloatTag.class) {
@@ -72,7 +74,7 @@ public abstract class TagType<T extends Tag> {
         }
     };
 
-    /// 8 byte floating point type.
+    /// A [value tag][ValueTag] that holds an 8 byte floating point number.
     ///
     /// @see DoubleTag
     public static final TagType<DoubleTag> DOUBLE = new TagType<>("TAG_Double", 0x06, DoubleTag.class) {
@@ -82,7 +84,7 @@ public abstract class TagType<T extends Tag> {
         }
     };
 
-    /// An array of bytes.
+    /// A tag that holds an array of [byte tag][ByteTag]s.
     ///
     /// @see ByteArrayTag
     public static final TagType<ByteArrayTag> BYTE_ARRAY = new TagType<>("TAG_Byte_Array", 0x07, ByteArrayTag.class) {
@@ -92,7 +94,7 @@ public abstract class TagType<T extends Tag> {
         }
     };
 
-    /// A UTF-8 encoded string. It has a size, rather than being null terminated.
+    /// A [value tag][ValueTag] that holds a Unicode string.
     ///
     /// @see StringTag
     public static final TagType<StringTag> STRING = new TagType<>("TAG_String", 0x08, StringTag.class) {
@@ -102,7 +104,7 @@ public abstract class TagType<T extends Tag> {
         }
     };
 
-    /// A list of tag payloads, without tag IDs or names, apart from the one before the length.
+    /// A [value tag][ValueTag] that holds a collection of other tags.
     ///
     /// @see ListTag
     public static final TagType<ListTag<?>> LIST = new TagType<>("TAG_List", 0x09, ListTag.class) {
@@ -112,7 +114,7 @@ public abstract class TagType<T extends Tag> {
         }
     };
 
-    /// A list of fully formed tags, including their IDs, names, and payloads. No two tags may have the same name.
+    /// A [value tag][ValueTag] that holds a collection of named tags.
     ///
     /// @see CompoundTag
     public static final TagType<CompoundTag> COMPOUND = new TagType<>("TAG_Compound", 0x0A, CompoundTag.class) {
@@ -122,7 +124,7 @@ public abstract class TagType<T extends Tag> {
         }
     };
 
-    /// An array of 4 byte signed integers.
+    /// A tag that holds an array of [int tag][IntTag]s.
     ///
     /// @see IntArrayTag
     public static final TagType<IntArrayTag> INT_ARRAY = new TagType<>("TAG_Int_Array", 0x0B, IntArrayTag.class) {
@@ -132,7 +134,7 @@ public abstract class TagType<T extends Tag> {
         }
     };
 
-    /// An array of 8 byte signed integers.
+    /// A tag that holds an array of [long tag][LongTag]s.
     ///
     /// @see LongArrayTag
     public static final TagType<LongArrayTag> LONG_ARRAY = new TagType<>("TAG_Long_Array", 0x0C, LongArrayTag.class) {

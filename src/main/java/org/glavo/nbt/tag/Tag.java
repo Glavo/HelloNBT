@@ -19,6 +19,7 @@ import org.glavo.nbt.NBTElement;
 import org.glavo.nbt.NBTParent;
 import org.glavo.nbt.internal.input.DataReader;
 import org.glavo.nbt.internal.output.DataWriter;
+import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.Nullable;
 
@@ -64,6 +65,8 @@ public sealed abstract class Tag implements NBTElement
     }
 
     /// Returns the type of the tag.
+    ///
+    /// @see TagType
     @Contract(pure = true)
     public abstract TagType<?> getType();
 
@@ -113,6 +116,8 @@ public sealed abstract class Tag implements NBTElement
     }
 
     /// If the tag is a child of a [parent tag][ParentTag], returns the parent tag; otherwise, returns `null`.
+    ///
+    /// @see ParentTag
     @Contract(pure = true)
     public @Nullable ParentTag<?> getParentTag() {
         return parent instanceof ParentTag<?> parentTag ? parentTag : null;
@@ -121,6 +126,8 @@ public sealed abstract class Tag implements NBTElement
     /// Sets the parent of this tag.
     ///
     /// Internal method, should only be called by [ParentTag] or [org.glavo.nbt.chunk.Chunk] when adding or removing subtags.
+    ///
+    /// @see ParentTag
     @Contract(mutates = "this")
     void setParent(@Nullable NBTParent<? extends Tag> parent, int index) {
         assert parent == null ^ index >= 0;
@@ -129,9 +136,11 @@ public sealed abstract class Tag implements NBTElement
     }
 
     /// Internal method for reading the content of the tag.
+    @ApiStatus.Internal
     protected abstract void readContent(DataReader reader) throws IOException;
 
     /// Internal method for writing the content of the tag.
+    @ApiStatus.Internal
     protected abstract void writeContent(DataWriter writer) throws IOException;
 
     protected abstract void contentToString(StringBuilder builder);

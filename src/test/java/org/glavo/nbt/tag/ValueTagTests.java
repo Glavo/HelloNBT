@@ -206,4 +206,72 @@ final class ValueTagTests {
             assertEquals("World", tag.getAsString());
         }
     }
+
+    @Test
+    void testClone() {
+        {
+            var tag = new ByteTag("Meow", (byte) 114);
+            var clone = tag.clone();
+
+            assertNotSame(tag, clone);
+            assertEquals("Meow", clone.getName());
+            assertIntegralEquals((byte) 114, clone);
+        }
+
+        {
+            var tag = new ShortTag("Meow", (short) 114);
+            var clone = tag.clone();
+
+            assertNotSame(tag, clone);
+            assertEquals("Meow", clone.getName());
+            assertIntegralEquals((short) 114, clone);
+        }
+
+        {
+            var tag = new IntTag("Meow", 114);
+            var clone = tag.clone();
+
+            assertNotSame(tag, clone);
+            assertEquals("Meow", clone.getName());
+            assertIntegralEquals(114, clone);
+        }
+
+        {
+            var tag = new LongTag("Meow", 114L);
+            var clone = tag.clone();
+
+            assertNotSame(tag, clone);
+            assertEquals("Meow", clone.getName());
+            assertIntegralEquals(114L, clone);
+        }
+
+        {
+            var tag = new FloatTag("Meow", 114.0f);
+            var clone = tag.clone();
+
+            assertNotSame(tag, clone);
+            assertEquals("Meow", clone.getName());
+            assertFloatingEquals(114.0f, clone);
+        }
+
+        {
+            var tag = new DoubleTag("Meow", 114.0);
+            var clone = tag.clone();
+
+            assertNotSame(tag, clone);
+            assertEquals("Meow", clone.getName());
+            assertFloatingEquals(114.0, clone);
+        }
+
+        {
+            var tag = new StringTag("Meow", "Hello");
+            var clone = tag.clone();
+
+            assertNotSame(tag, clone);
+            assertEquals("Meow", clone.getName());
+            assertEquals("Hello", clone.get());
+            assertEquals("Hello", clone.getValue());
+            assertEquals("Hello", clone.getAsString());
+        }
+    }
 }

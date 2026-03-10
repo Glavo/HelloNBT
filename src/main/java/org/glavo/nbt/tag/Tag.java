@@ -47,7 +47,7 @@ import java.util.Objects;
 ///     - [ListTag]: A tag that holds a collection of unnamed tags.
 ///     - [ArrayTag]: A tag that holds an array of primitive values.
 ///         - [ByteArrayTag]: A tag that holds an array of [byte tag][ByteTag]s.
-///         - [IntArrayTag]: A tag that holds an array of [int tag][IntTag]s. Sometimes used for UUIDs.
+///         - [IntArrayTag]: A tag that holds an array of [int tag][IntTag]s or a UUID.
 ///         - [LongArrayTag]: A tag that holds an array of [long tag][LongTag]s.
 ///
 /// @author Glavo

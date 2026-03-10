@@ -25,7 +25,7 @@ import java.nio.IntBuffer;
 import java.util.*;
 import java.util.stream.IntStream;
 
-/// A tag that holds an array of [int tag][IntTag]s.
+/// A tag that holds an array of [int tag][IntTag]s or a UUID.
 ///
 /// Minecraft also uses int array tags to store UUIDs. UUIDs are stored as an IntArrayTag with a length of 4.
 /// You can determine whether a tag is a UUID using [#isUUID()]. If the tag is a UUID, you can get the UUID value using [#getUUID()].

@@ -35,9 +35,9 @@ import java.util.stream.BaseStream;
 ///
 /// These are the all possible types of array tags:
 ///
-/// - [ByteArrayTag]: An array of 8-byte integers. The subtags are [ByteTag].
-/// - [IntArrayTag]: An array of 32-byte integers. The subtags are [IntTag].
-/// - [LongArrayTag]: An array of 64-byte integers. The subtags are [LongTag].
+/// - [ByteArrayTag]: A tag that holds an array of [byte tag][ByteTag]s.
+/// - [IntArrayTag]: A tag that holds an array of [int tag][IntTag]s or a UUID.
+/// - [LongArrayTag]: A tag that holds an array of [long tag][LongTag]s.
 ///
 /// @param <E> the type of number elements in this array
 /// @param <T> the type of subtags in this array

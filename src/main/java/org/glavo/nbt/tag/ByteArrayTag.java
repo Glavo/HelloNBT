@@ -18,6 +18,7 @@ package org.glavo.nbt.tag;
 import org.glavo.nbt.internal.ArrayAccessor;
 import org.glavo.nbt.internal.input.DataReader;
 import org.glavo.nbt.internal.output.DataWriter;
+import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Contract;
 
 import java.io.IOException;
@@ -88,8 +89,12 @@ public final class ByteArrayTag extends ArrayTag<Byte, ByteTag, byte[], ByteBuff
         }
     }
 
+    /// {@inheritDoc}
+    ///
+    /// @see #set(int, byte)
     @Override
     @Contract(mutates = "this")
+    @ApiStatus.Obsolete
     public void set(int index, Byte value) throws IndexOutOfBoundsException {
         set(index, value.byteValue());
     }
@@ -107,8 +112,12 @@ public final class ByteArrayTag extends ArrayTag<Byte, ByteTag, byte[], ByteBuff
         values[size++] = value;
     }
 
+    /// {@inheritDoc}
+    ///
+    /// @see #add(byte)
     @Override
     @Contract(mutates = "this")
+    @ApiStatus.Obsolete
     public void add(Byte value) {
         add(value.byteValue());
     }

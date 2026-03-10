@@ -18,6 +18,7 @@ package org.glavo.nbt.tag;
 import org.glavo.nbt.internal.ArrayAccessor;
 import org.glavo.nbt.internal.input.DataReader;
 import org.glavo.nbt.internal.output.DataWriter;
+import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Contract;
 
 import java.io.IOException;
@@ -92,8 +93,12 @@ public final class LongArrayTag extends ArrayTag<Long, LongTag, long[], LongBuff
         }
     }
 
+    /// {@inheritDoc}
+    ///
+    /// @see #set(int, long)
     @Override
     @Contract(mutates = "this")
+    @ApiStatus.Obsolete
     public void set(int index, Long value) throws IndexOutOfBoundsException {
         set(index, value.longValue());
     }
@@ -111,8 +116,12 @@ public final class LongArrayTag extends ArrayTag<Long, LongTag, long[], LongBuff
         values[size++] = value;
     }
 
+    /// {@inheritDoc}
+    ///
+    /// @see #add(long)
     @Override
     @Contract(mutates = "this")
+    @ApiStatus.Obsolete
     public void add(Long value) {
         add(value.longValue());
     }

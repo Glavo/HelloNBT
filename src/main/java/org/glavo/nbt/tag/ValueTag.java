@@ -28,6 +28,15 @@ import org.jetbrains.annotations.Contract;
 /// - [FloatTag]: A tag that holds a 4 byte floating point number.
 /// - [DoubleTag]: A tag that holds an 8 byte floating point number.
 /// - [StringTag]: A tag that holds a Unicode string.
+///
+/// @see Tag
+/// @see ByteTag
+/// @see ShortTag
+/// @see IntTag
+/// @see LongTag
+/// @see FloatTag
+/// @see DoubleTag
+/// @see StringTag
 public sealed abstract class ValueTag<V> extends Tag
         permits ByteTag, ShortTag, IntTag, LongTag, FloatTag, DoubleTag, StringTag {
     protected ValueTag(String name) {

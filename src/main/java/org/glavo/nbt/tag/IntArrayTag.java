@@ -30,6 +30,11 @@ import java.util.stream.IntStream;
 /// Minecraft also uses int array tags to store UUIDs. UUIDs are stored as an IntArrayTag with a length of 4.
 /// You can determine whether a tag is a UUID using [#isUUID()]. If the tag is a UUID, you can get the UUID value using [#getUUID()].
 /// You can also set the UUID value using [#setUUID(UUID)].
+///
+/// @see Tag
+/// @see ParentTag
+/// @see ArrayTag
+/// @see IntTag
 public final class IntArrayTag extends ArrayTag<Integer, IntTag, int[], IntBuffer> {
     /// Creates a new IntArrayTag with an empty name and an empty array.
     public IntArrayTag() {

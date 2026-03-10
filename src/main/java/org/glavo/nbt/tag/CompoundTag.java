@@ -25,14 +25,22 @@ import org.jetbrains.annotations.Nullable;
 import java.io.IOException;
 import java.util.*;
 
+/// A [parent tag][ParentTag] that holds an unordered collection of named tags.
+///
+/// All elements in the compound tag must have a unique name.
+///
+/// @see Tag
+/// @see ParentTag
 public final class CompoundTag extends ParentTag<Tag> {
 
     private final Map<String, Tag> subTagsByName = new HashMap<>();
 
+    /// Creates a new empty compound tag with an empty name.
     public CompoundTag() {
         this("");
     }
 
+    /// Creates a new empty compound tag with the given name.
     public CompoundTag(String name) {
         super(name);
     }

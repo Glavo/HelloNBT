@@ -23,9 +23,14 @@ import org.jetbrains.annotations.Nullable;
 import java.io.IOException;
 import java.util.Objects;
 
-/// Represents a list of tags in NBT format.
+/// A [parent tag][ParentTag] that holds an ordered collection of isomorphic unnamed tags.
 ///
-/// All elements in the list must have the same type.
+/// All elements in the list must have the same type, and its name will always be empty.
+///
+/// For heterogeneous lists in SNBT, the [ListTag#addAny(Tag)] method can be used to simulate their behavior.
+///
+/// @see Tag
+/// @see ParentTag
 public final class ListTag<T extends Tag> extends ParentTag<T> {
 
     /// The type of the elements in the list.

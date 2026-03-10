@@ -52,6 +52,8 @@ import java.util.Objects;
 ///
 /// @author Glavo
 /// @see <a href="https://minecraft.wiki/w/NBT_format">NBT format - Minecraft Wiki</a>
+/// @see ValueTag
+/// @see ParentTag
 public sealed abstract class Tag implements NBTElement
         permits ValueTag, ParentTag {
 

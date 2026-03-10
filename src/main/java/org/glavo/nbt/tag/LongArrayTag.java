@@ -29,6 +29,11 @@ import java.util.PrimitiveIterator;
 import java.util.stream.LongStream;
 
 /// A tag that holds an array of [long tag][LongTag]s.
+///
+/// @see Tag
+/// @see ParentTag
+/// @see ArrayTag
+/// @see LongTag
 public final class LongArrayTag extends ArrayTag<Long, LongTag, long[], LongBuffer> {
 
     /// Creates a new LongArrayTag with an empty name and an empty array.

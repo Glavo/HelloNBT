@@ -27,6 +27,11 @@ import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
 /// A tag that holds an array of [byte tag][ByteTag]s.
+///
+/// @see Tag
+/// @see ParentTag
+/// @see ArrayTag
+/// @see ByteTag
 public final class ByteArrayTag extends ArrayTag<Byte, ByteTag, byte[], ByteBuffer> {
     /// Creates a new ByteArrayTag with an empty name and an empty array.
     public ByteArrayTag() {

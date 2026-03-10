@@ -22,6 +22,9 @@ import org.jetbrains.annotations.Contract;
 import java.io.IOException;
 
 /// A [value tag][ValueTag] that holds a 2 byte integer.
+///
+/// @see Tag
+/// @see ValueTag
 public final class ShortTag extends ValueTag<Short> {
     private short value;
 

@@ -35,6 +35,11 @@ import java.util.stream.StreamSupport;
 ///     - [ByteArrayTag]: A tag that holds an array of [byte tag][ByteTag]s.
 ///     - [IntArrayTag]: A tag that holds an array of [int tag][IntTag]s. Sometimes used for UUIDs.
 ///     - [LongArrayTag]: A tag that holds an array of [long tag][LongTag]s.
+///
+/// @see Tag
+/// @see CompoundTag
+/// @see ListTag
+/// @see ArrayTag
 public sealed abstract class ParentTag<T extends Tag> extends Tag
         implements NBTParent<T>, Iterable<T>
         permits CompoundTag, ListTag, ArrayTag {

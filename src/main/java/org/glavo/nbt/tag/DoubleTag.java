@@ -22,6 +22,9 @@ import org.jetbrains.annotations.Contract;
 import java.io.IOException;
 
 /// A [value tag][ValueTag] that holds an 8 byte floating point number.
+///
+/// @see Tag
+/// @see ValueTag
 public final class DoubleTag extends ValueTag<Double> {
     private double value;
 

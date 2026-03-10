@@ -27,11 +27,9 @@ import java.util.List;
 import java.util.Objects;
 import java.util.stream.BaseStream;
 
-/// Base class for array tags.
+/// Base class for array tags. Each array tag holds an array of numbers.
 ///
-/// Each array tag holds an array of numbers.
-///
-/// Array tags are also subclasses of [ParentTag], and each element is a [ValueTag]. In practice,
+/// Array tags are subclasses of [ParentTag], and each element is a [ValueTag]. In practice,
 /// this array will lazily allocate [ValueTag] for its elements as much as possible,
 /// making the performance and memory overhead of this class close to that of primitive type arrays in most cases.
 ///
@@ -45,6 +43,8 @@ import java.util.stream.BaseStream;
 /// @param <T> the type of subtags in this array
 /// @param <A> the type of the array
 /// @param <B> the type of the buffer
+/// @see Tag
+/// @see ParentTag
 /// @see ByteArrayTag
 /// @see IntArrayTag
 /// @see LongArrayTag

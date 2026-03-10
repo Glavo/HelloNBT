@@ -121,12 +121,6 @@ public final class ByteArrayTag extends ArrayTag<Byte, ByteTag, byte[], ByteBuff
     }
 
     @Override
-    @Contract(value = "-> new", pure = true)
-    public ByteBuffer getBuffer() {
-        return ByteBuffer.wrap(values).slice(0, size).asReadOnlyBuffer();
-    }
-
-    @Override
     public Iterator<Byte> valueIterator() {
         final byte[] array = this.values;
         final int size = this.size;

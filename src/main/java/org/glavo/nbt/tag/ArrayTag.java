@@ -129,7 +129,9 @@ public sealed abstract class ArrayTag<E extends Number, T extends ValueTag<E>, A
     ///
     /// Each call returns a new buffer, but the underlying implementation may share the same array.
     @Contract(value = "-> new", pure = true)
-    public abstract B getBuffer();
+    public final B getBuffer() {
+        return accessor().getReadOnlyView(values, 0, size);
+    }
 
     /// Sets the value of the tag without cloning the array.
     @Contract(mutates = "this")

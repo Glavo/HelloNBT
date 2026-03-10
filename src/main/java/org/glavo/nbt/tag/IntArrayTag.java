@@ -104,12 +104,6 @@ public final class IntArrayTag extends ArrayTag<Integer, IntTag, int[], IntBuffe
         return new UUID(msb, lsb);
     }
 
-    @Override
-    @Contract(value = "-> new", pure = true)
-    public IntBuffer getBuffer() {
-        return IntBuffer.wrap(values).slice(0, size).asReadOnlyBuffer();
-    }
-
     void setDirect(int index, int value) {
         values[index] = value;
     }

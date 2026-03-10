@@ -190,12 +190,16 @@ public final class IntArrayTag extends ArrayTag<Integer, IntTag, int[]> {
 
     @Override
     protected void readContent(DataReader reader) throws IOException {
-        values = reader.readIntArray();
+        clear();
+        int len = reader.readInt();
+        values = reader.readIntArray(len);
+        size = len;
     }
 
     @Override
     protected void writeContent(DataWriter writer) throws IOException {
-        writer.writeIntArray(values);
+        writer.writeInt(size);
+        writer.writeIntArrayDirect(values);
     }
 
     @Override

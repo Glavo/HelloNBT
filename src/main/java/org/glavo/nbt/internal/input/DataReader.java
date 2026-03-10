@@ -33,23 +33,13 @@ public sealed abstract class DataReader implements Closeable
     @Override
     public abstract void close() throws IOException;
 
-    public byte[] readByteArray() throws IOException {
-        int len = readInt();
+    public byte[] readByteArray(int len) throws IOException {
         if (len < 0 || len >= Integer.MAX_VALUE - 8) {
             throw new IOException("Array length too large");
         }
 
-        return readByteArray(len);
-    }
-
-    public byte[] readByteArray(int len) throws IOException {
         ensureBufferRemaining(len);
         return getBuffer().getByteArray(len);
-    }
-
-    public int[] readIntArray() throws IOException {
-        int len = readInt();
-        return readIntArray(len);
     }
 
     public int[] readIntArray(int len) throws IOException {
@@ -59,16 +49,6 @@ public sealed abstract class DataReader implements Closeable
 
         ensureBufferRemaining(len * Integer.BYTES);
         return getBuffer().getIntArray(len);
-    }
-
-    public long[] readLongArray() throws IOException {
-        int len = readInt();
-        if (len < 0 || len > Integer.MAX_VALUE / Long.BYTES - 8) {
-            throw new IOException("Array length too large");
-        }
-
-        ensureBufferRemaining(len * Long.BYTES);
-        return getBuffer().getLongArray(len);
     }
 
     public long[] readLongArray(int len) throws IOException {

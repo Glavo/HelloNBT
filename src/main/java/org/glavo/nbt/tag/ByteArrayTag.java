@@ -156,12 +156,16 @@ public final class ByteArrayTag extends ArrayTag<Byte, ByteTag, byte[]> {
 
     @Override
     protected void readContent(DataReader reader) throws IOException {
-        values = reader.readByteArray();
+        clear();
+        int len = reader.readInt();
+        values = reader.readByteArray(len);
+        size = len;
     }
 
     @Override
     protected void writeContent(DataWriter writer) throws IOException {
-        writer.writeByteArray(values);
+        writer.writeInt(size);
+        writer.writeByteArrayDirect(values);
     }
 
     @Override

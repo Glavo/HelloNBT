@@ -65,8 +65,7 @@ public record NBTCodecImpl(MinecraftEdition edition,
             throw new IOException("Invalid tag type: %02x".formatted(Byte.toUnsignedInt(tagByte)));
         }
 
-        Tag tag = type.createTag();
-        tag.setName(reader.readString());
+        Tag tag = type.createTag(reader.readString());
         Access.TAG.readContent(tag, reader);
         return tag;
     }

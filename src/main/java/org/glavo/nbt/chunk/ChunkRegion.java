@@ -37,6 +37,8 @@ public final class ChunkRegion implements NBTParent<Chunk>, NBTElement, Iterable
     private final @Nullable Chunk[] chunks = new Chunk[ChunkUtils.CHUNKS_PRE_REGION];
 
     /// Creates a new empty chunk region.
+    ///
+    /// All chunks in the region are initially empty.
     public ChunkRegion() {
     }
 

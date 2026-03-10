@@ -18,6 +18,7 @@ package org.glavo.nbt;
 import org.glavo.nbt.chunk.Chunk;
 import org.glavo.nbt.chunk.ChunkRegion;
 import org.glavo.nbt.tag.ParentTag;
+import org.jetbrains.annotations.Contract;
 
 import java.util.stream.Stream;
 
@@ -26,16 +27,20 @@ public sealed interface NBTParent<E extends NBTElement> extends NBTElement, Iter
         permits ParentTag, ChunkRegion, Chunk {
 
     /// Returns `true` if this parent has no child elements, `false` otherwise.
+    @Contract(pure = true)
     boolean isEmpty();
 
     /// Returns the number of child elements.
+    @Contract(pure = true)
     int size();
 
     /// Returns a stream of child elements.
+    @Contract(pure = true)
     Stream<E> stream();
 
     /// Removes the `element` from this parent.
     ///
-    /// @throws IllegalArgumentException if the `element` is not a child of this parent..
+    /// @throws IllegalArgumentException if the `element` is not a child of this parent.
+    @Contract(mutates = "this,param1")
     void remove(E element) throws IllegalArgumentException;
 }

@@ -135,7 +135,8 @@ public final class ByteArrayTag extends ArrayTag<Byte, ByteTag, byte[], ByteBuff
     public Stream<Byte> valueStream() {
         return isEmpty()
                 ? Stream.empty()
-                : StreamSupport.stream(Spliterators.spliterator(valueIterator(), size(), 0), false);
+                : StreamSupport.stream(Spliterators.spliterator(valueIterator(), size(), Spliterator.ORDERED | Spliterator.IMMUTABLE),
+                false);
     }
 
     @Override

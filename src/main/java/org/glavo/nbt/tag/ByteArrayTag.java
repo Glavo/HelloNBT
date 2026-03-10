@@ -47,6 +47,22 @@ public final class ByteArrayTag extends ArrayTag<Byte, ByteTag, byte[]> {
     }
 
     @Override
+    protected byte[] emptyArray() {
+        return ArrayUtils.EMPTY_BYTE_ARRAY;
+    }
+
+    @Override
+    protected ByteTag createTagFromIndex(int index) {
+        assert index >= 0 && index < size;
+        return new ByteTag("", values[index]);
+    }
+
+    @Override
+    protected byte[] copyOf(byte[] array, int newLength) {
+        return Arrays.copyOf(array, newLength);
+    }
+
+    @Override
     public TagType<ByteArrayTag> getType() {
         return TagType.BYTE_ARRAY;
     }
@@ -67,7 +83,8 @@ public final class ByteArrayTag extends ArrayTag<Byte, ByteTag, byte[]> {
     }
 
     public void add(byte value) {
-        throw new UnsupportedOperationException("TODO"); // TODO
+        ensureValuesCapacityForAdd();
+        values[size++] = value;
     }
 
     @Override
@@ -154,17 +171,6 @@ public final class ByteArrayTag extends ArrayTag<Byte, ByteTag, byte[]> {
     @Override
     protected byte[] clone(byte[] array) {
         return array.clone();
-    }
-
-    @Override
-    protected byte[] emptyArray() {
-        return ArrayUtils.EMPTY_BYTE_ARRAY;
-    }
-
-    @Override
-    protected ByteTag createTagFromIndex(int index) {
-        assert index >= 0 && index < size;
-        return new ByteTag("", values[index]);
     }
 
 }

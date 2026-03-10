@@ -63,6 +63,11 @@ public final class IntArrayTag extends ArrayTag<Integer, IntTag, int[]> {
     }
 
     @Override
+    protected int[] copyOf(int[] array, int newLength) {
+        return Arrays.copyOf(array, newLength);
+    }
+
+    @Override
     public TagType<IntArrayTag> getType() {
         return TagType.INT_ARRAY;
     }
@@ -119,7 +124,8 @@ public final class IntArrayTag extends ArrayTag<Integer, IntTag, int[]> {
 
     @Contract(mutates = "this")
     public void add(int value) {
-        throw new UnsupportedOperationException("TODO"); // TODO
+        ensureValuesCapacityForAdd();
+        values[size++] = value;
     }
 
     @Override

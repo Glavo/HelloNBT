@@ -15,6 +15,7 @@
  */
 package org.glavo.nbt.tag;
 
+import org.glavo.nbt.internal.ArrayUtils;
 import org.jetbrains.annotations.Contract;
 
 import java.lang.reflect.Array;
@@ -32,6 +33,37 @@ public sealed abstract class ArrayTag<E extends Number, T extends ValueTag<E>, A
 
     protected ArrayTag(String name) {
         super(name);
+    }
+
+    /// Returns an empty array.
+    protected abstract A emptyArray();
+
+    /// Creates a tag from the value at the given index.
+    @Contract("_ -> new")
+    protected abstract T createTagFromIndex(int index);
+
+    protected abstract A copyOf(A array, int newLength);
+
+    private void removeValueFromArray(int index) {
+        assert index >= 0 && index < size;
+
+        if (index < size - 1) {
+            //noinspection SuspiciousSystemArraycopy
+            System.arraycopy(values, index + 1, values, index, size - index - 1);
+        }
+    }
+
+    protected void ensureValuesCapacityForAdd() {
+        if (Array.getLength(values) == size) {
+            values = copyOf(values, ArrayUtils.nextCapacity(size));
+        }
+    }
+
+    @Override
+    protected final void preUpdateSubTagName(Tag tag, String oldName, String newName) throws IllegalArgumentException {
+        if (!newName.isEmpty()) {
+            throw new IllegalArgumentException("The name of the subtag must be null for ArrayTag");
+        }
     }
 
     @Override
@@ -152,29 +184,10 @@ public sealed abstract class ArrayTag<E extends Number, T extends ValueTag<E>, A
         return tag;
     }
 
+    protected abstract A clone(A array);
+
     @Override
     @Contract(value = "-> new", pure = true)
     public abstract ArrayTag<E, T, A> clone();
 
-    protected abstract A clone(A array);
-
-    protected abstract A emptyArray();
-
-    protected abstract T createTagFromIndex(int index);
-
-    protected final void removeValueFromArray(int index) {
-        assert index >= 0 && index < size;
-
-        if (index < size - 1) {
-            //noinspection SuspiciousSystemArraycopy
-            System.arraycopy(values, index + 1, values, index, size - index - 1);
-        }
-    }
-
-    @Override
-    protected final void preUpdateSubTagName(Tag tag, String oldName, String newName) throws IllegalArgumentException {
-        if (!newName.isEmpty()) {
-            throw new IllegalArgumentException("The name of the subtag must be null for ArrayTag");
-        }
-    }
 }

@@ -60,6 +60,11 @@ public final class LongArrayTag extends ArrayTag<Long, LongTag, long[]> {
     }
 
     @Override
+    protected long[] copyOf(long[] array, int newLength) {
+        return Arrays.copyOf(array, newLength);
+    }
+
+    @Override
     @Contract(pure = true)
     public TagType<LongArrayTag> getType() {
         return TagType.LONG_ARRAY;
@@ -87,7 +92,8 @@ public final class LongArrayTag extends ArrayTag<Long, LongTag, long[]> {
 
     @Contract(mutates = "this")
     public void add(long value) {
-        throw new UnsupportedOperationException("TODO"); // TODO
+        ensureValuesCapacityForAdd();
+        values[size++] = value;
     }
 
     @Override

@@ -23,8 +23,10 @@ import java.nio.ByteBuffer;
 import java.nio.IntBuffer;
 import java.nio.LongBuffer;
 import java.util.Random;
+import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 
 abstract class ArrayTagTests<AT extends ArrayTag<E, T, A, B>, E extends Number, T extends ValueTag<E>, A, B extends Buffer> {
     abstract ArrayAccessor<E, T, A, B> accessor();
@@ -53,7 +55,7 @@ abstract class ArrayTagTests<AT extends ArrayTag<E, T, A, B>, E extends Number, 
 
     abstract A randomArray(Random random, int size);
 
-    private void assertArrayEquals(A expected, A actual) {
+    void assertArrayEquals(A expected, A actual) {
         if (getLength(expected) != getLength(actual)) {
             throw new AssertionError("Array lengths differ: " + getLength(expected) + " != " + getLength(actual));
         }
@@ -147,6 +149,19 @@ abstract class ArrayTagTests<AT extends ArrayTag<E, T, A, B>, E extends Number, 
         @Override
         int[] randomArray(Random random, int size) {
             return random.ints(size).limit(size).toArray();
+        }
+
+        @Test
+        void testUUID() {
+            var tag = new IntArrayTag();
+            var uuid = UUID.fromString("f81d4fae-7dec-11d0-a765-00a0c91e6bf6");
+
+            assertFalse(tag.isUUID());
+
+            tag.setUUID(uuid);
+            assertTrue(tag.isUUID());
+            assertArrayEquals(new int[]{-132296786, 2112623056, -1486552928, -920753162}, tag.getArray());
+            assertEquals(uuid, tag.getUUID());
         }
     }
 

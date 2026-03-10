@@ -60,6 +60,15 @@ public final class IntArrayTag extends ArrayTag<Integer> {
         return TagType.INT_ARRAY;
     }
 
+    /// Returns true if the tag is a UUID.
+    ///
+    /// All int array tags with length 4 are treated as UUIDs.
+    ///
+    /// @see <a href="https://minecraft.wiki/w/UUID">UUID - Minecraft Wiki</a>
+    public boolean isUUID() {
+        return value.length == 4;
+    }
+
     @Override
     @Contract(pure = true)
     public int[] get() {

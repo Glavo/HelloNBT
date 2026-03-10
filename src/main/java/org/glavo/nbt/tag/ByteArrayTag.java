@@ -167,7 +167,11 @@ public final class ByteArrayTag extends ArrayTag<Byte, ByteTag, byte[]> {
     @Override
     @Contract(pure = true)
     public int contentHashCode() {
-        return Arrays.hashCode(values);
+        int hashCode = 0;
+        for (int i = 0; i < size; i++) {
+            hashCode = 31 * hashCode + Byte.hashCode(values[i]);
+        }
+        return hashCode;
     }
 
     @Override

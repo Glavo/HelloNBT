@@ -201,7 +201,11 @@ public final class IntArrayTag extends ArrayTag<Integer, IntTag, int[]> {
     @Override
     @Contract(pure = true)
     public int contentHashCode() {
-        return Arrays.hashCode(values);
+        int hashCode = 0;
+        for (int i = 0; i < size; i++) {
+            hashCode = 31 * hashCode + Integer.hashCode(values[i]);
+        }
+        return hashCode;
     }
 
     @Override

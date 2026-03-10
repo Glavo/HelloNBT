@@ -170,7 +170,11 @@ public final class LongArrayTag extends ArrayTag<Long, LongTag, long[]> {
     @Override
     @Contract(pure = true)
     public int contentHashCode() {
-        return Arrays.hashCode(values);
+        int hashCode = 0;
+        for (int i = 0; i < size; i++) {
+            hashCode = 31 * hashCode + Long.hashCode(values[i]);
+        }
+        return hashCode;
     }
 
     @Override
@@ -178,7 +182,7 @@ public final class LongArrayTag extends ArrayTag<Long, LongTag, long[]> {
     public boolean contentEquals(Tag other) {
         return other instanceof LongArrayTag that && Arrays.equals(
                 this.values, 0, this.size,
-                that.values, 0 , that.size
+                that.values, 0, that.size
         );
     }
 

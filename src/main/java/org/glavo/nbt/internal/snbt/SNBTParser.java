@@ -20,15 +20,12 @@ package org.glavo.nbt.internal.snbt;
 import org.glavo.nbt.internal.TextUtils;
 import org.glavo.nbt.tag.*;
 import org.jetbrains.annotations.Nullable;
-import org.jetbrains.annotations.Unmodifiable;
 import org.jetbrains.annotations.VisibleForTesting;
 
 import java.util.Objects;
 import java.util.UUID;
 
 public final class SNBTParser {
-    public static final @Unmodifiable CompoundTag EMPTY_COMPOUND_TAG = new CompoundTag();
-
     private final CharSequence input;
     private final int endIndex;
 
@@ -444,11 +441,24 @@ public final class SNBTParser {
             throw new IllegalArgumentException("Unexpected token: " + firstToken);
         }
 
-        var builder = switch (arrayBeginToken) {
-            case BYTE_ARRAY -> new PrimaryArrayBuilder.OfByte();
-            case INT_ARRAY -> new PrimaryArrayBuilder.OfInt();
-            case LONG_ARRAY -> new PrimaryArrayBuilder.OfLong();
-        };
+        ArrayTag<?, ?, ?, ?> tag;
+        IntegralType integralType;
+
+        switch (arrayBeginToken) {
+            case BYTE_ARRAY -> {
+                integralType = IntegralType.BYTE;
+                tag = new ByteArrayTag();
+            }
+            case INT_ARRAY -> {
+                integralType = IntegralType.INT;
+                tag = new IntArrayTag();
+            }
+            case LONG_ARRAY -> {
+                integralType = IntegralType.LONG;
+                tag = new LongArrayTag();
+            }
+            default -> throw new IllegalArgumentException();
+        }
 
         while (true) {
             Token peek = peekToken();
@@ -457,7 +467,13 @@ public final class SNBTParser {
                 break;
             } else if (peek instanceof Token.IntegralToken integralToken) {
                 discardPeekedToken(integralToken);
-                builder.add(integralToken);
+                integralType.check(integralToken.value(), integralToken.unsigned());
+
+                switch (integralType) {
+                    case BYTE -> ((ByteArrayTag) tag).add((byte) integralToken.value());
+                    case INT -> ((IntArrayTag) tag).add((int) integralToken.value());
+                    case LONG -> ((LongArrayTag) tag).add(integralToken.value());
+                }
 
                 peek = peekToken();
                 if (peek == Token.SimpleToken.COMMA) {
@@ -473,6 +489,6 @@ public final class SNBTParser {
             }
         }
 
-        return builder.build();
+        return tag;
     }
 }

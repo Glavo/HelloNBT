@@ -39,15 +39,27 @@ public abstract class ArrayAccessor<E extends Number, T extends ValueTag<E>, A, 
         return Math.max(growCap, minCapacity);
     }
 
+    private final Class<?> primitiveClass;
+    private final Class<A> arrayClass;
     protected final A empty;
 
-    private ArrayAccessor(A empty) {
+    private ArrayAccessor(Class<?> primitiveClass, Class<A> arrayClass, A empty) {
+        this.primitiveClass = primitiveClass;
+        this.arrayClass = arrayClass;
         this.empty = empty;
     }
 
     /// Returns an empty array.
     public final A empty() {
         return empty;
+    }
+
+    public final Class<?> getPrimitiveClass() {
+        return primitiveClass;
+    }
+
+    public final Class<A> getArrayClass() {
+        return arrayClass;
     }
 
     public abstract A copyOf(A array, int newLength);
@@ -74,7 +86,7 @@ public abstract class ArrayAccessor<E extends Number, T extends ValueTag<E>, A, 
 
     public abstract T newTagFromElement(A array, int index);
 
-    public static final ArrayAccessor<Byte, ByteTag, byte[], ByteBuffer> BYTE_ARRAY = new ArrayAccessor<>(new byte[0]) {
+    public static final ArrayAccessor<Byte, ByteTag, byte[], ByteBuffer> BYTE_ARRAY = new ArrayAccessor<>(byte.class, byte[].class, new byte[0]) {
         @Override
         public byte[] copyOf(byte[] array, int newLength) {
             return Arrays.copyOf(array, newLength);
@@ -145,7 +157,7 @@ public abstract class ArrayAccessor<E extends Number, T extends ValueTag<E>, A, 
         }
     };
 
-    public static final ArrayAccessor<Integer, IntTag, int[], IntBuffer> INT_ARRAY = new ArrayAccessor<>(new int[0]) {
+    public static final ArrayAccessor<Integer, IntTag, int[], IntBuffer> INT_ARRAY = new ArrayAccessor<>(int.class, int[].class, new int[0]) {
 
         @Override
         public int[] copyOf(int[] array, int newLength) {
@@ -217,7 +229,7 @@ public abstract class ArrayAccessor<E extends Number, T extends ValueTag<E>, A, 
         }
     };
 
-    public static final ArrayAccessor<Long, LongTag, long[], LongBuffer> LONG_ARRAY = new ArrayAccessor<>(new long[0]) {
+    public static final ArrayAccessor<Long, LongTag, long[], LongBuffer> LONG_ARRAY = new ArrayAccessor<>(long.class, long[].class, new long[0]) {
 
         @Override
         public long[] copyOf(long[] array, int newLength) {

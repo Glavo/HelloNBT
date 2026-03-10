@@ -74,7 +74,7 @@ public final class LongArrayTag extends ArrayTag<Long, LongTag, long[]> {
     @Override
     @Contract(value = "-> new", pure = true)
     public LongBuffer getBuffer() {
-        return LongBuffer.wrap(values).asReadOnlyBuffer();
+        return LongBuffer.wrap(values).slice(0, size).asReadOnlyBuffer();
     }
 
     /// Returns the element at the given index.

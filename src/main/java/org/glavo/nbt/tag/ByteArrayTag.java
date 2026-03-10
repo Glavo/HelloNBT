@@ -71,7 +71,7 @@ public final class ByteArrayTag extends ArrayTag<Byte, ByteTag, byte[]> {
     }
 
     @Override
-    public Iterator<Byte> iterator() {
+    public Iterator<Byte> valueIterator() {
         final byte[] array = this.values;
         return new Iterator<>() {
             private int cursor;
@@ -93,10 +93,10 @@ public final class ByteArrayTag extends ArrayTag<Byte, ByteTag, byte[]> {
 
     @Override
     @Contract(pure = true)
-    public Stream<Byte> valuesStream() {
+    public Stream<Byte> valueStream() {
         return isEmpty()
                 ? Stream.empty()
-                : StreamSupport.stream(Spliterators.spliterator(iterator(), size(), 0), false);
+                : StreamSupport.stream(Spliterators.spliterator(valueIterator(), size(), 0), false);
     }
 
     @Override

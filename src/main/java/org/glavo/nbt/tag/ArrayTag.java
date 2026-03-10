@@ -19,11 +19,12 @@ import org.jetbrains.annotations.Contract;
 
 import java.lang.reflect.Array;
 import java.nio.Buffer;
+import java.util.Iterator;
 import java.util.stream.BaseStream;
 
 /// Base class for array tags.
 public sealed abstract class ArrayTag<E extends Number, T extends ValueTag<E>, A>
-        extends Tag implements Iterable<E>
+        extends Tag
         permits ByteArrayTag, IntArrayTag, LongArrayTag {
 
     A values;
@@ -49,9 +50,12 @@ public sealed abstract class ArrayTag<E extends Number, T extends ValueTag<E>, A
         return Array.getLength(values);
     }
 
+    /// Returns an iterator over the elements of this array.
+    public abstract Iterator<E> valueIterator();
+
     /// Returns a sequential stream with this array as its source.
     @Contract(pure = true)
-    public abstract BaseStream<E, ?> valuesStream();
+    public abstract BaseStream<E, ?> valueStream();
 
     /// Returns the clone of the array.
     @Contract(pure = true)

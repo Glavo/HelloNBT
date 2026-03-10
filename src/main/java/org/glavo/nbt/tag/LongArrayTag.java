@@ -74,7 +74,7 @@ public final class LongArrayTag extends ArrayTag<Long, LongTag, long[]> {
     }
 
     @Override
-    public PrimitiveIterator.OfLong iterator() {
+    public PrimitiveIterator.OfLong valueIterator() {
         final long[] array = this.values;
         return new PrimitiveIterator.OfLong() {
             private int cursor;
@@ -97,7 +97,7 @@ public final class LongArrayTag extends ArrayTag<Long, LongTag, long[]> {
     /// Returns a sequential [LongStream] with this value as its source.
     @Override
     @Contract(pure = true)
-    public LongStream valuesStream() {
+    public LongStream valueStream() {
         return Arrays.stream(values);
     }
 

@@ -106,7 +106,7 @@ public final class IntArrayTag extends ArrayTag<Integer, IntTag, int[]> {
     }
 
     @Override
-    public PrimitiveIterator.OfInt iterator() {
+    public PrimitiveIterator.OfInt valueIterator() {
         final int[] array = this.values;
         return new PrimitiveIterator.OfInt() {
             private int cursor;
@@ -129,7 +129,7 @@ public final class IntArrayTag extends ArrayTag<Integer, IntTag, int[]> {
     /// Returns a sequential [IntStream] with this value as its source.
     @Override
     @Contract(pure = true)
-    public IntStream valuesStream() {
+    public IntStream valueStream() {
         return Arrays.stream(values);
     }
 

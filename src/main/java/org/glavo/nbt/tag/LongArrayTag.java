@@ -28,7 +28,7 @@ import java.util.Objects;
 import java.util.PrimitiveIterator;
 import java.util.stream.LongStream;
 
-/// An ordered list of 64-bit integers.
+/// An ordered list of [LongTag]s.
 public final class LongArrayTag extends ArrayTag<Long, LongTag, long[], LongBuffer> {
 
     /// Creates a new LongArrayTag with an empty name and an empty array.

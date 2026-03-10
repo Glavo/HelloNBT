@@ -25,7 +25,11 @@ import java.nio.IntBuffer;
 import java.util.*;
 import java.util.stream.IntStream;
 
-/// An ordered list of 32-bit integers. Sometimes used for UUIDs.
+/// An ordered list of [IntTag]s.
+///
+/// Minecraft also uses int array tags to store UUIDs. UUIDs are stored as an IntArrayTag with a length of 4.
+/// You can determine whether a tag is a UUID using [#isUUID()]. If the tag is a UUID, you can get the UUID value using [#getUUID()].
+/// You can also set the UUID value using [#setUUID(UUID)].
 public final class IntArrayTag extends ArrayTag<Integer, IntTag, int[], IntBuffer> {
     /// Creates a new IntArrayTag with an empty name and an empty array.
     public IntArrayTag() {

@@ -204,6 +204,14 @@ public abstract class TagType<T extends Tag> {
     @Contract("-> new")
     public abstract T createTag();
 
+    /// Creates a new tag of this type with the given name.
+    @Contract("_ -> new")
+    public T createTag(String name) {
+        T tag = createTag();
+        tag.setName(name);
+        return tag;
+    }
+
     @Override
     public String toString() {
         return name;

@@ -16,30 +16,15 @@
 package org.glavo.nbt;
 
 import org.glavo.nbt.internal.selector.NBTSelectorParser;
-import org.glavo.nbt.tag.Tag;
-
-import java.util.Collection;
-import java.util.List;
 
 /// Represents a selector for NBT tags.
 ///
 /// @see <a href="https://minecraft.wiki/w/NBT_path">NBT Path - Minecraft Wiki</a>
-public interface NBTSelector {
+public final class NBTSelector {
+
 
     /// @throws IllegalArgumentException if the input is not a valid NBT selector
-    static NBTSelector parse(String input) {
+    public static NBTSelector parse(String input) {
         return new NBTSelectorParser(input).parse();
     }
-
-    List<Tag> selectAll(NBTParent<?> parent);
-
-    List<Tag> selectAll(Collection<NBTParent<?>> parents);
-
-    Tag selectFirst(NBTParent<?> parent);
-
-    List<Tag> selectFirst(Collection<NBTParent<?>> parents);
-
-    Tag selectSingle(NBTParent<?> parent);
-
-    List<Tag> selectSingle(Collection<NBTParent<?>> parents);
 }

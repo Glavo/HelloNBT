@@ -16,9 +16,7 @@
 package org.glavo.nbt.internal.selector;
 
 import org.glavo.nbt.NBTSelector;
-import org.glavo.nbt.tag.CompoundTag;
 import org.jetbrains.annotations.Nullable;
-import org.jetbrains.annotations.Unmodifiable;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -28,7 +26,7 @@ public final class NBTSelectorParser {
     private final int beginIndex;
     private final int endIndex;
     private int cursor;
-    private final List<NBTSelectorImpl.Node> nodes = new ArrayList<>();
+    private final List<NBTSelectorNode> nodes = new ArrayList<>();
     private @Nullable StringBuilder buffer;
 
     public NBTSelectorParser(String input) {

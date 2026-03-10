@@ -20,15 +20,11 @@ package org.glavo.nbt.internal.selector;
 import org.glavo.nbt.tag.CompoundTag;
 import org.jetbrains.annotations.Unmodifiable;
 
-public final class NBTSelectorImpl {
+public sealed interface NBTSelectorNode {
+    @Unmodifiable
+    CompoundTag EMPTY_COMPOUND_TAG = new CompoundTag();
 
-    static final @Unmodifiable CompoundTag EMPTY_COMPOUND_TAG = new CompoundTag();
-
-    public sealed interface Node {
-
-    }
-
-    public static final class RootNode implements Node {
+    final class RootNode implements NBTSelectorNode {
         public static final RootNode EMPTY = new RootNode(EMPTY_COMPOUND_TAG);
 
         private final @Unmodifiable CompoundTag tags;
@@ -38,7 +34,7 @@ public final class NBTSelectorImpl {
         }
     }
 
-    public static final class NamedSubTagNode implements Node {
+    final class NamedSubTagNode implements NBTSelectorNode {
         private final String name;
 
         public NamedSubTagNode(String name) {
@@ -46,7 +42,7 @@ public final class NBTSelectorImpl {
         }
     }
 
-    public static final class NamedSubCompoundTagNode implements Node {
+    final class NamedSubCompoundTagNode implements NBTSelectorNode {
         private final String name;
         private final @Unmodifiable CompoundTag tags;
 
@@ -56,11 +52,11 @@ public final class NBTSelectorImpl {
         }
     }
 
-    public static final class AllElements implements Node {
+    final class AllElements implements NBTSelectorNode {
         public static final AllElements INSTANCE = new AllElements();
     }
 
-    public static final class IndexNode implements Node {
+    final class IndexNode implements NBTSelectorNode {
         private final int index;
 
         public IndexNode(int index) {
@@ -68,7 +64,7 @@ public final class NBTSelectorImpl {
         }
     }
 
-    public static final class CompoundElementsNode implements Node {
+    final class CompoundElementsNode implements NBTSelectorNode {
         public static final CompoundElementsNode EMPTY = new CompoundElementsNode(EMPTY_COMPOUND_TAG);
 
         private final @Unmodifiable CompoundTag tags;

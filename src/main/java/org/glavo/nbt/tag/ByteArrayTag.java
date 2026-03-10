@@ -104,15 +104,8 @@ public final class ByteArrayTag extends ArrayTag<Byte> {
         return ByteBuffer.wrap(value).asReadOnlyBuffer();
     }
 
-    /// Sets the element at the given index.
-    ///
-    /// @throws IndexOutOfBoundsException if the index is out of bounds.
-    @Contract(mutates = "this")
-    public void set(int index, byte value) throws IndexOutOfBoundsException {
-        this.value[index] = value;
-    }
-
     @Override
+    @Contract(pure = true)
     public int size() {
         return value.length;
     }

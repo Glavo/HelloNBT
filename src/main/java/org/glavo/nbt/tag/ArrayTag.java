@@ -150,7 +150,7 @@ public sealed abstract class ArrayTag<E extends Number, T extends ValueTag<E>, A
     @Contract(mutates = "this")
     public abstract void set(int index, E value) throws IndexOutOfBoundsException;
 
-    /// Sets all values of the tag.
+    /// Sets all values of the tag from an array.
     ///
     /// The array is cloned to avoid external modifications.
     ///
@@ -166,6 +166,15 @@ public sealed abstract class ArrayTag<E extends Number, T extends ValueTag<E>, A
             this.size = newSize;
         }
     }
+
+    /// Set all values of the tag from a buffer.
+    ///
+    /// This method uses the data in the buffer from `position` to `limit` to set the values of the array.
+    /// After calling this method, the `position` of the buffer will be set to `limit`.
+    ///
+    /// Calling this method will clear the current array, all subtags will be removed.
+    @Contract(mutates = "this,param1")
+    public abstract void setAll(B buffer);
 
     /// Appends the specified value to the end of this array.
     @Contract(mutates = "this")

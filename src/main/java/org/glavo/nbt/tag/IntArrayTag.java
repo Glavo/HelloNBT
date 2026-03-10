@@ -145,6 +145,18 @@ public final class IntArrayTag extends ArrayTag<Integer, IntTag, int[], IntBuffe
         super.setAll(array);
     }
 
+    @Override
+    @Contract(mutates = "this,param1")
+    public void setAll(IntBuffer buffer) {
+        clear();
+        int len = buffer.remaining();
+        if (len > 0) {
+            int[] ints = new int[len];
+            buffer.get(ints);
+            setArrayWithoutClone(ints, len);
+        }
+    }
+
     /// Sets the value of the tag from a UUID.
     @Contract(mutates = "this")
     public void setUUID(UUID uuid) {

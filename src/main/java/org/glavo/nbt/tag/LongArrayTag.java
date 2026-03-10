@@ -122,6 +122,18 @@ public final class LongArrayTag extends ArrayTag<Long, LongTag, long[], LongBuff
         super.setAll(array);
     }
 
+    @Override
+    @Contract(mutates = "this,param1")
+    public void setAll(LongBuffer buffer) {
+        clear();
+        int len = buffer.remaining();
+        if (len > 0) {
+            long[] longs = new long[len];
+            buffer.get(longs);
+            setArrayWithoutClone(longs, len);
+        }
+    }
+
     /// Appends the specified value to the end of this array.
     @Contract(mutates = "this")
     public void add(long value) {

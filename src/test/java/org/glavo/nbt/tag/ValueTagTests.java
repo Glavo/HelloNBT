@@ -174,5 +174,36 @@ final class ValueTagTests {
             tag.setValue(514L);
             assertIntegralEquals(514L, tag);
         }
+
+        {
+            var tag = new FloatTag();
+            tag.set(114.0f);
+            assertFloatingEquals(114.0f, tag);
+
+            tag.setValue(514.0f);
+            assertFloatingEquals(514.0f, tag);
+        }
+
+        {
+            var tag = new DoubleTag();
+            tag.set(114.0);
+            assertFloatingEquals(114.0, tag);
+
+            tag.setValue(514.0);
+            assertFloatingEquals(514.0, tag);
+        }
+
+        {
+            var tag = new StringTag();
+            tag.set("Hello");
+            assertEquals("Hello", tag.get());
+            assertEquals("Hello", tag.getValue());
+            assertEquals("Hello", tag.getAsString());
+
+            tag.setValue("World");
+            assertEquals("World", tag.get());
+            assertEquals("World", tag.getValue());
+            assertEquals("World", tag.getAsString());
+        }
     }
 }

@@ -21,7 +21,6 @@ import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.MustBeInvokedByOverriders;
 import org.jetbrains.annotations.Nullable;
 
-import java.lang.reflect.Array;
 import java.nio.Buffer;
 import java.util.Iterator;
 import java.util.Objects;
@@ -206,7 +205,7 @@ public sealed abstract class ArrayTag<E extends Number, T extends ValueTag<E>, A
                     removeValueFromArray(index);
 
                     tags[size - 1] = tag;
-                    Array.set(values, size - 1, tag.getValue());
+                    accessor().set(values, size - 1, tag);
 
                     updateIndexes(index);
                 }

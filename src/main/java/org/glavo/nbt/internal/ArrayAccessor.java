@@ -18,6 +18,7 @@ package org.glavo.nbt.internal;
 import org.glavo.nbt.tag.ByteTag;
 import org.glavo.nbt.tag.IntTag;
 import org.glavo.nbt.tag.LongTag;
+import org.glavo.nbt.tag.ValueTag;
 
 import java.lang.reflect.Array;
 import java.nio.Buffer;
@@ -26,7 +27,7 @@ import java.nio.IntBuffer;
 import java.nio.LongBuffer;
 import java.util.Arrays;
 
-public abstract class ArrayAccessor<E, T, A, B extends Buffer> {
+public abstract class ArrayAccessor<E extends Number, T extends ValueTag<E>, A, B extends Buffer> {
     protected final A empty;
 
     private ArrayAccessor(A empty) {
@@ -40,16 +41,37 @@ public abstract class ArrayAccessor<E, T, A, B extends Buffer> {
 
     public abstract A copyOf(A array, int newLength);
 
-    public abstract A get(B buffer);
-
     public final int getLength(A array) {
         return Array.getLength(array);
     }
+
+    public abstract E get(A array, int index);
+
+    public abstract void set(A array, int index, E value);
+
+    public abstract void set(A array, int index, T tag);
+
+    public abstract A get(B buffer);
 
     public static final ArrayAccessor<Byte, ByteTag, byte[], ByteBuffer> BYTE_ARRAY = new ArrayAccessor<>(new byte[0]) {
         @Override
         public byte[] copyOf(byte[] array, int newLength) {
             return Arrays.copyOf(array, newLength);
+        }
+
+        @Override
+        public Byte get(byte[] array, int index) {
+            return array[index];
+        }
+
+        @Override
+        public void set(byte[] array, int index, Byte value) {
+            array[index] = value;
+        }
+
+        @Override
+        public void set(byte[] array, int index, ByteTag tag) {
+            array[index] = tag.get();
         }
 
         @Override
@@ -73,6 +95,21 @@ public abstract class ArrayAccessor<E, T, A, B extends Buffer> {
         }
 
         @Override
+        public Integer get(int[] array, int index) {
+            return array[index];
+        }
+
+        @Override
+        public void set(int[] array, int index, Integer value) {
+            array[index] = value;
+        }
+
+        @Override
+        public void set(int[] array, int index, IntTag tag) {
+            array[index] = tag.getValue();
+        }
+
+        @Override
         public int[] get(IntBuffer buffer) {
             int remaining = buffer.remaining();
             if (remaining > 0) {
@@ -90,6 +127,21 @@ public abstract class ArrayAccessor<E, T, A, B extends Buffer> {
         @Override
         public long[] copyOf(long[] array, int newLength) {
             return Arrays.copyOf(array, newLength);
+        }
+
+        @Override
+        public Long get(long[] array, int index) {
+            return array[index];
+        }
+
+        @Override
+        public void set(long[] array, int index, Long value) {
+            array[index] = value;
+        }
+
+        @Override
+        public void set(long[] array, int index, LongTag tag) {
+            array[index] = tag.getValue();
         }
 
         @Override

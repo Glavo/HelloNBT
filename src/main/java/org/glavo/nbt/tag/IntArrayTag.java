@@ -102,7 +102,7 @@ public final class IntArrayTag extends ArrayTag<Integer, IntTag, int[]> {
     /// @throws IllegalStateException if the tag is not a UUID.
     @Contract(pure = true)
     public UUID getUUID() {
-        if (isUUID()) {
+        if (!isUUID()) {
             throw new IllegalStateException("IntArrayTag is not a UUID");
         }
         long msb = ((long) values[0] << 32) | (long) values[1] & 0xFFFFFFFFL;

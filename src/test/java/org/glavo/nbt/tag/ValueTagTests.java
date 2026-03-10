@@ -80,41 +80,90 @@ final class ValueTagTests {
     }
 
     @Test
-    void testDefaultConstructor() {
+    void testConstructor() {
         {
             var tag = new ByteTag();
             assertEquals("", tag.getName());
             assertIntegralEquals((byte) 0, tag);
+
+            tag = new ByteTag("Meow");
+            assertEquals("Meow", tag.getName());
+            assertIntegralEquals((byte) 0, tag);
+
+            tag = new ByteTag("Meow", (byte) 114);
+            assertEquals("Meow", tag.getName());
+            assertIntegralEquals((byte) 114, tag);
         }
 
         {
             var tag = new ShortTag();
             assertEquals("", tag.getName());
             assertIntegralEquals((short) 0, tag);
+
+            tag = new ShortTag("Meow");
+            assertEquals("Meow", tag.getName());
+            assertIntegralEquals((short) 0, tag);
+
+            tag = new ShortTag("Meow", (short) 114);
+            assertEquals("Meow", tag.getName());
+            assertIntegralEquals((short) 114, tag);
         }
 
         {
             var tag = new IntTag();
             assertEquals("", tag.getName());
             assertIntegralEquals(0, tag);
+
+            tag = new IntTag("Meow");
+            assertEquals("Meow", tag.getName());
+            assertIntegralEquals(0, tag);
+
+            tag = new IntTag("Meow", 114);
+            assertEquals("Meow", tag.getName());
+            assertIntegralEquals(114, tag);
         }
 
         {
             var tag = new LongTag();
             assertEquals("", tag.getName());
             assertIntegralEquals(0L, tag);
+
+            tag = new LongTag("Meow");
+            assertEquals("Meow", tag.getName());
+            assertIntegralEquals(0L, tag);
+
+            tag = new LongTag("Meow", 114L);
+            assertEquals("Meow", tag.getName());
+            assertIntegralEquals(114L, tag);
         }
 
         {
             var tag = new FloatTag();
             assertEquals("", tag.getName());
             assertFloatingEquals(0.0f, tag);
+
+            tag = new FloatTag("Meow");
+            assertEquals("Meow", tag.getName());
+            assertFloatingEquals(0.0f, tag);
+
+            tag = new FloatTag("Meow", 114.0f);
+            assertEquals("Meow", tag.getName());
+            assertFloatingEquals(114.0f, tag);
         }
 
         {
             var tag = new DoubleTag();
             assertEquals("", tag.getName());
             assertFloatingEquals(0.0, tag);
+
+            tag = new DoubleTag("Meow");
+            assertEquals("Meow", tag.getName());
+            assertFloatingEquals(0.0, tag);
+
+            tag = new DoubleTag("Meow", 114.0);
+            assertEquals("Meow", tag.getName());
+            assertFloatingEquals(114.0, tag);
+
         }
 
         {
@@ -123,6 +172,18 @@ final class ValueTagTests {
             assertEquals("", tag.get());
             assertEquals("", tag.getValue());
             assertEquals("", tag.getAsString());
+
+            tag = new StringTag("Meow");
+            assertEquals("Meow", tag.getName());
+            assertEquals("", tag.get());
+            assertEquals("", tag.getValue());
+            assertEquals("", tag.getAsString());
+
+            tag = new StringTag("Meow", "Hello");
+            assertEquals("Meow", tag.getName());
+            assertEquals("Hello", tag.get());
+            assertEquals("Hello", tag.getValue());
+            assertEquals("Hello", tag.getAsString());
         }
     }
 

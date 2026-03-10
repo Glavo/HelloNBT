@@ -132,6 +132,17 @@ public sealed abstract class ArrayTag<E extends Number, T extends ValueTag<E>, A
     @Contract(value = "-> new", pure = true)
     public abstract Buffer getBuffer();
 
+    /// Sets the value of the tag without cloning the array.
+    @Contract(mutates = "this")
+    final void setWithoutClone(A array, int size) {
+        assert Array.getLength(array) <= size;
+
+        clear();
+
+        this.values = array;
+        this.size = size;
+    }
+
     /// Sets the value of the tag.
     @Contract(mutates = "this")
     public final void set(A array) {

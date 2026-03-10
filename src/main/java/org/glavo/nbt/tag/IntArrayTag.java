@@ -42,8 +42,7 @@ public final class IntArrayTag extends ArrayTag<Integer, IntTag, int[]> {
     /// The value is cloned to avoid external modifications.
     public IntArrayTag(String name, int[] value) {
         super(name);
-        this.values = value.clone();
-        this.size = value.length;
+        set(value);
     }
 
     /// Create a new IntArrayTag with the name and a UUID value.
@@ -150,8 +149,7 @@ public final class IntArrayTag extends ArrayTag<Integer, IntTag, int[]> {
         array[3] = (int) (uuid.getLeastSignificantBits() & 0xFFFF_FFFFL);
 
         clear();
-        values = array;
-        size = 4;
+        setWithoutClone(array, 4);
     }
 
     /// Appends the specified value to the end of this array.

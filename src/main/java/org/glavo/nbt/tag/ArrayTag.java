@@ -17,6 +17,7 @@ package org.glavo.nbt.tag;
 
 import org.glavo.nbt.internal.ArrayUtils;
 import org.jetbrains.annotations.Contract;
+import org.jetbrains.annotations.MustBeInvokedByOverriders;
 import org.jetbrains.annotations.Nullable;
 
 import java.lang.reflect.Array;
@@ -143,9 +144,20 @@ public sealed abstract class ArrayTag<E extends Number, T extends ValueTag<E>, A
         this.size = size;
     }
 
-    /// Sets the value of the tag.
+    /// Sets the value at the given index.
+    ///
+    /// @throws IndexOutOfBoundsException if the index is out of bounds.
     @Contract(mutates = "this")
-    public final void set(A array) {
+    public abstract void set(int index, E value) throws IndexOutOfBoundsException;
+
+    /// Sets all values of the tag.
+    ///
+    /// The array is cloned to avoid external modifications.
+    ///
+    /// Calling this method will clear the current array, all subtags will be removed.
+    @Contract(mutates = "this")
+    @MustBeInvokedByOverriders
+    public void setAll(A array) {
         clear();
 
         int newSize = Array.getLength(array);
@@ -154,12 +166,6 @@ public sealed abstract class ArrayTag<E extends Number, T extends ValueTag<E>, A
             this.size = newSize;
         }
     }
-
-    /// Sets the value at the given index.
-    ///
-    /// @throws IndexOutOfBoundsException if the index is out of bounds.
-    @Contract(mutates = "this")
-    public abstract void set(int index, E value) throws IndexOutOfBoundsException;
 
     /// Appends the specified value to the end of this array.
     @Contract(mutates = "this")

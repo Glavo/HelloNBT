@@ -42,7 +42,7 @@ public final class IntArrayTag extends ArrayTag<Integer, IntTag, int[]> {
     /// The value is cloned to avoid external modifications.
     public IntArrayTag(String name, int[] value) {
         super(name);
-        set(value);
+        setAll(value);
     }
 
     /// Create a new IntArrayTag with the name and a UUID value.
@@ -137,6 +137,12 @@ public final class IntArrayTag extends ArrayTag<Integer, IntTag, int[]> {
     @Contract(mutates = "this")
     public void set(int index, Integer value) throws IndexOutOfBoundsException {
         set(index, value.intValue());
+    }
+
+    @Override
+    @Contract(mutates = "this")
+    public void setAll(int... array) { // Override to use varargs
+        super.setAll(array);
     }
 
     /// Sets the value of the tag from a UUID.

@@ -46,7 +46,7 @@ public final class LongArrayTag extends ArrayTag<Long, LongTag, long[]> {
     /// The value is cloned to avoid external modifications.
     public LongArrayTag(String name, long[] values) {
         super(name);
-        set(values);
+        setAll(values);
     }
 
     @Override
@@ -114,6 +114,12 @@ public final class LongArrayTag extends ArrayTag<Long, LongTag, long[]> {
     @Contract(mutates = "this")
     public void set(int index, Long value) throws IndexOutOfBoundsException {
         set(index, value.longValue());
+    }
+
+    @Override
+    @Contract(mutates = "this")
+    public void setAll(long... array) { // Override to use varargs
+        super.setAll(array);
     }
 
     /// Appends the specified value to the end of this array.

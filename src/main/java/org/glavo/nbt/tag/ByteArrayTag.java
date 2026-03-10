@@ -43,7 +43,7 @@ public final class ByteArrayTag extends ArrayTag<Byte, ByteTag, byte[]> {
     /// The value is cloned to avoid external modifications.
     public ByteArrayTag(String name, byte[] values) {
         super(name);
-        set(values);
+        setAll(values);
     }
 
     @Override
@@ -104,6 +104,12 @@ public final class ByteArrayTag extends ArrayTag<Byte, ByteTag, byte[]> {
     @Contract(mutates = "this")
     public void set(int index, Byte value) throws IndexOutOfBoundsException {
         set(index, value.byteValue());
+    }
+
+    @Override
+    @Contract(mutates = "this")
+    public void setAll(byte... array) { // Override to use varargs
+        super.setAll(array);
     }
 
     /// Appends the specified value to the end of this array.

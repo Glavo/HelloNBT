@@ -15,6 +15,7 @@
  */
 package org.glavo.nbt.internal;
 
+import java.lang.reflect.Array;
 import java.nio.Buffer;
 import java.nio.ByteBuffer;
 import java.nio.IntBuffer;
@@ -36,6 +37,10 @@ public abstract class ArrayAccessor<A, B extends Buffer> {
     public abstract A copyOf(A array, int newLength);
 
     public abstract A get(B buffer);
+
+    public final int getLength(A array) {
+        return Array.getLength(array);
+    }
 
     public static final ArrayAccessor<byte[], ByteBuffer> BYTE_ARRAY = new ArrayAccessor<>(new byte[0]) {
         @Override

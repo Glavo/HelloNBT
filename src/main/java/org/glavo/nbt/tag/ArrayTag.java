@@ -62,7 +62,7 @@ public sealed abstract class ArrayTag<E extends Number, T extends ValueTag<E>, A
     }
 
     protected void ensureValuesCapacityForAdd() {
-        if (Array.getLength(values) == size) {
+        if (accessor().getLength(values) == size) {
             values = accessor().copyOf(values, ArrayUtils.nextCapacity(size, size + 1));
         }
     }
@@ -135,7 +135,7 @@ public sealed abstract class ArrayTag<E extends Number, T extends ValueTag<E>, A
     /// Sets the value of the tag without cloning the array.
     @Contract(mutates = "this")
     final void setArrayWithoutClone(A array, int size) {
-        assert Array.getLength(array) <= size;
+        assert accessor().getLength(array) <= size;
 
         clear();
 
@@ -159,7 +159,7 @@ public sealed abstract class ArrayTag<E extends Number, T extends ValueTag<E>, A
     public void setAll(A array) {
         clear();
 
-        int newSize = Array.getLength(array);
+        int newSize = accessor().getLength(array);
         if (newSize > 0) {
             this.values = accessor().copyOf(array, newSize);
             this.size = newSize;
@@ -178,7 +178,7 @@ public sealed abstract class ArrayTag<E extends Number, T extends ValueTag<E>, A
 
         if (buffer.hasRemaining()) {
             A array = accessor().get(buffer);
-            setArrayWithoutClone(array, Array.getLength(array));
+            setArrayWithoutClone(array, accessor().getLength(array));
         }
     }
 

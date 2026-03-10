@@ -21,7 +21,8 @@ import java.nio.Buffer;
 import java.util.stream.BaseStream;
 
 /// Base class for array tags.
-public sealed abstract class ArrayTag<E extends Number> extends ValueTag<Object> implements Iterable<E>
+public sealed abstract class ArrayTag<E extends Number, T extends ValueTag<E>, A>
+        extends ValueTag<Object> implements Iterable<E>
         permits ByteArrayTag, IntArrayTag, LongArrayTag {
 
     protected ArrayTag(String name) {
@@ -30,7 +31,7 @@ public sealed abstract class ArrayTag<E extends Number> extends ValueTag<Object>
 
     @Override
     @Contract(pure = true)
-    public abstract TagType<? extends ArrayTag<E>> getType();
+    public abstract TagType<? extends ArrayTag<E, T, A>> getType();
 
     /// Returns `true` if the array is empty; otherwise, returns `false`.
     @Contract(pure = true)
@@ -44,11 +45,11 @@ public sealed abstract class ArrayTag<E extends Number> extends ValueTag<Object>
 
     /// Returns a sequential stream with this array as its source.
     @Contract(pure = true)
-    public abstract BaseStream<E, ?> stream();
+    public abstract BaseStream<E, ?> valuesStream();
 
     /// Returns the clone of the array.
     @Contract(pure = true)
-    public abstract Object get();
+    public abstract A getArray();
 
     /// Returns the element at the given index.
     ///
@@ -66,5 +67,5 @@ public sealed abstract class ArrayTag<E extends Number> extends ValueTag<Object>
 
     @Override
     @Contract(value = "-> new", pure = true)
-    public abstract ArrayTag<E> clone();
+    public abstract ArrayTag<E, T, A> clone();
 }

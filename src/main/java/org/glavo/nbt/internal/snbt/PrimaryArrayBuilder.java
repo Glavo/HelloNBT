@@ -26,7 +26,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.Arrays;
 
-sealed abstract class PrimaryArrayBuilder<T extends ArrayTag<?>, A> {
+sealed abstract class PrimaryArrayBuilder<T extends ArrayTag<?, ?, ?>, A> {
     protected A array;
     protected int capacity;
     protected int length;
@@ -117,14 +117,14 @@ sealed abstract class PrimaryArrayBuilder<T extends ArrayTag<?>, A> {
         }
     }
 
-    static final class OfLong extends PrimaryArrayBuilder<ArrayTag<Long>, long[]> {
+    static final class OfLong extends PrimaryArrayBuilder<LongArrayTag, long[]> {
         @Override
         protected IntegralType getIntegralType() {
             return IntegralType.LONG;
         }
 
         @Override
-        protected ArrayTag<Long> newTag(long @Nullable [] array) {
+        protected LongArrayTag newTag(long @Nullable [] array) {
             var tag = new LongArrayTag();
             if (array != null) {
                 Access.TAG.setInternalArray(tag, array);

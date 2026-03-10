@@ -25,7 +25,7 @@ import java.util.*;
 import java.util.stream.IntStream;
 
 /// An ordered list of 32-bit integers. Sometimes used for UUIDs.
-public final class IntArrayTag extends ArrayTag<Integer> {
+public final class IntArrayTag extends ArrayTag<Integer, IntTag, int[]> {
     private static final int[] EMPTY = new int[0];
 
     int[] value;
@@ -71,7 +71,7 @@ public final class IntArrayTag extends ArrayTag<Integer> {
 
     @Override
     @Contract(pure = true)
-    public int[] get() {
+    public int[] getArray() {
         return value.clone();
     }
 
@@ -169,7 +169,7 @@ public final class IntArrayTag extends ArrayTag<Integer> {
     /// Returns a sequential [IntStream] with this value as its source.
     @Override
     @Contract(pure = true)
-    public IntStream stream() {
+    public IntStream valuesStream() {
         return Arrays.stream(value);
     }
 

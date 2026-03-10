@@ -26,7 +26,7 @@ import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
 /// An ordered list of 8-bit integers.
-public final class ByteArrayTag extends ArrayTag<Byte> {
+public final class ByteArrayTag extends ArrayTag<Byte, ByteTag, byte[]> {
     private static final byte[] EMPTY = new byte[0];
 
     byte[] value;
@@ -57,7 +57,7 @@ public final class ByteArrayTag extends ArrayTag<Byte> {
 
     @Override
     @Contract(pure = true)
-    public byte[] get() {
+    public byte[] getArray() {
         return value.clone();
     }
 
@@ -133,7 +133,7 @@ public final class ByteArrayTag extends ArrayTag<Byte> {
 
     @Override
     @Contract(pure = true)
-    public Stream<Byte> stream() {
+    public Stream<Byte> valuesStream() {
         return isEmpty()
                 ? Stream.empty()
                 : StreamSupport.stream(Spliterators.spliterator(iterator(), size(), 0), false);

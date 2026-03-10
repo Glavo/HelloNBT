@@ -438,7 +438,7 @@ public final class SNBTParser {
         return tag;
     }
 
-    private ArrayTag<?> nextArrayTag() throws IllegalArgumentException {
+    private ArrayTag<?, ?, ?> nextArrayTag() throws IllegalArgumentException {
         Token firstToken = nextToken();
         if (!(firstToken instanceof Token.ArrayBeginToken arrayBeginToken)) {
             throw new IllegalArgumentException("Unexpected token: " + firstToken);

@@ -27,7 +27,7 @@ import java.util.PrimitiveIterator;
 import java.util.stream.LongStream;
 
 /// An ordered list of 64-bit integers.
-public final class LongArrayTag extends ArrayTag<Long> {
+public final class LongArrayTag extends ArrayTag<Long, LongTag, long[]> {
     private static final long[] EMPTY = new long[0];
 
     long[] value;
@@ -59,7 +59,7 @@ public final class LongArrayTag extends ArrayTag<Long> {
 
     @Override
     @Contract(pure = true)
-    public long[] get() {
+    public long[] getArray() {
         return value.clone();
     }
 
@@ -136,7 +136,7 @@ public final class LongArrayTag extends ArrayTag<Long> {
     /// Returns a sequential [LongStream] with this value as its source.
     @Override
     @Contract(pure = true)
-    public LongStream stream() {
+    public LongStream valuesStream() {
         return Arrays.stream(value);
     }
 

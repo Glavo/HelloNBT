@@ -22,7 +22,6 @@ import java.nio.Buffer;
 import java.nio.ByteBuffer;
 import java.nio.IntBuffer;
 import java.nio.LongBuffer;
-import java.util.Objects;
 import java.util.Random;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -36,14 +35,30 @@ abstract class ArrayTagTests<AT extends ArrayTag<E, T, A, B>, E extends Number, 
 
     abstract AT create(String name, A array);
 
+    final A newArray(int size) {
+        return accessor().newArray(size);
+    }
+
+    final int getLength(A array) {
+        return accessor().getLength(array);
+    }
+
+    final E get(A array, int index) {
+        return accessor().get(array, index);
+    }
+
+    final void set(A array, int index, E value) {
+        accessor().set(array, index, value);
+    }
+
     abstract A randomArray(Random random, int size);
 
     private void assertArrayEquals(A expected, A actual) {
-        if (accessor().getLength(expected) != accessor().getLength(actual)) {
-            throw new AssertionError("Array lengths differ: " + accessor().getLength(expected) + " != " + accessor().getLength(actual));
+        if (getLength(expected) != getLength(actual)) {
+            throw new AssertionError("Array lengths differ: " + getLength(expected) + " != " + getLength(actual));
         }
 
-        for (int i = 0, end = accessor().getLength(expected); i < end; i++) {
+        for (int i = 0, end = getLength(expected); i < end; i++) {
             if (!accessor().get(expected, i).equals(accessor().get(actual, i))) {
                 throw new AssertionError("Array contents differ at index " + i + ": " + accessor().get(expected, i) + " != " + accessor().get(actual, i));
             }
@@ -55,17 +70,17 @@ abstract class ArrayTagTests<AT extends ArrayTag<E, T, A, B>, E extends Number, 
         AT tag = create();
         assertEquals("", tag.getName());
         assertEquals(0, tag.size());
-        assertEquals(0, accessor().getLength(tag.getArray()));
+        assertEquals(0, getLength(tag.getArray()));
 
         tag = create("test");
         assertEquals("test", tag.getName());
         assertEquals(0, tag.size());
-        assertEquals(0, accessor().getLength(tag.getArray()));
+        assertEquals(0, getLength(tag.getArray()));
 
         tag = create("test", accessor().empty());
         assertEquals("test", tag.getName());
         assertEquals(0, tag.size());
-        assertEquals(0, accessor().getLength(tag.getArray()));
+        assertEquals(0, getLength(tag.getArray()));
 
         Random random = new Random(0);
         A array = randomArray(random, 10);

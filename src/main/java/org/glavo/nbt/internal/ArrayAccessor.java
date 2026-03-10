@@ -39,13 +39,13 @@ public abstract class ArrayAccessor<E extends Number, T extends ValueTag<E>, A, 
         return Math.max(growCap, minCapacity);
     }
 
-    private final Class<?> primitiveClass;
     private final Class<A> arrayClass;
+    private final Class<?> primitiveClass;
     protected final A empty;
 
-    private ArrayAccessor(Class<?> primitiveClass, Class<A> arrayClass, A empty) {
-        this.primitiveClass = primitiveClass;
+    private ArrayAccessor(Class<A> arrayClass, A empty) {
         this.arrayClass = arrayClass;
+        this.primitiveClass = arrayClass.getComponentType();
         this.empty = empty;
     }
 
@@ -63,6 +63,8 @@ public abstract class ArrayAccessor<E extends Number, T extends ValueTag<E>, A, 
     }
 
     public abstract A copyOf(A array, int newLength);
+
+    public abstract A newArray(int newLength);
 
     public final int getLength(A array) {
         return Array.getLength(array);
@@ -86,7 +88,12 @@ public abstract class ArrayAccessor<E extends Number, T extends ValueTag<E>, A, 
 
     public abstract T newTagFromElement(A array, int index);
 
-    public static final ArrayAccessor<Byte, ByteTag, byte[], ByteBuffer> BYTE_ARRAY = new ArrayAccessor<>(byte.class, byte[].class, new byte[0]) {
+    public static final ArrayAccessor<Byte, ByteTag, byte[], ByteBuffer> BYTE_ARRAY = new ArrayAccessor<>(byte[].class, new byte[0]) {
+        @Override
+        public byte[] newArray(int newLength) {
+            return new byte[newLength];
+        }
+
         @Override
         public byte[] copyOf(byte[] array, int newLength) {
             return Arrays.copyOf(array, newLength);
@@ -157,7 +164,12 @@ public abstract class ArrayAccessor<E extends Number, T extends ValueTag<E>, A, 
         }
     };
 
-    public static final ArrayAccessor<Integer, IntTag, int[], IntBuffer> INT_ARRAY = new ArrayAccessor<>(int.class, int[].class, new int[0]) {
+    public static final ArrayAccessor<Integer, IntTag, int[], IntBuffer> INT_ARRAY = new ArrayAccessor<>(int[].class, new int[0]) {
+
+        @Override
+        public int[] newArray(int newLength) {
+            return new int[newLength];
+        }
 
         @Override
         public int[] copyOf(int[] array, int newLength) {
@@ -229,7 +241,12 @@ public abstract class ArrayAccessor<E extends Number, T extends ValueTag<E>, A, 
         }
     };
 
-    public static final ArrayAccessor<Long, LongTag, long[], LongBuffer> LONG_ARRAY = new ArrayAccessor<>(long.class, long[].class, new long[0]) {
+    public static final ArrayAccessor<Long, LongTag, long[], LongBuffer> LONG_ARRAY = new ArrayAccessor<>(long[].class, new long[0]) {
+
+        @Override
+        public long[] newArray(int newLength) {
+            return new long[newLength];
+        }
 
         @Override
         public long[] copyOf(long[] array, int newLength) {

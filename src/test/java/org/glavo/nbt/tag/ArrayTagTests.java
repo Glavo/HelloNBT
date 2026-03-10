@@ -157,11 +157,24 @@ abstract class ArrayTagTests<AT extends ArrayTag<E, T, A, B>, E extends Number, 
             var uuid = UUID.fromString("f81d4fae-7dec-11d0-a765-00a0c91e6bf6");
 
             assertFalse(tag.isUUID());
+            assertThrows(IllegalStateException.class, tag::getUUID);
 
             tag.setUUID(uuid);
             assertTrue(tag.isUUID());
+            assertEquals(4, tag.size());
             assertArrayEquals(new int[]{-132296786, 2112623056, -1486552928, -920753162}, tag.getArray());
             assertEquals(uuid, tag.getUUID());
+
+            uuid = UUID.fromString("00000000-0000-0000-0000-000000000000");
+            tag.setUUID(uuid);
+            assertTrue(tag.isUUID());
+            assertEquals(4, tag.size());
+            assertArrayEquals(new int[]{0, 0, 0, 0}, tag.getArray());
+            assertEquals(uuid, tag.getUUID());
+
+            tag.clear();
+            assertFalse(tag.isUUID());
+            assertThrows(IllegalStateException.class, tag::getUUID);
         }
     }
 

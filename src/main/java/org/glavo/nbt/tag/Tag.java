@@ -33,7 +33,7 @@ import java.util.Objects;
 ///
 /// These are the all possible types of tags:
 ///
-/// - [ValueTag]: A tag that holds a single value.
+/// - [ValueTag]: A tag that holds a value.
 ///     - [ByteTag]: A tag that holds a 1 byte signed integer. Sometimes used for booleans.
 ///     - [ShortTag]: A tag that holds a 2 byte signed integer.
 ///     - [IntTag]: A tag that holds a 4 byte signed integer.
@@ -43,7 +43,7 @@ import java.util.Objects;
 ///     - [StringTag]: A tag that holds a Unicode string.
 ///     - [ArrayTag]: A tag that holds an array of primitive values.
 ///         - [ByteArrayTag]: A tag that holds an array of 1 byte signed integers.
-///         - [IntArrayTag]: A tag that holds an array of 4 byte signed integers.
+///         - [IntArrayTag]: A tag that holds an array of 4 byte signed integers. Sometimes used for UUIDs.
 ///         - [LongArrayTag]: A tag that holds an array of 8 byte signed integers.
 /// - [ParentTag]: A tag that holds a collection of other tags.
 ///     - [CompoundTag]: A tag that holds a collection of named tags.

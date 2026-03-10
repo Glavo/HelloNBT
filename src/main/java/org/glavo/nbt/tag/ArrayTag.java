@@ -16,6 +16,7 @@
 package org.glavo.nbt.tag;
 
 import org.glavo.nbt.internal.ArrayAccessor;
+import org.intellij.lang.annotations.Flow;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.MustBeInvokedByOverriders;
 import org.jetbrains.annotations.Nullable;
@@ -160,6 +161,8 @@ public sealed abstract class ArrayTag<E extends Number, T extends ValueTag<E>, A
     }
 
     @Override
+    @Contract(pure = true)
+    @Flow(sourceIsContainer = true)
     public T getTag(int index) throws IndexOutOfBoundsException {
         Objects.checkIndex(index, size);
 
@@ -187,6 +190,7 @@ public sealed abstract class ArrayTag<E extends Number, T extends ValueTag<E>, A
     /// @see IntArrayTag#get(int)
     /// @see LongArrayTag#get(int)
     @Contract(pure = true)
+    @Flow(sourceIsContainer = true)
     public final E getValue(int index) throws IndexOutOfBoundsException {
         Objects.checkIndex(index, size);
         return accessor().get(values, index);
@@ -198,6 +202,7 @@ public sealed abstract class ArrayTag<E extends Number, T extends ValueTag<E>, A
     ///
     /// Each call returns a new buffer, but the underlying implementation may share the same array.
     @Contract(value = "-> new", pure = true)
+    @Flow(sourceIsContainer = true, targetIsContainer = true)
     public final B getBuffer() {
         return accessor().getReadOnlyView(values, 0, size);
     }
@@ -217,7 +222,7 @@ public sealed abstract class ArrayTag<E extends Number, T extends ValueTag<E>, A
     ///
     /// @throws IndexOutOfBoundsException if the index is out of bounds.
     @Contract(mutates = "this")
-    public abstract void set(int index, E value) throws IndexOutOfBoundsException;
+    public abstract void set(int index, @Flow(targetIsContainer = true) E value) throws IndexOutOfBoundsException;
 
     /// Sets all values of the tag from an array.
     ///
@@ -226,7 +231,8 @@ public sealed abstract class ArrayTag<E extends Number, T extends ValueTag<E>, A
     /// Calling this method will clear the current array, all subtags will be removed.
     @Contract(mutates = "this")
     @MustBeInvokedByOverriders
-    public void setAll(A array) {
+    public void setAll(@Flow(sourceIsContainer = true, targetIsContainer = true)
+                       A array) {
         clear();
 
         int newSize = accessor().getLength(array);
@@ -243,7 +249,8 @@ public sealed abstract class ArrayTag<E extends Number, T extends ValueTag<E>, A
     ///
     /// Calling this method will clear the current array, all subtags will be removed.
     @Contract(mutates = "this,param1")
-    public final void setAll(B buffer) {
+    public final void setAll(@Flow(sourceIsContainer = true, targetIsContainer = true)
+                             B buffer) {
         clear();
 
         if (buffer.hasRemaining()) {
@@ -254,11 +261,13 @@ public sealed abstract class ArrayTag<E extends Number, T extends ValueTag<E>, A
 
     /// Appends the specified value to the end of this array.
     @Contract(mutates = "this")
-    public abstract void add(E value);
+    public abstract void add(@Flow(targetIsContainer = true)
+                             E value);
 
     @Override
     @Contract(mutates = "this,param1")
-    public final void addTag(T tag) throws IllegalArgumentException {
+    public final void addTag(@Flow(targetIsContainer = true)
+                             T tag) throws IllegalArgumentException {
         if (tag.getParentTag() != null) {
             if (tag.getParentTag() == this) {
                 int index = tag.getIndex();

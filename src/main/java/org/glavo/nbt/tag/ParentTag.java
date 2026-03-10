@@ -17,6 +17,7 @@ package org.glavo.nbt.tag;
 
 import org.glavo.nbt.NBTParent;
 import org.glavo.nbt.internal.ArrayAccessor;
+import org.intellij.lang.annotations.Flow;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.UnknownNullability;
@@ -118,12 +119,14 @@ public sealed abstract class ParentTag<T extends Tag> extends Tag
 
     /// Returns `true` if this tag has no subtags, `false` otherwise.
     @Override
+    @Contract(pure = true)
     public final boolean isEmpty() {
         return size == 0;
     }
 
     /// Returns the number of subtags in this tag.
     @Override
+    @Contract(pure = true)
     public final int size() {
         return size;
     }
@@ -131,6 +134,8 @@ public sealed abstract class ParentTag<T extends Tag> extends Tag
     /// Returns the subtag at the given index.
     ///
     /// @throws IndexOutOfBoundsException if the index is out of bounds.
+    @Contract(pure = true)
+    @Flow(sourceIsContainer = true)
     public T getTag(int index) throws IndexOutOfBoundsException {
         Objects.checkIndex(index, size);
         @SuppressWarnings("unchecked")
@@ -144,12 +149,14 @@ public sealed abstract class ParentTag<T extends Tag> extends Tag
     ///
     /// If the `tag` is already a child of another tag, removes it from old parent and adds it to this tag.
     @Contract(mutates = "this,param1")
-    public abstract void addTag(T tag) throws IllegalArgumentException;
+    public abstract void addTag(@Flow(targetIsContainer = true)
+                                T tag) throws IllegalArgumentException;
 
     /// Adds all `tags` to this tag.
     ///
     /// @see #addTag(Tag)
-    public final void addTags(Iterable<? extends T> tags) throws IllegalArgumentException {
+    public final void addTags(@Flow(sourceIsContainer = true, targetIsContainer = true)
+                              Iterable<? extends T> tags) throws IllegalArgumentException {
         if (this == tags) {
             return;
         }
@@ -163,7 +170,8 @@ public sealed abstract class ParentTag<T extends Tag> extends Tag
     ///
     /// @see #addTag(Tag)
     @SafeVarargs
-    public final void addTags(T... tags) throws IllegalArgumentException {
+    public final void addTags(@Flow(sourceIsContainer = true, targetIsContainer = true)
+                              T... tags) throws IllegalArgumentException {
         for (T tag : tags) {
             this.addTag(tag);
         }

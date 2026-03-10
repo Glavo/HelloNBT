@@ -165,7 +165,13 @@ public sealed abstract class ArrayTag<E extends Number, T extends ValueTag<E>, A
 
     /// Returns the element at the given index.
     ///
+    /// For specific subclasses, methods such as [ByteArrayTag#getByte(int)],
+    /// [IntArrayTag#getInt(int)], [LongArrayTag#getLong(int)] can be used to get unboxed elements.
+    ///
     /// @throws IndexOutOfBoundsException if the index is out of bounds.
+    /// @see ByteArrayTag#getByte(int)
+    /// @see IntArrayTag#getInt(int)
+    /// @see LongArrayTag#getLong(int)
     @Contract(pure = true)
     public final E getValue(int index) throws IndexOutOfBoundsException {
         Objects.checkIndex(index, size);

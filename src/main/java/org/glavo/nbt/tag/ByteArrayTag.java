@@ -158,6 +158,7 @@ public final class ByteArrayTag extends ArrayTag<Byte, ByteTag, byte[], ByteBuff
     }
 
     @Override
+    @Contract(value = "-> new", pure = true)
     public ByteArrayTag clone() {
         ByteArrayTag tag = new ByteArrayTag(name);
         if (size > 0) {

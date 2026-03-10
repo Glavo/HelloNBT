@@ -60,6 +60,6 @@ public sealed abstract class ValueTag<V> extends Tag
     public abstract void setValue(V value);
 
     @Override
-    @Contract(pure = true)
+    @Contract(value = "-> new", pure = true)
     public abstract ValueTag<V> clone();
 }

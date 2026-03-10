@@ -199,7 +199,7 @@ public sealed abstract class Tag implements NBTElement
     ///
     /// This method always performs a deep copy, and the returned tag will not have a parent tag.
     @Override
-    @Contract(pure = true)
+    @Contract(value = "-> new", pure = true)
     public abstract Tag clone();
 
     /// Returns a hash code for this tag.

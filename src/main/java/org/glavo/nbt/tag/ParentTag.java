@@ -255,5 +255,6 @@ public sealed abstract class ParentTag<T extends Tag> extends Tag
     }
 
     @Override
+    @Contract(value = "-> new", pure = true)
     public abstract ParentTag<T> clone();
 }

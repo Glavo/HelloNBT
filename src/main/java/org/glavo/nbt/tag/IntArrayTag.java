@@ -200,6 +200,7 @@ public final class IntArrayTag extends ArrayTag<Integer, IntTag, int[], IntBuffe
     }
 
     @Override
+    @Contract(value = "-> new", pure = true)
     public IntArrayTag clone() {
         IntArrayTag tag = new IntArrayTag(name);
         if (size > 0) {

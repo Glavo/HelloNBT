@@ -163,7 +163,6 @@ public abstract class TagType<T extends Tag> {
 
             ID_TO_TYPE[Byte.toUnsignedInt(type.id())] = type;
         }
-
     }
 
     private final String name;

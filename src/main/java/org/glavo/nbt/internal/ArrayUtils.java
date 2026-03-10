@@ -18,16 +18,15 @@
 package org.glavo.nbt.internal;
 
 public final class ArrayUtils {
-    public static int nextCapacity(int currentCapacity) {
-        if (currentCapacity < 4) {
-            return 12;
-        } else {
-            return currentCapacity + (currentCapacity >> 1);
-        }
-    }
 
     public static int nextCapacity(int currentCapacity, int minCapacity) {
-        return Math.max(nextCapacity(currentCapacity), minCapacity);
+        int growCap;
+        if (currentCapacity < 4) {
+            growCap = 12;
+        } else {
+            growCap = currentCapacity + (currentCapacity >> 1);
+        }
+        return Math.max(growCap, minCapacity);
     }
 
     private ArrayUtils() {

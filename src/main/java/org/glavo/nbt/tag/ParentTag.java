@@ -65,7 +65,7 @@ public sealed abstract class ParentTag<T extends Tag> extends Tag
 
     protected final void ensureTagsCapacityForAdd() {
         if (size >= tags.length) {
-            tags = Arrays.copyOf(tags, ArrayUtils.nextCapacity(size));
+            tags = Arrays.copyOf(tags, ArrayUtils.nextCapacity(tags.length, size + 1));
         }
     }
 

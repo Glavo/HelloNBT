@@ -63,7 +63,7 @@ public sealed abstract class ArrayTag<E extends Number, T extends ValueTag<E>, A
 
     protected void ensureValuesCapacityForAdd() {
         if (Array.getLength(values) == size) {
-            values = accessor().copyOf(values, ArrayUtils.nextCapacity(size));
+            values = accessor().copyOf(values, ArrayUtils.nextCapacity(size, size + 1));
         }
     }
 

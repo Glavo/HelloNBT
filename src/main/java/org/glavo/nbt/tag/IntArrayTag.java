@@ -155,7 +155,7 @@ public final class IntArrayTag extends ArrayTag<Integer, IntTag, int[]> {
         array[3] = (int) (uuid.getLeastSignificantBits() & 0xFFFF_FFFFL);
 
         clear();
-        setWithoutClone(array, 4);
+        setArrayWithoutClone(array, 4);
     }
 
     /// Appends the specified value to the end of this array.
@@ -204,7 +204,7 @@ public final class IntArrayTag extends ArrayTag<Integer, IntTag, int[]> {
     protected void readContent(DataReader reader) throws IOException {
         clear();
         int len = reader.readInt();
-        setWithoutClone(reader.readIntArray(len), len);
+        setArrayWithoutClone(reader.readIntArray(len), len);
     }
 
     @Override

@@ -165,7 +165,7 @@ public final class ByteArrayTag extends ArrayTag<Byte, ByteTag, byte[]> {
     protected void readContent(DataReader reader) throws IOException {
         clear();
         int len = reader.readInt();
-        setWithoutClone(reader.readByteArray(len), len);
+        setArrayWithoutClone(reader.readByteArray(len), len);
     }
 
     @Override

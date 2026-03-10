@@ -168,7 +168,7 @@ public final class LongArrayTag extends ArrayTag<Long, LongTag, long[]> {
     protected void readContent(DataReader reader) throws IOException {
         clear();
         int len = reader.readInt();
-        setWithoutClone(reader.readLongArray(len), len);
+        setArrayWithoutClone(reader.readLongArray(len), len);
     }
 
     @Override

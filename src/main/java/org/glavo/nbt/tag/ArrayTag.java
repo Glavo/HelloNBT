@@ -135,7 +135,7 @@ public sealed abstract class ArrayTag<E extends Number, T extends ValueTag<E>, A
 
     /// Sets the value of the tag without cloning the array.
     @Contract(mutates = "this")
-    final void setWithoutClone(A array, int size) {
+    final void setArrayWithoutClone(A array, int size) {
         assert Array.getLength(array) <= size;
 
         clear();

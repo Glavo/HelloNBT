@@ -212,9 +212,9 @@ public final class IntArrayTag extends ArrayTag<Integer, IntTag, int[]> {
 
     @Override
     protected void contentToString(StringBuilder builder) {
-        if (values.length > 0) {
+        if (size > 0) {
             builder.append('[').append(values[0]);
-            for (int i = 1; i < values.length; i++) {
+            for (int i = 1; i < size; i++) {
                 builder.append(", ").append(values[i]);
             }
             builder.append(']');
@@ -225,11 +225,11 @@ public final class IntArrayTag extends ArrayTag<Integer, IntTag, int[]> {
 
     @Override
     public IntArrayTag clone() {
-        return new IntArrayTag(name, values);
+        IntArrayTag tag = new IntArrayTag(name);
+        if (size > 0) {
+            tag.values = Arrays.copyOf(values, size);
+        }
+        return tag;
     }
 
-    @Override
-    protected int[] clone(int[] array) {
-        return array.clone();
-    }
 }

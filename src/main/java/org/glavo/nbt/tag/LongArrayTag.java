@@ -181,9 +181,9 @@ public final class LongArrayTag extends ArrayTag<Long, LongTag, long[]> {
 
     @Override
     protected void contentToString(StringBuilder builder) {
-        if (values.length > 0) {
+        if (size > 0) {
             builder.append('[').append(values[0]);
-            for (int i = 1; i < values.length; i++) {
+            for (int i = 1; i < size; i++) {
                 builder.append(", ").append(values[i]);
             }
             builder.append(']');
@@ -195,11 +195,11 @@ public final class LongArrayTag extends ArrayTag<Long, LongTag, long[]> {
     @Override
     @Contract(value = "-> new", pure = true)
     public LongArrayTag clone() {
-        return new LongArrayTag(name, values);
+        LongArrayTag tag = new LongArrayTag(name);
+        if (size > 0) {
+            tag.values = Arrays.copyOf(values, size);
+        }
+        return tag;
     }
 
-    @Override
-    protected long[] clone(long[] array) {
-        return array.clone();
-    }
 }

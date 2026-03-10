@@ -178,7 +178,7 @@ public final class ByteArrayTag extends ArrayTag<Byte, ByteTag, byte[]> {
 
     @Override
     protected void contentToString(StringBuilder builder) {
-        if (values.length > 0) {
+        if (size > 0) {
             builder.append('[').append(values[0]);
             for (int i = 1; i < values.length; i++) {
                 builder.append(", ").append(values[i]);
@@ -191,12 +191,10 @@ public final class ByteArrayTag extends ArrayTag<Byte, ByteTag, byte[]> {
 
     @Override
     public ByteArrayTag clone() {
-        return new ByteArrayTag(name, values);
+        ByteArrayTag tag = new ByteArrayTag(name);
+        if (size > 0) {
+            tag.values = Arrays.copyOf(values, size);
+        }
+        return tag;
     }
-
-    @Override
-    protected byte[] clone(byte[] array) {
-        return array.clone();
-    }
-
 }

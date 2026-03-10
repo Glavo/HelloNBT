@@ -88,7 +88,7 @@ public sealed abstract class ArrayTag<E extends Number, T extends ValueTag<E>, A
     /// Returns the clone of the array.
     @Contract(pure = true)
     public final A getArray() {
-        return clone(values);
+        return copyOf(values, size);
     }
 
     final @Nullable T getTagOrNull(int index) {
@@ -135,7 +135,12 @@ public sealed abstract class ArrayTag<E extends Number, T extends ValueTag<E>, A
     /// Sets the value of the tag.
     @Contract(mutates = "this")
     public final void set(A array) {
-        this.values = clone(array);
+        clear();
+
+        int newSize = Array.getLength(array);
+        if (newSize > 0) {
+            this.values = copyOf(array, newSize);
+        }
     }
 
     /// Sets the value at the given index.
@@ -230,8 +235,6 @@ public sealed abstract class ArrayTag<E extends Number, T extends ValueTag<E>, A
         super.clear();
         values = emptyArray();
     }
-
-    protected abstract A clone(A array);
 
     @Override
     @Contract(value = "-> new", pure = true)

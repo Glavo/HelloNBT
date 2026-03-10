@@ -94,6 +94,7 @@ public sealed abstract class ArrayTag<E extends Number, T extends ValueTag<E>, A
     ///
     /// @apiNote Currently, this list supports most list operations, but does not yet support
     /// operations such as [List#add(int, Object)] for inserting at a specific index.
+    @Contract(pure = true)
     public List<E> values() {
         if (listView == null) {
             listView = new AbstractList<>() {

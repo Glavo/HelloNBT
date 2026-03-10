@@ -149,7 +149,7 @@ public final class ByteArrayTag extends ArrayTag<Byte> {
     }
 
     @Override
-    protected int contentHashCode() {
+    public int contentHashCode() {
         return Arrays.hashCode(value);
     }
 

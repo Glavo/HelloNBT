@@ -121,7 +121,7 @@ public final class ByteTag extends ValueTag<Byte> {
     }
 
     @Override
-    protected int contentHashCode() {
+    public int contentHashCode() {
         return Byte.hashCode(value);
     }
 

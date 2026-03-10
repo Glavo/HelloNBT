@@ -264,7 +264,7 @@ public final class CompoundTag extends ParentTag<Tag> {
     }
 
     @Override
-    protected int contentHashCode() {
+    public int contentHashCode() {
         return subTagsByName.hashCode();
     }
 

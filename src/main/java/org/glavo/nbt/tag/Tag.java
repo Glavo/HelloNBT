@@ -129,8 +129,6 @@ public sealed abstract class Tag implements NBTElement
     /// Internal method for writing the content of the tag.
     protected abstract void writeContent(DataWriter writer) throws IOException;
 
-    protected abstract int contentHashCode();
-
     protected abstract void contentToString(StringBuilder builder);
 
     protected void appendString(StringBuilder builder, String value) {
@@ -189,15 +187,25 @@ public sealed abstract class Tag implements NBTElement
     public abstract Tag clone();
 
     /// Returns a hash code for this tag.
-    @Override
-    public int hashCode() {
-        return Objects.hash(name, this.getClass(), contentHashCode());
-    }
+    ///
+    /// The hash code is based on the content of the tag.
+    /// The name, parent tag, and index are not considered.
+    public abstract int contentHashCode();
 
     /// Returns `true` if The content of this tag is equal to the content of the given tag.
     ///
     /// The name, parent tag, and index are not considered.
     public abstract boolean contentEquals(Tag other);
+
+    /// Returns a hash code for this tag.
+    ///
+    /// The hash code is based on the name, type, and content of the tag.
+    /// The parent tag and index are not considered.
+    @Override
+    public int hashCode() {
+        return Objects.hash(name, getType(), contentHashCode());
+    }
+
 
     /// Returns `true` if this tag is equal to the given tag.
     ///

@@ -151,7 +151,7 @@ public final class LongArrayTag extends ArrayTag<Long> {
     }
 
     @Override
-    protected int contentHashCode() {
+    public int contentHashCode() {
         return Arrays.hashCode(value);
     }
 

@@ -100,7 +100,7 @@ public final class ShortTag extends ValueTag<Short> {
     }
 
     @Override
-    protected int contentHashCode() {
+    public int contentHashCode() {
         return Short.hashCode(value);
     }
 

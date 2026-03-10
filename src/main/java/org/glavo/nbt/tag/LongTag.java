@@ -88,7 +88,7 @@ public final class LongTag extends ValueTag<Long> {
     }
 
     @Override
-    protected int contentHashCode() {
+    public int contentHashCode() {
         return Long.hashCode(value);
     }
 

@@ -88,7 +88,7 @@ public final class DoubleTag extends ValueTag<Double> {
     }
 
     @Override
-    protected int contentHashCode() {
+    public int contentHashCode() {
         return Double.hashCode(value);
     }
 

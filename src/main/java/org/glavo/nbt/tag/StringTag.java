@@ -89,7 +89,7 @@ public final class StringTag extends ValueTag<String> {
     }
 
     @Override
-    protected int contentHashCode() {
+    public int contentHashCode() {
         return value.hashCode();
     }
 

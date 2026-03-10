@@ -88,7 +88,7 @@ public final class FloatTag extends ValueTag<Float> {
     }
 
     @Override
-    protected int contentHashCode() {
+    public int contentHashCode() {
         return Float.hashCode(value);
     }
 

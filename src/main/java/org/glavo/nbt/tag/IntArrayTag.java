@@ -184,7 +184,7 @@ public final class IntArrayTag extends ArrayTag<Integer> {
     }
 
     @Override
-    protected int contentHashCode() {
+    public int contentHashCode() {
         return Arrays.hashCode(value);
     }
 

@@ -269,7 +269,7 @@ public final class ListTag<T extends Tag> extends ParentTag<T> {
     }
 
     @Override
-    protected int contentHashCode() {
+    public int contentHashCode() {
         return subTags.hashCode();
     }
 

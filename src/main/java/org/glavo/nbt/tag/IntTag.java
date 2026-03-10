@@ -100,7 +100,7 @@ public final class IntTag extends ValueTag<Integer> {
     }
 
     @Override
-    protected int contentHashCode() {
+    public int contentHashCode() {
         return Integer.hashCode(value);
     }
 

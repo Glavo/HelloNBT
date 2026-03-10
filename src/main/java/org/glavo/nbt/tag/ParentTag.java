@@ -199,6 +199,7 @@ public sealed abstract class ParentTag<T extends Tag> extends Tag
     }
 
     /// Removes all subtags from this tag.
+    @Contract(mutates = "this")
     public void clear() {
         for (int i = 0, end = Math.min(size, tags.length); i < end; i++) {
             Tag subTag = tags[i];

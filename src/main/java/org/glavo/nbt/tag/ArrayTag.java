@@ -83,6 +83,27 @@ public sealed abstract class ArrayTag<E extends Number, T extends ValueTag<E>, A
         return clone(values);
     }
 
+    @Override
+    public T getTag(int index) throws IndexOutOfBoundsException {
+        Objects.checkIndex(index, size);
+
+        if (tags.length > index) {
+            @SuppressWarnings("unchecked")
+            T tag = (T) tags[index];
+            if (tag != null) {
+                return tag;
+            }
+        }
+
+        T tag = createTagFromIndex(index);
+        ensureTagsCapacity(index + 1);
+        assert tags[index] == null;
+
+        tag.setParent(this, index);
+        tags[index] = tag;
+        return tag;
+    }
+
     /// Returns the element at the given index.
     ///
     /// @throws IndexOutOfBoundsException if the index is out of bounds.

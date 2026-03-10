@@ -57,6 +57,12 @@ public sealed abstract class ParentTag<T extends Tag> extends Tag
     /// @see Tag#setName(String)
     protected abstract void preUpdateSubTagName(Tag tag, String oldName, String newName) throws IllegalArgumentException;
 
+    protected final void ensureTagsCapacity(int newCapacity) {
+        if (newCapacity > tags.length) {
+            tags = Arrays.copyOf(tags, ArrayUtils.nextCapacity(tags.length, newCapacity));
+        }
+    }
+
     protected final void ensureTagsCapacityForAdd() {
         if (size >= tags.length) {
             tags = Arrays.copyOf(tags, ArrayUtils.nextCapacity(size));
@@ -113,7 +119,7 @@ public sealed abstract class ParentTag<T extends Tag> extends Tag
     /// Returns the subtag at the given index.
     ///
     /// @throws IndexOutOfBoundsException if the index is out of bounds.
-    public final T getTag(int index) throws IndexOutOfBoundsException {
+    public T getTag(int index) throws IndexOutOfBoundsException {
         Objects.checkIndex(index, size);
         @SuppressWarnings("unchecked")
         T tag = (T) tags[index];

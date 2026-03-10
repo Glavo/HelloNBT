@@ -30,6 +30,10 @@ public final class ArrayUtils {
         }
     }
 
+    public static int nextCapacity(int currentCapacity, int minCapacity) {
+        return Math.max(nextCapacity(currentCapacity), minCapacity);
+    }
+
     private ArrayUtils() {
     }
 }

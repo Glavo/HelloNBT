@@ -64,7 +64,7 @@ public final class LongArrayTag extends ArrayTag<Long, LongTag, long[], LongBuff
     ///
     /// @throws IndexOutOfBoundsException if the index is out of bounds.
     @Contract(pure = true)
-    public long getLong(int index) throws IndexOutOfBoundsException {
+    public long get(int index) throws IndexOutOfBoundsException {
         Objects.checkIndex(index, size);
         return values[index];
     }

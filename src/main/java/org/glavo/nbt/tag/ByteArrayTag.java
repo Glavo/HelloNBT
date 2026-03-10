@@ -60,7 +60,7 @@ public final class ByteArrayTag extends ArrayTag<Byte, ByteTag, byte[], ByteBuff
     ///
     /// @throws IndexOutOfBoundsException if the index is out of bounds.
     @Contract(pure = true)
-    public byte getByte(int index) throws IndexOutOfBoundsException {
+    public byte get(int index) throws IndexOutOfBoundsException {
         Objects.checkIndex(index, size);
         return values[index];
     }

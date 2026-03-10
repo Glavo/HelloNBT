@@ -17,8 +17,7 @@ package org.glavo.nbt.tag;
 
 import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.junit.jupiter.api.Assertions.*;
 
 final class ValueTagTests {
 
@@ -33,57 +32,89 @@ final class ValueTagTests {
         assertSame(TagType.STRING, new StringTag().getType());
     }
 
+    private static void assertIntegralEquals(Number expected, ValueTag<? extends Number> tag) {
+        if (expected instanceof Byte value) {
+            ByteTag byteTag = assertInstanceOf(ByteTag.class, tag);
+
+            assertEquals(value, byteTag.get());
+            assertEquals(value, byteTag.getValue());
+            assertEquals(value.toString(), byteTag.getAsString());
+        } else if (expected instanceof Short value) {
+            ShortTag shortTag = assertInstanceOf(ShortTag.class, tag);
+
+            assertEquals(value, shortTag.get());
+            assertEquals(value, shortTag.getValue());
+            assertEquals(value.toString(), shortTag.getAsString());
+        } else if (expected instanceof Integer value) {
+            IntTag intTag = assertInstanceOf(IntTag.class, tag);
+
+            assertEquals(value, intTag.get());
+            assertEquals(value, intTag.getValue());
+            assertEquals(value.toString(), intTag.getAsString());
+        } else if (expected instanceof Long value) {
+            LongTag longTag = assertInstanceOf(LongTag.class, tag);
+
+            assertEquals(value, longTag.get());
+            assertEquals(value, longTag.getValue());
+            assertEquals(value.toString(), longTag.getAsString());
+        } else {
+            throw new IllegalArgumentException("Unsupported tag type: " + tag.getType());
+        }
+    }
+
+    private static void assertFloatingEquals(Number expected, ValueTag<? extends Number> tag) {
+        if (expected instanceof Float value) {
+            FloatTag floatTag = assertInstanceOf(FloatTag.class, tag);
+            assertEquals(value, floatTag.get());
+            assertEquals(value, floatTag.getValue());
+            assertEquals(Float.toString(value), floatTag.getAsString());
+
+        } else if (expected instanceof Double value) {
+            DoubleTag doubleTag = assertInstanceOf(DoubleTag.class, tag);
+            assertEquals(value, doubleTag.get());
+            assertEquals(value, doubleTag.getValue());
+            assertEquals(Double.toString(value), doubleTag.getAsString());
+        } else {
+            throw new IllegalArgumentException("Unsupported number type: " + expected.getClass().getName());
+        }
+    }
+
     @Test
     void testDefaultConstructor() {
         {
             var tag = new ByteTag();
             assertEquals("", tag.getName());
-            assertEquals((byte) 0, tag.get());
-            assertEquals(0, tag.getUnsigned());
-            assertEquals(Byte.valueOf((byte) 0), tag.getValue());
-            assertEquals("0", tag.getAsString());
+            assertIntegralEquals((byte) 0, tag);
         }
 
         {
             var tag = new ShortTag();
             assertEquals("", tag.getName());
-            assertEquals((short) 0, tag.get());
-            assertEquals(0, tag.getUnsigned());
-            assertEquals(Short.valueOf((short) 0), tag.getValue());
-            assertEquals("0", tag.getAsString());
+            assertIntegralEquals((short) 0, tag);
         }
 
         {
             var tag = new IntTag();
             assertEquals("", tag.getName());
-            assertEquals(0, tag.get());
-            assertEquals(0L, tag.getUnsigned());
-            assertEquals(Integer.valueOf(0), tag.getValue());
-            assertEquals("0", tag.getAsString());
+            assertIntegralEquals(0, tag);
         }
 
         {
             var tag = new LongTag();
             assertEquals("", tag.getName());
-            assertEquals(0L, tag.get());
-            assertEquals(Long.valueOf(0L), tag.getValue());
-            assertEquals("0", tag.getAsString());
+            assertIntegralEquals(0L, tag);
         }
 
         {
             var tag = new FloatTag();
             assertEquals("", tag.getName());
-            assertEquals(0.0f, tag.get());
-            assertEquals(Float.valueOf(0.0f), tag.getValue());
-            assertEquals("0.0", tag.getAsString());
+            assertFloatingEquals(0.0f, tag);
         }
 
         {
             var tag = new DoubleTag();
             assertEquals("", tag.getName());
-            assertEquals(0.0, tag.get());
-            assertEquals(Double.valueOf(0.0), tag.getValue());
-            assertEquals("0.0", tag.getAsString());
+            assertFloatingEquals(0.0, tag);
         }
 
         {
@@ -92,6 +123,56 @@ final class ValueTagTests {
             assertEquals("", tag.get());
             assertEquals("", tag.getValue());
             assertEquals("", tag.getAsString());
+        }
+    }
+
+    @Test
+    void testSet() {
+        {
+            var tag = new ByteTag();
+
+            tag.set((byte) 114);
+            assertIntegralEquals((byte) 114, tag);
+
+            tag.setValue((byte) 514);
+            assertIntegralEquals((byte) 514, tag);
+
+            tag.setUnsigned(0xFA);
+            assertIntegralEquals((byte) 0xFA, tag);
+        }
+
+        {
+            var tag = new ShortTag();
+
+            tag.set((short) 114);
+            assertIntegralEquals((short) 114, tag);
+
+            tag.setValue((short) 514);
+            assertIntegralEquals((short) 514, tag);
+
+            tag.setUnsigned(0xFAFA);
+            assertIntegralEquals((short) 0xFAFA, tag);
+        }
+
+        {
+            var tag = new IntTag();
+            tag.set(114);
+            assertIntegralEquals(114, tag);
+
+            tag.setValue(514);
+            assertIntegralEquals(514, tag);
+
+            tag.setUnsigned(0xFAFAFAFAL);
+            assertIntegralEquals(0xFAFAFAFA, tag);
+        }
+
+        {
+            var tag = new LongTag();
+            tag.set(114L);
+            assertIntegralEquals(114L, tag);
+
+            tag.setValue(514L);
+            assertIntegralEquals(514L, tag);
         }
     }
 }

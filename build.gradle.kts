@@ -35,7 +35,7 @@ java {
     withJavadocJar()
 }
 
-tasks.compileJava {
+tasks.withType(JavaCompile::class) {
     options.release.set(17)
 }
 

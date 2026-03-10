@@ -79,14 +79,14 @@ public final class IntArrayTag extends ArrayTag<Integer, IntTag, int[]> {
     ///
     /// @throws IndexOutOfBoundsException if the index is out of bounds.
     @Contract(pure = true)
-    public int get(int index) throws IndexOutOfBoundsException {
+    public int getInt(int index) throws IndexOutOfBoundsException {
         return values[index];
     }
 
     @Override
     @Contract(pure = true)
     public Integer getValue(int index) throws IndexOutOfBoundsException {
-        return get(index);
+        return getInt(index);
     }
 
     @Contract(pure = true)

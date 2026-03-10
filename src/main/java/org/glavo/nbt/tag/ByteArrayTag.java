@@ -28,8 +28,6 @@ import java.util.stream.StreamSupport;
 
 /// An ordered list of 8-bit integers.
 public final class ByteArrayTag extends ArrayTag<Byte, ByteTag, byte[]> {
-    private static final byte[] EMPTY = new byte[0];
-
     /// Creates a new ByteArrayTag with an empty name and an empty array.
     public ByteArrayTag() {
         this("");
@@ -56,14 +54,14 @@ public final class ByteArrayTag extends ArrayTag<Byte, ByteTag, byte[]> {
     ///
     /// @throws IndexOutOfBoundsException if the index is out of bounds.
     @Contract(pure = true)
-    public byte get(int index) throws IndexOutOfBoundsException {
+    public byte getByte(int index) throws IndexOutOfBoundsException {
         return values[index];
     }
 
     @Override
     @Contract(pure = true)
     public Byte getValue(int index) throws IndexOutOfBoundsException {
-        return get(index);
+        return getByte(index);
     }
 
     @Override

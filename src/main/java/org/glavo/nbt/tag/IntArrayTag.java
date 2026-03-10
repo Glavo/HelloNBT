@@ -97,6 +97,7 @@ public final class IntArrayTag extends ArrayTag<Integer, IntTag, int[]> {
     /// @throws IndexOutOfBoundsException if the index is out of bounds.
     @Contract(pure = true)
     public int getInt(int index) throws IndexOutOfBoundsException {
+        Objects.checkIndex(index, size);
         return values[index];
     }
 

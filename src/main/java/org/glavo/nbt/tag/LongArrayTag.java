@@ -24,6 +24,7 @@ import java.io.IOException;
 import java.nio.LongBuffer;
 import java.util.Arrays;
 import java.util.NoSuchElementException;
+import java.util.Objects;
 import java.util.PrimitiveIterator;
 import java.util.stream.LongStream;
 
@@ -81,6 +82,7 @@ public final class LongArrayTag extends ArrayTag<Long, LongTag, long[]> {
     /// @throws IndexOutOfBoundsException if the index is out of bounds.
     @Contract(pure = true)
     public long getLong(int index) throws IndexOutOfBoundsException {
+        Objects.checkIndex(index, size);
         return values[index];
     }
 

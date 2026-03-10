@@ -18,10 +18,6 @@
 package org.glavo.nbt.internal;
 
 public final class ArrayUtils {
-    public static byte[] EMPTY_BYTE_ARRAY = new byte[0];
-    public static int[] EMPTY_INT_ARRAY = new int[0];
-    public static long[] EMPTY_LONG_ARRAY = new long[0];
-
     public static int nextCapacity(int currentCapacity) {
         if (currentCapacity < 4) {
             return 12;

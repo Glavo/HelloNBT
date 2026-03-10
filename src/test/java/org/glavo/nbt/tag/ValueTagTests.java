@@ -17,6 +17,7 @@ package org.glavo.nbt.tag;
 
 import org.junit.jupiter.api.Test;
 
+import java.util.List;
 import java.util.function.Supplier;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -419,5 +420,26 @@ final class ValueTagTests {
         assertContentEquals(new StringTag("Meow", "Hello"), new StringTag("MeowMeow", "Hello"));
         assertContentNotEquals(new StringTag("Meow", "Hello"), new StringTag("Meow", "World"));
         assertContentNotEquals(new StringTag("Meow", "Hello"), new StringTag("MeowMeow", "World"));
+
+
+        List<ValueTag<?>> tags = List.of(
+                new ByteTag("Meow", (byte) 1),
+                new ShortTag("Meow", (short) 2),
+                new IntTag("Meow", 3),
+                new LongTag("Meow", 4L),
+                new FloatTag("Meow", 5.0f),
+                new DoubleTag("Meow", 6.0),
+                new StringTag("Meow", "Hello")
+        );
+
+        for (ValueTag<?> tag1 : tags) {
+            for (ValueTag<?> tag2 : tags) {
+                if (tag1 == tag2) {
+                    assertContentEquals(tag1, tag2);
+                } else {
+                    assertContentNotEquals(tag1, tag2);
+                }
+            }
+        }
     }
 }

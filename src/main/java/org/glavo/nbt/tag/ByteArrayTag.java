@@ -44,6 +44,7 @@ public final class ByteArrayTag extends ArrayTag<Byte, ByteTag, byte[]> {
     public ByteArrayTag(String name, byte[] values) {
         super(name);
         this.values = values.clone();
+        this.size = values.length;
     }
 
     @Override

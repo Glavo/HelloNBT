@@ -47,6 +47,7 @@ public final class LongArrayTag extends ArrayTag<Long, LongTag, long[]> {
     public LongArrayTag(String name, long[] values) {
         super(name);
         this.values = values.clone();
+        this.size = values.length;
     }
 
     @Override

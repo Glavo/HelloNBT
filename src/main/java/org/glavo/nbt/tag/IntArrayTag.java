@@ -43,6 +43,7 @@ public final class IntArrayTag extends ArrayTag<Integer, IntTag, int[]> {
     public IntArrayTag(String name, int[] value) {
         super(name);
         this.values = value.clone();
+        this.size = value.length;
     }
 
     /// Create a new IntArrayTag with the name and a UUID value.

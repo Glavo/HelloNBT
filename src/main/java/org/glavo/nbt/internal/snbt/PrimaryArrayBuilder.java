@@ -17,49 +17,28 @@
  */
 package org.glavo.nbt.internal.snbt;
 
-import org.glavo.nbt.internal.Access;
 import org.glavo.nbt.tag.ArrayTag;
 import org.glavo.nbt.tag.ByteArrayTag;
 import org.glavo.nbt.tag.IntArrayTag;
 import org.glavo.nbt.tag.LongArrayTag;
-import org.jetbrains.annotations.Nullable;
-
-import java.util.Arrays;
 
 sealed abstract class PrimaryArrayBuilder<T extends ArrayTag<?, ?, ?>, A> {
-    protected A array;
-    protected int capacity;
-    protected int length;
-
-    protected void prepareForAdd() {
-        if (capacity == length) {
-            int newCapacity = capacity == 0 ? 16 : capacity << 1;
-            array = copyOf(array, newCapacity);
-            capacity = newCapacity;
-        }
-    }
+    protected final T tag = newTag();
 
     protected abstract IntegralType getIntegralType();
 
-    protected abstract T newTag(@Nullable A array);
+    protected abstract T newTag();
 
-    protected abstract void setValue(A array, int index, long value);
-
-    protected abstract A copyOf(@Nullable A array, int newLength);
+    protected abstract void add(long value);
 
     public void add(Token.IntegralToken token) {
-        prepareForAdd();
         long value = token.value();
         getIntegralType().check(value, token.unsigned());
-        setValue(array, length++, value);
+        add(value);
     }
 
     public T build() {
-        if (length != 0) {
-            return newTag(capacity == length ? array : copyOf(array, length));
-        } else {
-            return newTag(null);
-        }
+        return tag;
     }
 
     static final class OfByte extends PrimaryArrayBuilder<ByteArrayTag, byte[]> {
@@ -70,22 +49,13 @@ sealed abstract class PrimaryArrayBuilder<T extends ArrayTag<?, ?, ?>, A> {
         }
 
         @Override
-        protected byte[] copyOf(byte @Nullable [] array, int newLength) {
-            return array != null ? Arrays.copyOf(array, newLength) : new byte[newLength];
+        protected ByteArrayTag newTag() {
+            return new ByteArrayTag();
         }
 
         @Override
-        protected ByteArrayTag newTag(byte @Nullable [] array) {
-            var tag = new ByteArrayTag();
-            if (array != null) {
-                Access.TAG.setInternalArray(tag, array);
-            }
-            return tag;
-        }
-
-        @Override
-        protected void setValue(byte[] array, int index, long value) {
-            array[index] = (byte) value;
+        protected void add(long value) {
+            tag.add((byte) value);
         }
     }
 
@@ -98,22 +68,13 @@ sealed abstract class PrimaryArrayBuilder<T extends ArrayTag<?, ?, ?>, A> {
         }
 
         @Override
-        protected IntArrayTag newTag(int @Nullable [] array) {
-            var tag = new IntArrayTag();
-            if (array != null) {
-                Access.TAG.setInternalArray(tag, array);
-            }
-            return tag;
+        protected IntArrayTag newTag() {
+            return new IntArrayTag();
         }
 
         @Override
-        protected void setValue(int[] array, int index, long value) {
-            array[index] = (int) value;
-        }
-
-        @Override
-        protected int[] copyOf(int @Nullable [] array, int newLength) {
-            return array != null ? Arrays.copyOf(array, newLength) : new int[newLength];
+        protected void add(long value) {
+            tag.add((int) value);
         }
     }
 
@@ -124,22 +85,13 @@ sealed abstract class PrimaryArrayBuilder<T extends ArrayTag<?, ?, ?>, A> {
         }
 
         @Override
-        protected LongArrayTag newTag(long @Nullable [] array) {
-            var tag = new LongArrayTag();
-            if (array != null) {
-                Access.TAG.setInternalArray(tag, array);
-            }
-            return tag;
+        protected LongArrayTag newTag() {
+            return new LongArrayTag();
         }
 
         @Override
-        protected void setValue(long[] array, int index, long value) {
-            array[index] = value;
-        }
-
-        @Override
-        protected long[] copyOf(long @Nullable [] array, int newLength) {
-            return array != null ? Arrays.copyOf(array, newLength) : new long[newLength];
+        protected void add(long value) {
+            tag.add(value);
         }
     }
 }

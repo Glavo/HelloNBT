@@ -140,6 +140,7 @@ public sealed abstract class ArrayTag<E extends Number, T extends ValueTag<E>, A
         int newSize = Array.getLength(array);
         if (newSize > 0) {
             this.values = copyOf(array, newSize);
+            this.size = newSize;
         }
     }
 

@@ -65,8 +65,4 @@ public final class TagAccess {
         return tag.values;
     }
 
-    /// Sets the internal value of the tag without cloning.
-    public <A> void setInternalArray(ArrayTag<?, ?, A> tag, A value) {
-        tag.values = value;
-    }
 }

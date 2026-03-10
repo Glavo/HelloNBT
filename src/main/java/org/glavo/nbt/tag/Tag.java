@@ -75,6 +75,10 @@ public sealed abstract class Tag implements NBTElement
 
     /// Set the name of the tag.
     ///
+    /// If this tag is a child of a compound tag, the new name must not be used by any other subtag of the compound tag.
+    ///
+    /// If this tag is a child of a list tag, the new name must be empty.
+    ///
     /// @throws IllegalStateException if this tag is a child of a parent tag and the name is not valid for the parent tag.
     @Contract(mutates = "this")
     public void setName(String name) throws IllegalStateException {

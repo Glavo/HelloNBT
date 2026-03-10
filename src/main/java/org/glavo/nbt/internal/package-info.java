@@ -14,7 +14,10 @@
  * limitations under the License.
  */
 
+/// Internal implementation details of the HelloNBT.
 @NotNullByDefault
+@ApiStatus.Internal
 package org.glavo.nbt.internal;
 
+import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNullByDefault;

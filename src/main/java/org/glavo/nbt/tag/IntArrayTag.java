@@ -207,7 +207,10 @@ public final class IntArrayTag extends ArrayTag<Integer, IntTag, int[]> {
     @Override
     @Contract(pure = true)
     public boolean contentEquals(Tag other) {
-        return other instanceof IntArrayTag that && Arrays.equals(values, that.values);
+        return other instanceof IntArrayTag that && Arrays.equals(
+                this.values, 0, this.size,
+                that.values, 0 , that.size
+        );
     }
 
     @Override

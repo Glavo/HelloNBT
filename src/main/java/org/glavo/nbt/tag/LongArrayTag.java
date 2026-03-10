@@ -176,7 +176,10 @@ public final class LongArrayTag extends ArrayTag<Long, LongTag, long[]> {
     @Override
     @Contract(pure = true)
     public boolean contentEquals(Tag other) {
-        return other instanceof LongArrayTag that && Arrays.equals(values, that.values);
+        return other instanceof LongArrayTag that && Arrays.equals(
+                this.values, 0, this.size,
+                that.values, 0 , that.size
+        );
     }
 
     @Override

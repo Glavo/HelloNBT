@@ -173,7 +173,10 @@ public final class ByteArrayTag extends ArrayTag<Byte, ByteTag, byte[]> {
     @Override
     @Contract(pure = true)
     public boolean contentEquals(Tag other) {
-        return other instanceof ByteArrayTag that && Arrays.equals(values, that.values);
+        return other instanceof ByteArrayTag that && Arrays.equals(
+                this.values, 0, this.size,
+                that.values, 0, that.size
+        );
     }
 
     @Override

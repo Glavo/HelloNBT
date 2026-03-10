@@ -35,14 +35,15 @@ public final class ByteArrayTag extends ArrayTag<Byte, ByteTag, byte[]> {
 
     /// Creates a new ByteArrayTag with the given name and an empty array.
     public ByteArrayTag(String name) {
-        super(name, ArrayUtils.EMPTY_BYTE_ARRAY);
+        super(name);
     }
 
     /// Creates a new ByteArrayTag with the given name and value.
     ///
     /// The value is cloned to avoid external modifications.
     public ByteArrayTag(String name, byte[] values) {
-        super(name, values.clone());
+        super(name);
+        this.values = values.clone();
     }
 
     @Override
@@ -55,6 +56,7 @@ public final class ByteArrayTag extends ArrayTag<Byte, ByteTag, byte[]> {
     /// @throws IndexOutOfBoundsException if the index is out of bounds.
     @Contract(pure = true)
     public byte getByte(int index) throws IndexOutOfBoundsException {
+        Objects.checkIndex(index, size);
         return values[index];
     }
 
@@ -62,6 +64,16 @@ public final class ByteArrayTag extends ArrayTag<Byte, ByteTag, byte[]> {
     @Contract(pure = true)
     public Byte getValue(int index) throws IndexOutOfBoundsException {
         return getByte(index);
+    }
+
+    public void add(byte value) {
+        throw new UnsupportedOperationException("TODO"); // TODO
+    }
+
+    @Override
+    @Contract(mutates = "this")
+    public void add(Byte value) {
+        add(value.byteValue());
     }
 
     @Override
@@ -143,4 +155,16 @@ public final class ByteArrayTag extends ArrayTag<Byte, ByteTag, byte[]> {
     protected byte[] clone(byte[] array) {
         return array.clone();
     }
+
+    @Override
+    protected byte[] emptyArray() {
+        return ArrayUtils.EMPTY_BYTE_ARRAY;
+    }
+
+    @Override
+    protected ByteTag createTagFromIndex(int index) {
+        assert index >= 0 && index < size;
+        return new ByteTag("", values[index]);
+    }
+
 }

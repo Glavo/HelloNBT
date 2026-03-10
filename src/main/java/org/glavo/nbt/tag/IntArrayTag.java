@@ -34,20 +34,32 @@ public final class IntArrayTag extends ArrayTag<Integer, IntTag, int[]> {
 
     /// Creates a new IntArrayTag with the given name and an empty array.
     public IntArrayTag(String name) {
-        this(name, ArrayUtils.EMPTY_INT_ARRAY);
+        super(name);
     }
 
     /// Creates a new IntArrayTag with the given name and value.
     ///
     /// The value is cloned to avoid external modifications.
     public IntArrayTag(String name, int[] value) {
-        super(name, value.clone());
+        super(name);
+        this.values = value.clone();
     }
 
     /// Create a new IntArrayTag with the name and a UUID value.
     public IntArrayTag(String name, UUID uuid) {
-        super(name, ArrayUtils.EMPTY_INT_ARRAY);
+        super(name);
         setUUID(uuid);
+    }
+
+    @Override
+    protected int[] emptyArray() {
+        return ArrayUtils.EMPTY_INT_ARRAY;
+    }
+
+    @Override
+    protected IntTag createTagFromIndex(int index) {
+        assert index >= 0 && index < size;
+        return new IntTag("", values[index]);
     }
 
     @Override
@@ -103,6 +115,17 @@ public final class IntArrayTag extends ArrayTag<Integer, IntTag, int[]> {
     @Contract(value = "-> new", pure = true)
     public IntBuffer getBuffer() {
         return IntBuffer.wrap(values).asReadOnlyBuffer();
+    }
+
+    @Contract(mutates = "this")
+    public void add(int value) {
+        throw new UnsupportedOperationException("TODO"); // TODO
+    }
+
+    @Override
+    @Contract(mutates = "this")
+    public void add(Integer value) {
+        add(value.intValue());
     }
 
     @Override

@@ -38,7 +38,7 @@ public final class CompoundTag extends ParentTag<Tag> {
     }
 
     @Override
-    void preUpdateSubTagName(Tag tag, String oldName, String newName) throws IllegalArgumentException {
+    protected void preUpdateSubTagName(Tag tag, String oldName, String newName) throws IllegalArgumentException {
         if (subTagsByName.containsKey(newName)) {
             throw new IllegalArgumentException("The name '" + newName + "' is already used by another subtag");
         }
@@ -83,8 +83,7 @@ public final class CompoundTag extends ParentTag<Tag> {
                         throw new AssertionError("Expected " + tag + ", but got " + oldTag);
                     }
 
-                    assert size < tags.length;
-                    tags[size++] = tag;
+                    tags[size - 1] = tag;
 
                     updateIndexes(index);
                 }
@@ -106,7 +105,7 @@ public final class CompoundTag extends ParentTag<Tag> {
         tag.setParent(this, size);
 
         // Add the tag to the subTags list and subTagsByName map.
-        ensureCapacityForAdd();
+        ensureTagsCapacityForAdd();
         tags[size++] = tag;
         subTagsByName.put(tag.getName(), tag);
     }
@@ -209,6 +208,9 @@ public final class CompoundTag extends ParentTag<Tag> {
 
         // Clear the tag's parent and index.
         tag.setParent(null, -1);
+
+        // Decrease the size.
+        size--;
 
         // Remove the tag from the subTagsByName map.
         Tag removedFromMap = subTagsByName.remove(tag.getName());

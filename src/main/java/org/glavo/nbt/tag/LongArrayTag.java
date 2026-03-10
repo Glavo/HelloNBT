@@ -37,14 +37,26 @@ public final class LongArrayTag extends ArrayTag<Long, LongTag, long[]> {
 
     /// Creates a new LongArrayTag with the given name and an empty array.
     public LongArrayTag(String name) {
-        super(name, ArrayUtils.EMPTY_LONG_ARRAY);
+        super(name);
     }
 
     /// Creates a new LongArrayTag with the given name and value.
     ///
     /// The value is cloned to avoid external modifications.
     public LongArrayTag(String name, long[] values) {
-        super(name, values.clone());
+        super(name);
+        this.values = values.clone();
+    }
+
+    @Override
+    protected long[] emptyArray() {
+        return ArrayUtils.EMPTY_LONG_ARRAY;
+    }
+
+    @Override
+    protected LongTag createTagFromIndex(int index) {
+        assert index >= 0 && index < size;
+        return new LongTag("", values[index]);
     }
 
     @Override
@@ -71,6 +83,16 @@ public final class LongArrayTag extends ArrayTag<Long, LongTag, long[]> {
     @Contract(pure = true)
     public Long getValue(int index) throws IndexOutOfBoundsException {
         return getLong(index);
+    }
+
+    @Contract(mutates = "this")
+    public void add(long value) {
+        throw new UnsupportedOperationException("TODO"); // TODO
+    }
+
+    @Override
+    public void add(Long value) {
+        add(value.longValue());
     }
 
     @Override

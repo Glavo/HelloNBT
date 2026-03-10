@@ -60,7 +60,7 @@ public final class ListTag<T extends Tag> extends ParentTag<T> {
     }
 
     @Override
-    void preUpdateSubTagName(Tag tag, String oldName, String newName) throws IllegalArgumentException {
+    protected void preUpdateSubTagName(Tag tag, String oldName, String newName) throws IllegalArgumentException {
         if (!newName.isEmpty()) {
             throw new IllegalArgumentException("The name of the subtag must be null for ListTag");
         }
@@ -152,8 +152,7 @@ public final class ListTag<T extends Tag> extends ParentTag<T> {
                         throw new AssertionError("Expected " + tag + ", but got " + oldTag);
                     }
 
-                    assert size < tags.length;
-                    tags[size++] = tag;
+                    tags[size - 1] = tag;
                     updateIndexes(index);
                 }
 
@@ -170,7 +169,7 @@ public final class ListTag<T extends Tag> extends ParentTag<T> {
         tag.setParent(this, size);
 
         // Add the tag to the subTags list.
-        ensureCapacityForAdd();
+        ensureTagsCapacityForAdd();
         tags[size++] = tag;
     }
 
@@ -203,12 +202,14 @@ public final class ListTag<T extends Tag> extends ParentTag<T> {
     public T removeTagAt(int index) throws IndexOutOfBoundsException {
         Objects.checkIndex(index, size);
 
-        @SuppressWarnings("unchecked")
-        T tag = (T) removeTagFromArray(index);
+        T tag = removeTagFromArray(index);
         assert tag.getIndex() == index && tag.getParentTag() == this;
 
         // Clear the tag's parent and index.
         tag.setParent(null, -1);
+
+        // Decrease the size.
+        size--;
 
         // Update the index of the successor tags.
         updateIndexes(index);

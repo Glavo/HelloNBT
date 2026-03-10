@@ -55,9 +55,9 @@ public sealed abstract class ParentTag<T extends Tag> extends Tag
     /// Used internally by [Tag#setName(String)].
     ///
     /// @see Tag#setName(String)
-    abstract void preUpdateSubTagName(Tag tag, String oldName, String newName) throws IllegalArgumentException;
+    protected abstract void preUpdateSubTagName(Tag tag, String oldName, String newName) throws IllegalArgumentException;
 
-    protected final void ensureCapacityForAdd() {
+    protected final void ensureTagsCapacityForAdd() {
         if (size >= tags.length) {
             tags = Arrays.copyOf(tags, ArrayUtils.nextCapacity(size));
         }
@@ -66,17 +66,24 @@ public sealed abstract class ParentTag<T extends Tag> extends Tag
     /// Removes the tag at the given index from the array, and decreases the size.
     ///
     /// @return The old tag at the given index.
-    protected final Tag removeTagFromArray(int index) {
+    protected final @UnknownNullability T removeTagFromArray(int index) {
         assert index >= 0 && index < size;
 
-        Tag oldTag = tags[index];
+        if (index >= tags.length) {
+            return null;
+        }
+
+        @SuppressWarnings("unchecked")
+        T oldTag = (T) tags[index];
+        if (oldTag == null) {
+            return null;
+        }
 
         if (index < size - 1) {
             System.arraycopy(tags, index + 1, tags, index, size - index);
         } else {
             tags[index] = null;
         }
-        size--;
 
         return oldTag;
     }
@@ -118,6 +125,7 @@ public sealed abstract class ParentTag<T extends Tag> extends Tag
     /// If the `tag` is already a child of this tag, move it to the end of the list.
     ///
     /// If the `tag` is already a child of another tag, removes it from old parent and adds it to this tag.
+    @Contract(mutates = "this,param1")
     public abstract void addTag(T tag) throws IllegalArgumentException;
 
     /// Adds all `tags` to this tag.
@@ -147,6 +155,7 @@ public sealed abstract class ParentTag<T extends Tag> extends Tag
     ///
     /// @param index The index of the tag to remove.
     /// @throws IndexOutOfBoundsException if the index is out of bounds.
+    @Contract(mutates = "this")
     public void removeAt(int index) throws IndexOutOfBoundsException {
         removeTagAt(index);
     }

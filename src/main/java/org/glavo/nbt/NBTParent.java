@@ -42,5 +42,5 @@ public sealed interface NBTParent<E extends NBTElement> extends NBTElement, Iter
     ///
     /// @throws IllegalArgumentException if the `element` is not a child of this parent.
     @Contract(mutates = "this,param1")
-    void remove(E element) throws IllegalArgumentException;
+    void removeElement(E element) throws IllegalArgumentException;
 }

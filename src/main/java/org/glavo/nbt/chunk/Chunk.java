@@ -22,13 +22,11 @@ import org.glavo.nbt.internal.ChunkUtils;
 import org.glavo.nbt.tag.CompoundTag;
 import org.glavo.nbt.tag.Tag;
 import org.jetbrains.annotations.Contract;
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.time.Instant;
 import java.util.Collections;
 import java.util.Iterator;
-import java.util.List;
 import java.util.Objects;
 import java.util.stream.Stream;
 
@@ -132,7 +130,7 @@ public final class Chunk implements NBTParent<CompoundTag>, NBTElement {
         }
 
         if (this.rootTag != null) {
-            remove(this.rootTag);
+            removeElement(this.rootTag);
         }
 
         if (rootTag != null) {
@@ -142,7 +140,7 @@ public final class Chunk implements NBTParent<CompoundTag>, NBTElement {
                 // The root tag is already a child of another tag, so we need to remove it from its parent first.
                 @SuppressWarnings("unchecked")
                 var oldParent = (NBTParent<Tag>) rootTag.getParent();
-                oldParent.remove(rootTag);
+                oldParent.removeElement(rootTag);
             }
 
             Access.TAG.setParent(rootTag, this, 0);
@@ -167,7 +165,7 @@ public final class Chunk implements NBTParent<CompoundTag>, NBTElement {
 
     @Override
     @Contract(mutates = "this,param1")
-    public void remove(CompoundTag element) throws IllegalArgumentException {
+    public void removeElement(CompoundTag element) throws IllegalArgumentException {
         if (element.getParent() != null) {
             throw new IllegalArgumentException("The root tag is not a root element");
         }

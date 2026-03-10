@@ -160,7 +160,7 @@ public final class ListTag<T extends Tag> extends ParentTag<T> {
 
                 return;
             } else {
-                tag.getParentTag().remove(tag);
+                tag.getParentTag().removeElement(tag);
             }
         }
 
@@ -201,7 +201,7 @@ public final class ListTag<T extends Tag> extends ParentTag<T> {
 
     @Override
     @Contract(mutates = "this,param1")
-    public void remove(Tag tag) {
+    public void removeElement(Tag tag) {
         if (tag.getParentTag() != this) {
             throw new IllegalArgumentException("The tag is not a child of this tag");
         }

@@ -94,14 +94,14 @@ public final class CompoundTag extends ParentTag<Tag> {
                 return;
             } else {
                 // Remove the tag from its old parent.
-                tag.getParentTag().remove(tag);
+                tag.getParentTag().removeElement(tag);
             }
         }
 
         // If a tag with the same name already exists, remove it first.
         Tag oldTag = subTagsByName.get(tag.getName());
         if (oldTag != null) {
-            remove(oldTag);
+            this.removeElement(oldTag);
         }
 
         // Set the parent and index of the tag.
@@ -122,7 +122,7 @@ public final class CompoundTag extends ParentTag<Tag> {
         @SuppressWarnings("unchecked")
         var oldParent = (NBTParent<Tag>) tag.getParent();
         if (oldParent != null) {
-            oldParent.remove(tag);
+            oldParent.removeElement(tag);
         }
 
         tag.setName(name);
@@ -203,7 +203,7 @@ public final class CompoundTag extends ParentTag<Tag> {
 
     @Override
     @Contract(mutates = "this,param1")
-    public void remove(Tag tag) {
+    public void removeElement(Tag tag) {
         if (tag.getParentTag() != this) {
             throw new IllegalArgumentException("The tag is not a child of this tag");
         }

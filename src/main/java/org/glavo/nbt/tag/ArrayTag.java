@@ -22,7 +22,9 @@ import org.jetbrains.annotations.MustBeInvokedByOverriders;
 import org.jetbrains.annotations.Nullable;
 
 import java.nio.Buffer;
+import java.util.AbstractList;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Objects;
 import java.util.stream.BaseStream;
 
@@ -72,6 +74,45 @@ public sealed abstract class ArrayTag<E extends Number, T extends ValueTag<E>, A
     @Override
     @Contract(pure = true)
     public abstract TagType<? extends ArrayTag<E, T, A, B>> getType();
+
+    private @Nullable List<E> listView = null;
+
+    /// Returns a view of the values of this array as a list.
+    public List<E> asList() {
+        if (listView == null) {
+            listView = new AbstractList<>() {
+                @Override
+                public int size() {
+                    return size;
+                }
+
+                @Override
+                public E get(int index) {
+                    return getValue(index);
+                }
+
+                @Override
+                public E set(int index, E element) {
+                    E oldValue = getValue(index);
+                    ArrayTag.this.set(index, element);
+                    return oldValue;
+                }
+
+                @Override
+                public E remove(int index) {
+                    E oldValue = getValue(index);
+                    ArrayTag.this.removeAt(index);
+                    return oldValue;
+                }
+
+                @Override
+                public void clear() {
+                    ArrayTag.this.clear();
+                }
+            };
+        }
+        return listView;
+    }
 
     /// Returns an iterator over the elements of this array.
     public abstract Iterator<E> valueIterator();

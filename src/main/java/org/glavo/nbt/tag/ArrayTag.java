@@ -78,6 +78,9 @@ public sealed abstract class ArrayTag<E extends Number, T extends ValueTag<E>, A
     private @Nullable List<E> listView = null;
 
     /// Returns a view of the values of this array as a list.
+    ///
+    /// @apiNote Currently, this list supports most list operations, but does not yet support
+    /// operations such as [List#add(int, Object)] for inserting at a specific index.
     public List<E> values() {
         if (listView == null) {
             listView = new AbstractList<>() {
@@ -96,6 +99,12 @@ public sealed abstract class ArrayTag<E extends Number, T extends ValueTag<E>, A
                     E oldValue = getValue(index);
                     ArrayTag.this.set(index, element);
                     return oldValue;
+                }
+
+                @Override
+                public boolean add(E e) {
+                    ArrayTag.this.add(e);
+                    return true;
                 }
 
                 @Override

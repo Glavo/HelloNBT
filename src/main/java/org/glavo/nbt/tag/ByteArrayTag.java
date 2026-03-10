@@ -71,12 +71,6 @@ public final class ByteArrayTag extends ArrayTag<Byte, ByteTag, byte[], ByteBuff
         return values[index];
     }
 
-    @Override
-    @Contract(pure = true)
-    public Byte getValue(int index) throws IndexOutOfBoundsException {
-        return getByte(index);
-    }
-
     void setDirect(int index, byte value) {
         values[index] = value;
     }

@@ -75,12 +75,6 @@ public final class LongArrayTag extends ArrayTag<Long, LongTag, long[], LongBuff
         return values[index];
     }
 
-    @Override
-    @Contract(pure = true)
-    public Long getValue(int index) throws IndexOutOfBoundsException {
-        return getLong(index);
-    }
-
     void setDirect(int index, long value) {
         values[index] = value;
     }

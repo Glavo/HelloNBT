@@ -121,7 +121,10 @@ public sealed abstract class ArrayTag<E extends Number, T extends ValueTag<E>, A
     ///
     /// @throws IndexOutOfBoundsException if the index is out of bounds.
     @Contract(pure = true)
-    public abstract E getValue(int index) throws IndexOutOfBoundsException;
+    public final E getValue(int index) throws IndexOutOfBoundsException {
+        Objects.checkIndex(index, size);
+        return accessor().get(values, index);
+    }
 
     /// Returns the array as a readonly [Buffer].
     ///

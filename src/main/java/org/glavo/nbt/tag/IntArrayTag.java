@@ -85,12 +85,6 @@ public final class IntArrayTag extends ArrayTag<Integer, IntTag, int[], IntBuffe
         return values[index];
     }
 
-    @Override
-    @Contract(pure = true)
-    public Integer getValue(int index) throws IndexOutOfBoundsException {
-        return getInt(index);
-    }
-
     /// Returns the UUID value of the tag.
     ///
     /// @throws IllegalStateException if the tag is not a UUID.

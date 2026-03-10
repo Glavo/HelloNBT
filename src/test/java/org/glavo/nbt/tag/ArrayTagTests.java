@@ -165,6 +165,10 @@ abstract class ArrayTagTests<AT extends ArrayTag<E, T, A, B>, E extends Number, 
             assertArrayEquals(new int[]{-132296786, 2112623056, -1486552928, -920753162}, tag.getArray());
             assertEquals(uuid, tag.getUUID());
 
+            tag.add(114);
+            assertFalse(tag.isUUID());
+            assertThrows(IllegalStateException.class, tag::getUUID);
+
             uuid = UUID.fromString("00000000-0000-0000-0000-000000000000");
             tag.setUUID(uuid);
             assertTrue(tag.isUUID());
@@ -175,6 +179,20 @@ abstract class ArrayTagTests<AT extends ArrayTag<E, T, A, B>, E extends Number, 
             tag.clear();
             assertFalse(tag.isUUID());
             assertThrows(IllegalStateException.class, tag::getUUID);
+
+            var random = new Random(0);
+
+            for (int i = 0; i < 100; i++) {
+                uuid = new UUID(random.nextLong(), random.nextLong());
+                tag.setUUID(uuid);
+                assertTrue(tag.isUUID());
+                assertEquals(4, tag.size());
+                assertEquals(uuid, tag.getUUID());
+
+                tag.clear();
+                assertFalse(tag.isUUID());
+                assertThrows(IllegalStateException.class, tag::getUUID);
+            }
         }
     }
 

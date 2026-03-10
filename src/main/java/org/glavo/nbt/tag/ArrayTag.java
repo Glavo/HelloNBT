@@ -26,6 +26,12 @@ import java.util.Objects;
 import java.util.stream.BaseStream;
 
 /// Base class for array tags.
+///
+/// Each array tag holds an array of numbers.
+///
+/// @see ByteArrayTag
+/// @see IntArrayTag
+/// @see LongArrayTag
 public sealed abstract class ArrayTag<E extends Number, T extends ValueTag<E>, A>
         extends ParentTag<T>
         permits ByteArrayTag, IntArrayTag, LongArrayTag {

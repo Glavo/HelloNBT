@@ -162,14 +162,13 @@ public final class LongArrayTag extends ArrayTag<Long, LongTag, long[]> {
     protected void readContent(DataReader reader) throws IOException {
         clear();
         int len = reader.readInt();
-        values = reader.readLongArray(len);
-        size = len;
+        setWithoutClone(reader.readLongArray(len), len);
     }
 
     @Override
     protected void writeContent(DataWriter writer) throws IOException {
         writer.writeInt(size);
-        writer.writeLongArrayDirect(values);
+        writer.writeLongArrayDirect(values, 0, size);
     }
 
     @Override

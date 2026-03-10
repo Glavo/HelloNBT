@@ -159,14 +159,13 @@ public final class ByteArrayTag extends ArrayTag<Byte, ByteTag, byte[]> {
     protected void readContent(DataReader reader) throws IOException {
         clear();
         int len = reader.readInt();
-        values = reader.readByteArray(len);
-        size = len;
+        setWithoutClone(reader.readByteArray(len), len);
     }
 
     @Override
     protected void writeContent(DataWriter writer) throws IOException {
         writer.writeInt(size);
-        writer.writeByteArrayDirect(values);
+        writer.writeByteArrayDirect(values, 0, size);
     }
 
     @Override

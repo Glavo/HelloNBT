@@ -105,6 +105,10 @@ public final class OutputBuffer {
         bytesBuffer.put(value);
     }
 
+    public void putByteArray(byte[] value, int offset, int length) {
+        bytesBuffer.put(value, offset, length);
+    }
+
     public void putByteBuffer(ByteBuffer buffer) {
         bytesBuffer.put(buffer);
     }

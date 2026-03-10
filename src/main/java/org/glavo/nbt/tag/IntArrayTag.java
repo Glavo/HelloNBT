@@ -198,14 +198,13 @@ public final class IntArrayTag extends ArrayTag<Integer, IntTag, int[]> {
     protected void readContent(DataReader reader) throws IOException {
         clear();
         int len = reader.readInt();
-        values = reader.readIntArray(len);
-        size = len;
+        setWithoutClone(reader.readIntArray(len), len);
     }
 
     @Override
     protected void writeContent(DataWriter writer) throws IOException {
         writer.writeInt(size);
-        writer.writeIntArrayDirect(values);
+        writer.writeIntArrayDirect(values, 0, size);
     }
 
     @Override

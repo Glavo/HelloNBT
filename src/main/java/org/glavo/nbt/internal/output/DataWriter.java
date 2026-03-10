@@ -60,6 +60,11 @@ public abstract class DataWriter implements Closeable, Flushable {
         getBuffer().putByteArray(value);
     }
 
+    public void writeByteArrayDirect(byte[] value, int offset, int length) throws IOException {
+        ensureBufferRemaining(length);
+        getBuffer().putByteArray(value, offset, length);
+    }
+
     public void writeByteBuffer(ByteBuffer buffer) throws IOException {
         writeInt(buffer.remaining());
         writeByteBufferDirect(buffer);
@@ -75,9 +80,19 @@ public abstract class DataWriter implements Closeable, Flushable {
         getBuffer().putIntArray(value);
     }
 
+    public void writeIntArrayDirect(int[] value, int offset, int length) throws IOException {
+        ensureBufferRemaining(length * Integer.BYTES);
+        getBuffer().putIntArray(value, offset, length);
+    }
+
     public void writeLongArrayDirect(long[] value) throws IOException {
         ensureBufferRemaining(value.length * Long.BYTES);
         getBuffer().putLongArray(value);
+    }
+
+    public void writeLongArrayDirect(long[] value, int offset, int length) throws IOException {
+        ensureBufferRemaining(length * Long.BYTES);
+        getBuffer().putLongArray(value, offset, length);
     }
 
     public void writeByte(byte value) throws IOException {

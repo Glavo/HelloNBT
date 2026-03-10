@@ -107,18 +107,6 @@ public final class ByteArrayTag extends ArrayTag<Byte, ByteTag, byte[], ByteBuff
         super.setAll(array);
     }
 
-    @Override
-    @Contract(mutates = "this,param1")
-    public void setAll(ByteBuffer buffer) {
-        clear();
-        int len = buffer.remaining();
-        if (len > 0) {
-            byte[] bytes = new byte[len];
-            buffer.get(bytes);
-            setArrayWithoutClone(bytes, len);
-        }
-    }
-
     /// Appends the specified value to the end of this array.
     @Contract(mutates = "this")
     public void add(byte value) {

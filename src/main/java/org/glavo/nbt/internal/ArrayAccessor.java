@@ -34,6 +34,18 @@ public interface ArrayAccessor<A, B extends Buffer> {
         public byte[] copyOf(byte[] array, int newLength) {
             return Arrays.copyOf(array, newLength);
         }
+
+        @Override
+        public byte[] get(ByteBuffer buffer) {
+            int remaining = buffer.remaining();
+            if (remaining > 0) {
+                byte[] array = new byte[remaining];
+                buffer.get(array);
+                return array;
+            } else {
+                return empty;
+            }
+        }
     };
 
     ArrayAccessor<int[], IntBuffer> INT_ARRAY = new ArrayAccessor<>() {
@@ -47,6 +59,18 @@ public interface ArrayAccessor<A, B extends Buffer> {
         @Override
         public int[] copyOf(int[] array, int newLength) {
             return Arrays.copyOf(array, newLength);
+        }
+
+        @Override
+        public int[] get(IntBuffer buffer) {
+            int remaining = buffer.remaining();
+            if (remaining > 0) {
+                int[] array = new int[remaining];
+                buffer.get(array);
+                return array;
+            } else {
+                return empty;
+            }
         }
     };
 
@@ -62,10 +86,24 @@ public interface ArrayAccessor<A, B extends Buffer> {
         public long[] copyOf(long[] array, int newLength) {
             return Arrays.copyOf(array, newLength);
         }
+
+        @Override
+        public long[] get(LongBuffer buffer) {
+            int remaining = buffer.remaining();
+            if (remaining > 0) {
+                long[] array = new long[remaining];
+                buffer.get(array);
+                return array;
+            } else {
+                return empty;
+            }
+        }
     };
 
 
     A empty();
 
     A copyOf(A array, int newLength);
+
+    A get(B buffer);
 }

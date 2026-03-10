@@ -45,6 +45,7 @@ public sealed abstract class ArrayTag<E extends Number, T extends ValueTag<E>, A
     }
 
     @SuppressWarnings("ClassEscapesDefinedScope")
+    @Contract(pure = true)
     protected abstract ArrayAccessor<A, B> accessor();
 
     /// Creates a tag from the value at the given index.
@@ -172,7 +173,14 @@ public sealed abstract class ArrayTag<E extends Number, T extends ValueTag<E>, A
     ///
     /// Calling this method will clear the current array, all subtags will be removed.
     @Contract(mutates = "this,param1")
-    public abstract void setAll(B buffer);
+    public final void setAll(B buffer) {
+        clear();
+
+        if (buffer.hasRemaining()) {
+            A array = accessor().get(buffer);
+            setArrayWithoutClone(array, Array.getLength(array));
+        }
+    }
 
     /// Appends the specified value to the end of this array.
     @Contract(mutates = "this")

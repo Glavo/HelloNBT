@@ -22,7 +22,7 @@ import org.glavo.nbt.tag.ByteArrayTag;
 import org.glavo.nbt.tag.IntArrayTag;
 import org.glavo.nbt.tag.LongArrayTag;
 
-sealed abstract class PrimaryArrayBuilder<T extends ArrayTag<?, ?, ?>, A> {
+sealed abstract class PrimaryArrayBuilder<T extends ArrayTag<?, ?, A, ?>, A> {
     protected final T tag = newTag();
 
     protected abstract IntegralType getIntegralType();

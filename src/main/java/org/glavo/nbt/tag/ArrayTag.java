@@ -83,7 +83,7 @@ public sealed abstract class ArrayTag<E extends Number, T extends ValueTag<E>, A
     /// Returns the clone of the array.
     @Contract(pure = true)
     public final A getArray() {
-        return accessor().copyOf(values, size);
+        return size > 0 ? accessor().copyOf(values, size) : accessor().empty();
     }
 
     final @Nullable T getTagOrNull(int index) {

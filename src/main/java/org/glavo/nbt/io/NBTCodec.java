@@ -18,6 +18,7 @@ package org.glavo.nbt.io;
 import org.glavo.nbt.chunk.ChunkRegion;
 import org.glavo.nbt.internal.NBTCodecImpl;
 import org.glavo.nbt.tag.Tag;
+import org.glavo.nbt.tag.TagType;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.Nullable;
 
@@ -81,6 +82,12 @@ public sealed interface NBTCodec permits NBTCodecImpl {
 
     /// Reads the specified NBT tag from a byte array.
     @Contract(pure = true)
+    default <T extends Tag> T readTag(byte[] array, TagType<T> tagType) throws IOException {
+        return check(readTag(array), tagType.tagClass());
+    }
+
+    /// Reads the specified NBT tag from a byte array.
+    @Contract(pure = true)
     default <T extends Tag> T readTag(byte[] array, Class<T> tagClass) throws IOException {
         return check(readTag(array), tagClass);
     }
@@ -89,6 +96,12 @@ public sealed interface NBTCodec permits NBTCodecImpl {
     @Contract(pure = true)
     default Tag readTag(byte[] array, int offset, int length) throws IOException {
         return readTag(ByteBuffer.wrap(array, offset, length));
+    }
+
+    /// Reads the specified NBT tag from a byte array with the specified offset and length.
+    @Contract(pure = true)
+    default <T extends Tag> T readTag(byte[] array, int offset, int length, TagType<T> tagType) throws IOException {
+        return check(readTag(array, offset, length), tagType.tagClass());
     }
 
     /// Reads the specified NBT tag from a byte array with the specified offset and length.
@@ -102,6 +115,14 @@ public sealed interface NBTCodec permits NBTCodecImpl {
     /// This method does not change the position and the limit of the buffer.
     @Contract(pure = true)
     Tag readTag(ByteBuffer buffer) throws IOException;
+
+    /// Reads the specified NBT tag from a byte buffer.
+    ///
+    /// This method does not change the position and the limit of the buffer.
+    @Contract(pure = true)
+    default <T extends Tag> T readTag(ByteBuffer buffer, TagType<T> tagType) throws IOException {
+        return check(readTag(buffer), tagType.tagClass());
+    }
 
     /// Reads the specified NBT tag from a byte buffer.
     ///
@@ -121,6 +142,14 @@ public sealed interface NBTCodec permits NBTCodecImpl {
     ///
     /// After this method is called, the state of the `inputStream` is undefined.
     @Contract(mutates = "param1")
+    default <T extends Tag> T readTag(InputStream inputStream, TagType<T> tagType) throws IOException {
+        return check(readTag(inputStream), tagType.tagClass());
+    }
+
+    /// Reads the specified NBT tag from an input stream.
+    ///
+    /// After this method is called, the state of the `inputStream` is undefined.
+    @Contract(mutates = "param1")
     default <T extends Tag> T readTag(InputStream inputStream, Class<T> tagClass) throws IOException {
         return check(readTag(inputStream), tagClass);
     }
@@ -135,12 +164,25 @@ public sealed interface NBTCodec permits NBTCodecImpl {
     ///
     /// After this method is called, the state of the `channel` is undefined.
     @Contract(mutates = "param1")
+    default <T extends Tag> T readTag(ReadableByteChannel channel, TagType<T> tagType) throws IOException {
+        return check(readTag(channel), tagType.tagClass());
+    }
+
+    /// Reads the specified NBT tag from a readable byte channel.
+    ///
+    /// After this method is called, the state of the `channel` is undefined.
+    @Contract(mutates = "param1")
     default <T extends Tag> T readTag(ReadableByteChannel channel, Class<T> tagClass) throws IOException {
         return check(readTag(channel), tagClass);
     }
 
     /// Reads a NBT tag from a file.
     Tag readTag(Path path) throws IOException;
+
+    /// Reads the specified NBT tag from a file.
+    default <T extends Tag> T readTag(Path path, TagType<T> tagType) throws IOException {
+        return check(readTag(path), tagType.tagClass());
+    }
 
     /// Reads the specified NBT tag from a file.
     default <T extends Tag> T readTag(Path path, Class<T> tagClass) throws IOException {

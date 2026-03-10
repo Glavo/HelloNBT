@@ -16,7 +16,6 @@
 package org.glavo.nbt.tag;
 
 import org.glavo.nbt.internal.ArrayAccessor;
-import org.glavo.nbt.internal.ArrayUtils;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.MustBeInvokedByOverriders;
 import org.jetbrains.annotations.Nullable;
@@ -74,7 +73,7 @@ public sealed abstract class ArrayTag<E extends Number, T extends ValueTag<E>, A
 
     protected void ensureValuesCapacityForAdd() {
         if (accessor().getLength(values) == size) {
-            values = accessor().copyOf(values, ArrayUtils.nextCapacity(size, size + 1));
+            values = accessor().copyOf(values, ArrayAccessor.nextCapacity(size, size + 1));
         }
     }
 

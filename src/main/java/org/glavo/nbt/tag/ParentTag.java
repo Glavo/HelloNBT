@@ -16,7 +16,7 @@
 package org.glavo.nbt.tag;
 
 import org.glavo.nbt.NBTParent;
-import org.glavo.nbt.internal.ArrayUtils;
+import org.glavo.nbt.internal.ArrayAccessor;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.UnknownNullability;
@@ -59,13 +59,13 @@ public sealed abstract class ParentTag<T extends Tag> extends Tag
 
     protected final void ensureTagsCapacity(int minCapacity) {
         if (minCapacity >= tags.length) {
-            tags = Arrays.copyOf(tags, ArrayUtils.nextCapacity(tags.length, minCapacity));
+            tags = Arrays.copyOf(tags, ArrayAccessor.nextCapacity(tags.length, minCapacity));
         }
     }
 
     protected final void ensureTagsCapacityForAdd() {
         if (size >= tags.length) {
-            tags = Arrays.copyOf(tags, ArrayUtils.nextCapacity(tags.length, size + 1));
+            tags = Arrays.copyOf(tags, ArrayAccessor.nextCapacity(tags.length, size + 1));
         }
     }
 

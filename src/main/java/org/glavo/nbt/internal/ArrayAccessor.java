@@ -28,6 +28,17 @@ import java.nio.LongBuffer;
 import java.util.Arrays;
 
 public abstract class ArrayAccessor<E extends Number, T extends ValueTag<E>, A, B extends Buffer> {
+
+    public static int nextCapacity(int currentCapacity, int minCapacity) {
+        int growCap;
+        if (currentCapacity < 4) {
+            growCap = 12;
+        } else {
+            growCap = currentCapacity + (currentCapacity >> 1);
+        }
+        return Math.max(growCap, minCapacity);
+    }
+
     protected final A empty;
 
     private ArrayAccessor(A empty) {

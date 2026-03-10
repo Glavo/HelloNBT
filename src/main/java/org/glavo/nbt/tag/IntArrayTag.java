@@ -193,7 +193,7 @@ public final class IntArrayTag extends ArrayTag<Integer, IntTag, int[]> {
     @Override
     @Contract(pure = true)
     public IntStream valueStream() {
-        return Arrays.stream(values);
+        return Arrays.stream(values, 0, size);
     }
 
     @Override

@@ -156,7 +156,7 @@ public final class LongArrayTag extends ArrayTag<Long, LongTag, long[]> {
     @Override
     @Contract(pure = true)
     public LongStream valueStream() {
-        return Arrays.stream(values);
+        return Arrays.stream(values, 0, size);
     }
 
     @Override

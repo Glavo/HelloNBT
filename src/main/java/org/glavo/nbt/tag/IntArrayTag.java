@@ -79,18 +79,7 @@ public final class IntArrayTag extends ArrayTag<Integer, IntTag, int[]> {
     ///
     /// @see <a href="https://minecraft.wiki/w/UUID">UUID - Minecraft Wiki</a>
     public boolean isUUID() {
-        return values.length == 4;
-    }
-
-    /// Sets the value of the tag from a UUID.
-    @Contract(mutates = "this")
-    public void setUUID(UUID uuid) {
-        int[] value = new int[4];
-        value[0] = (int) (uuid.getMostSignificantBits() >>> 32);
-        value[1] = (int) (uuid.getMostSignificantBits() & 0xFFFF_FFFFL);
-        value[2] = (int) (uuid.getLeastSignificantBits() >>> 32);
-        value[3] = (int) (uuid.getLeastSignificantBits() & 0xFFFF_FFFFL);
-        set(value);
+        return size == 4;
     }
 
     /// Returns the element at the given index.
@@ -108,9 +97,12 @@ public final class IntArrayTag extends ArrayTag<Integer, IntTag, int[]> {
         return getInt(index);
     }
 
+    /// Returns the UUID value of the tag.
+    ///
+    /// @throws IllegalStateException if the tag is not a UUID.
     @Contract(pure = true)
     public UUID getUUID() {
-        if (values.length != 4) {
+        if (isUUID()) {
             throw new IllegalStateException("IntArrayTag is not a UUID");
         }
         long msb = ((long) values[0] << 32) | (long) values[1] & 0xFFFFFFFFL;
@@ -148,6 +140,20 @@ public final class IntArrayTag extends ArrayTag<Integer, IntTag, int[]> {
         set(index, value.intValue());
     }
 
+    /// Sets the value of the tag from a UUID.
+    @Contract(mutates = "this")
+    public void setUUID(UUID uuid) {
+        int[] array = new int[4];
+        array[0] = (int) (uuid.getMostSignificantBits() >>> 32);
+        array[1] = (int) (uuid.getMostSignificantBits() & 0xFFFF_FFFFL);
+        array[2] = (int) (uuid.getLeastSignificantBits() >>> 32);
+        array[3] = (int) (uuid.getLeastSignificantBits() & 0xFFFF_FFFFL);
+
+        clear();
+        values = array;
+        size = 4;
+    }
+
     /// Appends the specified value to the end of this array.
     @Contract(mutates = "this")
     public void add(int value) {
@@ -164,17 +170,18 @@ public final class IntArrayTag extends ArrayTag<Integer, IntTag, int[]> {
     @Override
     public PrimitiveIterator.OfInt valueIterator() {
         final int[] array = this.values;
+        final int size = this.size;
         return new PrimitiveIterator.OfInt() {
             private int cursor;
 
             @Override
             public boolean hasNext() {
-                return cursor < array.length;
+                return cursor < size;
             }
 
             @Override
             public int nextInt() {
-                if (cursor >= array.length) {
+                if (cursor >= size) {
                     throw new NoSuchElementException();
                 }
                 return array[cursor++];
@@ -218,7 +225,7 @@ public final class IntArrayTag extends ArrayTag<Integer, IntTag, int[]> {
     public boolean contentEquals(Tag other) {
         return other instanceof IntArrayTag that && Arrays.equals(
                 this.values, 0, this.size,
-                that.values, 0 , that.size
+                that.values, 0, that.size
         );
     }
 

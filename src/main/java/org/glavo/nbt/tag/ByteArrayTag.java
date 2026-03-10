@@ -129,17 +129,18 @@ public final class ByteArrayTag extends ArrayTag<Byte, ByteTag, byte[]> {
     @Override
     public Iterator<Byte> valueIterator() {
         final byte[] array = this.values;
+        final int size = this.size;
         return new Iterator<>() {
             private int cursor;
 
             @Override
             public boolean hasNext() {
-                return cursor < array.length;
+                return cursor < size;
             }
 
             @Override
             public Byte next() {
-                if (cursor >= array.length) {
+                if (cursor >= size) {
                     throw new NoSuchElementException();
                 }
                 return array[cursor++];

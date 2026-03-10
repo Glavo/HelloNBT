@@ -133,17 +133,18 @@ public final class LongArrayTag extends ArrayTag<Long, LongTag, long[]> {
     @Override
     public PrimitiveIterator.OfLong valueIterator() {
         final long[] array = this.values;
+        final int size = this.size;
         return new PrimitiveIterator.OfLong() {
             private int cursor;
 
             @Override
             public boolean hasNext() {
-                return cursor < array.length;
+                return cursor < size;
             }
 
             @Override
             public long nextLong() {
-                if (cursor >= array.length) {
+                if (cursor >= size) {
                     throw new NoSuchElementException();
                 }
                 return array[cursor++];

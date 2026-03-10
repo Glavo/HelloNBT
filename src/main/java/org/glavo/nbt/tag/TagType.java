@@ -15,6 +15,7 @@
  */
 package org.glavo.nbt.tag;
 
+import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
@@ -176,22 +177,32 @@ public abstract class TagType<T extends Tag> {
         this.tagClass = (Class<T>) tagClass;
     }
 
+    /// Returns the name of the tag type.
+    @Contract(pure = true)
     public String name() {
         return name;
     }
 
+    /// Returns the full name of the tag type.
+    @Contract(pure = true)
     public String getFullName() {
         return name;
     }
 
+    /// Returns the ID of the tag type.
+    @Contract(pure = true)
     public byte id() {
         return id;
     }
 
+    /// Returns the class of the tag type.
+    @Contract(pure = true)
     public Class<T> tagClass() {
         return tagClass;
     }
 
+    /// Creates a new tag of this type.
+    @Contract(pure = true)
     public abstract T createTag();
 
     @Override

@@ -78,7 +78,7 @@ public sealed abstract class ArrayTag<E extends Number, T extends ValueTag<E>, A
     private @Nullable List<E> listView = null;
 
     /// Returns a view of the values of this array as a list.
-    public List<E> asList() {
+    public List<E> values() {
         if (listView == null) {
             listView = new AbstractList<>() {
                 @Override

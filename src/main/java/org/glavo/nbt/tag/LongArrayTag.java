@@ -155,15 +155,6 @@ public final class LongArrayTag extends ArrayTag<Long, LongTag, long[], LongBuff
     }
 
     @Override
-    @Contract(pure = true)
-    public boolean contentEquals(Tag other) {
-        return other instanceof LongArrayTag that && Arrays.equals(
-                this.values, 0, this.size,
-                that.values, 0, that.size
-        );
-    }
-
-    @Override
     @Contract(value = "-> new", pure = true)
     public LongArrayTag clone() {
         LongArrayTag tag = new LongArrayTag(name);

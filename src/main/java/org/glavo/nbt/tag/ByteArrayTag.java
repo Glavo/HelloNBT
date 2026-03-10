@@ -152,15 +152,6 @@ public final class ByteArrayTag extends ArrayTag<Byte, ByteTag, byte[], ByteBuff
     }
 
     @Override
-    @Contract(pure = true)
-    public boolean contentEquals(Tag other) {
-        return other instanceof ByteArrayTag that && Arrays.equals(
-                this.values, 0, this.size,
-                that.values, 0, that.size
-        );
-    }
-
-    @Override
     public ByteArrayTag clone() {
         ByteArrayTag tag = new ByteArrayTag(name);
         if (size > 0) {

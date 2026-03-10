@@ -55,6 +55,8 @@ public abstract class ArrayAccessor<E extends Number, T extends ValueTag<E>, A, 
 
     public abstract void toString(StringBuilder builder, A array, int offset, int length);
 
+    public abstract boolean equals(A array1, int offset1, A array2, int offset2, int length);
+
     public abstract A get(B buffer);
 
     public abstract B getReadOnlyView(A array, int offset, int length);
@@ -102,6 +104,11 @@ public abstract class ArrayAccessor<E extends Number, T extends ValueTag<E>, A, 
                 builder.append(", ").append(array[i]);
             }
             builder.append(']');
+        }
+
+        @Override
+        public boolean equals(byte[] array1, int offset1, byte[] array2, int offset2, int length) {
+            return Arrays.equals(array1, offset1, offset1 + length, array2, offset2, offset2 + length);
         }
 
         @Override
@@ -172,6 +179,11 @@ public abstract class ArrayAccessor<E extends Number, T extends ValueTag<E>, A, 
         }
 
         @Override
+        public boolean equals(int[] array1, int offset1, int[] array2, int offset2, int length) {
+            return Arrays.equals(array1, offset1, offset1 + length, array2, offset2, offset2 + length);
+        }
+
+        @Override
         public int[] get(IntBuffer buffer) {
             int remaining = buffer.remaining();
             if (remaining > 0) {
@@ -236,6 +248,11 @@ public abstract class ArrayAccessor<E extends Number, T extends ValueTag<E>, A, 
                 builder.append(", ").append(array[i]);
             }
             builder.append(']');
+        }
+
+        @Override
+        public boolean equals(long[] array1, int offset1, long[] array2, int offset2, int length) {
+            return Arrays.equals(array1, offset1, offset1 + length, array2, offset2, offset2 + length);
         }
 
         @Override

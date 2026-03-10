@@ -191,15 +191,6 @@ public final class IntArrayTag extends ArrayTag<Integer, IntTag, int[], IntBuffe
     }
 
     @Override
-    @Contract(pure = true)
-    public boolean contentEquals(Tag other) {
-        return other instanceof IntArrayTag that && Arrays.equals(
-                this.values, 0, this.size,
-                that.values, 0, that.size
-        );
-    }
-
-    @Override
     public IntArrayTag clone() {
         IntArrayTag tag = new IntArrayTag(name);
         if (size > 0) {

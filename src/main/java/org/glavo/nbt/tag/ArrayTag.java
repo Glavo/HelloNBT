@@ -283,4 +283,14 @@ public sealed abstract class ArrayTag<E extends Number, T extends ValueTag<E>, A
         accessor().toString(builder, values, 0, size);
     }
 
+    @Override
+    public final boolean contentEquals(Tag other) {
+        if (this.getClass() == other.getClass()) {
+            @SuppressWarnings("unchecked")
+            var that = (ArrayTag<E, T, A, B>) other;
+            return this.size == that.size && accessor().equals(values, 0, that.values, 0, size);
+        } else {
+            return false;
+        }
+    }
 }

@@ -32,6 +32,20 @@ import java.util.stream.BaseStream;
 ///
 /// Each array tag holds an array of numbers.
 ///
+/// Array tags are also subclasses of [ParentTag], and each element is a [ValueTag]. In practice,
+/// this array will lazily allocate [ValueTag] for its elements as much as possible,
+/// making the performance and memory overhead of this class close to that of primitive type arrays in most cases.
+///
+/// The following are the implementations of this class:
+///
+/// - [ByteArrayTag]: An array of 8-byte integers. The subtags are [ByteTag].
+/// - [IntArrayTag]: An array of 32-byte integers. The subtags are [IntTag].
+/// - [LongArrayTag]: An array of 64-byte integers. The subtags are [LongTag].
+///
+/// @param <E> the type of elements in this array
+/// @param <T> the type of subtags in this array
+/// @param <A> the type of the array
+/// @param <B> the type of the buffer
 /// @see ByteArrayTag
 /// @see IntArrayTag
 /// @see LongArrayTag

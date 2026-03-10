@@ -41,18 +41,21 @@ final class ValueTagTests {
 
             assertEquals(value, byteTag.get());
             assertEquals(value, byteTag.getValue());
+            assertEquals(Byte.toUnsignedInt(value), byteTag.getUnsigned());
             assertEquals(value.toString(), byteTag.getAsString());
         } else if (expected instanceof Short value) {
             ShortTag shortTag = assertInstanceOf(ShortTag.class, tag);
 
             assertEquals(value, shortTag.get());
             assertEquals(value, shortTag.getValue());
+            assertEquals(Short.toUnsignedInt(value), shortTag.getUnsigned());
             assertEquals(value.toString(), shortTag.getAsString());
         } else if (expected instanceof Integer value) {
             IntTag intTag = assertInstanceOf(IntTag.class, tag);
 
             assertEquals(value, intTag.get());
             assertEquals(value, intTag.getValue());
+            assertEquals(Integer.toUnsignedLong(value), intTag.getUnsigned());
             assertEquals(value.toString(), intTag.getAsString());
         } else if (expected instanceof Long value) {
             LongTag longTag = assertInstanceOf(LongTag.class, tag);

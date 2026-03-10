@@ -84,22 +84,26 @@ public final class ByteTag extends ValueTag<Byte> {
         return Byte.toString(value);
     }
 
+    void setDirect(byte value) {
+        this.value = value;
+    }
+
     /// Sets the value of the tag.
     @Contract(mutates = "this")
     public void set(byte value) {
-        this.value = value;
+        setDirect(value);
     }
 
     /// Sets the value of the tag from an unsigned integer.
     @Contract(mutates = "this")
     public void setUnsigned(int value) {
-        this.value = (byte) value;
+        set((byte) value);
     }
 
     @Override
     @Contract(mutates = "this")
     public void setValue(Byte value) {
-        this.value = value;
+        set(value);
     }
 
     /// Sets the boolean value of the tag.
@@ -107,7 +111,7 @@ public final class ByteTag extends ValueTag<Byte> {
     /// If the `value` is `true`, the tag will be set to `1`; otherwise, it will be set to `0`.
     @Contract(mutates = "this")
     public void setBoolean(boolean value) {
-        this.value = (byte) (value ? 1 : 0);
+        set((byte) (value ? 1 : 0));
     }
 
     @Override

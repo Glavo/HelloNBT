@@ -92,6 +92,21 @@ public final class LongArrayTag extends ArrayTag<Long, LongTag, long[]> {
         return getLong(index);
     }
 
+    void setDirect(int index, long value) {
+        values[index] = value;
+    }
+
+    @Contract(pure = true)
+    public void set(int index, long value) throws IndexOutOfBoundsException {
+        Objects.checkIndex(index, size);
+        setDirect(index, value);
+
+        LongTag tag = getTagOrNull(index);
+        if (tag != null) {
+            tag.setDirect(value);
+        }
+    }
+
     @Contract(mutates = "this")
     public void add(long value) {
         ensureValuesCapacityForAdd();

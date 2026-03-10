@@ -82,6 +82,21 @@ public final class ByteArrayTag extends ArrayTag<Byte, ByteTag, byte[]> {
         return getByte(index);
     }
 
+    void setDirect(int index, byte value) {
+        values[index] = value;
+    }
+
+    @Contract(pure = true)
+    public void set(int index, byte value) throws IndexOutOfBoundsException {
+        Objects.checkIndex(index, size);
+        setDirect(index, value);
+
+        ByteTag tag = getTagOrNull(index);
+        if (tag != null) {
+            tag.setDirect(value);
+        }
+    }
+
     public void add(byte value) {
         ensureValuesCapacityForAdd();
         values[size++] = value;

@@ -65,16 +65,20 @@ public final class LongTag extends ValueTag<Long> {
         return Long.toString(value);
     }
 
+    void setDirect(long value) {
+        this.value = value;
+    }
+
     /// Sets the value of the tag.
     @Contract(mutates = "this")
     public void set(long value) {
-        this.value = value;
+        setDirect(value);
     }
 
     @Override
     @Contract(mutates = "this")
     public void setValue(Long value) {
-        this.value = value;
+        set(value);
     }
 
     @Override

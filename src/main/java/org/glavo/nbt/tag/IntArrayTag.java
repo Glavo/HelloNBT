@@ -123,6 +123,21 @@ public final class IntArrayTag extends ArrayTag<Integer, IntTag, int[]> {
         return IntBuffer.wrap(values).asReadOnlyBuffer();
     }
 
+    void setDirect(int index, int value) {
+        values[index] = value;
+    }
+
+    @Contract(pure = true)
+    public void set(int index, int value) throws IndexOutOfBoundsException {
+        Objects.checkIndex(index, size);
+        setDirect(index, value);
+
+        IntTag tag = getTagOrNull(index);
+        if (tag != null) {
+            tag.setDirect(value);
+        }
+    }
+
     @Contract(mutates = "this")
     public void add(int value) {
         ensureValuesCapacityForAdd();

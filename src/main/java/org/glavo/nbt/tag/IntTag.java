@@ -71,6 +71,10 @@ public final class IntTag extends ValueTag<Integer> {
         return Integer.toString(value);
     }
 
+    void setDirect(int value) {
+        this.value = value;
+    }
+
     /// Sets the value of the tag.
     @Contract(mutates = "this")
     public void set(int value) {
@@ -80,13 +84,13 @@ public final class IntTag extends ValueTag<Integer> {
     /// Sets the value of the tag from an unsigned long.
     @Contract(mutates = "this")
     public void setUnsigned(long value) {
-        this.value = (int) value;
+        set((int) value);
     }
 
     @Override
     @Contract(mutates = "this")
     public void setValue(Integer value) {
-        this.value = value;
+        set(value);
     }
 
     @Override

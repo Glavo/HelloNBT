@@ -17,6 +17,7 @@ package org.glavo.nbt.tag;
 
 import org.glavo.nbt.internal.ArrayUtils;
 import org.jetbrains.annotations.Contract;
+import org.jetbrains.annotations.Nullable;
 
 import java.lang.reflect.Array;
 import java.nio.Buffer;
@@ -83,19 +84,25 @@ public sealed abstract class ArrayTag<E extends Number, T extends ValueTag<E>, A
         return clone(values);
     }
 
+    final @Nullable T getTagOrNull(int index) {
+        if (index >= tags.length) {
+            return null;
+        }
+        @SuppressWarnings("unchecked")
+        T tag = (T) tags[index];
+        return tag;
+    }
+
     @Override
     public T getTag(int index) throws IndexOutOfBoundsException {
         Objects.checkIndex(index, size);
 
-        if (tags.length > index) {
-            @SuppressWarnings("unchecked")
-            T tag = (T) tags[index];
-            if (tag != null) {
-                return tag;
-            }
+        T tag = getTagOrNull(index);
+        if (tag != null) {
+            return tag;
         }
 
-        T tag = createTagFromIndex(index);
+        tag = createTagFromIndex(index);
         ensureTagsCapacity(index + 1);
         assert tags[index] == null;
 

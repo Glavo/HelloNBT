@@ -21,15 +21,23 @@ import java.nio.IntBuffer;
 import java.nio.LongBuffer;
 import java.util.Arrays;
 
-public interface ArrayAccessor<A, B extends Buffer> {
-    ArrayAccessor<byte[], ByteBuffer> BYTE_ARRAY = new ArrayAccessor<>() {
-        private final byte[] empty = new byte[0];
+public abstract class ArrayAccessor<A, B extends Buffer> {
+    protected final A empty;
 
-        @Override
-        public byte[] empty() {
-            return empty;
-        }
+    private ArrayAccessor(A empty) {
+        this.empty = empty;
+    }
 
+    /// Returns an empty array.
+    public final A empty() {
+        return empty;
+    }
+
+    public abstract A copyOf(A array, int newLength);
+
+    public abstract A get(B buffer);
+
+    public static final ArrayAccessor<byte[], ByteBuffer> BYTE_ARRAY = new ArrayAccessor<>(new byte[0]) {
         @Override
         public byte[] copyOf(byte[] array, int newLength) {
             return Arrays.copyOf(array, newLength);
@@ -48,13 +56,7 @@ public interface ArrayAccessor<A, B extends Buffer> {
         }
     };
 
-    ArrayAccessor<int[], IntBuffer> INT_ARRAY = new ArrayAccessor<>() {
-        private final int[] empty = new int[0];
-
-        @Override
-        public int[] empty() {
-            return empty;
-        }
+    public static final ArrayAccessor<int[], IntBuffer> INT_ARRAY = new ArrayAccessor<>(new int[0]) {
 
         @Override
         public int[] copyOf(int[] array, int newLength) {
@@ -74,13 +76,7 @@ public interface ArrayAccessor<A, B extends Buffer> {
         }
     };
 
-    ArrayAccessor<long[], LongBuffer> LONG_ARRAY = new ArrayAccessor<>() {
-        private final long[] empty = new long[0];
-
-        @Override
-        public long[] empty() {
-            return empty;
-        }
+    public static final ArrayAccessor<long[], LongBuffer> LONG_ARRAY = new ArrayAccessor<>(new long[0]) {
 
         @Override
         public long[] copyOf(long[] array, int newLength) {
@@ -100,10 +96,4 @@ public interface ArrayAccessor<A, B extends Buffer> {
         }
     };
 
-
-    A empty();
-
-    A copyOf(A array, int newLength);
-
-    A get(B buffer);
 }

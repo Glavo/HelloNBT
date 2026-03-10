@@ -200,7 +200,7 @@ public sealed abstract class ParentTag<T extends Tag> extends Tag
 
     /// Removes all subtags from this tag.
     public void clear() {
-        for (int i = 0; i < size; i++) {
+        for (int i = 0, end = Math.min(size, tags.length); i < end; i++) {
             Tag subTag = tags[i];
             if (subTag != null) {
                 subTag.setParent(null, -1);

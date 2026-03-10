@@ -225,6 +225,12 @@ public sealed abstract class ArrayTag<E extends Number, T extends ValueTag<E>, A
         return tag;
     }
 
+    @Override
+    public void clear() {
+        super.clear();
+        values = emptyArray();
+    }
+
     protected abstract A clone(A array);
 
     @Override

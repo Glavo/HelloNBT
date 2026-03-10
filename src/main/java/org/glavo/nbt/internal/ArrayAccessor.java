@@ -51,6 +51,10 @@ public abstract class ArrayAccessor<E extends Number, T extends ValueTag<E>, A, 
 
     public abstract void set(A array, int index, T tag);
 
+    public abstract int hashCode(A array, int offset, int length);
+
+    public abstract void toString(StringBuilder builder, A array, int offset, int length);
+
     public abstract A get(B buffer);
 
     public abstract B getReadOnlyView(A array, int offset, int length);
@@ -76,6 +80,28 @@ public abstract class ArrayAccessor<E extends Number, T extends ValueTag<E>, A, 
         @Override
         public void set(byte[] array, int index, ByteTag tag) {
             array[index] = tag.get();
+        }
+
+        @Override
+        public int hashCode(byte[] array, int offset, int length) {
+            int hashCode = 0;
+            for (int i = offset; i < offset + length; i++) {
+                hashCode = 31 * hashCode + Byte.hashCode(array[i]);
+            }
+            return hashCode;
+        }
+
+        @Override
+        public void toString(StringBuilder builder, byte[] array, int offset, int length) {
+            if (length == 0) {
+                builder.append("[]");
+                return;
+            }
+            builder.append('[').append(array[offset]);
+            for (int i = offset + 1; i < offset + length; i++) {
+                builder.append(", ").append(array[i]);
+            }
+            builder.append(']');
         }
 
         @Override
@@ -124,6 +150,28 @@ public abstract class ArrayAccessor<E extends Number, T extends ValueTag<E>, A, 
         }
 
         @Override
+        public int hashCode(int[] array, int offset, int length) {
+            int hashCode = 0;
+            for (int i = offset; i < offset + length; i++) {
+                hashCode = 31 * hashCode + Integer.hashCode(array[i]);
+            }
+            return hashCode;
+        }
+
+        @Override
+        public void toString(StringBuilder builder, int[] array, int offset, int length) {
+            if (length == 0) {
+                builder.append("[]");
+                return;
+            }
+            builder.append('[').append(array[offset]);
+            for (int i = offset + 1; i < offset + length; i++) {
+                builder.append(", ").append(array[i]);
+            }
+            builder.append(']');
+        }
+
+        @Override
         public int[] get(IntBuffer buffer) {
             int remaining = buffer.remaining();
             if (remaining > 0) {
@@ -166,6 +214,28 @@ public abstract class ArrayAccessor<E extends Number, T extends ValueTag<E>, A, 
         @Override
         public void set(long[] array, int index, LongTag tag) {
             array[index] = tag.getValue();
+        }
+
+        @Override
+        public int hashCode(long[] array, int offset, int length) {
+            int hashCode = 0;
+            for (int i = offset; i < offset + length; i++) {
+                hashCode = 31 * hashCode + Long.hashCode(array[i]);
+            }
+            return hashCode;
+        }
+
+        @Override
+        public void toString(StringBuilder builder, long[] array, int offset, int length) {
+            if (length == 0) {
+                builder.append("[]");
+                return;
+            }
+            builder.append('[').append(array[offset]);
+            for (int i = offset + 1; i < offset + length; i++) {
+                builder.append(", ").append(array[i]);
+            }
+            builder.append(']');
         }
 
         @Override

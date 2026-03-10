@@ -264,7 +264,7 @@ public sealed abstract class ArrayTag<E extends Number, T extends ValueTag<E>, A
     }
 
     @Override
-    public void clear() {
+    public final void clear() {
         super.clear();
         values = accessor().empty();
     }
@@ -272,5 +272,15 @@ public sealed abstract class ArrayTag<E extends Number, T extends ValueTag<E>, A
     @Override
     @Contract(value = "-> new", pure = true)
     public abstract ArrayTag<E, T, A, B> clone();
+
+    @Override
+    public final int contentHashCode() {
+        return accessor().hashCode(values, 0, size);
+    }
+
+    @Override
+    protected final void contentToString(StringBuilder builder) {
+        accessor().toString(builder, values, 0, size);
+    }
 
 }

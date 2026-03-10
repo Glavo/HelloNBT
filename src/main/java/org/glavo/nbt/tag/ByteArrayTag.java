@@ -153,34 +153,11 @@ public final class ByteArrayTag extends ArrayTag<Byte, ByteTag, byte[], ByteBuff
 
     @Override
     @Contract(pure = true)
-    public int contentHashCode() {
-        int hashCode = 0;
-        for (int i = 0; i < size; i++) {
-            hashCode = 31 * hashCode + Byte.hashCode(values[i]);
-        }
-        return hashCode;
-    }
-
-    @Override
-    @Contract(pure = true)
     public boolean contentEquals(Tag other) {
         return other instanceof ByteArrayTag that && Arrays.equals(
                 this.values, 0, this.size,
                 that.values, 0, that.size
         );
-    }
-
-    @Override
-    protected void contentToString(StringBuilder builder) {
-        if (size > 0) {
-            builder.append('[').append(values[0]);
-            for (int i = 1; i < values.length; i++) {
-                builder.append(", ").append(values[i]);
-            }
-            builder.append(']');
-        } else {
-            builder.append("[]");
-        }
     }
 
     @Override

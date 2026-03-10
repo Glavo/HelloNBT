@@ -116,6 +116,7 @@ public final class LongArrayTag extends ArrayTag<Long, LongTag, long[]> {
         set(index, value.longValue());
     }
 
+    /// Appends the specified value to the end of this array.
     @Contract(mutates = "this")
     public void add(long value) {
         ensureValuesCapacityForAdd();
@@ -123,6 +124,7 @@ public final class LongArrayTag extends ArrayTag<Long, LongTag, long[]> {
     }
 
     @Override
+    @Contract(mutates = "this")
     public void add(Long value) {
         add(value.longValue());
     }

@@ -127,7 +127,6 @@ public final class IntArrayTag extends ArrayTag<Integer, IntTag, int[]> {
         values[index] = value;
     }
 
-
     /// Sets the value at the given index.
     ///
     /// @throws IndexOutOfBoundsException if the index is out of bounds.
@@ -148,6 +147,7 @@ public final class IntArrayTag extends ArrayTag<Integer, IntTag, int[]> {
         set(index, value.intValue());
     }
 
+    /// Appends the specified value to the end of this array.
     @Contract(mutates = "this")
     public void add(int value) {
         ensureValuesCapacityForAdd();

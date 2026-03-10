@@ -106,6 +106,8 @@ public final class ByteArrayTag extends ArrayTag<Byte, ByteTag, byte[]> {
         set(index, value.byteValue());
     }
 
+    /// Appends the specified value to the end of this array.
+    @Contract(mutates = "this")
     public void add(byte value) {
         ensureValuesCapacityForAdd();
         values[size++] = value;

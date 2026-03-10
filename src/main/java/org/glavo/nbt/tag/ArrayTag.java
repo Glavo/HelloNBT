@@ -43,6 +43,7 @@ public sealed abstract class ArrayTag<E extends Number, T extends ValueTag<E>, A
     }
 
     /// Returns an empty array.
+    @Contract(pure = true)
     protected abstract A emptyArray();
 
     /// Creates a tag from the value at the given index.
@@ -143,7 +144,7 @@ public sealed abstract class ArrayTag<E extends Number, T extends ValueTag<E>, A
     @Contract(mutates = "this")
     public abstract void set(int index, E value) throws IndexOutOfBoundsException;
 
-    /// Adds the `value` to this array.
+    /// Appends the specified value to the end of this array.
     @Contract(mutates = "this")
     public abstract void add(E value);
 

@@ -158,7 +158,7 @@ public sealed abstract class Tag implements NBTElement
                 case '\n' -> builder.append("\\n");
                 case '\f' -> builder.append("\\f");
                 case '\r' -> builder.append("\\r");
-                case '"' -> builder.append("\"");
+                case '"' -> builder.append("\\\"");
                 case ' ' -> builder.append(' ');
                 default -> {
                     if (Character.isJavaIdentifierPart(ch)) {

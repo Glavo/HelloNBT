@@ -82,21 +82,6 @@ final class ValueTagTests {
         }
     }
 
-    private static void assertContentEquals(ValueTag<?> expected, ValueTag<?> actual) {
-        Supplier<String> errorMessage = () -> "Expected %s to be equal to %s".formatted(expected, actual);
-
-        assertTrue(expected.contentEquals(actual), errorMessage);
-        assertTrue(actual.contentEquals(expected), errorMessage);
-        assertEquals(expected.contentHashCode(), actual.contentHashCode(), errorMessage);
-    }
-
-    private static void assertContentNotEquals(ValueTag<?> expected, ValueTag<?> actual) {
-        Supplier<String> errorMessage = () -> "Expected %s not to be equal to %s".formatted(expected, actual);
-
-        assertFalse(expected.contentEquals(actual), errorMessage);
-        assertFalse(actual.contentEquals(expected), errorMessage);
-        assertNotEquals(expected.contentHashCode(), actual.contentHashCode(), errorMessage);
-    }
 
     @Test
     @SuppressWarnings("DataFlowIssue")
@@ -378,6 +363,22 @@ final class ValueTagTests {
         }
     }
 
+    private static void assertContentEquals(ValueTag<?> expected, ValueTag<?> actual) {
+        Supplier<String> errorMessage = () -> "Expected %s to be equal to %s".formatted(expected, actual);
+
+        assertTrue(expected.contentEquals(actual), errorMessage);
+        assertTrue(actual.contentEquals(expected), errorMessage);
+        assertEquals(expected.contentHashCode(), actual.contentHashCode(), errorMessage);
+    }
+
+    private static void assertContentNotEquals(ValueTag<?> expected, ValueTag<?> actual) {
+        Supplier<String> errorMessage = () -> "Expected %s not to be equal to %s".formatted(expected, actual);
+
+        assertFalse(expected.contentEquals(actual), errorMessage);
+        assertFalse(actual.contentEquals(expected), errorMessage);
+        assertNotEquals(expected.contentHashCode(), actual.contentHashCode(), errorMessage);
+    }
+
     @Test
     void testContentEquals() {
         assertContentEquals(new ByteTag("Meow", (byte) 114), new ByteTag("Meow", (byte) 114));
@@ -443,5 +444,41 @@ final class ValueTagTests {
                 }
             }
         }
+    }
+
+    private static void assertToString(String expected, ValueTag<?> tag) {
+        assertEquals(expected, tag.toString());
+    }
+
+    @Test
+    void testToString() {
+        assertToString("TAG_Byte[0]", new ByteTag());
+        assertToString("TAG_Byte[114]", new ByteTag("", (byte) 114));
+        assertToString("TAG_Byte(Meow)[114]", new ByteTag("Meow", (byte) 114));
+
+        assertToString("TAG_Short[0]", new ShortTag());
+        assertToString("TAG_Short[114]", new ShortTag("", (short) 114));
+        assertToString("TAG_Short(Meow)[114]", new ShortTag("Meow", (short) 114));
+
+        assertToString("TAG_Int[0]", new IntTag());
+        assertToString("TAG_Int[114]", new IntTag("", 114));
+        assertToString("TAG_Int(Meow)[114]", new IntTag("Meow", 114));
+
+        assertToString("TAG_Long[0]", new LongTag());
+        assertToString("TAG_Long[114]", new LongTag("", 114L));
+        assertToString("TAG_Long(Meow)[114]", new LongTag("Meow", 114L));
+
+        assertToString("TAG_Float[0.0]", new FloatTag());
+        assertToString("TAG_Float[114.0]", new FloatTag("", 114.0f));
+        assertToString("TAG_Float(Meow)[114.0]", new FloatTag("Meow", 114.0f));
+
+        assertToString("TAG_Double[0.0]", new DoubleTag());
+        assertToString("TAG_Double[114.0]", new DoubleTag("", 114.0));
+        assertToString("TAG_Double(Meow)[114.0]", new DoubleTag("Meow", 114.0));
+
+        assertToString("TAG_String[\"\"]", new StringTag());
+        assertToString("TAG_String[\"Hello\"]", new StringTag("", "Hello"));
+        assertToString("TAG_String(Meow)[\"Hello\"]", new StringTag("Meow", "Hello"));
+        assertToString("TAG_String(Meow)[\"\\0\\b\\t\\n\\f\\r\\n \\\"ABC你好世界\\ud83d\\ude04\"]", new StringTag("Meow", "\0\b\t\n\f\r\n \"ABC你好世界😄"));
     }
 }

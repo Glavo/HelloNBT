@@ -45,9 +45,9 @@ import java.util.Objects;
 ///     - [CompoundTag]: A tag that holds a collection of named tags.
 ///     - [ListTag]: A tag that holds a collection of unnamed tags.
 ///     - [ArrayTag]: A tag that holds an array of primitive values.
-///         - [ByteArrayTag]: A tag that holds an array of 1 byte signed integers.
-///         - [IntArrayTag]: A tag that holds an array of 4 byte signed integers. Sometimes used for UUIDs.
-///         - [LongArrayTag]: A tag that holds an array of 8 byte signed integers.
+///         - [ByteArrayTag]: A tag that holds an array of [byte tag][ByteTag]s.
+///         - [IntArrayTag]: A tag that holds an array of [int tag][IntTag]s. Sometimes used for UUIDs.
+///         - [LongArrayTag]: A tag that holds an array of [long tag][LongTag]s.
 ///
 /// @author Glavo
 /// @see <a href="https://minecraft.wiki/w/NBT_format">NBT format - Minecraft Wiki</a>

@@ -26,6 +26,15 @@ import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
 /// Base class for tags that can contain other tags as children.
+///
+/// These are the all possible types of parent tags:
+///
+/// - [CompoundTag]: A tag that holds a collection of named tags.
+/// - [ListTag]: A tag that holds a collection of unnamed tags.
+/// - [ArrayTag]: A tag that holds an array of primitive values.
+///     - [ByteArrayTag]: A tag that holds an array of [byte tag][ByteTag]s.
+///     - [IntArrayTag]: A tag that holds an array of [int tag][IntTag]s. Sometimes used for UUIDs.
+///     - [LongArrayTag]: A tag that holds an array of [long tag][LongTag]s.
 public sealed abstract class ParentTag<T extends Tag> extends Tag
         implements NBTParent<T>, Iterable<T>
         permits CompoundTag, ListTag, ArrayTag {

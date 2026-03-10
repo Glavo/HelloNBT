@@ -18,6 +18,16 @@ package org.glavo.nbt.tag;
 import org.jetbrains.annotations.Contract;
 
 /// Base class for tags that hold a single value.
+///
+/// These are the all possible types of value tags:
+///
+/// - [ByteTag]: A tag that holds a 1 byte signed integer. Sometimes used for booleans.
+/// - [ShortTag]: A tag that holds a 2 byte signed integer.
+/// - [IntTag]: A tag that holds a 4 byte signed integer.
+/// - [LongTag]: A tag that holds an 8 byte signed integer.
+/// - [FloatTag]: A tag that holds a 4 byte floating point number.
+/// - [DoubleTag]: A tag that holds an 8 byte floating point number.
+/// - [StringTag]: A tag that holds a Unicode string.
 public sealed abstract class ValueTag<V> extends Tag
         permits ByteTag, ShortTag, IntTag, LongTag, FloatTag, DoubleTag, StringTag {
     protected ValueTag(String name) {

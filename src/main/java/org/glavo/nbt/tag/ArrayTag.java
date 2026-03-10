@@ -35,7 +35,7 @@ import java.util.stream.BaseStream;
 /// this array will lazily allocate [ValueTag] for its elements as much as possible,
 /// making the performance and memory overhead of this class close to that of primitive type arrays in most cases.
 ///
-/// The following are the implementations of this class:
+/// These are the all possible types of array tags:
 ///
 /// - [ByteArrayTag]: An array of 8-byte integers. The subtags are [ByteTag].
 /// - [IntArrayTag]: An array of 32-byte integers. The subtags are [IntTag].

@@ -16,10 +16,15 @@
 package org.glavo.nbt.tag;
 
 import org.glavo.nbt.NBTParent;
+import org.glavo.nbt.internal.ArrayUtils;
 import org.jetbrains.annotations.ApiStatus;
+import org.jetbrains.annotations.UnknownNullability;
 
-import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.Iterator;
+import java.util.NoSuchElementException;
+import java.util.Objects;
 import java.util.stream.Stream;
 
 /// Base class for tags that can contain other tags as children.
@@ -27,7 +32,11 @@ public sealed abstract class ParentTag<T extends Tag> extends Tag
         implements NBTParent<T>, Iterable<T>
         permits CompoundTag, ListTag {
 
-    final ArrayList<T> subTags = new ArrayList<>();
+    private final Tag[] EMPTY_TAGS = new Tag[0];
+
+    @UnknownNullability
+    Tag[] tags = EMPTY_TAGS;
+    int size;
 
     protected ParentTag(String name) {
         super(name);
@@ -43,30 +52,60 @@ public sealed abstract class ParentTag<T extends Tag> extends Tag
     /// @see Tag#setName(String)
     abstract void preUpdateSubTagName(Tag tag, String oldName, String newName) throws IllegalArgumentException;
 
+    protected final void ensureCapacityForAdd() {
+        if (size >= tags.length) {
+            tags = Arrays.copyOf(tags, ArrayUtils.nextCapacity(size));
+        }
+    }
+
+    /// Removes the tag at the given index from the array, and decreases the size.
+    ///
+    /// @return The old tag at the given index.
+    protected final Tag removeTagFromArray(int index) {
+        assert index >= 0 && index < size;
+
+        Tag oldTag = tags[index];
+
+        if (index < size - 1) {
+            System.arraycopy(tags, index + 1, tags, index, size - index);
+        } else {
+            tags[index] = null;
+        }
+        size--;
+
+        return oldTag;
+    }
+
     /// Updates the indexes of the subtags starting from the given index.
     protected final void updateIndexes(int startIndex) {
-        for (int i = startIndex, end = subTags.size(); i < end; i++) {
-            subTags.get(i).setIndex(i);
+        for (int i = startIndex; i < size; i++) {
+            Tag subTag = tags[i];
+            if (subTag != null) {
+                subTag.setIndex(i);
+            }
         }
     }
 
     /// Returns `true` if this tag has no subtags, `false` otherwise.
     @Override
     public final boolean isEmpty() {
-        return subTags.isEmpty();
+        return size == 0;
     }
 
     /// Returns the number of subtags in this tag.
     @Override
     public final int size() {
-        return subTags.size();
+        return size;
     }
 
     /// Returns the subtag at the given index.
     ///
     /// @throws IndexOutOfBoundsException if the index is out of bounds.
     public final T getTag(int index) throws IndexOutOfBoundsException {
-        return subTags.get(index);
+        Objects.checkIndex(index, size);
+        @SuppressWarnings("unchecked")
+        T tag = (T) tags[index];
+        return tag;
     }
 
     /// Adds the `tag` to this tag.
@@ -109,35 +148,46 @@ public sealed abstract class ParentTag<T extends Tag> extends Tag
 
     /// Removes all subtags from this tag.
     public void clear() {
-        for (T subTag : subTags) {
-            // Clear the parent and index of the subtag.
-            subTag.setParent(null, -1);
+        for (int i = 0; i < size; i++) {
+            Tag subTag = tags[i];
+            if (subTag != null) {
+                subTag.setParent(null, -1);
+            }
         }
 
-        subTags.clear();
+        tags = EMPTY_TAGS;
     }
 
     @Override
-    public final Iterator<T> iterator() {
-        Iterator<T> iterator = subTags.iterator();
+    public Iterator<T> iterator() {
+        if (size == 0) {
+            return Collections.emptyIterator();
+        }
 
-        // Prevent calling Iterator#remove()
         return new Iterator<>() {
+            private int cursor = 0;
+
             @Override
             public boolean hasNext() {
-                return iterator.hasNext();
+                return cursor < size;
             }
 
             @Override
             public T next() {
-                return iterator.next();
+                if (cursor >= size) {
+                    throw new NoSuchElementException();
+                }
+                return getTag(cursor++);
             }
         };
     }
 
     /// Returns a stream of subtags.
+    @Override
     public Stream<T> stream() {
-        return subTags.stream();
+        @SuppressWarnings("unchecked")
+        var result = (Stream<T>) Arrays.stream(tags, 0, size);
+        return result;
     }
 
     @Override

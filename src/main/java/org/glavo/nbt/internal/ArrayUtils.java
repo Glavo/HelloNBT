@@ -22,6 +22,14 @@ public final class ArrayUtils {
     public static int[] EMPTY_INT_ARRAY = new int[0];
     public static long[] EMPTY_LONG_ARRAY = new long[0];
 
+    public static int nextCapacity(int currentCapacity) {
+        if (currentCapacity < 4) {
+            return 12;
+        } else {
+            return currentCapacity + (currentCapacity >> 1);
+        }
+    }
+
     private ArrayUtils() {
     }
 }

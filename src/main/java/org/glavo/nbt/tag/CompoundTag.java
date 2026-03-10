@@ -81,12 +81,13 @@ public final class CompoundTag extends ParentTag<Tag> {
                 } else {
                     // Move the tag to the end of the subTags list.
 
-                    Tag oldTag = subTags.remove(index);
+                    Tag oldTag = removeTagFromArray(index);
                     if (oldTag != tag) {
                         throw new AssertionError("Expected " + tag + ", but got " + oldTag);
                     }
 
-                    subTags.add(tag);
+                    assert size < tags.length;
+                    tags[size++] = tag;
 
                     updateIndexes(index);
                 }
@@ -105,10 +106,11 @@ public final class CompoundTag extends ParentTag<Tag> {
         }
 
         // Set the parent and index of the tag.
-        tag.setParent(this, subTags.size());
+        tag.setParent(this, size);
 
         // Add the tag to the subTags list and subTagsByName map.
-        subTags.add(tag);
+        ensureCapacityForAdd();
+        tags[size++] = tag;
         subTagsByName.put(tag.getName(), tag);
     }
 
@@ -216,11 +218,11 @@ public final class CompoundTag extends ParentTag<Tag> {
 
         // Remove the tag from the subTags list.
         int subtagIndex = tag.getIndex();
-        if (subtagIndex < 0 || subtagIndex >= subTags.size()) {
-            throw new AssertionError("Expected subtag index in range [0, " + subTags.size() + "), but got " + subtagIndex);
+        if (subtagIndex < 0 || subtagIndex >= size) {
+            throw new AssertionError("Expected subtag index in range [0, " + size + "), but got " + subtagIndex);
         }
 
-        removed = subTags.remove(subtagIndex);
+        removed = removeTagFromArray(subtagIndex);
         if (removed != tag) {
             throw new AssertionError("Expected " + tag + ", but got " + removed);
         }
@@ -256,10 +258,9 @@ public final class CompoundTag extends ParentTag<Tag> {
 
     @Override
     protected void writeContent(DataWriter writer) throws IOException {
-        for (Tag subTag : subTags) {
-            NBTCodecImpl.writeTag(writer, subTag);
+        for (int i = 0; i < size; i++) {
+            NBTCodecImpl.writeTag(writer, tags[i]);
         }
-
         writer.writeByte((byte) 0x00);
     }
 
@@ -279,13 +280,11 @@ public final class CompoundTag extends ParentTag<Tag> {
     protected void contentToString(StringBuilder builder) {
         builder.append('[');
 
-        if (!subTags.isEmpty()) {
-            Iterator<Tag> it = subTags.iterator();
-            it.next().toString(builder);
-
-            while (it.hasNext()) {
+        if (size > 0) {
+            tags[0].toString(builder);
+            for (int i = 1; i < size; i++) {
                 builder.append(", ");
-                it.next().toString(builder);
+                tags[i].toString(builder);
             }
         }
         builder.append(']');
@@ -295,9 +294,8 @@ public final class CompoundTag extends ParentTag<Tag> {
     @Contract(value = "-> new", pure = true)
     public CompoundTag clone() {
         var newTag = new CompoundTag(this.name);
-        newTag.subTags.ensureCapacity(this.size());
-        for (Tag tag : this) {
-            newTag.addTag(tag.clone());
+        for (int i = 0; i < size; i++) {
+            newTag.addTag(tags[i].clone());
         }
         return newTag;
     }

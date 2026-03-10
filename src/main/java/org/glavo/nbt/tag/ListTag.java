@@ -21,8 +21,8 @@ import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.Iterator;
-import java.util.List;
 
 /// Represents a list of tags in NBT format.
 ///
@@ -99,12 +99,12 @@ public final class ListTag<T extends Tag> extends ParentTag<T> {
         } else if (elementType != TagType.COMPOUND) {
             throw new IllegalStateException("Cannot set element type to " + elementType + " for a " + this.elementType + " list");
         } else {
-            var oldSubTags = List.copyOf(subTags);
-            this.clear();
+            var oldTags = tags.clone();
 
+            this.clear();
             this.elementType = elementType;
 
-            for (T subTag : oldSubTags) {
+            for (Tag subTag : oldTags) {
                 assert subTag.getName().isEmpty();
                 assert subTag.getParent() == null;
                 assert subTag.getIndex() == -1;
@@ -132,7 +132,7 @@ public final class ListTag<T extends Tag> extends ParentTag<T> {
     public void addTag(T tag) {
         if (tag.getType() != elementType) { // implicit null check
             if (this.elementType == null) {
-                assert subTags.isEmpty();
+                assert isEmpty();
                 this.elementType = tag.getType();
             } else {
                 throw new IllegalArgumentException("Cannot add a tag of type " + tag.getType() + " to a list of type " + elementType);
@@ -148,13 +148,13 @@ public final class ListTag<T extends Tag> extends ParentTag<T> {
                 } else {
                     // Move the tag to the end of the subTags list.
 
-                    T oldTag = subTags.remove(index);
+                    Tag oldTag = removeTagFromArray(index);
                     if (oldTag != tag) {
                         throw new AssertionError("Expected " + tag + ", but got " + oldTag);
                     }
 
-                    subTags.add(tag);
-
+                    assert size < tags.length;
+                    tags[size++] = tag;
                     updateIndexes(index);
                 }
 
@@ -168,10 +168,11 @@ public final class ListTag<T extends Tag> extends ParentTag<T> {
         tag.name = "";
 
         // Set the parent and index of the tag.
-        tag.setParent(this, subTags.size());
+        tag.setParent(this, size);
 
         // Add the tag to the subTags list.
-        subTags.add(tag);
+        ensureCapacityForAdd();
+        tags[size++] = tag;
     }
 
     /// For the heterogeneous list in SNBT, this method can be used to add any tag to the list.
@@ -208,11 +209,11 @@ public final class ListTag<T extends Tag> extends ParentTag<T> {
 
         // Remove the tag from the subTags list.
         int subtagIndex = tag.getIndex();
-        if (subtagIndex < 0 || subtagIndex >= subTags.size()) {
-            throw new AssertionError("Expected subtag index in range [0, " + subTags.size() + "), but got " + subtagIndex);
+        if (subtagIndex < 0 || subtagIndex >= size) {
+            throw new AssertionError("Expected subtag index in range [0, " + size + "), but got " + subtagIndex);
         }
 
-        T removedTag = subTags.remove(subtagIndex);
+        Tag removedTag = removeTagFromArray(subtagIndex);
         if (removedTag != tag) {
             throw new AssertionError("Expected " + tag + ", but got " + removedTag);
         }
@@ -263,21 +264,38 @@ public final class ListTag<T extends Tag> extends ParentTag<T> {
         writer.writeByte(getElementType() != null ? getElementType().id() : 0);
         writer.writeInt(size());
 
-        for (Tag subTag : subTags) {
-            subTag.writeContent(writer);
+        for (int i = 0; i < size; i++) {
+            tags[i].writeContent(writer);
         }
     }
 
     @Override
     @Contract(pure = true)
     public int contentHashCode() {
-        return subTags.hashCode();
+        int hashCode = 0;
+        for (int i = 0; i < size; i++) {
+            hashCode = 31 * hashCode + tags[i].contentHashCode();
+        }
+        return hashCode;
     }
 
     @Override
     @Contract(pure = true)
     public boolean contentEquals(Tag other) {
-        return other instanceof ListTag<?> that && subTags.equals(that.subTags);
+        if (other instanceof ListTag<?> that) {
+            if (this.size != that.size) {
+                return false;
+            }
+
+            for (int i = 0; i < size; i++) {
+                if (!tags[i].contentEquals(that.tags[i])) {
+                    return false;
+                }
+            }
+            return true;
+        } else {
+            return false;
+        }
     }
 
     @Override
@@ -286,13 +304,11 @@ public final class ListTag<T extends Tag> extends ParentTag<T> {
         if (getElementType() != null)
             builder.append(getElementType().getFullName()).append(';');
 
-        if (!subTags.isEmpty()) {
-            Iterator<T> it = subTags.iterator();
-            it.next().contentToString(builder);
-
-            while (it.hasNext()) {
+        if (size > 0) {
+            tags[0].contentToString(builder);
+            for (int i = 1; i < size; i++) {
                 builder.append(", ");
-                it.next().contentToString(builder);
+                tags[i].contentToString(builder);
             }
         }
         builder.append(']');
@@ -303,9 +319,13 @@ public final class ListTag<T extends Tag> extends ParentTag<T> {
     @SuppressWarnings("unchecked")
     public ListTag<T> clone() {
         var newTag = new ListTag<>(this.name, (TagType<T>) this.elementType);
-        newTag.subTags.ensureCapacity(this.size());
-        for (T tag : this) {
-            newTag.addTag((T) tag.clone());
+        if (size > 0) {
+            Tag[] newArray = new Tag[size];
+            for (int i = 0; i < size; i++) {
+                newArray[i] = tags[i].clone();
+            }
+            newTag.tags = newArray;
+            newTag.size = size;
         }
         return newTag;
     }

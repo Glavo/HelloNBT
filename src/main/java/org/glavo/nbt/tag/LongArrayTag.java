@@ -15,7 +15,7 @@
  */
 package org.glavo.nbt.tag;
 
-import org.glavo.nbt.internal.ArrayUtils;
+import org.glavo.nbt.internal.ArrayAccessor;
 import org.glavo.nbt.internal.input.DataReader;
 import org.glavo.nbt.internal.output.DataWriter;
 import org.jetbrains.annotations.Contract;
@@ -50,19 +50,14 @@ public final class LongArrayTag extends ArrayTag<Long, LongTag, long[], LongBuff
     }
 
     @Override
-    protected long[] emptyArray() {
-        return ArrayUtils.EMPTY_LONG_ARRAY;
+    protected ArrayAccessor<long[], LongBuffer> accessor() {
+        return ArrayAccessor.LONG_ARRAY;
     }
 
     @Override
     protected LongTag createTagFromIndex(int index) {
         assert index >= 0 && index < size;
         return new LongTag("", values[index]);
-    }
-
-    @Override
-    protected long[] copyOf(long[] array, int newLength) {
-        return Arrays.copyOf(array, newLength);
     }
 
     @Override

@@ -15,6 +15,7 @@
  */
 package org.glavo.nbt.tag;
 
+import org.glavo.nbt.internal.ArrayAccessor;
 import org.glavo.nbt.internal.ArrayUtils;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.MustBeInvokedByOverriders;
@@ -37,21 +38,18 @@ public sealed abstract class ArrayTag<E extends Number, T extends ValueTag<E>, A
         extends ParentTag<T>
         permits ByteArrayTag, IntArrayTag, LongArrayTag {
 
-    A values = emptyArray();
+    A values = accessor().empty();
 
     protected ArrayTag(String name) {
         super(name);
     }
 
-    /// Returns an empty array.
-    @Contract(pure = true)
-    protected abstract A emptyArray();
+    @SuppressWarnings("ClassEscapesDefinedScope")
+    protected abstract ArrayAccessor<A, B> accessor();
 
     /// Creates a tag from the value at the given index.
     @Contract("_ -> new")
     protected abstract T createTagFromIndex(int index);
-
-    protected abstract A copyOf(A array, int newLength);
 
     private void removeValueFromArray(int index) {
         assert index >= 0 && index < size;
@@ -64,7 +62,7 @@ public sealed abstract class ArrayTag<E extends Number, T extends ValueTag<E>, A
 
     protected void ensureValuesCapacityForAdd() {
         if (Array.getLength(values) == size) {
-            values = copyOf(values, ArrayUtils.nextCapacity(size));
+            values = accessor().copyOf(values, ArrayUtils.nextCapacity(size));
         }
     }
 
@@ -89,7 +87,7 @@ public sealed abstract class ArrayTag<E extends Number, T extends ValueTag<E>, A
     /// Returns the clone of the array.
     @Contract(pure = true)
     public final A getArray() {
-        return copyOf(values, size);
+        return accessor().copyOf(values, size);
     }
 
     final @Nullable T getTagOrNull(int index) {
@@ -162,7 +160,7 @@ public sealed abstract class ArrayTag<E extends Number, T extends ValueTag<E>, A
 
         int newSize = Array.getLength(array);
         if (newSize > 0) {
-            this.values = copyOf(array, newSize);
+            this.values = accessor().copyOf(array, newSize);
             this.size = newSize;
         }
     }
@@ -260,7 +258,7 @@ public sealed abstract class ArrayTag<E extends Number, T extends ValueTag<E>, A
     @Override
     public void clear() {
         super.clear();
-        values = emptyArray();
+        values = accessor().empty();
     }
 
     @Override

@@ -15,7 +15,7 @@
  */
 package org.glavo.nbt.tag;
 
-import org.glavo.nbt.internal.ArrayUtils;
+import org.glavo.nbt.internal.ArrayAccessor;
 import org.glavo.nbt.internal.input.DataReader;
 import org.glavo.nbt.internal.output.DataWriter;
 import org.jetbrains.annotations.Contract;
@@ -47,19 +47,14 @@ public final class ByteArrayTag extends ArrayTag<Byte, ByteTag, byte[], ByteBuff
     }
 
     @Override
-    protected byte[] emptyArray() {
-        return ArrayUtils.EMPTY_BYTE_ARRAY;
+    protected ArrayAccessor<byte[], ByteBuffer> accessor() {
+        return ArrayAccessor.BYTE_ARRAY;
     }
 
     @Override
     protected ByteTag createTagFromIndex(int index) {
         assert index >= 0 && index < size;
         return new ByteTag("", values[index]);
-    }
-
-    @Override
-    protected byte[] copyOf(byte[] array, int newLength) {
-        return Arrays.copyOf(array, newLength);
     }
 
     @Override

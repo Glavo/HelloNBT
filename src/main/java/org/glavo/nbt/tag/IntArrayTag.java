@@ -15,7 +15,7 @@
  */
 package org.glavo.nbt.tag;
 
-import org.glavo.nbt.internal.ArrayUtils;
+import org.glavo.nbt.internal.ArrayAccessor;
 import org.glavo.nbt.internal.input.DataReader;
 import org.glavo.nbt.internal.output.DataWriter;
 import org.jetbrains.annotations.Contract;
@@ -52,19 +52,14 @@ public final class IntArrayTag extends ArrayTag<Integer, IntTag, int[], IntBuffe
     }
 
     @Override
-    protected int[] emptyArray() {
-        return ArrayUtils.EMPTY_INT_ARRAY;
+    protected ArrayAccessor<int[], IntBuffer> accessor() {
+        return ArrayAccessor.INT_ARRAY;
     }
 
     @Override
     protected IntTag createTagFromIndex(int index) {
         assert index >= 0 && index < size;
         return new IntTag("", values[index]);
-    }
-
-    @Override
-    protected int[] copyOf(int[] array, int newLength) {
-        return Arrays.copyOf(array, newLength);
     }
 
     @Override

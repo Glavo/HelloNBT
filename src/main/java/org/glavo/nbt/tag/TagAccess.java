@@ -61,7 +61,7 @@ public final class TagAccess {
     }
 
     /// Returns the internal value of the tag without cloning.
-    public <A> A getInternalArray(ArrayTag<?, ?, A> tag) {
+    public <A> A getInternalArray(ArrayTag<?, ?, A, ?> tag) {
         return tag.values;
     }
 

@@ -33,7 +33,7 @@ import java.util.stream.BaseStream;
 /// @see ByteArrayTag
 /// @see IntArrayTag
 /// @see LongArrayTag
-public sealed abstract class ArrayTag<E extends Number, T extends ValueTag<E>, A>
+public sealed abstract class ArrayTag<E extends Number, T extends ValueTag<E>, A, B extends Buffer>
         extends ParentTag<T>
         permits ByteArrayTag, IntArrayTag, LongArrayTag {
 
@@ -77,7 +77,7 @@ public sealed abstract class ArrayTag<E extends Number, T extends ValueTag<E>, A
 
     @Override
     @Contract(pure = true)
-    public abstract TagType<? extends ArrayTag<E, T, A>> getType();
+    public abstract TagType<? extends ArrayTag<E, T, A, B>> getType();
 
     /// Returns an iterator over the elements of this array.
     public abstract Iterator<E> valueIterator();
@@ -131,7 +131,7 @@ public sealed abstract class ArrayTag<E extends Number, T extends ValueTag<E>, A
     ///
     /// Each call returns a new buffer, but the underlying implementation may share the same array.
     @Contract(value = "-> new", pure = true)
-    public abstract Buffer getBuffer();
+    public abstract B getBuffer();
 
     /// Sets the value of the tag without cloning the array.
     @Contract(mutates = "this")
@@ -256,6 +256,6 @@ public sealed abstract class ArrayTag<E extends Number, T extends ValueTag<E>, A
 
     @Override
     @Contract(value = "-> new", pure = true)
-    public abstract ArrayTag<E, T, A> clone();
+    public abstract ArrayTag<E, T, A, B> clone();
 
 }

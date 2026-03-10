@@ -27,7 +27,7 @@ import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
 /// An ordered list of 8-bit integers.
-public final class ByteArrayTag extends ArrayTag<Byte, ByteTag, byte[]> {
+public final class ByteArrayTag extends ArrayTag<Byte, ByteTag, byte[], ByteBuffer> {
     /// Creates a new ByteArrayTag with an empty name and an empty array.
     public ByteArrayTag() {
         this("");

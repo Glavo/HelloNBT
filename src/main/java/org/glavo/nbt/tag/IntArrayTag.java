@@ -26,7 +26,7 @@ import java.util.*;
 import java.util.stream.IntStream;
 
 /// An ordered list of 32-bit integers. Sometimes used for UUIDs.
-public final class IntArrayTag extends ArrayTag<Integer, IntTag, int[]> {
+public final class IntArrayTag extends ArrayTag<Integer, IntTag, int[], IntBuffer> {
     /// Creates a new IntArrayTag with an empty name and an empty array.
     public IntArrayTag() {
         this("");

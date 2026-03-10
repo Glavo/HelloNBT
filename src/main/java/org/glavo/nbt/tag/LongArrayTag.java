@@ -29,7 +29,7 @@ import java.util.PrimitiveIterator;
 import java.util.stream.LongStream;
 
 /// An ordered list of 64-bit integers.
-public final class LongArrayTag extends ArrayTag<Long, LongTag, long[]> {
+public final class LongArrayTag extends ArrayTag<Long, LongTag, long[], LongBuffer> {
 
     /// Creates a new LongArrayTag with an empty name and an empty array.
     public LongArrayTag() {

@@ -47,7 +47,7 @@ public final class ByteArrayTag extends ArrayTag<Byte, ByteTag, byte[], ByteBuff
     }
 
     @Override
-    protected ArrayAccessor<byte[], ByteBuffer> accessor() {
+    protected ArrayAccessor<Byte, ByteTag, byte[], ByteBuffer> accessor() {
         return ArrayAccessor.BYTE_ARRAY;
     }
 

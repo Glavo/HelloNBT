@@ -15,6 +15,10 @@
  */
 package org.glavo.nbt.internal;
 
+import org.glavo.nbt.tag.ByteTag;
+import org.glavo.nbt.tag.IntTag;
+import org.glavo.nbt.tag.LongTag;
+
 import java.lang.reflect.Array;
 import java.nio.Buffer;
 import java.nio.ByteBuffer;
@@ -22,7 +26,7 @@ import java.nio.IntBuffer;
 import java.nio.LongBuffer;
 import java.util.Arrays;
 
-public abstract class ArrayAccessor<A, B extends Buffer> {
+public abstract class ArrayAccessor<E, T, A, B extends Buffer> {
     protected final A empty;
 
     private ArrayAccessor(A empty) {
@@ -42,7 +46,7 @@ public abstract class ArrayAccessor<A, B extends Buffer> {
         return Array.getLength(array);
     }
 
-    public static final ArrayAccessor<byte[], ByteBuffer> BYTE_ARRAY = new ArrayAccessor<>(new byte[0]) {
+    public static final ArrayAccessor<Byte, ByteTag, byte[], ByteBuffer> BYTE_ARRAY = new ArrayAccessor<>(new byte[0]) {
         @Override
         public byte[] copyOf(byte[] array, int newLength) {
             return Arrays.copyOf(array, newLength);
@@ -61,7 +65,7 @@ public abstract class ArrayAccessor<A, B extends Buffer> {
         }
     };
 
-    public static final ArrayAccessor<int[], IntBuffer> INT_ARRAY = new ArrayAccessor<>(new int[0]) {
+    public static final ArrayAccessor<Integer, IntTag, int[], IntBuffer> INT_ARRAY = new ArrayAccessor<>(new int[0]) {
 
         @Override
         public int[] copyOf(int[] array, int newLength) {
@@ -81,7 +85,7 @@ public abstract class ArrayAccessor<A, B extends Buffer> {
         }
     };
 
-    public static final ArrayAccessor<long[], LongBuffer> LONG_ARRAY = new ArrayAccessor<>(new long[0]) {
+    public static final ArrayAccessor<Long, LongTag, long[], LongBuffer> LONG_ARRAY = new ArrayAccessor<>(new long[0]) {
 
         @Override
         public long[] copyOf(long[] array, int newLength) {

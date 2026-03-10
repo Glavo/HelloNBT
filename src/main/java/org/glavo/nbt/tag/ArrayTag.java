@@ -46,7 +46,7 @@ public sealed abstract class ArrayTag<E extends Number, T extends ValueTag<E>, A
 
     @SuppressWarnings("ClassEscapesDefinedScope")
     @Contract(pure = true)
-    protected abstract ArrayAccessor<A, B> accessor();
+    protected abstract ArrayAccessor<E, T, A, B> accessor();
 
     /// Creates a tag from the value at the given index.
     @Contract("_ -> new")

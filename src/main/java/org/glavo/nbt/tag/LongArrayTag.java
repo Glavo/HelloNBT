@@ -50,7 +50,7 @@ public final class LongArrayTag extends ArrayTag<Long, LongTag, long[], LongBuff
     }
 
     @Override
-    protected ArrayAccessor<long[], LongBuffer> accessor() {
+    protected ArrayAccessor<Long, LongTag, long[], LongBuffer> accessor() {
         return ArrayAccessor.LONG_ARRAY;
     }
 

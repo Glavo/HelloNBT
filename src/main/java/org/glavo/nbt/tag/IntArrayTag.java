@@ -52,7 +52,7 @@ public final class IntArrayTag extends ArrayTag<Integer, IntTag, int[], IntBuffe
     }
 
     @Override
-    protected ArrayAccessor<int[], IntBuffer> accessor() {
+    protected ArrayAccessor<Integer, IntTag, int[], IntBuffer> accessor() {
         return ArrayAccessor.INT_ARRAY;
     }
 

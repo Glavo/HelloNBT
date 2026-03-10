@@ -206,7 +206,6 @@ public sealed abstract class Tag implements NBTElement
         return Objects.hash(name, getType(), contentHashCode());
     }
 
-
     /// Returns `true` if this tag is equal to the given tag.
     ///
     /// Two tags are considered equal if they have the same name, type, and content.

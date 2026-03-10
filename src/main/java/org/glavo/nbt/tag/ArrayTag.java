@@ -47,10 +47,6 @@ public sealed abstract class ArrayTag<E extends Number, T extends ValueTag<E>, A
     @Contract(pure = true)
     protected abstract ArrayAccessor<E, T, A, B> accessor();
 
-    /// Creates a tag from the value at the given index.
-    @Contract("_ -> new")
-    protected abstract T createTagFromIndex(int index);
-
     private void removeValueFromArray(int index) {
         assert index >= 0 && index < size;
 
@@ -108,7 +104,7 @@ public sealed abstract class ArrayTag<E extends Number, T extends ValueTag<E>, A
             return tag;
         }
 
-        tag = createTagFromIndex(index);
+        tag = accessor().newTagFromElement(values, index);
         ensureTagsCapacity(index + 1);
         assert tags[index] == null;
 
@@ -258,7 +254,7 @@ public sealed abstract class ArrayTag<E extends Number, T extends ValueTag<E>, A
 
             tag.setParent(null, -1);
         } else {
-            tag = createTagFromIndex(index);
+            tag = accessor().newTagFromElement(values, index);
         }
 
         removeValueFromArray(index);

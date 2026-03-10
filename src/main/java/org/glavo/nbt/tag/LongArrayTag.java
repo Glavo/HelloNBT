@@ -55,12 +55,6 @@ public final class LongArrayTag extends ArrayTag<Long, LongTag, long[], LongBuff
     }
 
     @Override
-    protected LongTag createTagFromIndex(int index) {
-        assert index >= 0 && index < size;
-        return new LongTag("", values[index]);
-    }
-
-    @Override
     @Contract(pure = true)
     public TagType<LongArrayTag> getType() {
         return TagType.LONG_ARRAY;

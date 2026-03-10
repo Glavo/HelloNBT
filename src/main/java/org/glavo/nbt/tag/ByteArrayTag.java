@@ -52,12 +52,6 @@ public final class ByteArrayTag extends ArrayTag<Byte, ByteTag, byte[], ByteBuff
     }
 
     @Override
-    protected ByteTag createTagFromIndex(int index) {
-        assert index >= 0 && index < size;
-        return new ByteTag("", values[index]);
-    }
-
-    @Override
     public TagType<ByteArrayTag> getType() {
         return TagType.BYTE_ARRAY;
     }

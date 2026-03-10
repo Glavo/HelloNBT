@@ -55,6 +55,8 @@ public abstract class ArrayAccessor<E extends Number, T extends ValueTag<E>, A, 
 
     public abstract B getReadOnlyView(A array, int offset, int length);
 
+    public abstract T newTagFromElement(A array, int index);
+
     public static final ArrayAccessor<Byte, ByteTag, byte[], ByteBuffer> BYTE_ARRAY = new ArrayAccessor<>(new byte[0]) {
         @Override
         public byte[] copyOf(byte[] array, int newLength) {
@@ -91,6 +93,11 @@ public abstract class ArrayAccessor<E extends Number, T extends ValueTag<E>, A, 
         @Override
         public ByteBuffer getReadOnlyView(byte[] array, int offset, int length) {
             return ByteBuffer.wrap(array, offset, length).asReadOnlyBuffer();
+        }
+
+        @Override
+        public ByteTag newTagFromElement(byte[] array, int index) {
+            return new ByteTag("", array[index]);
         }
     };
 
@@ -132,6 +139,11 @@ public abstract class ArrayAccessor<E extends Number, T extends ValueTag<E>, A, 
         public IntBuffer getReadOnlyView(int[] array, int offset, int length) {
             return IntBuffer.wrap(array, offset, length).asReadOnlyBuffer();
         }
+
+        @Override
+        public IntTag newTagFromElement(int[] array, int index) {
+            return new IntTag("", array[index]);
+        }
     };
 
     public static final ArrayAccessor<Long, LongTag, long[], LongBuffer> LONG_ARRAY = new ArrayAccessor<>(new long[0]) {
@@ -171,6 +183,11 @@ public abstract class ArrayAccessor<E extends Number, T extends ValueTag<E>, A, 
         @Override
         public LongBuffer getReadOnlyView(long[] array, int offset, int length) {
             return LongBuffer.wrap(array, offset, length).asReadOnlyBuffer();
+        }
+
+        @Override
+        public LongTag newTagFromElement(long[] array, int index) {
+            return new LongTag("", array[index]);
         }
     };
 

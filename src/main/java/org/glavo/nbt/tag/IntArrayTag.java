@@ -57,12 +57,6 @@ public final class IntArrayTag extends ArrayTag<Integer, IntTag, int[], IntBuffe
     }
 
     @Override
-    protected IntTag createTagFromIndex(int index) {
-        assert index >= 0 && index < size;
-        return new IntTag("", values[index]);
-    }
-
-    @Override
     public TagType<IntArrayTag> getType() {
         return TagType.INT_ARRAY;
     }

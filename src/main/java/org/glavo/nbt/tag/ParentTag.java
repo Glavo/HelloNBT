@@ -18,19 +18,17 @@ package org.glavo.nbt.tag;
 import org.glavo.nbt.NBTParent;
 import org.glavo.nbt.internal.ArrayUtils;
 import org.jetbrains.annotations.ApiStatus;
+import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.UnknownNullability;
 
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.Iterator;
-import java.util.NoSuchElementException;
-import java.util.Objects;
+import java.util.*;
 import java.util.stream.Stream;
+import java.util.stream.StreamSupport;
 
 /// Base class for tags that can contain other tags as children.
 public sealed abstract class ParentTag<T extends Tag> extends Tag
         implements NBTParent<T>, Iterable<T>
-        permits CompoundTag, ListTag {
+        permits CompoundTag, ListTag, ArrayTag {
 
     private final Tag[] EMPTY_TAGS = new Tag[0];
 
@@ -85,7 +83,7 @@ public sealed abstract class ParentTag<T extends Tag> extends Tag
 
     /// Updates the indexes of the subtags starting from the given index.
     protected final void updateIndexes(int startIndex) {
-        for (int i = startIndex; i < size; i++) {
+        for (int i = startIndex, end = Math.min(size, tags.length); i < end; i++) {
             Tag subTag = tags[i];
             if (subTag != null) {
                 subTag.setIndex(i);
@@ -145,10 +143,38 @@ public sealed abstract class ParentTag<T extends Tag> extends Tag
         }
     }
 
+    /// Removes the tag at the given index from this tag.
+    ///
+    /// @param index The index of the tag to remove.
+    /// @throws IndexOutOfBoundsException if the index is out of bounds.
+    public void removeAt(int index) throws IndexOutOfBoundsException {
+        removeTagAt(index);
+    }
+
+    /// Removes the tag at the given index from this tag.
+    ///
+    /// If the return value is not needed, use [ParentTag#removeAt(int)] instead.
+    ///
+    /// @param index The index of the tag to remove.
+    /// @return The removed tag.
+    /// @throws IndexOutOfBoundsException if the index is out of bounds.
+    @Contract(mutates = "this")
+    @SuppressWarnings("UnusedReturnValue")
+    public abstract T removeTagAt(int index) throws IndexOutOfBoundsException;
+
     /// Removes the `tag` from this tag.
     ///
     /// @throws IllegalArgumentException if the `tag` is not a child of this tag.
-    public abstract void removeTag(Tag tag) throws IllegalArgumentException;
+    @Contract(mutates = "this,param1")
+    public void removeTag(Tag tag) throws IllegalArgumentException {
+        if (tag.getParentTag() != this) {
+            throw new IllegalArgumentException("The tag is not a child of this tag");
+        }
+
+        assert tag.getIndex() >= 0 && tag.getIndex() < size;
+
+        removeAt(tag.getIndex());
+    }
 
     /// @see #removeTag(Tag)
     @ApiStatus.Obsolete
@@ -196,10 +222,8 @@ public sealed abstract class ParentTag<T extends Tag> extends Tag
 
     /// Returns a stream of subtags.
     @Override
-    public Stream<T> stream() {
-        @SuppressWarnings("unchecked")
-        var result = (Stream<T>) Arrays.stream(tags, 0, size);
-        return result;
+    public final Stream<T> stream() {
+        return StreamSupport.stream(Spliterators.spliterator(iterator(), size(), 0), false);
     }
 
     @Override

@@ -23,10 +23,7 @@ import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 
 public final class CompoundTag extends ParentTag<Tag> {
 
@@ -204,34 +201,25 @@ public final class CompoundTag extends ParentTag<Tag> {
     }
 
     @Override
-    @Contract(mutates = "this,param1")
-    public void removeTag(Tag tag) {
-        if (tag.getParentTag() != this) {
-            throw new IllegalArgumentException("The tag is not a child of this tag");
-        }
+    public Tag removeTagAt(int index) throws IndexOutOfBoundsException {
+        Objects.checkIndex(index, size);
 
-        // Remove the tag from the subTagsByName map.
-        Tag removed = subTagsByName.remove(tag.getName());
-        if (removed != tag) {
-            throw new AssertionError("Expected " + tag + ", but got " + removed);
-        }
-
-        // Remove the tag from the subTags list.
-        int subtagIndex = tag.getIndex();
-        if (subtagIndex < 0 || subtagIndex >= size) {
-            throw new AssertionError("Expected subtag index in range [0, " + size + "), but got " + subtagIndex);
-        }
-
-        removed = removeTagFromArray(subtagIndex);
-        if (removed != tag) {
-            throw new AssertionError("Expected " + tag + ", but got " + removed);
-        }
+        Tag tag = removeTagFromArray(index);
+        assert tag.getIndex() == index && tag.getParentTag() == this;
 
         // Clear the tag's parent and index.
         tag.setParent(null, -1);
 
+        // Remove the tag from the subTagsByName map.
+        Tag removedFromMap = subTagsByName.remove(tag.getName());
+        if (removedFromMap != tag) {
+            throw new AssertionError("Expected " + tag + ", but got " + removedFromMap);
+        }
+
         // Update the index of the successor tags.
-        updateIndexes(subtagIndex);
+        updateIndexes(index);
+
+        return tag;
     }
 
     @Override

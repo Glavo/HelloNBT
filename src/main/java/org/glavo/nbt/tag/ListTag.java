@@ -21,8 +21,7 @@ import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.IOException;
-import java.util.Arrays;
-import java.util.Iterator;
+import java.util.Objects;
 
 /// Represents a list of tags in NBT format.
 ///
@@ -201,28 +200,20 @@ public final class ListTag<T extends Tag> extends ParentTag<T> {
     }
 
     @Override
-    @Contract(mutates = "this,param1")
-    public void removeTag(Tag tag) {
-        if (tag.getParentTag() != this) {
-            throw new IllegalArgumentException("The tag is not a child of this tag");
-        }
+    public T removeTagAt(int index) throws IndexOutOfBoundsException {
+        Objects.checkIndex(index, size);
 
-        // Remove the tag from the subTags list.
-        int subtagIndex = tag.getIndex();
-        if (subtagIndex < 0 || subtagIndex >= size) {
-            throw new AssertionError("Expected subtag index in range [0, " + size + "), but got " + subtagIndex);
-        }
-
-        Tag removedTag = removeTagFromArray(subtagIndex);
-        if (removedTag != tag) {
-            throw new AssertionError("Expected " + tag + ", but got " + removedTag);
-        }
+        @SuppressWarnings("unchecked")
+        T tag = (T) removeTagFromArray(index);
+        assert tag.getIndex() == index && tag.getParentTag() == this;
 
         // Clear the tag's parent and index.
         tag.setParent(null, -1);
 
         // Update the index of the successor tags.
-        updateIndexes(subtagIndex);
+        updateIndexes(index);
+
+        return tag;
     }
 
     @Override

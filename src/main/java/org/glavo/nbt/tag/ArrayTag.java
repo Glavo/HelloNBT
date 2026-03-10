@@ -24,7 +24,7 @@ import java.util.stream.BaseStream;
 
 /// Base class for array tags.
 public sealed abstract class ArrayTag<E extends Number, T extends ValueTag<E>, A>
-        extends Tag
+        extends ParentTag<T>
         permits ByteArrayTag, IntArrayTag, LongArrayTag {
 
     A values;
@@ -37,18 +37,6 @@ public sealed abstract class ArrayTag<E extends Number, T extends ValueTag<E>, A
     @Override
     @Contract(pure = true)
     public abstract TagType<? extends ArrayTag<E, T, A>> getType();
-
-    /// Returns `true` if the array is empty; otherwise, returns `false`.
-    @Contract(pure = true)
-    public final boolean isEmpty() {
-        return size() == 0;
-    }
-
-    /// Returns the size of the array.
-    @Contract(pure = true)
-    public final int size() {
-        return Array.getLength(values);
-    }
 
     /// Returns an iterator over the elements of this array.
     public abstract Iterator<E> valueIterator();
@@ -88,4 +76,13 @@ public sealed abstract class ArrayTag<E extends Number, T extends ValueTag<E>, A
     public abstract ArrayTag<E, T, A> clone();
 
     protected abstract A clone(A array);
+
+    // ParentTag methods
+
+    @Override
+    void preUpdateSubTagName(Tag tag, String oldName, String newName) throws IllegalArgumentException {
+        if (!newName.isEmpty()) {
+            throw new IllegalArgumentException("The name of the subtag must be null for ArrayTag");
+        }
+    }
 }

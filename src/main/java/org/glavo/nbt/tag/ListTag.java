@@ -61,9 +61,9 @@ public final class ListTag<T extends Tag> extends ParentTag<T> {
     }
 
     @Override
-    void updateSubTagName(Tag tag, String name) throws IllegalStateException {
-        if (!name.isEmpty()) {
-            throw new IllegalStateException("The name of the subtag must be null for ListTag");
+    void preUpdateSubTagName(Tag tag, String oldName, String newName) throws IllegalArgumentException {
+        if (!newName.isEmpty()) {
+            throw new IllegalArgumentException("The name of the subtag must be null for ListTag");
         }
     }
 

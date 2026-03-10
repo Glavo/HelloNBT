@@ -41,17 +41,17 @@ public final class CompoundTag extends ParentTag<Tag> {
     }
 
     @Override
-    void updateSubTagName(Tag tag, String name) throws IllegalStateException {
-        if (subTagsByName.containsKey(name)) {
-            throw new IllegalStateException("The name '" + name + "' is already used by another subtag");
+    void preUpdateSubTagName(Tag tag, String oldName, String newName) throws IllegalArgumentException {
+        if (subTagsByName.containsKey(newName)) {
+            throw new IllegalArgumentException("The name '" + newName + "' is already used by another subtag");
         }
 
-        Tag removedTag = subTagsByName.remove(tag.getName());
+        Tag removedTag = subTagsByName.remove(oldName);
         if (removedTag != tag) {
             throw new AssertionError("Expected " + tag + ", but got " + removedTag);
         }
 
-        subTagsByName.put(name, tag);
+        subTagsByName.put(newName, tag);
     }
 
     @Override

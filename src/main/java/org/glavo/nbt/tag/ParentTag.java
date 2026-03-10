@@ -35,12 +35,12 @@ public sealed abstract class ParentTag<T extends Tag> extends Tag
     @Override
     public abstract TagType<? extends ParentTag<?>> getType();
 
-    /// Updates the name of the given subtag.
+    /// Prepares to update the name of the given subtag.
     ///
     /// Used internally by [Tag#setName(String)].
     ///
     /// @see Tag#setName(String)
-    abstract void updateSubTagName(Tag tag, String name) throws IllegalStateException;
+    abstract void preUpdateSubTagName(Tag tag, String oldName, String newName) throws IllegalArgumentException;
 
     /// Updates the indexes of the subtags starting from the given index.
     protected final void updateIndexes(int startIndex) {

@@ -39,7 +39,7 @@ import java.util.stream.BaseStream;
 /// - [IntArrayTag]: An array of 32-byte integers. The subtags are [IntTag].
 /// - [LongArrayTag]: An array of 64-byte integers. The subtags are [LongTag].
 ///
-/// @param <E> the type of elements in this array
+/// @param <E> the type of number elements in this array
 /// @param <T> the type of subtags in this array
 /// @param <A> the type of the array
 /// @param <B> the type of the buffer

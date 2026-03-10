@@ -269,11 +269,13 @@ public final class ListTag<T extends Tag> extends ParentTag<T> {
     }
 
     @Override
+    @Contract(pure = true)
     public int contentHashCode() {
         return subTags.hashCode();
     }
 
     @Override
+    @Contract(pure = true)
     public boolean contentEquals(Tag other) {
         return other instanceof ListTag<?> that && subTags.equals(that.subTags);
     }

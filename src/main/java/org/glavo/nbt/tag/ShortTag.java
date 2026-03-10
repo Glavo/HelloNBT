@@ -100,11 +100,13 @@ public final class ShortTag extends ValueTag<Short> {
     }
 
     @Override
+    @Contract(pure = true)
     public int contentHashCode() {
         return Short.hashCode(value);
     }
 
     @Override
+    @Contract(pure = true)
     public boolean contentEquals(Tag other) {
         return other instanceof ShortTag that && value == that.value;
     }

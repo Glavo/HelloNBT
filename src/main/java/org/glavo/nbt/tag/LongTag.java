@@ -88,11 +88,13 @@ public final class LongTag extends ValueTag<Long> {
     }
 
     @Override
+    @Contract(pure = true)
     public int contentHashCode() {
         return Long.hashCode(value);
     }
 
     @Override
+    @Contract(pure = true)
     public boolean contentEquals(Tag other) {
         return other instanceof LongTag that && value == that.value;
     }

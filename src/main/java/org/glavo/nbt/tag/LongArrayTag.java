@@ -151,11 +151,13 @@ public final class LongArrayTag extends ArrayTag<Long> {
     }
 
     @Override
+    @Contract(pure = true)
     public int contentHashCode() {
         return Arrays.hashCode(value);
     }
 
     @Override
+    @Contract(pure = true)
     public boolean contentEquals(Tag other) {
         return other instanceof LongArrayTag that && Arrays.equals(value, that.value);
     }

@@ -190,11 +190,13 @@ public sealed abstract class Tag implements NBTElement
     ///
     /// The hash code is based on the content of the tag.
     /// The name, parent tag, and index are not considered.
+    @Contract(pure = true)
     public abstract int contentHashCode();
 
     /// Returns `true` if The content of this tag is equal to the content of the given tag.
     ///
     /// The name, parent tag, and index are not considered.
+    @Contract(pure = true)
     public abstract boolean contentEquals(Tag other);
 
     /// Returns a hash code for this tag.

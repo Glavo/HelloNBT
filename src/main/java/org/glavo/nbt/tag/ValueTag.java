@@ -25,6 +25,7 @@ public sealed abstract class ValueTag<V> extends Tag
     }
 
     @Override
+    @Contract(pure = true)
     public abstract TagType<? extends ValueTag<V>> getType();
 
     /// Returns the value of the tag.

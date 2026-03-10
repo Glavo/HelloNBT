@@ -100,11 +100,13 @@ public final class IntTag extends ValueTag<Integer> {
     }
 
     @Override
+    @Contract(pure = true)
     public int contentHashCode() {
         return Integer.hashCode(value);
     }
 
     @Override
+    @Contract(pure = true)
     public boolean contentEquals(Tag other) {
         return other instanceof IntTag that && value == that.value;
     }

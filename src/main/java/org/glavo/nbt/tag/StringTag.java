@@ -89,11 +89,13 @@ public final class StringTag extends ValueTag<String> {
     }
 
     @Override
+    @Contract(pure = true)
     public int contentHashCode() {
         return value.hashCode();
     }
 
     @Override
+    @Contract(pure = true)
     public boolean contentEquals(Tag other) {
         return other instanceof StringTag that && value.equals(that.value);
     }

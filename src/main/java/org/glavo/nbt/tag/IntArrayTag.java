@@ -184,11 +184,13 @@ public final class IntArrayTag extends ArrayTag<Integer> {
     }
 
     @Override
+    @Contract(pure = true)
     public int contentHashCode() {
         return Arrays.hashCode(value);
     }
 
     @Override
+    @Contract(pure = true)
     public boolean contentEquals(Tag other) {
         return other instanceof IntArrayTag that && Arrays.equals(value, that.value);
     }

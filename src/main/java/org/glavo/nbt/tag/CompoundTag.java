@@ -264,11 +264,13 @@ public final class CompoundTag extends ParentTag<Tag> {
     }
 
     @Override
+    @Contract(pure = true)
     public int contentHashCode() {
         return subTagsByName.hashCode();
     }
 
     @Override
+    @Contract(pure = true)
     public boolean contentEquals(Tag other) {
         return other instanceof CompoundTag that && subTagsByName.equals(that.subTagsByName);
     }

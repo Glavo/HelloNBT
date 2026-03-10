@@ -88,11 +88,13 @@ public final class FloatTag extends ValueTag<Float> {
     }
 
     @Override
+    @Contract(pure = true)
     public int contentHashCode() {
         return Float.hashCode(value);
     }
 
     @Override
+    @Contract(pure = true)
     public boolean contentEquals(Tag other) {
         return other instanceof FloatTag that && Float.floatToIntBits(value) == Float.floatToIntBits(that.value);
     }

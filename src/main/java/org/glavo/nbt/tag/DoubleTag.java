@@ -88,11 +88,13 @@ public final class DoubleTag extends ValueTag<Double> {
     }
 
     @Override
+    @Contract(pure = true)
     public int contentHashCode() {
         return Double.hashCode(value);
     }
 
     @Override
+    @Contract(pure = true)
     public boolean contentEquals(Tag other) {
         return other instanceof DoubleTag that && Double.doubleToLongBits(value) == Double.doubleToLongBits(that.value);
     }

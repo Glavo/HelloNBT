@@ -121,11 +121,13 @@ public final class ByteTag extends ValueTag<Byte> {
     }
 
     @Override
+    @Contract(pure = true)
     public int contentHashCode() {
         return Byte.hashCode(value);
     }
 
     @Override
+    @Contract(pure = true)
     public boolean contentEquals(Tag other) {
         return other instanceof ByteTag that && value == that.value;
     }

@@ -142,12 +142,12 @@ final class SNBTParserTest {
 
         assertEquals(new ListTag<>(), parseTag("[]"));
         assertEquals(with(new ListTag<>(), l -> {
-            l.add(new StringTag("", "Hello"));
-            l.add(new StringTag("", "Glavo"));
+            l.addTag(new StringTag("", "Hello"));
+            l.addTag(new StringTag("", "Glavo"));
         }), parseTag("[Hello, 'Glavo']"));
         assertEquals(with(new ListTag<>(), l -> {
-            l.add(new StringTag("", "Hello"));
-            l.add(new StringTag("", "Glavo"));
+            l.addTag(new StringTag("", "Hello"));
+            l.addTag(new StringTag("", "Glavo"));
         }), parseTag("[Hello, 'Glavo',]"));
 
         assertEquals(new CompoundTag(), parseTag("{}"));

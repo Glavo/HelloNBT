@@ -73,24 +73,24 @@ public sealed abstract class ParentTag<T extends Tag> extends Tag
     /// If the `tag` is already a child of this tag, move it to the end of the list.
     ///
     /// If the `tag` is already a child of another tag, removes it from old parent and adds it to this tag.
-    public abstract void add(T tag) throws IllegalArgumentException;
+    public abstract void addTag(T tag) throws IllegalArgumentException;
 
     /// Adds all `tags` to this tag.`
     ///
-    /// @see #add(Tag)
-    public final void addAll(Iterable<? extends T> tags) throws IllegalArgumentException {
+    /// @see #addTag(Tag)
+    public final void addTags(Iterable<? extends T> tags) throws IllegalArgumentException {
         for (T tag : tags) {
-            this.add(tag);
+            this.addTag(tag);
         }
     }
 
     /// Adds all `tags` to this tag.
     ///
-    /// @see #add(Tag)
+    /// @see #addTag(Tag)
     @SafeVarargs
-    public final void addAll(T... tags) throws IllegalArgumentException {
+    public final void addTags(T... tags) throws IllegalArgumentException {
         for (T tag : tags) {
-            this.add(tag);
+            this.addTag(tag);
         }
     }
 

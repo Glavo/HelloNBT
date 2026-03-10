@@ -71,7 +71,7 @@ public final class CompoundTag extends ParentTag<Tag> {
     /// If another tag with the same name already exists, the old tag will be removed.
     @Override
     @Contract(mutates = "this,param1")
-    public void add(Tag tag) {
+    public void addTag(Tag tag) {
         if (tag.getParentTag() != null) {
             if (tag.getParentTag() == this) {
                 int index = tag.getIndex();
@@ -126,79 +126,79 @@ public final class CompoundTag extends ParentTag<Tag> {
         }
 
         tag.setName(name);
-        add(tag);
+        addTag(tag);
     }
 
     /// Adds a byte tag with the given name and value to this compound tag.
     @Contract(mutates = "this")
     public void putByte(String name, byte value) {
-        add(new ByteTag(name, value));
+        addTag(new ByteTag(name, value));
     }
 
     /// Adds a byte tag with the given name and value to this compound tag.
     @Contract(mutates = "this")
     public void putBoolean(String name, boolean value) {
-        add(new ByteTag(name, value));
+        addTag(new ByteTag(name, value));
     }
 
     /// Adds a short tag with the given name and value to this compound tag.
     @Contract(mutates = "this")
     public void putShort(String name, short value) {
-        add(new ShortTag(name, value));
+        addTag(new ShortTag(name, value));
     }
 
     /// Adds an int tag with the given name and value to this compound tag.
     @Contract(mutates = "this")
     public void putInt(String name, int value) {
-        add(new IntTag(name, value));
+        addTag(new IntTag(name, value));
     }
 
     /// Adds a long tag with the given name and value to this compound tag.
     @Contract(mutates = "this")
     public void putLong(String name, long value) {
-        add(new LongTag(name, value));
+        addTag(new LongTag(name, value));
     }
 
     /// Adds a float tag with the given name and value to this compound tag.
     @Contract(mutates = "this")
     public void putFloat(String name, float value) {
-        add(new FloatTag(name, value));
+        addTag(new FloatTag(name, value));
     }
 
     /// Adds a double tag with the given name and value to this compound tag.
     @Contract(mutates = "this")
     public void putDouble(String name, double value) {
-        add(new DoubleTag(name, value));
+        addTag(new DoubleTag(name, value));
     }
 
     /// Adds a string tag with the given name and value to this compound tag.
     @Contract(mutates = "this")
     public void putString(String name, String value) {
-        add(new StringTag(name, value));
+        addTag(new StringTag(name, value));
     }
 
     /// Adds a byte array tag with the given name and value to this compound tag.
     @Contract(mutates = "this")
     public void putByteArray(String name, byte[] value) {
-        add(new ByteArrayTag(name, value));
+        addTag(new ByteArrayTag(name, value));
     }
 
     /// Adds an int array tag with the given name and value to this compound tag.
     @Contract(mutates = "this")
     public void putIntArray(String name, int[] value) {
-        add(new IntArrayTag(name, value));
+        addTag(new IntArrayTag(name, value));
     }
 
     /// Adds a long array tag with the given name and value to this compound tag.
     @Contract(mutates = "this")
     public void putLongArray(String name, long[] value) {
-        add(new LongArrayTag(name, value));
+        addTag(new LongArrayTag(name, value));
     }
 
     /// Adds an int array tag with the given name and UUID value to this compound tag.
     @Contract(mutates = "this")
     public void putUUID(String name, UUID value) {
-        add(new IntArrayTag(name, value));
+        addTag(new IntArrayTag(name, value));
     }
 
     @Override
@@ -246,7 +246,7 @@ public final class CompoundTag extends ParentTag<Tag> {
         Tag subTag;
         while ((subTag = NBTCodecImpl.readTag(reader)) != null) {
             count++;
-            add(subTag);
+            addTag(subTag);
         }
 
         if (count != this.size()) {
@@ -297,7 +297,7 @@ public final class CompoundTag extends ParentTag<Tag> {
         var newTag = new CompoundTag(this.name);
         newTag.subTags.ensureCapacity(this.size());
         for (Tag tag : this) {
-            newTag.add(tag.clone());
+            newTag.addTag(tag.clone());
         }
         return newTag;
     }

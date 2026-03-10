@@ -112,7 +112,7 @@ public final class ReadTagTest {
             var actual = new com.github.steveice10.opennbt.tag.builtin.ListTag("Meow", com.github.steveice10.opennbt.tag.builtin.IntTag.class);
 
             for (int i = 0; i < 10000; i++) {
-                expected.add(new IntTag("", i));
+                expected.addTag(new IntTag("", i));
                 actual.add(new com.github.steveice10.opennbt.tag.builtin.IntTag("", i));
             }
 
@@ -121,27 +121,27 @@ public final class ReadTagTest {
 
         {
             var expected = new CompoundTag("Meow");
-            expected.add(new ByteTag("Sub0", (byte) 42));
-            expected.add(new ShortTag("Sub1", (short) 42));
-            expected.add(new IntTag("Sub2", 42));
-            expected.add(new LongTag("Sub3", 42L));
-            expected.add(new FloatTag("Sub4", 42.0f));
-            expected.add(new DoubleTag("Sub5", 42.0));
-            expected.add(new StringTag("Sub6", "Glavo"));
-            expected.add(new ByteArrayTag("Sub7", new byte[]{1, 2, 3}));
-            expected.add(new IntArrayTag("Sub8", new int[]{1, 2, 3}));
-            expected.add(new LongArrayTag("Sub9", new long[]{1, 2, 3}));
+            expected.addTag(new ByteTag("Sub0", (byte) 42));
+            expected.addTag(new ShortTag("Sub1", (short) 42));
+            expected.addTag(new IntTag("Sub2", 42));
+            expected.addTag(new LongTag("Sub3", 42L));
+            expected.addTag(new FloatTag("Sub4", 42.0f));
+            expected.addTag(new DoubleTag("Sub5", 42.0));
+            expected.addTag(new StringTag("Sub6", "Glavo"));
+            expected.addTag(new ByteArrayTag("Sub7", new byte[]{1, 2, 3}));
+            expected.addTag(new IntArrayTag("Sub8", new int[]{1, 2, 3}));
+            expected.addTag(new LongArrayTag("Sub9", new long[]{1, 2, 3}));
             {
                 var sub10 = new CompoundTag("Sub10");
-                sub10.add(new ByteTag("Sub10Sub0", (byte) 42));
-                expected.add(sub10);
+                sub10.addTag(new ByteTag("Sub10Sub0", (byte) 42));
+                expected.addTag(sub10);
             }
             {
                 var sub11 = new ListTag<>("Sub11", TagType.INT);
                 for (int i = 0; i < 10000; i++) {
-                    sub11.add(new IntTag("", i));
+                    sub11.addTag(new IntTag("", i));
                 }
-                expected.add(sub11);
+                expected.addTag(sub11);
             }
 
             var actual = new com.github.steveice10.opennbt.tag.builtin.CompoundTag("Meow");

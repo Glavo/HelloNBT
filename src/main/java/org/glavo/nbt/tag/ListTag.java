@@ -110,11 +110,11 @@ public final class ListTag<T extends Tag> extends ParentTag<T> {
                 assert subTag.getIndex() == -1;
 
                 CompoundTag newSubTag = new CompoundTag();
-                newSubTag.add(subTag);
+                newSubTag.addTag(subTag);
 
                 @SuppressWarnings("unchecked")
                 T castedTag = (T) newSubTag;
-                this.add(castedTag);
+                this.addTag(castedTag);
             }
 
         }
@@ -129,7 +129,7 @@ public final class ListTag<T extends Tag> extends ParentTag<T> {
     /// @throws IllegalArgumentException if the type of the tag is not the same as the element type of this list.
     @Override
     @Contract(mutates = "this,param1")
-    public void add(T tag) {
+    public void addTag(T tag) {
         if (tag.getType() != elementType) { // implicit null check
             if (this.elementType == null) {
                 assert subTags.isEmpty();
@@ -186,16 +186,16 @@ public final class ListTag<T extends Tag> extends ParentTag<T> {
     @SuppressWarnings("unchecked")
     public void addAny(T tag) {
         if (elementType == null || tag.getType() == elementType) {
-            add(tag);
+            addTag(tag);
         } else if (this.isEmpty()) {
             elementType = tag.getType();
-            add(tag);
+            addTag(tag);
         } else {
             setElementType(TagType.COMPOUND);
 
             CompoundTag subTag = new CompoundTag();
             subTag.put("", tag);
-            add((T) subTag);
+            addTag((T) subTag);
         }
     }
 
@@ -254,7 +254,7 @@ public final class ListTag<T extends Tag> extends ParentTag<T> {
         for (int i = 0; i < count; i++) {
             Tag subTag = elementType.createTag();
             subTag.readContent(reader);
-            uncheckedListTag.add(subTag);
+            uncheckedListTag.addTag(subTag);
         }
     }
 
@@ -305,7 +305,7 @@ public final class ListTag<T extends Tag> extends ParentTag<T> {
         var newTag = new ListTag<>(this.name, (TagType<T>) this.elementType);
         newTag.subTags.ensureCapacity(this.size());
         for (T tag : this) {
-            newTag.add((T) tag.clone());
+            newTag.addTag((T) tag.clone());
         }
         return newTag;
     }

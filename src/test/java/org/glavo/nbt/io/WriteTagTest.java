@@ -92,7 +92,7 @@ public final class WriteTagTest {
 
             for (int i = 0; i < 10000; i++) {
                 expected.add(new com.github.steveice10.opennbt.tag.builtin.IntTag("", i));
-                actual.add(new IntTag("", i));
+                actual.addTag(new IntTag("", i));
             }
 
             validator.assertTagEquals(expected, actual);
@@ -124,27 +124,27 @@ public final class WriteTagTest {
             }
 
             var actual = new CompoundTag("Meow");
-            actual.add(new ByteTag("Sub0", (byte) 42));
-            actual.add(new ShortTag("Sub1", (short) 42));
-            actual.add(new IntTag("Sub2", 42));
-            actual.add(new LongTag("Sub3", 42L));
-            actual.add(new FloatTag("Sub4", 42.0f));
-            actual.add(new DoubleTag("Sub5", 42.0));
-            actual.add(new StringTag("Sub6", "Glavo"));
-            actual.add(new ByteArrayTag("Sub7", new byte[]{1, 2, 3}));
-            actual.add(new IntArrayTag("Sub8", new int[]{1, 2, 3}));
-            actual.add(new LongArrayTag("Sub9", new long[]{1, 2, 3}));
+            actual.addTag(new ByteTag("Sub0", (byte) 42));
+            actual.addTag(new ShortTag("Sub1", (short) 42));
+            actual.addTag(new IntTag("Sub2", 42));
+            actual.addTag(new LongTag("Sub3", 42L));
+            actual.addTag(new FloatTag("Sub4", 42.0f));
+            actual.addTag(new DoubleTag("Sub5", 42.0));
+            actual.addTag(new StringTag("Sub6", "Glavo"));
+            actual.addTag(new ByteArrayTag("Sub7", new byte[]{1, 2, 3}));
+            actual.addTag(new IntArrayTag("Sub8", new int[]{1, 2, 3}));
+            actual.addTag(new LongArrayTag("Sub9", new long[]{1, 2, 3}));
             {
                 var sub10 = new CompoundTag("Sub10");
-                sub10.add(new ByteTag("Sub10Sub0", (byte) 42));
-                actual.add(sub10);
+                sub10.addTag(new ByteTag("Sub10Sub0", (byte) 42));
+                actual.addTag(sub10);
             }
             {
                 var sub11 = new ListTag<>("Sub11", TagType.INT);
                 for (int i = 0; i < 10000; i++) {
-                    sub11.add(new IntTag("", i));
+                    sub11.addTag(new IntTag("", i));
                 }
-                actual.add(sub11);
+                actual.addTag(sub11);
             }
 
             validator.assertTagEquals(expected, actual);

@@ -74,7 +74,7 @@ public sealed abstract class Tag implements NBTElement
 
     /// Returns the name of the tag, or an empty string if it has no name.
     @Contract(pure = true)
-    public String getName() {
+    public final String getName() {
         return name;
     }
 
@@ -86,7 +86,7 @@ public sealed abstract class Tag implements NBTElement
     ///
     /// @throws IllegalArgumentException if this tag is a child of a parent tag and the name is not valid for the parent tag.
     @Contract(mutates = "this")
-    public void setName(String name) throws IllegalArgumentException {
+    public final void setName(String name) throws IllegalArgumentException {
         // If the name is the same as the current name, do nothing.
         if (name.equals(this.name)) { // implicit null check
             return;
@@ -101,19 +101,19 @@ public sealed abstract class Tag implements NBTElement
 
     /// If the tag is a child of a [parent][NBTParent], returns the index of the tag in its parent; otherwise, returns `-1`.
     @Contract(pure = true)
-    public int getIndex() {
+    public final int getIndex() {
         return index;
     }
 
     /// Updates the index of this tag in its parent tag.
-    void setIndex(int index) {
+    final void setIndex(int index) {
         this.index = index;
     }
 
     /// If the tag is a child of a [parent][NBTParent], returns the parent; otherwise, returns `null`.
     @Override
     @Contract(pure = true)
-    public @Nullable NBTParent<? extends Tag> getParent() {
+    public final @Nullable NBTParent<? extends Tag> getParent() {
         return parent;
     }
 
@@ -121,7 +121,7 @@ public sealed abstract class Tag implements NBTElement
     ///
     /// @see ParentTag
     @Contract(pure = true)
-    public @Nullable ParentTag<?> getParentTag() {
+    public final @Nullable ParentTag<?> getParentTag() {
         return parent instanceof ParentTag<?> parentTag ? parentTag : null;
     }
 
@@ -131,7 +131,7 @@ public sealed abstract class Tag implements NBTElement
     ///
     /// @see ParentTag
     @Contract(mutates = "this")
-    void setParent(@Nullable NBTParent<? extends Tag> parent, int index) {
+    final void setParent(@Nullable NBTParent<? extends Tag> parent, int index) {
         assert parent == null ^ index >= 0;
         this.parent = parent;
         this.index = index;
@@ -147,7 +147,7 @@ public sealed abstract class Tag implements NBTElement
 
     protected abstract void contentToString(StringBuilder builder);
 
-    protected void appendString(StringBuilder builder, String value) {
+    protected final void appendString(StringBuilder builder, String value) {
         for (int i = 0; i < value.length(); i++) {
             char ch = value.charAt(i);
 
@@ -171,7 +171,7 @@ public sealed abstract class Tag implements NBTElement
         }
     }
 
-    protected void toString(StringBuilder builder) {
+    protected final void toString(StringBuilder builder) {
         builder.append(getType().getFullName());
         if (!name.isEmpty()) {
             builder.append('(');
@@ -189,7 +189,7 @@ public sealed abstract class Tag implements NBTElement
     }
 
     @Override
-    public String toString() {
+    public final String toString() {
         var builder = new StringBuilder();
         toString(builder);
         return builder.toString();
@@ -220,7 +220,7 @@ public sealed abstract class Tag implements NBTElement
     /// The hash code is based on the name, type, and content of the tag.
     /// The parent tag and index are not considered.
     @Override
-    public int hashCode() {
+    public final int hashCode() {
         return Objects.hash(name, getType(), contentHashCode());
     }
 
@@ -228,7 +228,7 @@ public sealed abstract class Tag implements NBTElement
     ///
     /// Two tags are considered equal if they have the same name, type, and content.
     /// The parent tag and index are not considered.
-    public boolean equals(Object obj) {
+    public final boolean equals(Object obj) {
         return this == obj || obj instanceof Tag that
                 && Objects.equals(this.name, that.name)
                 && this.contentEquals(that);

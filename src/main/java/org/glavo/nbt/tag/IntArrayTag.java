@@ -15,6 +15,7 @@
  */
 package org.glavo.nbt.tag;
 
+import org.glavo.nbt.internal.ArrayUtils;
 import org.glavo.nbt.internal.input.DataReader;
 import org.glavo.nbt.internal.output.DataWriter;
 import org.jetbrains.annotations.Contract;
@@ -26,10 +27,6 @@ import java.util.stream.IntStream;
 
 /// An ordered list of 32-bit integers. Sometimes used for UUIDs.
 public final class IntArrayTag extends ArrayTag<Integer, IntTag, int[]> {
-    private static final int[] EMPTY = new int[0];
-
-    int[] value;
-
     /// Creates a new IntArrayTag with an empty name and an empty array.
     public IntArrayTag() {
         this("");
@@ -37,21 +34,19 @@ public final class IntArrayTag extends ArrayTag<Integer, IntTag, int[]> {
 
     /// Creates a new IntArrayTag with the given name and an empty array.
     public IntArrayTag(String name) {
-        super(name);
-        this.value = EMPTY;
+        this(name, ArrayUtils.EMPTY_INT_ARRAY);
     }
 
     /// Creates a new IntArrayTag with the given name and value.
     ///
     /// The value is cloned to avoid external modifications.
     public IntArrayTag(String name, int[] value) {
-        super(name);
-        this.value = value.clone();
+        super(name, value.clone());
     }
 
     /// Create a new IntArrayTag with the name and a UUID value.
     public IntArrayTag(String name, UUID uuid) {
-        super(name);
+        super(name, ArrayUtils.EMPTY_INT_ARRAY);
         setUUID(uuid);
     }
 
@@ -66,19 +61,7 @@ public final class IntArrayTag extends ArrayTag<Integer, IntTag, int[]> {
     ///
     /// @see <a href="https://minecraft.wiki/w/UUID">UUID - Minecraft Wiki</a>
     public boolean isUUID() {
-        return value.length == 4;
-    }
-
-    @Override
-    @Contract(pure = true)
-    public int[] getArray() {
-        return value.clone();
-    }
-
-    /// Sets the value of the tag.
-    @Contract(mutates = "this")
-    public void set(int[] value) {
-        this.value = value.clone();
+        return values.length == 4;
     }
 
     /// Sets the value of the tag from a UUID.
@@ -89,7 +72,7 @@ public final class IntArrayTag extends ArrayTag<Integer, IntTag, int[]> {
         value[1] = (int) (uuid.getMostSignificantBits() & 0xFFFF_FFFFL);
         value[2] = (int) (uuid.getLeastSignificantBits() >>> 32);
         value[3] = (int) (uuid.getLeastSignificantBits() & 0xFFFF_FFFFL);
-        this.value = value;
+        set(value);
     }
 
     /// Returns the element at the given index.
@@ -97,7 +80,7 @@ public final class IntArrayTag extends ArrayTag<Integer, IntTag, int[]> {
     /// @throws IndexOutOfBoundsException if the index is out of bounds.
     @Contract(pure = true)
     public int get(int index) throws IndexOutOfBoundsException {
-        return value[index];
+        return values[index];
     }
 
     @Override
@@ -108,29 +91,23 @@ public final class IntArrayTag extends ArrayTag<Integer, IntTag, int[]> {
 
     @Contract(pure = true)
     public UUID getUUID() {
-        if (value.length != 4) {
+        if (values.length != 4) {
             throw new IllegalStateException("IntArrayTag is not a UUID");
         }
-        long msb = ((long) value[0] << 32) | (long) value[1] & 0xFFFFFFFFL;
-        long lsb = ((long) value[2] << 32) | (long) value[3] & 0xFFFFFFFFL;
+        long msb = ((long) values[0] << 32) | (long) values[1] & 0xFFFFFFFFL;
+        long lsb = ((long) values[2] << 32) | (long) values[3] & 0xFFFFFFFFL;
         return new UUID(msb, lsb);
     }
 
     @Override
     @Contract(value = "-> new", pure = true)
     public IntBuffer getBuffer() {
-        return IntBuffer.wrap(value).asReadOnlyBuffer();
-    }
-
-    @Override
-    @Contract(pure = true)
-    public int size() {
-        return value.length;
+        return IntBuffer.wrap(values).asReadOnlyBuffer();
     }
 
     @Override
     public PrimitiveIterator.OfInt iterator() {
-        final int[] array = this.value;
+        final int[] array = this.values;
         return new PrimitiveIterator.OfInt() {
             private int cursor;
 
@@ -153,37 +130,37 @@ public final class IntArrayTag extends ArrayTag<Integer, IntTag, int[]> {
     @Override
     @Contract(pure = true)
     public IntStream valuesStream() {
-        return Arrays.stream(value);
+        return Arrays.stream(values);
     }
 
     @Override
     protected void readContent(DataReader reader) throws IOException {
-        value = reader.readIntArray();
+        values = reader.readIntArray();
     }
 
     @Override
     protected void writeContent(DataWriter writer) throws IOException {
-        writer.writeIntArray(value);
+        writer.writeIntArray(values);
     }
 
     @Override
     @Contract(pure = true)
     public int contentHashCode() {
-        return Arrays.hashCode(value);
+        return Arrays.hashCode(values);
     }
 
     @Override
     @Contract(pure = true)
     public boolean contentEquals(Tag other) {
-        return other instanceof IntArrayTag that && Arrays.equals(value, that.value);
+        return other instanceof IntArrayTag that && Arrays.equals(values, that.values);
     }
 
     @Override
     protected void contentToString(StringBuilder builder) {
-        if (value.length > 0) {
-            builder.append('[').append(value[0]);
-            for (int i = 1; i < value.length; i++) {
-                builder.append(", ").append(value[i]);
+        if (values.length > 0) {
+            builder.append('[').append(values[0]);
+            for (int i = 1; i < values.length; i++) {
+                builder.append(", ").append(values[i]);
             }
             builder.append(']');
         } else {
@@ -193,6 +170,11 @@ public final class IntArrayTag extends ArrayTag<Integer, IntTag, int[]> {
 
     @Override
     public IntArrayTag clone() {
-        return new IntArrayTag(name, value);
+        return new IntArrayTag(name, values);
+    }
+
+    @Override
+    protected int[] clone(int[] array) {
+        return array.clone();
     }
 }

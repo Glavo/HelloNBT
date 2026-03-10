@@ -61,32 +61,12 @@ public final class TagAccess {
     }
 
     /// Returns the internal value of the tag without cloning.
-    public byte[] getInternalArray(ByteArrayTag tag) {
-        return tag.value;
+    public <A> A getInternalArray(ArrayTag<?, ?, A> tag) {
+        return tag.values;
     }
 
     /// Sets the internal value of the tag without cloning.
-    public void setInternalArray(ByteArrayTag tag, byte[] value) {
-        tag.value = value;
-    }
-
-    /// Returns the internal value of the tag without cloning.
-    public int[] getInternalArray(IntArrayTag tag) {
-        return tag.value;
-    }
-
-    /// Sets the internal value of the tag without cloning.
-    public void setInternalArray(IntArrayTag tag, int[] value) {
-        tag.value = value;
-    }
-
-    /// Returns the internal value of the tag without cloning.
-    public long[] getInternalArray(LongArrayTag tag) {
-        return tag.value;
-    }
-
-    /// Sets the internal value of the tag without cloning.
-    public void setInternalArray(LongArrayTag tag, long[] value) {
-        tag.value = value;
+    public <A> void setInternalArray(ArrayTag<?, ?, A> tag, A value) {
+        tag.values = value;
     }
 }

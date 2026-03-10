@@ -15,6 +15,7 @@
  */
 package org.glavo.nbt.tag;
 
+import org.glavo.nbt.internal.ArrayUtils;
 import org.glavo.nbt.internal.input.DataReader;
 import org.glavo.nbt.internal.output.DataWriter;
 import org.jetbrains.annotations.Contract;
@@ -28,9 +29,6 @@ import java.util.stream.LongStream;
 
 /// An ordered list of 64-bit integers.
 public final class LongArrayTag extends ArrayTag<Long, LongTag, long[]> {
-    private static final long[] EMPTY = new long[0];
-
-    long[] value;
 
     /// Creates a new LongArrayTag with an empty name and an empty array.
     public LongArrayTag() {
@@ -39,16 +37,14 @@ public final class LongArrayTag extends ArrayTag<Long, LongTag, long[]> {
 
     /// Creates a new LongArrayTag with the given name and an empty array.
     public LongArrayTag(String name) {
-        super(name);
-        this.value = EMPTY;
+        super(name, ArrayUtils.EMPTY_LONG_ARRAY);
     }
 
     /// Creates a new LongArrayTag with the given name and value.
     ///
     /// The value is cloned to avoid external modifications.
-    public LongArrayTag(String name, long[] value) {
-        super(name);
-        this.value = value.clone();
+    public LongArrayTag(String name, long[] values) {
+        super(name, values.clone());
     }
 
     @Override
@@ -58,21 +54,9 @@ public final class LongArrayTag extends ArrayTag<Long, LongTag, long[]> {
     }
 
     @Override
-    @Contract(pure = true)
-    public long[] getArray() {
-        return value.clone();
-    }
-
-    @Override
     @Contract(value = "-> new", pure = true)
     public LongBuffer getBuffer() {
-        return LongBuffer.wrap(value).asReadOnlyBuffer();
-    }
-
-    /// Sets the value of the tag.
-    @Contract(mutates = "this")
-    public void set(long[] value) {
-        this.value = value.clone();
+        return LongBuffer.wrap(values).asReadOnlyBuffer();
     }
 
     /// Returns the element at the given index.
@@ -80,7 +64,7 @@ public final class LongArrayTag extends ArrayTag<Long, LongTag, long[]> {
     /// @throws IndexOutOfBoundsException if the index is out of bounds.
     @Contract(pure = true)
     public long get(int index) throws IndexOutOfBoundsException {
-        return value[index];
+        return values[index];
     }
 
     @Override
@@ -90,14 +74,8 @@ public final class LongArrayTag extends ArrayTag<Long, LongTag, long[]> {
     }
 
     @Override
-    @Contract(pure = true)
-    public int size() {
-        return value.length;
-    }
-
-    @Override
     public PrimitiveIterator.OfLong iterator() {
-        final long[] array = this.value;
+        final long[] array = this.values;
         return new PrimitiveIterator.OfLong() {
             private int cursor;
 
@@ -120,37 +98,37 @@ public final class LongArrayTag extends ArrayTag<Long, LongTag, long[]> {
     @Override
     @Contract(pure = true)
     public LongStream valuesStream() {
-        return Arrays.stream(value);
+        return Arrays.stream(values);
     }
 
     @Override
     protected void readContent(DataReader reader) throws IOException {
-        value = reader.readLongArray();
+        values = reader.readLongArray();
     }
 
     @Override
     protected void writeContent(DataWriter writer) throws IOException {
-        writer.writeLongArray(value);
+        writer.writeLongArray(values);
     }
 
     @Override
     @Contract(pure = true)
     public int contentHashCode() {
-        return Arrays.hashCode(value);
+        return Arrays.hashCode(values);
     }
 
     @Override
     @Contract(pure = true)
     public boolean contentEquals(Tag other) {
-        return other instanceof LongArrayTag that && Arrays.equals(value, that.value);
+        return other instanceof LongArrayTag that && Arrays.equals(values, that.values);
     }
 
     @Override
     protected void contentToString(StringBuilder builder) {
-        if (value.length > 0) {
-            builder.append('[').append(value[0]);
-            for (int i = 1; i < value.length; i++) {
-                builder.append(", ").append(value[i]);
+        if (values.length > 0) {
+            builder.append('[').append(values[0]);
+            for (int i = 1; i < values.length; i++) {
+                builder.append(", ").append(values[i]);
             }
             builder.append(']');
         } else {
@@ -161,6 +139,11 @@ public final class LongArrayTag extends ArrayTag<Long, LongTag, long[]> {
     @Override
     @Contract(value = "-> new", pure = true)
     public LongArrayTag clone() {
-        return new LongArrayTag(name, value);
+        return new LongArrayTag(name, values);
+    }
+
+    @Override
+    protected long[] clone(long[] array) {
+        return array.clone();
     }
 }

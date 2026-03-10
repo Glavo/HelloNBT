@@ -17,6 +17,7 @@ package org.glavo.nbt.tag;
 
 import org.jetbrains.annotations.Contract;
 
+import java.lang.reflect.Array;
 import java.nio.Buffer;
 import java.util.stream.BaseStream;
 
@@ -25,8 +26,11 @@ public sealed abstract class ArrayTag<E extends Number, T extends ValueTag<E>, A
         extends Tag implements Iterable<E>
         permits ByteArrayTag, IntArrayTag, LongArrayTag {
 
-    protected ArrayTag(String name) {
+    A values;
+
+    protected ArrayTag(String name, A values) {
         super(name);
+        this.values = values;
     }
 
     @Override
@@ -41,7 +45,9 @@ public sealed abstract class ArrayTag<E extends Number, T extends ValueTag<E>, A
 
     /// Returns the size of the array.
     @Contract(pure = true)
-    public abstract int size();
+    public final int size() {
+        return Array.getLength(values);
+    }
 
     /// Returns a sequential stream with this array as its source.
     @Contract(pure = true)
@@ -49,7 +55,9 @@ public sealed abstract class ArrayTag<E extends Number, T extends ValueTag<E>, A
 
     /// Returns the clone of the array.
     @Contract(pure = true)
-    public abstract A getArray();
+    public A getArray() {
+        return clone(values);
+    }
 
     /// Returns the element at the given index.
     ///
@@ -65,7 +73,15 @@ public sealed abstract class ArrayTag<E extends Number, T extends ValueTag<E>, A
     @Contract(value = "-> new", pure = true)
     public abstract Buffer getBuffer();
 
+    /// Sets the value of the tag.
+    @Contract(mutates = "this")
+    public void set(A array) {
+        this.values = clone(array);
+    }
+
     @Override
     @Contract(value = "-> new", pure = true)
     public abstract ArrayTag<E, T, A> clone();
+
+    protected abstract A clone(A array);
 }

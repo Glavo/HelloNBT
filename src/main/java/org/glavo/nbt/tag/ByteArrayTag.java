@@ -15,6 +15,7 @@
  */
 package org.glavo.nbt.tag;
 
+import org.glavo.nbt.internal.ArrayUtils;
 import org.glavo.nbt.internal.input.DataReader;
 import org.glavo.nbt.internal.output.DataWriter;
 import org.jetbrains.annotations.Contract;
@@ -29,8 +30,6 @@ import java.util.stream.StreamSupport;
 public final class ByteArrayTag extends ArrayTag<Byte, ByteTag, byte[]> {
     private static final byte[] EMPTY = new byte[0];
 
-    byte[] value;
-
     /// Creates a new ByteArrayTag with an empty name and an empty array.
     public ByteArrayTag() {
         this("");
@@ -38,16 +37,14 @@ public final class ByteArrayTag extends ArrayTag<Byte, ByteTag, byte[]> {
 
     /// Creates a new ByteArrayTag with the given name and an empty array.
     public ByteArrayTag(String name) {
-        super(name);
-        this.value = EMPTY;
+        super(name, ArrayUtils.EMPTY_BYTE_ARRAY);
     }
 
     /// Creates a new ByteArrayTag with the given name and value.
     ///
     /// The value is cloned to avoid external modifications.
-    public ByteArrayTag(String name, byte[] value) {
-        super(name);
-        this.value = value.clone();
+    public ByteArrayTag(String name, byte[] values) {
+        super(name, values.clone());
     }
 
     @Override
@@ -55,24 +52,12 @@ public final class ByteArrayTag extends ArrayTag<Byte, ByteTag, byte[]> {
         return TagType.BYTE_ARRAY;
     }
 
-    @Override
-    @Contract(pure = true)
-    public byte[] getArray() {
-        return value.clone();
-    }
-
-    /// Sets the value of the tag.
-    @Contract(mutates = "this")
-    public void set(byte[] value) {
-        this.value = value.clone();
-    }
-
     /// Returns the element at the given index.
     ///
     /// @throws IndexOutOfBoundsException if the index is out of bounds.
     @Contract(pure = true)
     public byte get(int index) throws IndexOutOfBoundsException {
-        return value[index];
+        return values[index];
     }
 
     @Override
@@ -84,18 +69,12 @@ public final class ByteArrayTag extends ArrayTag<Byte, ByteTag, byte[]> {
     @Override
     @Contract(value = "-> new", pure = true)
     public ByteBuffer getBuffer() {
-        return ByteBuffer.wrap(value).asReadOnlyBuffer();
-    }
-
-    @Override
-    @Contract(pure = true)
-    public int size() {
-        return value.length;
+        return ByteBuffer.wrap(values).asReadOnlyBuffer();
     }
 
     @Override
     public Iterator<Byte> iterator() {
-        final byte[] array = this.value;
+        final byte[] array = this.values;
         return new Iterator<>() {
             private int cursor;
 
@@ -124,32 +103,32 @@ public final class ByteArrayTag extends ArrayTag<Byte, ByteTag, byte[]> {
 
     @Override
     protected void readContent(DataReader reader) throws IOException {
-        value = reader.readByteArray();
+        values = reader.readByteArray();
     }
 
     @Override
     protected void writeContent(DataWriter writer) throws IOException {
-        writer.writeByteArray(value);
+        writer.writeByteArray(values);
     }
 
     @Override
     @Contract(pure = true)
     public int contentHashCode() {
-        return Arrays.hashCode(value);
+        return Arrays.hashCode(values);
     }
 
     @Override
     @Contract(pure = true)
     public boolean contentEquals(Tag other) {
-        return other instanceof ByteArrayTag that && Arrays.equals(value, that.value);
+        return other instanceof ByteArrayTag that && Arrays.equals(values, that.values);
     }
 
     @Override
     protected void contentToString(StringBuilder builder) {
-        if (value.length > 0) {
-            builder.append('[').append(value[0]);
-            for (int i = 1; i < value.length; i++) {
-                builder.append(", ").append(value[i]);
+        if (values.length > 0) {
+            builder.append('[').append(values[0]);
+            for (int i = 1; i < values.length; i++) {
+                builder.append(", ").append(values[i]);
             }
             builder.append(']');
         } else {
@@ -159,6 +138,11 @@ public final class ByteArrayTag extends ArrayTag<Byte, ByteTag, byte[]> {
 
     @Override
     public ByteArrayTag clone() {
-        return new ByteArrayTag(name, value);
+        return new ByteArrayTag(name, values);
+    }
+
+    @Override
+    protected byte[] clone(byte[] array) {
+        return array.clone();
     }
 }

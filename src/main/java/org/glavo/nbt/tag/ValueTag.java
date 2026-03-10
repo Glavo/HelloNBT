@@ -19,7 +19,7 @@ import org.jetbrains.annotations.Contract;
 
 /// Base class for tags that hold a single value.
 public sealed abstract class ValueTag<V> extends Tag
-        permits ByteTag, ShortTag, IntTag, LongTag, FloatTag, DoubleTag, StringTag, ArrayTag {
+        permits ByteTag, ShortTag, IntTag, LongTag, FloatTag, DoubleTag, StringTag {
     protected ValueTag(String name) {
         super(name);
     }

@@ -31,7 +31,7 @@ public final class UUIDTest {
             var uuid = UUID.fromString("f81d4fae-7dec-11d0-a765-00a0c91e6bf6");
 
             tag.setUUID(uuid);
-            assertArrayEquals(new int[]{-132296786, 2112623056, -1486552928, -920753162}, tag.getValue());
+            assertArrayEquals(new int[]{-132296786, 2112623056, -1486552928, -920753162}, tag.getArray());
             assertEquals(uuid, tag.getUUID());
         }
     }

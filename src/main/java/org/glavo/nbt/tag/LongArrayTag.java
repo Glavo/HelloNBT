@@ -64,17 +64,6 @@ public final class LongArrayTag extends ArrayTag<Long, LongTag, long[]> {
     }
 
     @Override
-    @Contract(pure = true)
-    public long[] getValue() {
-        return value;
-    }
-
-    @Override
-    public String getAsString() {
-        return Arrays.toString(value);
-    }
-
-    @Override
     @Contract(value = "-> new", pure = true)
     public LongBuffer getBuffer() {
         return LongBuffer.wrap(value).asReadOnlyBuffer();
@@ -84,12 +73,6 @@ public final class LongArrayTag extends ArrayTag<Long, LongTag, long[]> {
     @Contract(mutates = "this")
     public void set(long[] value) {
         this.value = value.clone();
-    }
-
-    @Override
-    @Contract(mutates = "this")
-    public void setValue(Object value) {
-        set((long[]) value);
     }
 
     /// Returns the element at the given index.

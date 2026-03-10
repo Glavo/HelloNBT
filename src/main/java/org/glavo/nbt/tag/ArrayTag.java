@@ -22,7 +22,7 @@ import java.util.stream.BaseStream;
 
 /// Base class for array tags.
 public sealed abstract class ArrayTag<E extends Number, T extends ValueTag<E>, A>
-        extends ValueTag<Object> implements Iterable<E>
+        extends Tag implements Iterable<E>
         permits ByteArrayTag, IntArrayTag, LongArrayTag {
 
     protected ArrayTag(String name) {

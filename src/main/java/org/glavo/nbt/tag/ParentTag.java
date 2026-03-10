@@ -126,6 +126,10 @@ public sealed abstract class ParentTag<T extends Tag> extends Tag
     ///
     /// @see #addTag(Tag)
     public final void addTags(Iterable<? extends T> tags) throws IllegalArgumentException {
+        if (this == tags) {
+            return;
+        }
+
         for (T tag : tags) {
             this.addTag(tag);
         }
@@ -163,6 +167,7 @@ public sealed abstract class ParentTag<T extends Tag> extends Tag
         }
 
         tags = EMPTY_TAGS;
+        size = 0;
     }
 
     @Override

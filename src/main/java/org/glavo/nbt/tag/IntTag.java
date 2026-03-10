@@ -21,7 +21,7 @@ import org.jetbrains.annotations.Contract;
 
 import java.io.IOException;
 
-/// 4 byte signed integer tag type.
+/// A [value tag][ValueTag] that holds a 4 byte integer.
 public final class IntTag extends ValueTag<Integer> {
     private int value;
 

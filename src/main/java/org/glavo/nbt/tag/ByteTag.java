@@ -21,7 +21,7 @@ import org.jetbrains.annotations.Contract;
 
 import java.io.IOException;
 
-/// 1 byte signed integer tag type. Sometimes used for booleans.
+/// A [value tag][ValueTag] that holds a 1 byte integer or a boolean.
 public final class ByteTag extends ValueTag<Byte> {
     private byte value;
 

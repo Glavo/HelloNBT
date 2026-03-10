@@ -21,7 +21,7 @@ import org.jetbrains.annotations.Contract;
 
 import java.io.IOException;
 
-/// 8 byte signed integer tag type.
+/// A [value tag][ValueTag] that holds an 8 byte integer.
 public final class LongTag extends ValueTag<Long> {
     private long value;
 

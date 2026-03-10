@@ -35,10 +35,10 @@ import java.util.Objects;
 /// These are the all possible types of tags:
 ///
 /// - [ValueTag]: A tag that holds a value.
-///     - [ByteTag]: A tag that holds a 1 byte signed integer. Sometimes used for booleans.
-///     - [ShortTag]: A tag that holds a 2 byte signed integer.
-///     - [IntTag]: A tag that holds a 4 byte signed integer.
-///     - [LongTag]: A tag that holds an 8 byte signed integer.
+///     - [ByteTag]: A tag that holds a 1 byte integer or a boolean.
+///     - [ShortTag]: A tag that holds a 2 byte integer.
+///     - [IntTag]: A tag that holds a 4 byte integer.
+///     - [LongTag]: A tag that holds an 8 byte integer.
 ///     - [FloatTag]: A tag that holds a 4 byte floating point number.
 ///     - [DoubleTag]: A tag that holds an 8 byte floating point number.
 ///     - [StringTag]: A tag that holds a Unicode string.

@@ -22,6 +22,7 @@ import org.jetbrains.annotations.Contract;
 import java.io.IOException;
 import java.util.Objects;
 
+/// A [value tag][ValueTag] that holds a Unicode string.
 public final class StringTag extends ValueTag<String> {
     private String value;
 

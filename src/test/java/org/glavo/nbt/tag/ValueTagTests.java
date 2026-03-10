@@ -17,6 +17,8 @@ package org.glavo.nbt.tag;
 
 import org.junit.jupiter.api.Test;
 
+import java.util.function.Supplier;
+
 import static org.junit.jupiter.api.Assertions.*;
 
 final class ValueTagTests {
@@ -77,6 +79,22 @@ final class ValueTagTests {
         } else {
             throw new IllegalArgumentException("Unsupported number type: " + expected.getClass().getName());
         }
+    }
+
+    private static void assertContentEquals(ValueTag<?> expected, ValueTag<?> actual) {
+        Supplier<String> errorMessage = () -> "Expected %s to be equal to %s".formatted(expected, actual);
+
+        assertTrue(expected.contentEquals(actual), errorMessage);
+        assertTrue(actual.contentEquals(expected), errorMessage);
+        assertEquals(expected.contentHashCode(), actual.contentHashCode(), errorMessage);
+    }
+
+    private static void assertContentNotEquals(ValueTag<?> expected, ValueTag<?> actual) {
+        Supplier<String> errorMessage = () -> "Expected %s not to be equal to %s".formatted(expected, actual);
+
+        assertFalse(expected.contentEquals(actual), errorMessage);
+        assertFalse(actual.contentEquals(expected), errorMessage);
+        assertNotEquals(expected.contentHashCode(), actual.contentHashCode(), errorMessage);
     }
 
     @Test
@@ -357,5 +375,49 @@ final class ValueTagTests {
             assertEquals("Hello", clone.getValue());
             assertEquals("Hello", clone.getAsString());
         }
+    }
+
+    @Test
+    void testContentEquals() {
+        assertContentEquals(new ByteTag("Meow", (byte) 114), new ByteTag("Meow", (byte) 114));
+        assertContentEquals(new ByteTag("Meow", (byte) 114), new ByteTag("MeowMeow", (byte) 114));
+        assertContentNotEquals(new ByteTag("Meow", (byte) 114), new ByteTag("Meow", (byte) 514));
+        assertContentNotEquals(new ByteTag("Meow", (byte) 114), new ByteTag("MeowMeow", (byte) 514));
+
+        assertContentEquals(new ShortTag("Meow", (short) 114), new ShortTag("Meow", (short) 114));
+        assertContentEquals(new ShortTag("Meow", (short) 114), new ShortTag("MeowMeow", (short) 114));
+        assertContentNotEquals(new ShortTag("Meow", (short) 114), new ShortTag("Meow", (short) 514));
+        assertContentNotEquals(new ShortTag("Meow", (short) 114), new ShortTag("MeowMeow", (short) 514));
+
+        assertContentEquals(new IntTag("Meow", 114), new IntTag("Meow", 114));
+        assertContentEquals(new IntTag("Meow", 114), new IntTag("MeowMeow", 114));
+        assertContentNotEquals(new IntTag("Meow", 114), new IntTag("Meow", 514));
+        assertContentNotEquals(new IntTag("Meow", 114), new IntTag("MeowMeow", 514));
+
+        assertContentEquals(new LongTag("Meow", 114L), new LongTag("Meow", 114L));
+        assertContentEquals(new LongTag("Meow", 114L), new LongTag("MeowMeow", 114L));
+        assertContentNotEquals(new LongTag("Meow", 114L), new LongTag("Meow", 514L));
+        assertContentNotEquals(new LongTag("Meow", 114L), new LongTag("MeowMeow", 514L));
+
+        assertContentEquals(new FloatTag("Meow", 114.0f), new FloatTag("Meow", 114.0f));
+        assertContentEquals(new FloatTag("Meow", 114.0f), new FloatTag("MeowMeow", 114.0f));
+        assertContentEquals(new FloatTag("Meow", Float.NaN), new FloatTag("Meow", Float.NaN));
+        assertContentEquals(new FloatTag("Meow", Float.POSITIVE_INFINITY), new FloatTag("Meow", Float.POSITIVE_INFINITY));
+        assertContentEquals(new FloatTag("Meow", Float.NEGATIVE_INFINITY), new FloatTag("Meow", Float.NEGATIVE_INFINITY));
+        assertContentNotEquals(new FloatTag("Meow", 114.0f), new FloatTag("Meow", 514.0f));
+        assertContentNotEquals(new FloatTag("Meow", 114.0f), new FloatTag("MeowMeow", 514.0f));
+
+        assertContentEquals(new DoubleTag("Meow", 114.0), new DoubleTag("Meow", 114.0));
+        assertContentEquals(new DoubleTag("Meow", 114.0), new DoubleTag("MeowMeow", 114.0));
+        assertContentEquals(new DoubleTag("Meow", Double.NaN), new DoubleTag("Meow", Double.NaN));
+        assertContentEquals(new DoubleTag("Meow", Double.POSITIVE_INFINITY), new DoubleTag("Meow", Double.POSITIVE_INFINITY));
+        assertContentEquals(new DoubleTag("Meow", Double.NEGATIVE_INFINITY), new DoubleTag("Meow", Double.NEGATIVE_INFINITY));
+        assertContentNotEquals(new DoubleTag("Meow", 114.0), new DoubleTag("Meow", 514.0));
+        assertContentNotEquals(new DoubleTag("Meow", 114.0), new DoubleTag("MeowMeow", 514.0));
+
+        assertContentEquals(new StringTag("Meow", "Hello"), new StringTag("Meow", "Hello"));
+        assertContentEquals(new StringTag("Meow", "Hello"), new StringTag("MeowMeow", "Hello"));
+        assertContentNotEquals(new StringTag("Meow", "Hello"), new StringTag("Meow", "World"));
+        assertContentNotEquals(new StringTag("Meow", "Hello"), new StringTag("MeowMeow", "World"));
     }
 }

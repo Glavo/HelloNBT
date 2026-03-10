@@ -28,7 +28,7 @@ import java.util.Objects;
 import java.util.PrimitiveIterator;
 import java.util.stream.LongStream;
 
-/// A tag that holds an array of [long tag][LongTag]s.
+/// A tag that holds an array of [long tags][LongTag].
 ///
 /// @see Tag
 /// @see ParentTag

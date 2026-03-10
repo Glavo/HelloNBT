@@ -26,7 +26,7 @@ import java.util.*;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
-/// A tag that holds an array of [byte tag][ByteTag]s.
+/// A tag that holds an array of [byte tags][ByteTag].
 ///
 /// @see Tag
 /// @see ParentTag

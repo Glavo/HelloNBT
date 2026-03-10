@@ -84,7 +84,7 @@ public abstract class TagType<T extends Tag> {
         }
     };
 
-    /// A tag that holds an array of [byte tag][ByteTag]s.
+    /// A tag that holds an array of [byte tags][ByteTag].
     ///
     /// @see ByteArrayTag
     public static final TagType<ByteArrayTag> BYTE_ARRAY = new TagType<>("TAG_Byte_Array", 0x07, ByteArrayTag.class) {
@@ -124,7 +124,7 @@ public abstract class TagType<T extends Tag> {
         }
     };
 
-    /// A tag that holds an array of [int tag][IntTag]s.
+    /// A tag that holds an array of [int tags][IntTag].
     ///
     /// @see IntArrayTag
     public static final TagType<IntArrayTag> INT_ARRAY = new TagType<>("TAG_Int_Array", 0x0B, IntArrayTag.class) {
@@ -134,7 +134,7 @@ public abstract class TagType<T extends Tag> {
         }
     };
 
-    /// A tag that holds an array of [long tag][LongTag]s.
+    /// A tag that holds an array of [long tags][LongTag].
     ///
     /// @see LongArrayTag
     public static final TagType<LongArrayTag> LONG_ARRAY = new TagType<>("TAG_Long_Array", 0x0C, LongArrayTag.class) {

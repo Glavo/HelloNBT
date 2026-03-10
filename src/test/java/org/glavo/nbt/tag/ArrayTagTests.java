@@ -18,6 +18,7 @@ package org.glavo.nbt.tag;
 import org.glavo.nbt.internal.ArrayAccessor;
 import org.junit.jupiter.api.Test;
 
+import java.lang.reflect.Array;
 import java.nio.Buffer;
 import java.nio.ByteBuffer;
 import java.nio.IntBuffer;
@@ -41,6 +42,18 @@ abstract class ArrayTagTests<AT extends ArrayTag<E, T, A, B>, E extends Number, 
         return accessor().newArray(size);
     }
 
+    final A emptyArray() {
+        return accessor().empty();
+    }
+
+    final A arrayOf(long... values) {
+        A array = newArray(values.length);
+        for (int i = 0; i < values.length; i++) {
+            Array.setLong(array, i, values[i]);
+        }
+        return array;
+    }
+
     final int getLength(A array) {
         return accessor().getLength(array);
     }
@@ -52,6 +65,8 @@ abstract class ArrayTagTests<AT extends ArrayTag<E, T, A, B>, E extends Number, 
     final void set(A array, int index, E value) {
         accessor().set(array, index, value);
     }
+
+    abstract void set(A array, int index, long value);
 
     abstract A randomArray(Random random, int size);
 
@@ -67,22 +82,25 @@ abstract class ArrayTagTests<AT extends ArrayTag<E, T, A, B>, E extends Number, 
         }
     }
 
+    void assertArrayEquals(A expected, AT tag) {
+        assertEquals(getLength(expected), tag.size(), () -> "Array lengths differ: " + getLength(expected) + " != " + tag.size());
+        assertArrayEquals(expected, tag.getArray());
+        assertArrayEquals(expected, accessor().get(tag.getBuffer()));
+    }
+
     @Test
     void testConstructor() {
         AT tag = create();
         assertEquals("", tag.getName());
-        assertEquals(0, tag.size());
-        assertEquals(0, getLength(tag.getArray()));
+        assertArrayEquals(emptyArray(), tag);
 
         tag = create("test");
         assertEquals("test", tag.getName());
-        assertEquals(0, tag.size());
-        assertEquals(0, getLength(tag.getArray()));
+        assertArrayEquals(emptyArray(), tag);
 
         tag = create("test", accessor().empty());
         assertEquals("test", tag.getName());
-        assertEquals(0, tag.size());
-        assertEquals(0, getLength(tag.getArray()));
+        assertArrayEquals(emptyArray(), tag);
 
         Random random = new Random(0);
         A array = randomArray(random, 10);
@@ -90,12 +108,11 @@ abstract class ArrayTagTests<AT extends ArrayTag<E, T, A, B>, E extends Number, 
         assertEquals("test", tag.getName());
         assertEquals(10, tag.size());
         assertNotSame(array, tag.values);
-        assertArrayEquals(array, tag.values);
-        assertArrayEquals(array, tag.getArray());
-        assertArrayEquals(array, accessor().get(tag.getBuffer()));
+        assertArrayEquals(array, tag);
     }
 
     static final class ByteArrayTagTests extends ArrayTagTests<ByteArrayTag, Byte, ByteTag, byte[], ByteBuffer> {
+
         @Override
         ArrayAccessor<Byte, ByteTag, byte[], ByteBuffer> accessor() {
             return ArrayAccessor.BYTE_ARRAY;
@@ -114,6 +131,11 @@ abstract class ArrayTagTests<AT extends ArrayTag<E, T, A, B>, E extends Number, 
         @Override
         ByteArrayTag create(String name, byte[] array) {
             return new ByteArrayTag(name, array);
+        }
+
+        @Override
+        void set(byte[] array, int index, long value) {
+            array[index] = (byte) value;
         }
 
         @Override
@@ -147,6 +169,11 @@ abstract class ArrayTagTests<AT extends ArrayTag<E, T, A, B>, E extends Number, 
         }
 
         @Override
+        void set(int[] array, int index, long value) {
+            array[index] = (int) value;
+        }
+
+        @Override
         int[] randomArray(Random random, int size) {
             return random.ints(size).limit(size).toArray();
         }
@@ -162,7 +189,7 @@ abstract class ArrayTagTests<AT extends ArrayTag<E, T, A, B>, E extends Number, 
             tag.setUUID(uuid);
             assertTrue(tag.isUUID());
             assertEquals(4, tag.size());
-            assertArrayEquals(new int[]{-132296786, 2112623056, -1486552928, -920753162}, tag.getArray());
+            assertArrayEquals(new int[]{-132296786, 2112623056, -1486552928, -920753162}, tag);
             assertEquals(uuid, tag.getUUID());
 
             tag.add(114);
@@ -173,7 +200,7 @@ abstract class ArrayTagTests<AT extends ArrayTag<E, T, A, B>, E extends Number, 
             tag.setUUID(uuid);
             assertTrue(tag.isUUID());
             assertEquals(4, tag.size());
-            assertArrayEquals(new int[]{0, 0, 0, 0}, tag.getArray());
+            assertArrayEquals(new int[]{0, 0, 0, 0}, tag);
             assertEquals(uuid, tag.getUUID());
 
             tag.clear();
@@ -215,6 +242,11 @@ abstract class ArrayTagTests<AT extends ArrayTag<E, T, A, B>, E extends Number, 
         @Override
         LongArrayTag create(String name, long[] array) {
             return new LongArrayTag(name, array);
+        }
+
+        @Override
+        void set(long[] array, int index, long value) {
+            array[index] = value;
         }
 
         @Override

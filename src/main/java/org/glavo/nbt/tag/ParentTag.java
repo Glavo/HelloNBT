@@ -34,6 +34,13 @@ public sealed abstract class ParentTag<T extends Tag> extends Tag
 
     private final Tag[] EMPTY_TAGS = new Tag[0];
 
+    // Store all sub-tags in an array.
+    //
+    // For ListTag and CompoundTag, the array length is large or equal to the size,
+    // and all tags in [0, size) are not null.
+    //
+    // For ArrayTag, we may lazy allocate the array and the tags, so the array length
+    // may be smaller than the size, and some tags in [0, size) may be null.
     @UnknownNullability
     Tag[] tags = EMPTY_TAGS;
     int size;

@@ -127,7 +127,11 @@ public final class IntArrayTag extends ArrayTag<Integer, IntTag, int[]> {
         values[index] = value;
     }
 
-    @Contract(pure = true)
+
+    /// Sets the value at the given index.
+    ///
+    /// @throws IndexOutOfBoundsException if the index is out of bounds.
+    @Contract(mutates = "this")
     public void set(int index, int value) throws IndexOutOfBoundsException {
         Objects.checkIndex(index, size);
         setDirect(index, value);
@@ -136,6 +140,12 @@ public final class IntArrayTag extends ArrayTag<Integer, IntTag, int[]> {
         if (tag != null) {
             tag.setDirect(value);
         }
+    }
+
+    @Override
+    @Contract(mutates = "this")
+    public void set(int index, Integer value) throws IndexOutOfBoundsException {
+        set(index, value.intValue());
     }
 
     @Contract(mutates = "this")

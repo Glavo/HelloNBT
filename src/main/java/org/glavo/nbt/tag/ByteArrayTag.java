@@ -86,7 +86,10 @@ public final class ByteArrayTag extends ArrayTag<Byte, ByteTag, byte[]> {
         values[index] = value;
     }
 
-    @Contract(pure = true)
+    /// Sets the value at the given index.
+    ///
+    /// @throws IndexOutOfBoundsException if the index is out of bounds.
+    @Contract(mutates = "this")
     public void set(int index, byte value) throws IndexOutOfBoundsException {
         Objects.checkIndex(index, size);
         setDirect(index, value);
@@ -95,6 +98,12 @@ public final class ByteArrayTag extends ArrayTag<Byte, ByteTag, byte[]> {
         if (tag != null) {
             tag.setDirect(value);
         }
+    }
+
+    @Override
+    @Contract(mutates = "this")
+    public void set(int index, Byte value) throws IndexOutOfBoundsException {
+        set(index, value.byteValue());
     }
 
     public void add(byte value) {

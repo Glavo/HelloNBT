@@ -78,7 +78,13 @@ public final class IntTag extends ValueTag<Integer> {
     /// Sets the value of the tag.
     @Contract(mutates = "this")
     public void set(int value) {
-        this.value = value;
+        if (getParent() instanceof IntArrayTag parent) {
+            assert parent.getTagOrNull(getIndex()) == this;
+
+            parent.setDirect(getIndex(), value);
+        }
+
+        setDirect(value);
     }
 
     /// Sets the value of the tag from an unsigned long.

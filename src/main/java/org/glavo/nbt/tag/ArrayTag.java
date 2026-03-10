@@ -131,6 +131,12 @@ public sealed abstract class ArrayTag<E extends Number, T extends ValueTag<E>, A
         this.values = clone(array);
     }
 
+    /// Sets the value at the given index.
+    ///
+    /// @throws IndexOutOfBoundsException if the index is out of bounds.
+    @Contract(mutates = "this")
+    public abstract void set(int index, E value) throws IndexOutOfBoundsException;
+
     /// Adds the `value` to this array.
     @Contract(mutates = "this")
     public abstract void add(E value);

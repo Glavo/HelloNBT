@@ -91,6 +91,12 @@ public final class ByteTag extends ValueTag<Byte> {
     /// Sets the value of the tag.
     @Contract(mutates = "this")
     public void set(byte value) {
+        if (getParent() instanceof ByteArrayTag parent) {
+            assert parent.getTagOrNull(getIndex()) == this;
+
+            parent.setDirect(getIndex(), value);
+        }
+
         setDirect(value);
     }
 

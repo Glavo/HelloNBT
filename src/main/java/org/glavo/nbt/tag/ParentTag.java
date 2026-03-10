@@ -16,6 +16,7 @@
 package org.glavo.nbt.tag;
 
 import org.glavo.nbt.NBTParent;
+import org.jetbrains.annotations.ApiStatus;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -97,8 +98,14 @@ public sealed abstract class ParentTag<T extends Tag> extends Tag
     /// Removes the `tag` from this tag.
     ///
     /// @throws IllegalArgumentException if the `tag` is not a child of this tag.
+    public abstract void removeTag(Tag tag) throws IllegalArgumentException;
+
+    /// @see #removeTag(Tag)
+    @ApiStatus.Obsolete
     @Override
-    public abstract void removeElement(Tag tag) throws IllegalArgumentException;
+    public final void removeElement(Tag tag) throws IllegalArgumentException {
+        removeTag(tag);
+    }
 
     /// Removes all subtags from this tag.
     public void clear() {

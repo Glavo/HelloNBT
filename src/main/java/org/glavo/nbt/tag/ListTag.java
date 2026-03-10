@@ -201,7 +201,7 @@ public final class ListTag<T extends Tag> extends ParentTag<T> {
 
     @Override
     @Contract(mutates = "this,param1")
-    public void removeElement(Tag tag) {
+    public void removeTag(Tag tag) {
         if (tag.getParentTag() != this) {
             throw new IllegalArgumentException("The tag is not a child of this tag");
         }

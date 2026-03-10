@@ -403,6 +403,7 @@ final class ValueTagTests {
         assertContentEquals(new FloatTag("Meow", 114.0f), new FloatTag("Meow", 114.0f));
         assertContentEquals(new FloatTag("Meow", 114.0f), new FloatTag("MeowMeow", 114.0f));
         assertContentEquals(new FloatTag("Meow", Float.NaN), new FloatTag("Meow", Float.NaN));
+        assertContentEquals(new FloatTag("Meow", Float.NaN), new FloatTag("Meow", Float.intBitsToFloat(0x7f800001)));
         assertContentEquals(new FloatTag("Meow", Float.POSITIVE_INFINITY), new FloatTag("Meow", Float.POSITIVE_INFINITY));
         assertContentEquals(new FloatTag("Meow", Float.NEGATIVE_INFINITY), new FloatTag("Meow", Float.NEGATIVE_INFINITY));
         assertContentNotEquals(new FloatTag("Meow", 114.0f), new FloatTag("Meow", 514.0f));
@@ -411,6 +412,7 @@ final class ValueTagTests {
         assertContentEquals(new DoubleTag("Meow", 114.0), new DoubleTag("Meow", 114.0));
         assertContentEquals(new DoubleTag("Meow", 114.0), new DoubleTag("MeowMeow", 114.0));
         assertContentEquals(new DoubleTag("Meow", Double.NaN), new DoubleTag("Meow", Double.NaN));
+        assertContentEquals(new DoubleTag("Meow", Double.NaN), new DoubleTag("Meow", Double.longBitsToDouble(0x7FF800000000DEADL)));
         assertContentEquals(new DoubleTag("Meow", Double.POSITIVE_INFINITY), new DoubleTag("Meow", Double.POSITIVE_INFINITY));
         assertContentEquals(new DoubleTag("Meow", Double.NEGATIVE_INFINITY), new DoubleTag("Meow", Double.NEGATIVE_INFINITY));
         assertContentNotEquals(new DoubleTag("Meow", 114.0), new DoubleTag("Meow", 514.0));

@@ -80,6 +80,7 @@ final class ValueTagTests {
     }
 
     @Test
+    @SuppressWarnings("DataFlowIssue")
     void testConstructor() {
         {
             var tag = new ByteTag();
@@ -93,6 +94,9 @@ final class ValueTagTests {
             tag = new ByteTag("Meow", (byte) 114);
             assertEquals("Meow", tag.getName());
             assertIntegralEquals((byte) 114, tag);
+
+            assertThrows(NullPointerException.class, () -> new ByteTag(null));
+            assertThrows(NullPointerException.class, () -> new ByteTag(null, (byte) 114));
         }
 
         {
@@ -107,6 +111,9 @@ final class ValueTagTests {
             tag = new ShortTag("Meow", (short) 114);
             assertEquals("Meow", tag.getName());
             assertIntegralEquals((short) 114, tag);
+
+            assertThrows(NullPointerException.class, () -> new ShortTag(null));
+            assertThrows(NullPointerException.class, () -> new ShortTag(null, (short) 114));
         }
 
         {
@@ -121,6 +128,9 @@ final class ValueTagTests {
             tag = new IntTag("Meow", 114);
             assertEquals("Meow", tag.getName());
             assertIntegralEquals(114, tag);
+
+            assertThrows(NullPointerException.class, () -> new IntTag(null));
+            assertThrows(NullPointerException.class, () -> new IntTag(null, 114));
         }
 
         {
@@ -135,6 +145,9 @@ final class ValueTagTests {
             tag = new LongTag("Meow", 114L);
             assertEquals("Meow", tag.getName());
             assertIntegralEquals(114L, tag);
+
+            assertThrows(NullPointerException.class, () -> new LongTag(null));
+            assertThrows(NullPointerException.class, () -> new LongTag(null, 114L));
         }
 
         {
@@ -149,6 +162,9 @@ final class ValueTagTests {
             tag = new FloatTag("Meow", 114.0f);
             assertEquals("Meow", tag.getName());
             assertFloatingEquals(114.0f, tag);
+
+            assertThrows(NullPointerException.class, () -> new FloatTag(null));
+            assertThrows(NullPointerException.class, () -> new FloatTag(null, 114.0f));
         }
 
         {
@@ -164,6 +180,9 @@ final class ValueTagTests {
             assertEquals("Meow", tag.getName());
             assertFloatingEquals(114.0, tag);
 
+
+            assertThrows(NullPointerException.class, () -> new DoubleTag(null));
+            assertThrows(NullPointerException.class, () -> new DoubleTag(null, 114.0));
         }
 
         {
@@ -184,6 +203,10 @@ final class ValueTagTests {
             assertEquals("Hello", tag.get());
             assertEquals("Hello", tag.getValue());
             assertEquals("Hello", tag.getAsString());
+
+            assertThrows(NullPointerException.class, () -> new StringTag(null));
+            assertThrows(NullPointerException.class, () -> new StringTag(null, "Hello"));
+            assertThrows(NullPointerException.class, () -> new StringTag("Meow", null));
         }
     }
 

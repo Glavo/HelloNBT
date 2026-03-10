@@ -81,13 +81,11 @@ public sealed abstract class ParentTag<T extends Tag> extends Tag
 
         @SuppressWarnings("unchecked")
         T oldTag = (T) tags[index];
-        if (oldTag == null) {
-            return null;
-        }
 
-        if (index < size - 1) {
+        int arrayEnd = Math.min(size, tags.length);
+        if (index < arrayEnd - 1) {
             System.arraycopy(tags, index + 1, tags, index, size - index);
-        } else {
+        } else if (oldTag != null) {
             tags[index] = null;
         }
 

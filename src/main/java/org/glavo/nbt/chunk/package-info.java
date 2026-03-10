@@ -14,6 +14,10 @@
  * limitations under the License.
  */
 
+/// Base package for NBT chunks.
+///
+/// @see org.glavo.nbt.chunk.ChunkRegion
+/// @see org.glavo.nbt.chunk.Chunk
 @NotNullByDefault
 package org.glavo.nbt.chunk;
 

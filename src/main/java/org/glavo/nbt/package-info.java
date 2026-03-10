@@ -14,6 +14,9 @@
  * limitations under the License.
  */
 
+/// Base package for the [HelloNBT](https://github.com/Glavo/HelloNBT).
+///
+/// @see org.glavo.nbt.tag
 @NotNullByDefault
 package org.glavo.nbt;
 

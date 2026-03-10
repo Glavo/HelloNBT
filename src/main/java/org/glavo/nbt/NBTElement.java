@@ -23,6 +23,11 @@ import org.jetbrains.annotations.Nullable;
 
 import java.io.IOException;
 
+/// Base interface for all NBT elements.
+///
+/// @see Tag
+/// @see ChunkRegion
+/// @see Chunk
 public sealed interface NBTElement permits ChunkRegion, Chunk, Tag, NBTParent {
     /// Returns the parent of this element, or `null` if this element is not a child of any parent.
     @Contract(pure = true)

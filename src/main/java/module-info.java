@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+/// Base module for the [HelloNBT](https://github.com/Glavo/HelloNBT).
 module org.glavo.nbt {
     requires static org.jetbrains.annotations;
     requires static org.lz4.java;

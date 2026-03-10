@@ -22,6 +22,7 @@ import org.glavo.nbt.internal.selector.NBTSelectorParser;
 /// @see <a href="https://minecraft.wiki/w/NBT_path">NBT Path - Minecraft Wiki</a>
 public final class NBTSelector {
 
+    // TODO
 
     /// @throws IllegalArgumentException if the input is not a valid NBT selector
     public static NBTSelector parse(String input) {

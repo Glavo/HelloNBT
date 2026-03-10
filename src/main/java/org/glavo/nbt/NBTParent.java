@@ -23,6 +23,10 @@ import org.jetbrains.annotations.Contract;
 import java.util.stream.Stream;
 
 /// Base interface for NBT elements that can contain other NBT elements as children.
+///
+/// @see ParentTag
+/// @see ChunkRegion
+/// @see Chunk
 public sealed interface NBTParent<E extends NBTElement> extends NBTElement, Iterable<E>
         permits ParentTag, ChunkRegion, Chunk {
 

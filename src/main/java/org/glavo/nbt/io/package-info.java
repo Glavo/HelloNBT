@@ -14,6 +14,9 @@
  * limitations under the License.
  */
 
+/// Base package for input/output operations for NBT elements.
+///
+/// @see org.glavo.nbt.io.NBTCodec
 @NotNullByDefault
 package org.glavo.nbt.io;
 

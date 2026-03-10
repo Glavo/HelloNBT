@@ -64,7 +64,7 @@ public sealed abstract class ParentTag<T extends Tag> extends Tag
     /// Returns the subtag at the given index.
     ///
     /// @throws IndexOutOfBoundsException if the index is out of bounds.
-    public final T get(int index) throws IndexOutOfBoundsException {
+    public final T getTag(int index) throws IndexOutOfBoundsException {
         return subTags.get(index);
     }
 

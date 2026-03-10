@@ -201,7 +201,7 @@ public abstract class TagType<T extends Tag> {
     }
 
     /// Creates a new tag of this type.
-    @Contract(pure = true)
+    @Contract("-> new")
     public abstract T createTag();
 
     @Override

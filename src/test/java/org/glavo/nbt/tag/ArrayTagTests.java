@@ -186,6 +186,28 @@ abstract class ArrayTagTests<AT extends ArrayTag<E, T, A, B>, E extends Number, 
         assertValueEquals(data, tag);
     }
 
+    @Test
+    void testClear() {
+        var tag = create();
+        tag.add(valueOf(1));
+
+        tag.clear();
+        assertEquals(0, tag.size());
+        assertValueEquals(emptyArray(), tag);
+        assertEquals(0, getLength(tag.values));
+        assertEquals(0, tag.tags.length);
+
+        A data = randomArray(new Random(0), 100);
+        for (int i = 0; i < 100; i++) {
+            tag.add(get(data, i));
+        }
+        tag.clear();
+        assertEquals(0, tag.size());
+        assertValueEquals(emptyArray(), tag);
+        assertEquals(0, getLength(tag.values));
+        assertEquals(0, tag.tags.length);
+    }
+
     static final class ByteArrayTagTests extends ArrayTagTests<ByteArrayTag, Byte, ByteTag, byte[], ByteBuffer> {
 
         @Override

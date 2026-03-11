@@ -17,6 +17,8 @@ package org.glavo.nbt.tag;
 
 import org.glavo.nbt.internal.ArrayAccessor;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 
 import java.nio.Buffer;
 import java.nio.ByteBuffer;
@@ -208,11 +210,17 @@ abstract class ArrayTagTests<AT extends ArrayTag<E, T, A, B>, E extends Number, 
         assertEquals(0, tag.tags.length);
     }
 
-    @Test
-    void testSubTag() {
-        final int size = 100;
+    @ParameterizedTest
+    @ValueSource(longs = {0L, 1L, 2L, 3L, 4L, 5L, 6L, 7L, 8L, 9L})
+    void testSubTag(long seed) {
+        Random random = new Random(seed);
 
-        A data = randomArray(new Random(0), size);
+        final int size = random.nextInt(128);
+
+        A data = newArray(size);
+        for (int i = 0; i < size; i++) {
+            set(data, i, i);
+        }
 
         var tag = create("", data);
 
@@ -238,11 +246,11 @@ abstract class ArrayTagTests<AT extends ArrayTag<E, T, A, B>, E extends Number, 
 
         // Modifying array values should also synchronize the corresponding subtag values
         for (int i = 0; i < size; i++) {
-            tag.set(i, valueOf(114L));
+            tag.set(i, valueOf(-i));
         }
         for (int i = 0; i < size; i++) {
             assertSame(subTags.get(i), tag.getTag(i));
-            assertEquals(valueOf(114L), tag.getValue(i));
+            assertEquals(valueOf(-i), tag.getValue(i));
         }
 
         // Modifying subtag values should also synchronize the array values
@@ -251,19 +259,26 @@ abstract class ArrayTagTests<AT extends ArrayTag<E, T, A, B>, E extends Number, 
         }
         assertValueEquals(data, tag);
 
-        int removedIndex = 42;
-        T removedTag = tag.removeTagAt(removedIndex);
-        assertSame(subTags.get(removedIndex), removedTag);
-        assertEquals(-1, removedTag.getIndex());
-        assertNull(removedTag.getParent());
+        while (!subTags.isEmpty()) {
+            int removedIndex = random.nextInt(subTags.size());
 
-        subTags.remove(removedTag);
+            if (random.nextBoolean()) {
+                T removedTag = tag.removeTagAt(removedIndex);
+                assertSame(subTags.get(removedIndex), removedTag);
+                assertEquals(-1, removedTag.getIndex());
+                assertNull(removedTag.getParent());
+            } else {
+                tag.removeAt(removedIndex);
+            }
 
-        for (int i = 0; i < size - 1; i++) {
-            T subTag = subTags.get(i);
-            assertSame(subTag, tag.getTag(i));
-            assertSame(tag, subTag.getParent());
-            assertEquals(i, subTag.getIndex());
+            subTags.remove(removedIndex);
+
+            for (int i = 0; i < subTags.size(); i++) {
+                T subTag = subTags.get(i);
+                assertSame(subTag, tag.getTag(i));
+                assertSame(tag, subTag.getParent());
+                assertEquals(i, subTag.getIndex());
+            }
         }
     }
 

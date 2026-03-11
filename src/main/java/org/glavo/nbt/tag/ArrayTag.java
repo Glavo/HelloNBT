@@ -284,6 +284,7 @@ public sealed abstract class ArrayTag<E extends Number, T extends ValueTag<E>, A
 
                     removeValueFromArray(index);
 
+                    ensureTagsCapacity(size);
                     tags[size - 1] = tag;
                     accessor().set(values, size - 1, tag);
 

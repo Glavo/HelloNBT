@@ -308,7 +308,6 @@ public sealed abstract class ArrayTag<E extends Number, T extends ValueTag<E>, A
     public final void removeAt(int index) throws IndexOutOfBoundsException {
         Objects.checkIndex(index, size);
 
-
         T tag = removeTagFromArray(index);
         if (tag != null) {
             assert tag.getIndex() == index && tag.getParentTag() == this;

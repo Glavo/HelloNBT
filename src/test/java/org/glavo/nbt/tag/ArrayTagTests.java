@@ -22,8 +22,11 @@ import java.nio.Buffer;
 import java.nio.ByteBuffer;
 import java.nio.IntBuffer;
 import java.nio.LongBuffer;
-import java.util.Random;
-import java.util.UUID;
+import java.util.*;
+import java.util.stream.BaseStream;
+import java.util.stream.IntStream;
+import java.util.stream.LongStream;
+import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
@@ -82,9 +85,45 @@ abstract class ArrayTagTests<AT extends ArrayTag<E, T, A, B>, E extends Number, 
     }
 
     void assertValueEquals(A expected, AT tag) {
-        assertEquals(getLength(expected), tag.size(), () -> "Array lengths differ: " + getLength(expected) + " != " + tag.size());
+        int length = getLength(expected);
+
+        // Test size
+        assertEquals(length, tag.size(), () -> "Array lengths differ: " + length + " != " + tag.size());
+
+        // Test getArray
         assertArrayEquals(expected, tag.getArray());
+
+        // Test getBuffer
         assertArrayEquals(expected, accessor().get(tag.getBuffer()));
+
+        // Test valueIterator
+        Iterator<E> valueIterator = tag.valueIterator();
+        for (int i = 0; i < length; i++) {
+            try {
+                assertEquals(get(expected, i), valueIterator.next());
+            } catch (NoSuchElementException e) {
+                throw new AssertionError("Array contents differ at index " + i + ": expected " + get(expected, i) + ", but iterator ran out of elements", e);
+            }
+        }
+        assertFalse(valueIterator.hasNext());
+        assertThrows(NoSuchElementException.class, valueIterator::next);
+
+        // Test valueStream
+        //noinspection resource
+        BaseStream<E, ?> valueStream = tag.valueStream();
+        if (valueStream instanceof IntStream intStream) {
+            assertArrayEquals(expected, (A) intStream.toArray());
+        } else if (valueStream instanceof LongStream longStream) {
+            assertArrayEquals(expected, (A) longStream.toArray());
+        } else {
+            @SuppressWarnings("unchecked")
+            List<Byte> list = ((Stream<Byte>) valueStream).toList();
+            assertEquals(length, list.size());
+            for (int i = 0; i < length; i++) {
+                assertEquals(get(expected, i), list.get(i));
+            }
+        }
+
     }
 
     @Test

@@ -73,7 +73,7 @@ public sealed abstract class ParentTag<T extends Tag> extends Tag
     protected abstract void preUpdateSubTagName(Tag tag, String oldName, String newName) throws IllegalArgumentException;
 
     protected final void ensureTagsCapacity(int minCapacity) {
-        if (minCapacity >= tags.length) {
+        if (minCapacity > tags.length) {
             tags = Arrays.copyOf(tags, ArrayAccessor.nextCapacity(tags.length, minCapacity));
         }
     }

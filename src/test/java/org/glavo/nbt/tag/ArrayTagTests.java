@@ -44,6 +44,8 @@ abstract class ArrayTagTests<AT extends ArrayTag<E, T, A, B>, E extends Number, 
 
     abstract AT create(String name, A array);
 
+    abstract T createSubTag();
+
     final A newArray(int size) {
         return accessor().newArray(size);
     }
@@ -189,6 +191,52 @@ abstract class ArrayTagTests<AT extends ArrayTag<E, T, A, B>, E extends Number, 
     }
 
     @Test
+    void testAddTag() {
+        var tag = create();
+
+        T subTag0 = createSubTag();
+        subTag0.setValue(valueOf(114));
+        tag.addTag(subTag0);
+        assertEquals(1, tag.size());
+        assertValueEquals(arrayOf(114L), tag);
+        assertSame(tag, subTag0.getParentTag());
+        assertEquals(0, subTag0.getIndex());
+        assertSame(subTag0, tag.getTag(0));
+
+        T subTag1 = createSubTag();
+        subTag1.setValue(valueOf(123));
+        tag.addTag(subTag1);
+        assertEquals(2, tag.size());
+        assertValueEquals(arrayOf(114L, 123L), tag);
+        assertSame(tag, subTag1.getParentTag());
+        assertEquals(1, subTag1.getIndex());
+        assertSame(subTag1, tag.getTag(1));
+
+        subTag0.setValue(valueOf(10));
+        assertValueEquals(arrayOf(10L, 123L), tag);
+
+        tag.set(1, valueOf(20));
+        assertEquals(valueOf(20), subTag1.getValue());
+        assertValueEquals(arrayOf(10L, 20L), tag);
+
+        tag.addTag(subTag1);
+        assertValueEquals(arrayOf(10L, 20L), tag);
+        assertSame(subTag0, tag.getTag(0));
+        assertSame(subTag1, tag.getTag(1));
+
+        tag.addTag(subTag0);
+        assertValueEquals(arrayOf(20L, 10L), tag);
+        assertSame(subTag1, tag.getTag(0));
+        assertSame(subTag0, tag.getTag(1));
+        assertSame(tag, subTag0.getParent());
+        assertSame(tag, subTag0.getParentTag());
+        assertSame(tag, subTag1.getParent());
+        assertSame(tag, subTag1.getParentTag());
+        assertEquals(0, subTag1.getIndex());
+        assertEquals(1, subTag0.getIndex());
+    }
+
+    @Test
     void testClear() {
         var tag = create();
         tag.add(valueOf(1));
@@ -310,6 +358,11 @@ abstract class ArrayTagTests<AT extends ArrayTag<E, T, A, B>, E extends Number, 
         }
 
         @Override
+        ByteTag createSubTag() {
+            return new ByteTag();
+        }
+
+        @Override
         byte[] arrayOf(long... values) {
             byte[] array = new byte[values.length];
             for (int i = 0; i < values.length; i++) {
@@ -356,6 +409,11 @@ abstract class ArrayTagTests<AT extends ArrayTag<E, T, A, B>, E extends Number, 
         @Override
         IntArrayTag create(String name, int[] array) {
             return new IntArrayTag(name, array);
+        }
+
+        @Override
+        IntTag createSubTag() {
+            return new IntTag();
         }
 
         @Override
@@ -446,6 +504,11 @@ abstract class ArrayTagTests<AT extends ArrayTag<E, T, A, B>, E extends Number, 
         @Override
         LongArrayTag create(String name, long[] array) {
             return new LongArrayTag(name, array);
+        }
+
+        @Override
+        LongTag createSubTag() {
+            return new LongTag();
         }
 
         @Override

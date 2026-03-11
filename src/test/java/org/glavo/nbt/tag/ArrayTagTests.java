@@ -39,8 +39,6 @@ abstract class ArrayTagTests<AT extends ArrayTag<E, T, A, B>, E extends Number, 
 
     abstract AT create(String name, A array);
 
-    abstract void addPrimitive(AT tag, E value);
-
     final A newArray(int size) {
         return accessor().newArray(size);
     }
@@ -118,7 +116,7 @@ abstract class ArrayTagTests<AT extends ArrayTag<E, T, A, B>, E extends Number, 
         assertEquals(0, tag.tags.length);
         assertValueEquals(emptyArray(), tag);
 
-        addPrimitive(tag, valueOf(1));
+        tag.add(valueOf(1));
         assertEquals(0, tag.tags.length);
         assertEquals(ArrayAccessor.DEFAULT_CAPACITY, getLength(tag.values));
         assertValueEquals(arrayOf(1L), tag);
@@ -138,6 +136,8 @@ abstract class ArrayTagTests<AT extends ArrayTag<E, T, A, B>, E extends Number, 
         assertEquals(2, tag.size());
         assertValueEquals(arrayOf(1L, 3L), tag);
         assertEquals(valueOf(3L), subTag.getValue());
+
+
     }
 
     static final class ByteArrayTagTests extends ArrayTagTests<ByteArrayTag, Byte, ByteTag, byte[], ByteBuffer> {
@@ -165,11 +165,6 @@ abstract class ArrayTagTests<AT extends ArrayTag<E, T, A, B>, E extends Number, 
         @Override
         ByteArrayTag create(String name, byte[] array) {
             return new ByteArrayTag(name, array);
-        }
-
-        @Override
-        void addPrimitive(ByteArrayTag tag, Byte value) {
-            tag.add(value);
         }
 
         @Override
@@ -219,11 +214,6 @@ abstract class ArrayTagTests<AT extends ArrayTag<E, T, A, B>, E extends Number, 
         @Override
         IntArrayTag create(String name, int[] array) {
             return new IntArrayTag(name, array);
-        }
-
-        @Override
-        void addPrimitive(IntArrayTag tag, Integer value) {
-            tag.add(value);
         }
 
         @Override
@@ -314,11 +304,6 @@ abstract class ArrayTagTests<AT extends ArrayTag<E, T, A, B>, E extends Number, 
         @Override
         LongArrayTag create(String name, long[] array) {
             return new LongArrayTag(name, array);
-        }
-
-        @Override
-        void addPrimitive(LongArrayTag tag, Long value) {
-            tag.add(value);
         }
 
         @Override

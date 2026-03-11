@@ -25,6 +25,12 @@ import java.io.IOException;
 
 /// Base interface for all NBT elements.
 ///
+/// An NBT element may be a child element of an [NBTParent] (such as a [CompoundTag][org.glavo.nbt.tag.CompoundTag] or [ListTag][org.glavo.nbt.tag.ListTag]).
+///
+/// Each NBT element has a unique position in the entire tree:
+/// It can have at most one parent and cannot belong to multiple parents simultaneously;
+/// and it cannot be multiple children of the same parent at the same time.
+///
 /// @see Tag
 /// @see ChunkRegion
 /// @see Chunk

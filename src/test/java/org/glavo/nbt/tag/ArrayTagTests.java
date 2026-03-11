@@ -137,7 +137,14 @@ abstract class ArrayTagTests<AT extends ArrayTag<E, T, A, B>, E extends Number, 
         assertValueEquals(arrayOf(1L, 3L), tag);
         assertEquals(valueOf(3L), subTag.getValue());
 
+        tag.clear();
 
+        var random = new Random(0);
+        A data = randomArray(random, 100);
+        for (int i = 0; i < 100; i++) {
+            tag.add(get(data, i));
+        }
+        assertValueEquals(data, tag);
     }
 
     static final class ByteArrayTagTests extends ArrayTagTests<ByteArrayTag, Byte, ByteTag, byte[], ByteBuffer> {

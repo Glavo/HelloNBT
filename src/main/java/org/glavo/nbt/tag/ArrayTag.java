@@ -301,6 +301,7 @@ public sealed abstract class ArrayTag<E extends Number, T extends ValueTag<E>, A
         ensureTagsCapacityForAdd();
 
         add(tag.getValue());
+        tag.setParent(this, size - 1);
         tags[size - 1] = tag;
     }
 

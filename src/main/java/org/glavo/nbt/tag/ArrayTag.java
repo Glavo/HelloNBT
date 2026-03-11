@@ -317,8 +317,8 @@ public sealed abstract class ArrayTag<E extends Number, T extends ValueTag<E>, A
 
         removeValueFromArray(index);
 
-        updateIndexes(index);
         size--;
+        updateIndexes(index);
     }
 
     @Override
@@ -338,9 +338,8 @@ public sealed abstract class ArrayTag<E extends Number, T extends ValueTag<E>, A
 
         removeValueFromArray(index);
 
-        updateIndexes(index);
-
         size--;
+        updateIndexes(index);
         return tag;
     }
 

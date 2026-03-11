@@ -318,6 +318,7 @@ public sealed abstract class ArrayTag<E extends Number, T extends ValueTag<E>, A
 
         removeValueFromArray(index);
 
+        updateIndexes(index);
         size--;
     }
 
@@ -337,6 +338,8 @@ public sealed abstract class ArrayTag<E extends Number, T extends ValueTag<E>, A
         }
 
         removeValueFromArray(index);
+
+        updateIndexes(index);
 
         size--;
         return tag;

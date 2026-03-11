@@ -208,6 +208,65 @@ abstract class ArrayTagTests<AT extends ArrayTag<E, T, A, B>, E extends Number, 
         assertEquals(0, tag.tags.length);
     }
 
+    @Test
+    void testSubTag() {
+        final int size = 100;
+
+        A data = randomArray(new Random(0), size);
+
+        var tag = create("", data);
+
+        // No child tags should be allocated when no child tags are used.
+        assertEquals(0, tag.tags.length);
+
+        List<T> subTags = new ArrayList<>();
+        for (int i = 0; i < size; i++) {
+            T subTag = tag.getTag(i);
+            assertSame(tag, subTag.getParent());
+            assertSame(tag, subTag.getParentTag());
+            assertEquals(i, subTag.getIndex());
+            assertEquals(get(data, i), subTag.getValue());
+            assertTrue(tag.tags.length >= i + 1);
+
+            subTags.add(subTag);
+        }
+
+        // Assigned subTags should be cached.
+        for (int i = 0; i < size; i++) {
+            assertSame(subTags.get(i), tag.getTag(i));
+        }
+
+        // Modifying array values should also synchronize the corresponding subtag values
+        for (int i = 0; i < size; i++) {
+            tag.set(i, valueOf(114L));
+        }
+        for (int i = 0; i < size; i++) {
+            assertSame(subTags.get(i), tag.getTag(i));
+            assertEquals(valueOf(114L), tag.getValue(i));
+        }
+
+        // Modifying subtag values should also synchronize the array values
+        for (int i = 0; i < size; i++) {
+            subTags.get(i).setValue(get(data, i));
+        }
+        assertValueEquals(data, tag);
+
+        int removedIndex = 42;
+        T removedTag = tag.removeTagAt(removedIndex);
+        assertSame(subTags.get(removedIndex), removedTag);
+        assertEquals(-1, removedTag.getIndex());
+        assertNull(removedTag.getParent());
+
+        subTags.remove(removedTag);
+
+        for (int i = 0; i < size - 1; i++) {
+            T subTag = subTags.get(i);
+            assertSame(subTag, tag.getTag(i));
+            assertSame(tag, subTag.getParent());
+            assertEquals(i, subTag.getIndex());
+        }
+    }
+
     static final class ByteArrayTagTests extends ArrayTagTests<ByteArrayTag, Byte, ByteTag, byte[], ByteBuffer> {
 
         @Override

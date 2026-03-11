@@ -29,10 +29,12 @@ import java.util.Arrays;
 
 public abstract class ArrayAccessor<E extends Number, T extends ValueTag<E>, A, B extends Buffer> {
 
+    public static final int DEFAULT_CAPACITY = 12;
+
     public static int nextCapacity(int currentCapacity, int minCapacity) {
         int growCap;
-        if (currentCapacity < 4) {
-            growCap = 12;
+        if (currentCapacity < (DEFAULT_CAPACITY >> 1)) {
+            growCap = DEFAULT_CAPACITY;
         } else {
             growCap = currentCapacity + (currentCapacity >> 1);
         }

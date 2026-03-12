@@ -55,18 +55,18 @@ public final class QuoteStrategies {
         }
     }
 
-    public record WhenNeeded(char preferredQuoteChar) implements QuoteStrategy {
+    public record WhenNeeded(char quoteChar) implements QuoteStrategy {
         public static final WhenNeeded DOUBLE_QUOTE = new WhenNeeded('"');
         public static final WhenNeeded SINGLE_QUOTE = new WhenNeeded('\'');
 
         @Override
         public char getQuoteChar(String value) {
             if (value.isEmpty()) {
-                return preferredQuoteChar;
+                return quoteChar;
             }
 
             int scanBegin = scanSimplePrefix(value);
-            return scanBegin != value.length() ? preferredQuoteChar : '\0';
+            return scanBegin != value.length() ? quoteChar : '\0';
         }
     }
 

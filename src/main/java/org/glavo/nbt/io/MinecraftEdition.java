@@ -18,6 +18,8 @@ package org.glavo.nbt.io;
 import java.nio.ByteOrder;
 
 /// Represents the edition of Minecraft that the NBT data is used for.
+///
+/// @see NBTCodec
 public enum MinecraftEdition {
     /// Stores the NBT data in big-endian byte order, and encodes strings in modified UTF-8.
     JAVA_EDITION(ByteOrder.BIG_ENDIAN),
@@ -31,6 +33,7 @@ public enum MinecraftEdition {
         this.byteOrder = byteOrder;
     }
 
+    /// Returns the byte order of the NBT data.
     public ByteOrder byteOrder() {
         return this.byteOrder;
     }

@@ -111,6 +111,14 @@ public sealed interface SNBTCodec permits SNBTCodecImpl {
     @Contract(value = "_ -> new", pure = true)
     SNBTCodec withEscapeStrategy(EscapeStrategy escapeStrategy);
 
+    /// Returns the quote strategy for SNBT.
+    @Contract(pure = true)
+    QuoteStrategy getQuoteStrategy();
+
+    /// Returns a new codec with the specified quote strategy.
+    @Contract(value = "_ -> new", pure = true)
+    SNBTCodec withQuoteStrategy(QuoteStrategy quoteStrategy);
+
     /// Reads a NBT tag from the Stringified NBT data.
     ///
     /// @throws IOException if the input is not a valid Stringified NBT data.

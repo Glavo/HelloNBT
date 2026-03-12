@@ -16,10 +16,7 @@
 package org.glavo.nbt.internal;
 
 import org.glavo.nbt.internal.snbt.SNBTParser;
-import org.glavo.nbt.io.EscapeStrategy;
-import org.glavo.nbt.io.LineBreakStrategy;
-import org.glavo.nbt.io.SNBTCodec;
-import org.glavo.nbt.io.SurroundingSpaces;
+import org.glavo.nbt.io.*;
 import org.glavo.nbt.tag.Tag;
 
 import java.io.IOException;
@@ -31,7 +28,8 @@ public record SNBTCodecImpl(
         LineBreakStrategy arrayTagLineBreakStrategy,
         String indentation,
         SurroundingSpaces surroundingSpaces,
-        EscapeStrategy escapeStrategy
+        EscapeStrategy escapeStrategy,
+        QuoteStrategy quoteStrategy
 ) implements SNBTCodec {
     public static final SNBTCodecImpl COMPACT = new SNBTCodecImpl(
             LineBreakStrategy.NEVER,
@@ -39,7 +37,8 @@ public record SNBTCodecImpl(
             LineBreakStrategy.NEVER,
             "", // No indentation
             SurroundingSpaces.COMPACT,
-            EscapeStrategy.defaultStrategy()
+            EscapeStrategy.defaultStrategy(),
+            QuoteStrategy.defaultStrategy()
     );
 
     public static final SNBTCodecImpl PRETTY = new SNBTCodecImpl(
@@ -48,13 +47,14 @@ public record SNBTCodecImpl(
             LineBreakStrategy.ALWAYS,
             "    ", // 4 spaces
             SurroundingSpaces.PRETTY,
-            EscapeStrategy.defaultStrategy()
+            EscapeStrategy.defaultStrategy(),
+            QuoteStrategy.defaultStrategy()
     );
 
 
     @Override
     public SNBTCodec withLineBreakStrategy(LineBreakStrategy strategy) {
-        return new SNBTCodecImpl(strategy, strategy, strategy, indentation, surroundingSpaces, escapeStrategy);
+        return new SNBTCodecImpl(strategy, strategy, strategy, indentation, surroundingSpaces, escapeStrategy, quoteStrategy);
     }
 
     @Override
@@ -64,7 +64,7 @@ public record SNBTCodecImpl(
 
     @Override
     public SNBTCodec withCompoundTagLineBreakStrategy(LineBreakStrategy strategy) {
-        return new SNBTCodecImpl(strategy, listTagLineBreakStrategy, arrayTagLineBreakStrategy, indentation, surroundingSpaces, escapeStrategy);
+        return new SNBTCodecImpl(strategy, listTagLineBreakStrategy, arrayTagLineBreakStrategy, indentation, surroundingSpaces, escapeStrategy, quoteStrategy);
     }
 
     @Override
@@ -74,7 +74,7 @@ public record SNBTCodecImpl(
 
     @Override
     public SNBTCodec withListTagLineBreakStrategy(LineBreakStrategy strategy) {
-        return new SNBTCodecImpl(compoundTagLineBreakStrategy, strategy, arrayTagLineBreakStrategy, indentation, surroundingSpaces, escapeStrategy);
+        return new SNBTCodecImpl(compoundTagLineBreakStrategy, strategy, arrayTagLineBreakStrategy, indentation, surroundingSpaces, escapeStrategy, quoteStrategy);
     }
 
     @Override
@@ -84,7 +84,7 @@ public record SNBTCodecImpl(
 
     @Override
     public SNBTCodec withArrayTagLineBreakStrategy(LineBreakStrategy strategy) {
-        return new SNBTCodecImpl(compoundTagLineBreakStrategy, listTagLineBreakStrategy, strategy, indentation, surroundingSpaces, escapeStrategy);
+        return new SNBTCodecImpl(compoundTagLineBreakStrategy, listTagLineBreakStrategy, strategy, indentation, surroundingSpaces, escapeStrategy, quoteStrategy);
     }
 
     @Override
@@ -101,12 +101,12 @@ public record SNBTCodecImpl(
             }
         }
 
-        return new SNBTCodecImpl(compoundTagLineBreakStrategy, listTagLineBreakStrategy, arrayTagLineBreakStrategy, indentation, surroundingSpaces, escapeStrategy);
+        return new SNBTCodecImpl(compoundTagLineBreakStrategy, listTagLineBreakStrategy, arrayTagLineBreakStrategy, indentation, surroundingSpaces, escapeStrategy, quoteStrategy);
     }
 
     @Override
     public SNBTCodec withIndentation(int spaces) {
-        return new SNBTCodecImpl(compoundTagLineBreakStrategy, listTagLineBreakStrategy, arrayTagLineBreakStrategy, " ".repeat(spaces), surroundingSpaces, escapeStrategy);
+        return new SNBTCodecImpl(compoundTagLineBreakStrategy, listTagLineBreakStrategy, arrayTagLineBreakStrategy, " ".repeat(spaces), surroundingSpaces, escapeStrategy, quoteStrategy);
     }
 
     @Override
@@ -116,7 +116,7 @@ public record SNBTCodecImpl(
 
     @Override
     public SNBTCodec withSurroundingSpaces(SurroundingSpaces surroundingSpaces) {
-        return new SNBTCodecImpl(compoundTagLineBreakStrategy, listTagLineBreakStrategy, arrayTagLineBreakStrategy, indentation, surroundingSpaces, escapeStrategy);
+        return new SNBTCodecImpl(compoundTagLineBreakStrategy, listTagLineBreakStrategy, arrayTagLineBreakStrategy, indentation, surroundingSpaces, escapeStrategy, quoteStrategy);
     }
 
     @Override
@@ -126,7 +126,17 @@ public record SNBTCodecImpl(
 
     @Override
     public SNBTCodec withEscapeStrategy(EscapeStrategy escapeStrategy) {
-        return new SNBTCodecImpl(compoundTagLineBreakStrategy, listTagLineBreakStrategy, arrayTagLineBreakStrategy, indentation, surroundingSpaces, escapeStrategy);
+        return new SNBTCodecImpl(compoundTagLineBreakStrategy, listTagLineBreakStrategy, arrayTagLineBreakStrategy, indentation, surroundingSpaces, escapeStrategy, quoteStrategy);
+    }
+
+    @Override
+    public QuoteStrategy getQuoteStrategy() {
+        return quoteStrategy;
+    }
+
+    @Override
+    public SNBTCodec withQuoteStrategy(QuoteStrategy quoteStrategy) {
+        return new SNBTCodecImpl(compoundTagLineBreakStrategy, listTagLineBreakStrategy, arrayTagLineBreakStrategy, indentation, surroundingSpaces, escapeStrategy, quoteStrategy);
     }
 
     @Override

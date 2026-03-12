@@ -34,7 +34,7 @@ public final class QuoteStrategies {
             return 0;
         }
 
-        for (int i = 0; i < value.length(); i++) {
+        for (int i = 1; i < value.length(); i++) {
             c = value.charAt(i);
 
             if ((c < 'a' || c > 'z') && (c < 'A' || c > 'Z') && (c < '0' || c > '9') && c != '_' && c != '+' && c != '-') {

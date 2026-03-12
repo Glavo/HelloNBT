@@ -15,16 +15,16 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-package org.glavo.nbt.internal.selector;
+package org.glavo.nbt.internal.path;
 
 import org.glavo.nbt.tag.CompoundTag;
 import org.jetbrains.annotations.Unmodifiable;
 
-public sealed interface NBTSelectorNode {
+public sealed interface NBTPathNode {
     @Unmodifiable
     CompoundTag EMPTY_COMPOUND_TAG = new CompoundTag();
 
-    final class RootNode implements NBTSelectorNode {
+    final class RootNode implements NBTPathNode {
         public static final RootNode EMPTY = new RootNode(EMPTY_COMPOUND_TAG);
 
         private final @Unmodifiable CompoundTag tags;
@@ -34,7 +34,7 @@ public sealed interface NBTSelectorNode {
         }
     }
 
-    final class NamedSubTagNode implements NBTSelectorNode {
+    final class NamedSubTagNode implements NBTPathNode {
         private final String name;
 
         public NamedSubTagNode(String name) {
@@ -42,7 +42,7 @@ public sealed interface NBTSelectorNode {
         }
     }
 
-    final class NamedSubCompoundTagNode implements NBTSelectorNode {
+    final class NamedSubCompoundTagNode implements NBTPathNode {
         private final String name;
         private final @Unmodifiable CompoundTag tags;
 
@@ -52,11 +52,11 @@ public sealed interface NBTSelectorNode {
         }
     }
 
-    final class AllElements implements NBTSelectorNode {
+    final class AllElements implements NBTPathNode {
         public static final AllElements INSTANCE = new AllElements();
     }
 
-    final class IndexNode implements NBTSelectorNode {
+    final class IndexNode implements NBTPathNode {
         private final int index;
 
         public IndexNode(int index) {
@@ -64,7 +64,7 @@ public sealed interface NBTSelectorNode {
         }
     }
 
-    final class CompoundElementsNode implements NBTSelectorNode {
+    final class CompoundElementsNode implements NBTPathNode {
         public static final CompoundElementsNode EMPTY = new CompoundElementsNode(EMPTY_COMPOUND_TAG);
 
         private final @Unmodifiable CompoundTag tags;

@@ -13,19 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.glavo.nbt;
+package org.glavo.nbt.internal.path;
 
-import org.glavo.nbt.internal.selector.NBTSelectorParser;
+import org.glavo.nbt.NBTPath;
 
-/// Represents a selector for NBT tags.
-///
-/// @see <a href="https://minecraft.wiki/w/NBT_path">NBT Path - Minecraft Wiki</a>
-public final class NBTSelector {
-
-    // TODO
-
-    /// @throws IllegalArgumentException if the input is not a valid NBT selector
-    public static NBTSelector parse(String input) {
-        return new NBTSelectorParser(input).parse();
-    }
+public final class NBTPathImpl implements NBTPath {
 }

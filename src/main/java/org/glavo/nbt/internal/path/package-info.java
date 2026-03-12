@@ -15,6 +15,6 @@
  */
 
 @NotNullByDefault
-package org.glavo.nbt.internal.selector;
+package org.glavo.nbt.internal.path;
 
 import org.jetbrains.annotations.NotNullByDefault;

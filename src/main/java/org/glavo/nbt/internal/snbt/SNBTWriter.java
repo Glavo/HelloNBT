@@ -15,6 +15,7 @@
  */
 package org.glavo.nbt.internal.snbt;
 
+import org.glavo.nbt.io.QuoteStrategy;
 import org.glavo.nbt.io.SNBTCodec;
 import org.glavo.nbt.tag.*;
 
@@ -30,8 +31,8 @@ public final class SNBTWriter {
         this.appendable = appendable;
     }
 
-    private void writeStringValue(String value) throws IOException {
-        char quoteChar = codec.getQuoteStrategy().getQuoteChar(value);
+    private void writeString(QuoteStrategy quoteStrategy, String value) throws IOException {
+        char quoteChar = quoteStrategy.getQuoteChar(value);
 
         if (quoteChar == '\0') {
             appendable.append(value);
@@ -40,6 +41,10 @@ public final class SNBTWriter {
             ((EscapeStrategies) codec.getEscapeStrategy()).appendString(appendable, quoteChar, value, 0, value.length());
             appendable.append(quoteChar);
         }
+    }
+
+    private void writeStringValue(String value) throws IOException {
+        writeString(codec.getValueQuoteStrategy(), value);
     }
 
     private void writeNewLine() throws IOException {
@@ -73,7 +78,7 @@ public final class SNBTWriter {
                 writeIndent();
             }
 
-            writeStringValue(subTag.getName());
+            writeString(codec.getNameQuoteStrategy(), subTag.getName());
 
             writeSpaces(codec.getSurroundingSpaces().getSpacesBeforeColon());
             appendable.append(':');
@@ -227,7 +232,7 @@ public final class SNBTWriter {
 
     public void writeTagWithName(Tag tag) throws IOException {
         if (!tag.getName().isEmpty()) {
-            writeStringValue(tag.getName());
+            writeString(codec.getNameQuoteStrategy(), tag.getName());
             writeSpaces(codec.getSurroundingSpaces().getSpacesBeforeColon());
             appendable.append(':');
             writeSpaces(codec.getSurroundingSpaces().getSpacesAfterColon());

@@ -480,8 +480,8 @@ final class ValueTagTests {
         assertToString("Meow: 114.0D", new DoubleTag("Meow", 114.0));
 
         assertToString("\"\"", new StringTag());
-        assertToString("Hello", new StringTag("", "Hello"));
-        assertToString("Meow: Hello", new StringTag("Meow", "Hello"));
+        assertToString("\"Hello\"", new StringTag("", "Hello"));
+        assertToString("Meow: \"Hello\"", new StringTag("Meow", "Hello"));
         assertToString("Meow: \"\\u0000\\b\\t\\n\\f\\r\\n \\\"ABC你好世界\\U0001F604\"", new StringTag("Meow", "\0\b\t\n\f\r\n \"ABC你好世界😄"));
     }
 }

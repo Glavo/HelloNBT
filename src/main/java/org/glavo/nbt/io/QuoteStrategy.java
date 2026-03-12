@@ -19,11 +19,18 @@ import org.glavo.nbt.internal.snbt.QuoteStrategies;
 
 public sealed interface QuoteStrategy permits QuoteStrategies.Always, QuoteStrategies.Smart, QuoteStrategies.WhenNeeded {
 
-    /// Returns the default quote strategy.
+    /// Returns the default quote strategy for tag names.
     ///
     /// It is equivalent to [`whenNeeded('"')`][#whenNeeded(char)].
-    static QuoteStrategy defaultStrategy() {
+    static QuoteStrategy defaultNameStrategy() {
         return QuoteStrategies.WhenNeeded.DOUBLE_QUOTE;
+    }
+
+    /// Returns the default quote strategy for tag values.
+    ///
+    /// It is equivalent to [`always('"')`][#always(char)].
+    static QuoteStrategy defaultValueStrategy() {
+        return QuoteStrategies.Always.DOUBLE_QUOTE;
     }
 
     /// Returns a quote strategy that always uses the specified quote character.

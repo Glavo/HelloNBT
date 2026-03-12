@@ -28,14 +28,16 @@ public record SNBTCodecImpl(
         String indentation,
         SurroundingSpaces surroundingSpaces,
         EscapeStrategy escapeStrategy,
-        QuoteStrategy quoteStrategy
+        QuoteStrategy nameQuoteStrategy,
+        QuoteStrategy valueQuoteStrategy
 ) implements SNBTCodec {
     public static final SNBTCodecImpl COMPACT = new SNBTCodecImpl(
             LineBreakStrategy.never(),
             "", // No indentation
             SurroundingSpaces.COMPACT,
             EscapeStrategy.defaultStrategy(),
-            QuoteStrategy.defaultStrategy()
+            QuoteStrategy.defaultNameStrategy(),
+            QuoteStrategy.defaultValueStrategy()
     );
 
     public static final SNBTCodecImpl PRETTY = new SNBTCodecImpl(
@@ -43,7 +45,8 @@ public record SNBTCodecImpl(
             "    ", // 4 spaces
             SurroundingSpaces.PRETTY,
             EscapeStrategy.defaultStrategy(),
-            QuoteStrategy.defaultStrategy()
+            QuoteStrategy.defaultNameStrategy(),
+            QuoteStrategy.defaultValueStrategy()
     );
 
 
@@ -54,7 +57,7 @@ public record SNBTCodecImpl(
 
     @Override
     public SNBTCodec withLineBreakStrategy(LineBreakStrategy strategy) {
-        return new SNBTCodecImpl(strategy, indentation, surroundingSpaces, escapeStrategy, quoteStrategy);
+        return new SNBTCodecImpl(strategy, indentation, surroundingSpaces, escapeStrategy, nameQuoteStrategy, valueQuoteStrategy);
     }
 
     @Override
@@ -71,12 +74,12 @@ public record SNBTCodecImpl(
             }
         }
 
-        return new SNBTCodecImpl(lineBreakStrategy, indentation, surroundingSpaces, escapeStrategy, quoteStrategy);
+        return new SNBTCodecImpl(lineBreakStrategy, indentation, surroundingSpaces, escapeStrategy, nameQuoteStrategy, valueQuoteStrategy);
     }
 
     @Override
     public SNBTCodec withIndentation(int spaces) {
-        return new SNBTCodecImpl(lineBreakStrategy, " ".repeat(spaces), surroundingSpaces, escapeStrategy, quoteStrategy);
+        return new SNBTCodecImpl(lineBreakStrategy, " ".repeat(spaces), surroundingSpaces, escapeStrategy, nameQuoteStrategy, valueQuoteStrategy);
     }
 
     @Override
@@ -86,7 +89,7 @@ public record SNBTCodecImpl(
 
     @Override
     public SNBTCodec withSurroundingSpaces(SurroundingSpaces surroundingSpaces) {
-        return new SNBTCodecImpl(lineBreakStrategy, indentation, surroundingSpaces, escapeStrategy, quoteStrategy);
+        return new SNBTCodecImpl(lineBreakStrategy, indentation, surroundingSpaces, escapeStrategy, nameQuoteStrategy, valueQuoteStrategy);
     }
 
     @Override
@@ -96,17 +99,27 @@ public record SNBTCodecImpl(
 
     @Override
     public SNBTCodec withEscapeStrategy(EscapeStrategy escapeStrategy) {
-        return new SNBTCodecImpl(lineBreakStrategy, indentation, surroundingSpaces, escapeStrategy, quoteStrategy);
+        return new SNBTCodecImpl(lineBreakStrategy, indentation, surroundingSpaces, escapeStrategy, nameQuoteStrategy, valueQuoteStrategy);
     }
 
     @Override
-    public QuoteStrategy getQuoteStrategy() {
-        return quoteStrategy;
+    public QuoteStrategy getNameQuoteStrategy() {
+        return nameQuoteStrategy;
     }
 
     @Override
-    public SNBTCodec withQuoteStrategy(QuoteStrategy quoteStrategy) {
-        return new SNBTCodecImpl(lineBreakStrategy, indentation, surroundingSpaces, escapeStrategy, quoteStrategy);
+    public SNBTCodec withNameQuoteStrategy(QuoteStrategy quoteStrategy) {
+        return new SNBTCodecImpl(lineBreakStrategy, indentation, surroundingSpaces, escapeStrategy, quoteStrategy, valueQuoteStrategy);
+    }
+
+    @Override
+    public QuoteStrategy getValueQuoteStrategy() {
+        return valueQuoteStrategy;
+    }
+
+    @Override
+    public SNBTCodec withValueQuoteStrategy(QuoteStrategy quoteStrategy) {
+        return new SNBTCodecImpl(lineBreakStrategy, indentation, surroundingSpaces, escapeStrategy, nameQuoteStrategy, quoteStrategy);
     }
 
     @Override

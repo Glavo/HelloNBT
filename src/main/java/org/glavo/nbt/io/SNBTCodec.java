@@ -35,6 +35,7 @@ public sealed interface SNBTCodec permits SNBTCodecImpl {
 
     /// Parses a Stringified NBT data.
     ///
-    /// @throws IllegalArgumentException if the input is not a valid Stringified NBT data.
+    /// @throws IndexOutOfBoundsException if the range is out of bounds.
+    /// @throws IllegalArgumentException  if the input is not a valid Stringified NBT data.
     Tag parse(CharSequence input, int startInclusive, int endExclusive) throws IllegalArgumentException;
 }

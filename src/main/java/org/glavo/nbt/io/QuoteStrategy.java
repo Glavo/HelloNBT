@@ -29,15 +29,20 @@ public sealed interface QuoteStrategy permits QuoteStrategies.Always, QuoteStrat
 
     /// Returns the default quote strategy for tag names.
     ///
-    /// It is equivalent to [`whenNeeded('"')`][#whenNeeded(char)].
+    /// It is equivalent to [`whenNeeded()`][#whenNeeded()].
     static QuoteStrategy defaultNameStrategy() {
-        return QuoteStrategies.WhenNeeded.DOUBLE_QUOTE;
+        return whenNeeded();
     }
 
     /// Returns the default quote strategy for tag values.
     ///
-    /// It is equivalent to [`always('"')`][#always(char)].
+    /// It is equivalent to [`always()`][#always()].
     static QuoteStrategy defaultValueStrategy() {
+        return always();
+    }
+
+    /// Returns a quote strategy that always uses double quotes.
+    static QuoteStrategy always() {
         return QuoteStrategies.Always.DOUBLE_QUOTE;
     }
 
@@ -50,6 +55,11 @@ public sealed interface QuoteStrategy permits QuoteStrategies.Always, QuoteStrat
             case '\'' -> QuoteStrategies.Always.SINGLE_QUOTE;
             default -> throw new IllegalArgumentException("Invalid quote char: " + quoteChar);
         };
+    }
+
+    /// Returns a quote strategy that always uses double quotes.
+    static QuoteStrategy whenNeeded() {
+        return QuoteStrategies.WhenNeeded.DOUBLE_QUOTE;
     }
 
     /// Returns a quote strategy that only uses the specified quote character when necessary.

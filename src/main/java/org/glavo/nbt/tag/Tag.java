@@ -32,6 +32,11 @@ import java.util.Objects;
 ///
 /// The payload of a tag can be a primitive value, an array of primitive values, or a collection of other tags.
 ///
+/// Each tag may have a [parent][#getParent()], which can be a [parent tag][ParentTag] or a [chunk][org.glavo.nbt.chunk.Chunk].
+/// Tags form a tree structure, where each tag has a unique position in the tree:
+/// It can have at most one parent and cannot belong to multiple parents simultaneously;
+/// and it cannot be multiple children of the same parent at the same time.
+///
 /// These are the all possible types of tags:
 ///
 /// - [ValueTag]: A tag that holds a value.

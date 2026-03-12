@@ -71,6 +71,168 @@ public final class CompoundTag extends ParentTag<Tag> {
         return subTagsByName.get(name);
     }
 
+    /// Returns the byte value of the byte tag with the given name.
+    ///
+    /// @throws NoSuchElementException if no byte tag with the given name exists.
+    public byte getByte(String name) throws NoSuchElementException {
+        if (get(name) instanceof ByteTag tag) {
+            return tag.get();
+        } else {
+            throw new NoSuchElementException("No byte tag with name " + name);
+        }
+    }
+
+    /// Returns the byte value of the byte tag with the given name, or `null` if no such tag exists.
+    public @Nullable Byte getByteOrNull(String name) {
+        return get(name) instanceof ByteTag tag ? tag.get() : null;
+    }
+
+    /// Returns the byte value of the byte tag with the given name, or `0` if no such tag exists.
+    public byte getByteOrZero(String name) {
+        return get(name) instanceof ByteTag tag ? tag.get() : 0;
+    }
+
+    /// Returns the byte value of the byte tag with the given name, or the default value if no such tag exists.
+    public byte getByteOrElse(String name, byte defaultValue) {
+        return get(name) instanceof ByteTag tag ? tag.get() : defaultValue;
+    }
+
+    /// Returns the short value of the short tag with the given name.
+    ///
+    /// @throws NoSuchElementException if no short tag with the given name exists.
+    public short getShort(String name) throws NoSuchElementException {
+        if (get(name) instanceof ShortTag tag) {
+            return tag.get();
+        } else {
+            throw new NoSuchElementException("No short tag with name " + name);
+        }
+    }
+
+    /// Returns the short value of the short tag with the given name, or `null` if no such tag exists.
+    public @Nullable Short getShortOrNull(String name) {
+        return get(name) instanceof ShortTag tag ? tag.get() : null;
+    }
+
+    /// Returns the short value of the short tag with the given name, or `0` if no such tag exists.
+    public short getShortOrZero(String name) {
+        return get(name) instanceof ShortTag tag ? tag.get() : 0;
+    }
+
+    /// Returns the short value of the short tag with the given name, or the default value if no such tag exists.
+    public short getShortOrElse(String name, short defaultValue) {
+        return get(name) instanceof ShortTag tag ? tag.get() : defaultValue;
+    }
+
+    /// Returns the int value of the int tag with the given name.
+    ///
+    /// @throws NoSuchElementException if no int tag with the given name exists.
+    public int getInt(String name) throws NoSuchElementException {
+        if (get(name) instanceof IntTag tag) {
+            return tag.get();
+        } else {
+            throw new NoSuchElementException("No int tag with name " + name);
+        }
+    }
+
+    /// Returns the int value of the int tag with the given name, or `null` if no such tag exists.
+    public @Nullable Integer getIntOrNull(String name) {
+        return get(name) instanceof IntTag tag ? tag.get() : null;
+    }
+
+    /// Returns the int value of the int tag with the given name, or `0` if no such tag exists.
+    public int getIntOrZero(String name) {
+        return get(name) instanceof IntTag tag ? tag.get() : 0;
+    }
+
+    /// Returns the int value of the int tag with the given name, or the default value if no such tag exists.
+    public int getIntOrElse(String name, int defaultValue) {
+        return get(name) instanceof IntTag tag ? tag.get() : defaultValue;
+    }
+
+    /// Returns the long value of the long tag with the given name.
+    ///
+    /// @throws NoSuchElementException if no long tag with the given name exists.
+    public long getLong(String name) throws NoSuchElementException {
+        if (get(name) instanceof LongTag tag) {
+            return tag.get();
+        } else {
+            throw new NoSuchElementException("No long tag with name " + name);
+        }
+    }
+
+    /// Returns the long value of the long tag with the given name, or `null` if no such tag exists.
+    public @Nullable Long getLongOrNull(String name) {
+        return get(name) instanceof LongTag tag ? tag.get() : null;
+    }
+
+    /// Returns the long value of the long tag with the given name, or `0` if no such tag exists.
+    public long getLongOrZero(String name) {
+        return get(name) instanceof LongTag tag ? tag.get() : 0L;
+    }
+
+    /// Returns the long value of the long tag with the given name, or the default value if no such tag exists.
+    public long getLongOrElse(String name, long defaultValue) {
+        return get(name) instanceof LongTag tag ? tag.get() : defaultValue;
+    }
+
+    /// Returns the float value of the float tag with the given name.
+    ///
+    /// @throws NoSuchElementException if no float tag with the given name exists.
+    public float getFloat(String name) throws NoSuchElementException {
+        if (get(name) instanceof FloatTag tag) {
+            return tag.get();
+        } else {
+            throw new NoSuchElementException("No float tag with name " + name);
+        }
+    }
+
+    /// Returns the float value of the float tag with the given name, or `null` if no such tag exists.
+    public @Nullable Float getFloatOrNull(String name) {
+        return get(name) instanceof FloatTag tag ? tag.get() : null;
+    }
+
+    /// Returns the double value of the double tag with the given name.
+    ///
+    /// @throws NoSuchElementException if no double tag with the given name exists.
+    public double getDouble(String name) throws NoSuchElementException {
+        if (get(name) instanceof DoubleTag tag) {
+            return tag.get();
+        } else {
+            throw new NoSuchElementException("No double tag with name " + name);
+        }
+    }
+
+    /// Returns the double value of the double tag with the given name, or `null` if no such tag exists.
+    public @Nullable Double getDoubleOrNull(String name) {
+        return get(name) instanceof DoubleTag tag ? tag.get() : null;
+    }
+
+    /// Returns the string value of the string tag with the given name.
+    ///
+    /// @throws NoSuchElementException if no string tag with the given name exists.
+    public String getString(String name) throws NoSuchElementException {
+        if (get(name) instanceof StringTag tag) {
+            return tag.get();
+        } else {
+            throw new NoSuchElementException("No string tag with name " + name);
+        }
+    }
+
+    /// Returns the string value of the string tag with the given name, or `null` if no such tag exists.
+    public @Nullable String getStringOrNull(String name) {
+        return get(name) instanceof StringTag tag ? tag.get() : null;
+    }
+
+    /// Returns the string value of the string tag with the given name, or an empty string if no such tag exists.
+    public String getStringOrEmpty(String name) {
+        return get(name) instanceof StringTag tag ? tag.get() : "";
+    }
+
+    /// Returns the string value of the string tag with the given name, or the default value if no such tag exists.
+    public String getStringOrDefault(String name, String defaultValue) {
+        return get(name) instanceof StringTag tag ? tag.get() : defaultValue;
+    }
+
     /// {@inheritDoc}
     ///
     /// If another tag with the same name already exists, the old tag will be removed.
@@ -205,123 +367,6 @@ public final class CompoundTag extends ParentTag<Tag> {
     @Contract(mutates = "this")
     public void putUUID(String name, UUID value) {
         addTag(new IntArrayTag(name, value));
-    }
-
-    /// Returns the byte value of the byte tag with the given name.
-    ///
-    /// @throws NoSuchElementException if no byte tag with the given name exists.
-    public byte getByte(String name) throws NoSuchElementException {
-        if (get(name) instanceof ByteTag tag) {
-            return tag.get();
-        } else {
-            throw new NoSuchElementException("No byte tag with name " + name);
-        }
-    }
-
-    /// Returns the byte value of the byte tag with the given name, or `null` if no such tag exists.
-    public @Nullable Byte getByteOrNull(String name) {
-        return get(name) instanceof ByteTag tag ? tag.get() : null;
-    }
-
-    /// Returns the short value of the short tag with the given name.
-    ///
-    /// @throws NoSuchElementException if no short tag with the given name exists.
-    public short getShort(String name) throws NoSuchElementException {
-        if (get(name) instanceof ShortTag tag) {
-            return tag.get();
-        } else {
-            throw new NoSuchElementException("No short tag with name " + name);
-        }
-    }
-
-    /// Returns the short value of the short tag with the given name, or `null` if no such tag exists.
-    public @Nullable Short getShortOrNull(String name) {
-        return get(name) instanceof ShortTag tag ? tag.get() : null;
-    }
-
-    /// Returns the int value of the int tag with the given name.
-    ///
-    /// @throws NoSuchElementException if no int tag with the given name exists.
-    public int getInt(String name) throws NoSuchElementException {
-        if (get(name) instanceof IntTag tag) {
-            return tag.get();
-        } else {
-            throw new NoSuchElementException("No int tag with name " + name);
-        }
-    }
-
-    /// Returns the int value of the int tag with the given name, or `null` if no such tag exists.
-    public @Nullable Integer getIntOrNull(String name) {
-        return get(name) instanceof IntTag tag ? tag.get() : null;
-    }
-
-    /// Returns the long value of the long tag with the given name.
-    ///
-    /// @throws NoSuchElementException if no long tag with the given name exists.
-    public long getLong(String name) throws NoSuchElementException {
-        if (get(name) instanceof LongTag tag) {
-            return tag.get();
-        } else {
-            throw new NoSuchElementException("No long tag with name " + name);
-        }
-    }
-
-    /// Returns the long value of the long tag with the given name, or `null` if no such tag exists.
-    public @Nullable Long getLongOrNull(String name) {
-        return get(name) instanceof LongTag tag ? tag.get() : null;
-    }
-
-    /// Returns the float value of the float tag with the given name.
-    ///
-    /// @throws NoSuchElementException if no float tag with the given name exists.
-    public float getFloat(String name) throws NoSuchElementException {
-        if (get(name) instanceof FloatTag tag) {
-            return tag.get();
-        } else {
-            throw new NoSuchElementException("No float tag with name " + name);
-        }
-    }
-
-    /// Returns the float value of the float tag with the given name, or `null` if no such tag exists.
-    public @Nullable Float getFloatOrNull(String name) {
-        return get(name) instanceof FloatTag tag ? tag.get() : null;
-    }
-
-    /// Returns the double value of the double tag with the given name.
-    ///
-    /// @throws NoSuchElementException if no double tag with the given name exists.
-    public double getDouble(String name) throws NoSuchElementException {
-        if (get(name) instanceof DoubleTag tag) {
-            return tag.get();
-        } else {
-            throw new NoSuchElementException("No double tag with name " + name);
-        }
-    }
-
-    /// Returns the double value of the double tag with the given name, or `null` if no such tag exists.
-    public @Nullable Double getDoubleOrNull(String name) {
-        return get(name) instanceof DoubleTag tag ? tag.get() : null;
-    }
-
-    /// Returns the string value of the string tag with the given name.
-    ///
-    /// @throws NoSuchElementException if no string tag with the given name exists.
-    public String getString(String name) throws NoSuchElementException {
-        if (get(name) instanceof StringTag tag) {
-            return tag.get();
-        } else {
-            throw new NoSuchElementException("No string tag with name " + name);
-        }
-    }
-
-    /// Returns the string value of the string tag with the given name, or `null` if no such tag exists.
-    public @Nullable String getStringOrNull(String name) {
-        return get(name) instanceof StringTag tag ? tag.get() : null;
-    }
-
-    /// Returns the string value of the string tag with the given name, or an empty string if no such tag exists.
-    public String getStringOrEmpty(String name) {
-        return get(name) instanceof StringTag tag ? tag.get() : "";
     }
 
     @Override

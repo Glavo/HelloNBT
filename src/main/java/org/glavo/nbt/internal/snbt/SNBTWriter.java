@@ -139,12 +139,16 @@ public final class SNBTWriter {
     private <E extends Number, T extends ValueTag<E>> void writeArrayTag(ArrayTag<E, T, ?, ?> tag) throws IOException {
         boolean shouldBreakLines = codec.getArrayTagLineBreakStrategy().shouldBreakLines(tag);
 
+        char suffix;
         if (tag instanceof ByteArrayTag) {
             appendable.append("[B;");
+            suffix = 'B';
         } else if (tag instanceof IntArrayTag) {
             appendable.append("[I;");
+            suffix = 'I';
         } else if (tag instanceof LongArrayTag) {
             appendable.append("[L;");
+            suffix = 'L';
         } else {
             throw new AssertionError("Unsupported array tag: " + tag);
         }
@@ -158,6 +162,7 @@ public final class SNBTWriter {
             }
 
             appendable.append(tag.getAsString(i));
+            appendable.append(suffix);
 
             if (i < end - 1) {
                 writeSpaces(codec.getSurroundingSpaces().getSpacesBeforeComma());
@@ -188,6 +193,23 @@ public final class SNBTWriter {
         } else if (tag instanceof StringTag stringTag) {
             writeStringValue(stringTag.getValue());
         } else if (tag instanceof ValueTag<?> valueTag) {
+            char suffix;
+            if (valueTag instanceof ByteTag) {
+                suffix = 'B';
+            } else if (valueTag instanceof ShortTag) {
+                suffix = 'S';
+            } else if (valueTag instanceof IntTag) {
+                suffix = 'I';
+            } else if (valueTag instanceof LongTag) {
+                suffix = 'L';
+            } else if (valueTag instanceof FloatTag) {
+                suffix = 'F';
+            } else if (valueTag instanceof DoubleTag) {
+                suffix = 'D';
+            } else {
+                suffix = '\0';
+            }
+
             String string = valueTag.getAsString();
             if (string.equals("-Infinity")) {
                 // For Float.NEGATIVE_INFINITY and Double.NEGATIVE_INFINITY,
@@ -196,6 +218,21 @@ public final class SNBTWriter {
             } else {
                 appendable.append(string);
             }
+
+            if (suffix != '\0') {
+                appendable.append(suffix);
+            }
         }
+    }
+
+    public void writeTagWithName(Tag tag) throws IOException {
+        if (!tag.getName().isEmpty()) {
+            writeStringValue(tag.getName());
+            writeSpaces(codec.getSurroundingSpaces().getSpacesBeforeColon());
+            appendable.append(':');
+            writeSpaces(codec.getSurroundingSpaces().getSpacesAfterColon());
+        }
+
+        writeTag(tag);
     }
 }

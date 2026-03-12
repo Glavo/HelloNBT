@@ -32,7 +32,7 @@ import java.util.stream.Stream;
 
 /// Represents a chunk in a region file.
 ///
-///  A chunk can contain a root tag, which is usually a compound tag containing the chunk data.
+/// A chunk can contain a root tag, which is usually a compound tag containing the chunk data.
 public final class Chunk implements NBTParent<CompoundTag>, NBTElement {
     @Nullable ChunkRegion region;
     int localIndex;

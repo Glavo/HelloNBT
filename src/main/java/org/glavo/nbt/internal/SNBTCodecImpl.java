@@ -22,6 +22,7 @@ import org.glavo.nbt.tag.Tag;
 
 import java.io.IOException;
 import java.nio.CharBuffer;
+import java.util.Objects;
 
 public record SNBTCodecImpl(
         LineBreakStrategy lineBreakStrategy,
@@ -57,6 +58,7 @@ public record SNBTCodecImpl(
 
     @Override
     public SNBTCodec withLineBreakStrategy(LineBreakStrategy strategy) {
+        Objects.requireNonNull(strategy, "strategy");
         return new SNBTCodecImpl(strategy, indentation, surroundingSpaces, escapeStrategy, nameQuoteStrategy, valueQuoteStrategy);
     }
 
@@ -67,7 +69,7 @@ public record SNBTCodecImpl(
 
     @Override
     public SNBTCodec withIndentation(String indentation) {
-        for (int i = 0; i < indentation.length(); i++) {
+        for (int i = 0; i < indentation.length(); i++) { // implicit null check of indentation
             char ch = indentation.charAt(i);
             if (ch != ' ' && ch != '\t') {
                 throw new IllegalArgumentException("Indentation must be a sequence of spaces or tabs");
@@ -89,6 +91,7 @@ public record SNBTCodecImpl(
 
     @Override
     public SNBTCodec withSurroundingSpaces(SurroundingSpaces surroundingSpaces) {
+        Objects.requireNonNull(surroundingSpaces, "surroundingSpaces");
         return new SNBTCodecImpl(lineBreakStrategy, indentation, surroundingSpaces, escapeStrategy, nameQuoteStrategy, valueQuoteStrategy);
     }
 
@@ -99,6 +102,7 @@ public record SNBTCodecImpl(
 
     @Override
     public SNBTCodec withEscapeStrategy(EscapeStrategy escapeStrategy) {
+        Objects.requireNonNull(escapeStrategy, "escapeStrategy");
         return new SNBTCodecImpl(lineBreakStrategy, indentation, surroundingSpaces, escapeStrategy, nameQuoteStrategy, valueQuoteStrategy);
     }
 
@@ -109,6 +113,7 @@ public record SNBTCodecImpl(
 
     @Override
     public SNBTCodec withNameQuoteStrategy(QuoteStrategy quoteStrategy) {
+        Objects.requireNonNull(quoteStrategy, "quoteStrategy");
         return new SNBTCodecImpl(lineBreakStrategy, indentation, surroundingSpaces, escapeStrategy, quoteStrategy, valueQuoteStrategy);
     }
 
@@ -119,6 +124,7 @@ public record SNBTCodecImpl(
 
     @Override
     public SNBTCodec withValueQuoteStrategy(QuoteStrategy quoteStrategy) {
+        Objects.requireNonNull(quoteStrategy, "quoteStrategy");
         return new SNBTCodecImpl(lineBreakStrategy, indentation, surroundingSpaces, escapeStrategy, nameQuoteStrategy, quoteStrategy);
     }
 

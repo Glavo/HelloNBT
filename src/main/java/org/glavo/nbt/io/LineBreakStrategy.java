@@ -16,12 +16,19 @@
 package org.glavo.nbt.io;
 
 import org.glavo.nbt.internal.snbt.LineBreakStrategyImpl;
+import org.glavo.nbt.tag.ArrayTag;
+import org.glavo.nbt.tag.CompoundTag;
+import org.glavo.nbt.tag.ListTag;
 import org.glavo.nbt.tag.ParentTag;
 
 /// Line break strategy for SNBT.
 public sealed interface LineBreakStrategy permits org.glavo.nbt.internal.snbt.LineBreakStrategyImpl {
 
-    /// Returns the default line break strategy.
+    /// Returns the default line break strategy:
+    ///
+    /// - For [CompoundTag], break lines if the size is greater than 1;
+    /// - For [ListTag], break lines if the size is greater than 1;
+    /// - For [ArrayTag], never break lines.
     static LineBreakStrategy defaultStrategy() {
         return LineBreakStrategyImpl.DEFAULT;
     }

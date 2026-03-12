@@ -27,7 +27,7 @@ public record LineBreakStrategyImpl(
         long arrayThreshold
 ) implements LineBreakStrategy {
 
-    public static final LineBreakStrategyImpl DEFAULT = new LineBreakStrategyImpl(2, 2, 0);
+    public static final LineBreakStrategyImpl DEFAULT = new LineBreakStrategyImpl(2, 2, Long.MAX_VALUE);
 
     public static final LineBreakStrategyImpl NEVER = new LineBreakStrategyImpl(Long.MAX_VALUE, Long.MAX_VALUE, Long.MAX_VALUE);
 

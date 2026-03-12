@@ -297,76 +297,143 @@ public final class CompoundTag extends ParentTag<Tag> {
         addTag(tag);
     }
 
-    /// Adds a byte tag with the given name and value to this compound tag.
-    @Contract(mutates = "this")
-    public void putByte(String name, byte value) {
-        addTag(new ByteTag(name, value));
+    @SuppressWarnings("unchecked")
+    private <T extends Tag> T getOrPutTag(String name, TagType<T> tagType) throws IllegalStateException {
+        Tag existingTag = get(name);
+        if (existingTag != null) {
+            assert existingTag.getName().equalsIgnoreCase(name);
+
+            if (existingTag.getType() == tagType) {
+                return (T) existingTag;
+            } else {
+                throw new IllegalStateException("Cannot set a " + tagType + " with name " + name + " because there is already a " + existingTag.getType() + " with the same name");
+            }
+        } else {
+            T tag = tagType.createTag();
+            tag.setName(name);
+            addTag(tag);
+            return tag;
+        }
     }
 
-    /// Adds a byte tag with the given name and value to this compound tag.
+    /// Sets the byte value of the [ByteTag] with the given name.
+    ///
+    /// If no byte tag with the given name exists, a new byte tag will be created.
+    ///
+    /// @throws IllegalStateException if the tag with the given name exists but is not a byte tag.
     @Contract(mutates = "this")
-    public void putBoolean(String name, boolean value) {
-        addTag(new ByteTag(name, value));
+    public void setByte(String name, byte value) throws IllegalStateException {
+        getOrPutTag(name, TagType.BYTE).set(value);
     }
 
-    /// Adds a short tag with the given name and value to this compound tag.
+    /// Sets the boolean value of the [ByteTag] with the given name.
+    ///
+    /// If no byte tag with the given name exists, a new byte tag will be created.
+    ///
+    /// @throws IllegalStateException if the tag with the given name exists but is not a byte tag.
     @Contract(mutates = "this")
-    public void putShort(String name, short value) {
-        addTag(new ShortTag(name, value));
+    public void setBoolean(String name, boolean value) throws IllegalStateException {
+        getOrPutTag(name, TagType.BYTE).setBoolean(value);
     }
 
-    /// Adds an int tag with the given name and value to this compound tag.
+    /// Sets the short value of the [ShortTag] with the given name.
+    ///
+    /// If no short tag with the given name exists, a new short tag will be created.
+    ///
+    /// @throws IllegalStateException if the tag with the given name exists but is not a short tag.
     @Contract(mutates = "this")
-    public void putInt(String name, int value) {
-        addTag(new IntTag(name, value));
+    public void setShort(String name, short value) throws IllegalStateException {
+        getOrPutTag(name, TagType.SHORT).set(value);
     }
 
-    /// Adds a long tag with the given name and value to this compound tag.
+    /// Sets the int value of the [IntTag] with the given name.
+    ///
+    /// If no int tag with the given name exists, a new int tag will be created.
+    ///
+    /// @throws IllegalStateException if the tag with the given name exists but is not an int tag.
     @Contract(mutates = "this")
-    public void putLong(String name, long value) {
-        addTag(new LongTag(name, value));
+    public void setInt(String name, int value) throws IllegalStateException {
+        getOrPutTag(name, TagType.INT).set(value);
     }
 
-    /// Adds a float tag with the given name and value to this compound tag.
+    /// Sets the long value of the [LongTag] with the given name.
+    ///
+    /// If no long tag with the given name exists, a new long tag will be created.
+    ///
+    /// @throws IllegalStateException if the tag with the given name exists but is not a long tag.
     @Contract(mutates = "this")
-    public void putFloat(String name, float value) {
-        addTag(new FloatTag(name, value));
+    public void setLong(String name, long value) throws IllegalStateException {
+        getOrPutTag(name, TagType.LONG).set(value);
     }
 
-    /// Adds a double tag with the given name and value to this compound tag.
+    /// Sets the float value of the [FloatTag] with the given name.
+    ///
+    /// If no float tag with the given name exists, a new float tag will be created.
+    ///
+    /// @throws IllegalStateException if the tag with the given name exists but is not a float tag.
     @Contract(mutates = "this")
-    public void putDouble(String name, double value) {
-        addTag(new DoubleTag(name, value));
+    public void setFloat(String name, float value) throws IllegalStateException {
+        getOrPutTag(name, TagType.FLOAT).set(value);
     }
 
-    /// Adds a string tag with the given name and value to this compound tag.
+    /// Sets the double value of the [DoubleTag] with the given name.
+    ///
+    /// If no double tag with the given name exists, a new double tag will be created.
+    ///
+    /// @throws IllegalStateException if the tag with the given name exists but is not a double tag.
     @Contract(mutates = "this")
-    public void putString(String name, String value) {
-        addTag(new StringTag(name, value));
+    public void setDouble(String name, double value) throws IllegalStateException {
+        getOrPutTag(name, TagType.DOUBLE).set(value);
     }
 
-    /// Adds a byte array tag with the given name and value to this compound tag.
+    /// Sets the string value of the [StringTag] with the given name.
+    ///
+    /// If no string tag with the given name exists, a new string tag will be created.
+    ///
+    /// @throws IllegalStateException if the tag with the given name exists but is not a string tag.
     @Contract(mutates = "this")
-    public void putByteArray(String name, byte[] value) {
-        addTag(new ByteArrayTag(name, value));
+    public void setString(String name, String value) throws IllegalStateException {
+        getOrPutTag(name, TagType.STRING).set(value);
     }
 
-    /// Adds an int array tag with the given name and value to this compound tag.
+    /// Sets the byte array value of the [ByteArrayTag] with the given name.
+    ///
+    /// If no byte array tag with the given name exists, a new byte array tag will be created.
+    ///
+    /// @throws IllegalStateException if the tag with the given name exists but is not a byte array tag.
     @Contract(mutates = "this")
-    public void putIntArray(String name, int[] value) {
-        addTag(new IntArrayTag(name, value));
+    public void setByteArray(String name, byte[] value) throws IllegalStateException {
+        getOrPutTag(name, TagType.BYTE_ARRAY).setAll(value);
     }
 
-    /// Adds a long array tag with the given name and value to this compound tag.
+    /// Sets the int array value of the [IntArrayTag] with the given name.
+    ///
+    /// If no int array tag with the given name exists, a new int array tag will be created.
+    ///
+    /// @throws IllegalStateException if the tag with the given name exists but is not an int array tag.
     @Contract(mutates = "this")
-    public void putLongArray(String name, long[] value) {
-        addTag(new LongArrayTag(name, value));
+    public void setIntArray(String name, int[] value) throws IllegalStateException {
+        getOrPutTag(name, TagType.INT_ARRAY).setAll(value);
     }
 
-    /// Adds an int array tag with the given name and UUID value to this compound tag.
+    /// Sets the long array value of the [LongArrayTag] with the given name.
+    ///
+    /// If no long array tag with the given name exists, a new long array tag will be created.
+    ///
+    /// @throws IllegalStateException if the tag with the given name exists but is not a long array tag.
     @Contract(mutates = "this")
-    public void putUUID(String name, UUID value) {
-        addTag(new IntArrayTag(name, value));
+    public void setLongArray(String name, long[] value) throws IllegalStateException {
+        getOrPutTag(name, TagType.LONG_ARRAY).setAll(value);
+    }
+
+    /// Set the UUID value of the [IntArrayTag] with the given name.
+    ///
+    /// If no int array tag with the given name exists, a new int array tag will be created.
+    ///
+    /// @throws IllegalStateException if the tag with the given name exists but is not an int array tag.
+    @Contract(mutates = "this")
+    public void setUUID(String name, UUID value) {
+        getOrPutTag(name, TagType.INT_ARRAY).setUUID(value);
     }
 
     @Override

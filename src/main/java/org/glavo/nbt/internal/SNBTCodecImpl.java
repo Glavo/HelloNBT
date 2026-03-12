@@ -23,7 +23,7 @@ public record SNBTCodecImpl() implements SNBTCodec {
     public static final SNBTCodecImpl DEFAULT = new SNBTCodecImpl();
 
     @Override
-    public Tag parse(CharSequence input, int startInclusive, int endExclusive) throws IllegalArgumentException {
+    public Tag parseTag(CharSequence input, int startInclusive, int endExclusive) throws IllegalArgumentException {
         Tag tag = new SNBTParser(input, startInclusive, endExclusive).nextTag();
         if (tag == null) {
             throw new IllegalArgumentException("Unexpected end of input");

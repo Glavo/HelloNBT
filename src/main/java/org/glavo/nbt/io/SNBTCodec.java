@@ -28,17 +28,12 @@ public sealed interface SNBTCodec permits SNBTCodecImpl {
 
     /// Returns the default [SNBTCodec].
     static SNBTCodec of() {
-        return SNBTCodecImpl.COMPACT;
-    }
-
-    /// Returns the compact [SNBTCodec].
-    static SNBTCodec compact() {
-        return SNBTCodecImpl.COMPACT;
-    }
-
-    /// Returns the pretty [SNBTCodec].
-    static SNBTCodec pretty() {
         return SNBTCodecImpl.PRETTY;
+    }
+
+    /// Returns a [SNBTCodec] with compact formatting.
+    static SNBTCodec ofCompact() {
+        return SNBTCodecImpl.COMPACT;
     }
 
     /// Returns a new codec with the specified line break strategy for all parent tags.

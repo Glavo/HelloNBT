@@ -36,6 +36,10 @@ public sealed interface SNBTCodec permits SNBTCodecImpl {
         return SNBTCodecImpl.COMPACT;
     }
 
+    /// Returns the line break strategy for all parent tags.
+    @Contract(pure = true)
+    LineBreakStrategy getLineBreakStrategy();
+
     /// Returns a new codec with the specified line break strategy for all parent tags.
     ///
     /// This method is a shortcut for calling [withCompoundTagLineBreakStrategy][#withCompoundTagLineBreakStrategy()],
@@ -43,36 +47,6 @@ public sealed interface SNBTCodec permits SNBTCodecImpl {
     /// with the same strategy.
     @Contract(value = "_ -> new", pure = true)
     SNBTCodec withLineBreakStrategy(LineBreakStrategy strategy);
-
-    /// Returns the line break strategy for compound tags.
-    ///
-    /// If not specified, [the default line break strategy][#getDefaultLineBreakStrategy()] is used.
-    @Contract(pure = true)
-    LineBreakStrategy getCompoundTagLineBreakStrategy();
-
-    /// Returns a new codec with the specified line break strategy for compound tags.
-    @Contract(value = "_ -> new", pure = true)
-    SNBTCodec withCompoundTagLineBreakStrategy(LineBreakStrategy strategy);
-
-    /// Returns the line break strategy for list tags.
-    ///
-    /// If not specified, [the default line break strategy][#getDefaultLineBreakStrategy()] is used.
-    @Contract(pure = true)
-    LineBreakStrategy getListTagLineBreakStrategy();
-
-    /// Returns a new codec with the specified line break strategy for list tags.
-    @Contract(value = "_ -> new", pure = true)
-    SNBTCodec withListTagLineBreakStrategy(LineBreakStrategy strategy);
-
-    /// Returns the line break strategy for array tags.
-    ///
-    /// If not specified, [the default line break strategy][#getDefaultLineBreakStrategy()] is used.
-    @Contract(pure = true)
-    LineBreakStrategy getArrayTagLineBreakStrategy();
-
-    /// Returns a new codec with the specified line break strategy for array tags.
-    @Contract(value = "_ -> new", pure = true)
-    SNBTCodec withArrayTagLineBreakStrategy(LineBreakStrategy strategy);
 
     /// Returns the indentation string before each line.
     @Contract(pure = true)

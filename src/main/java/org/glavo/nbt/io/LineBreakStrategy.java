@@ -15,64 +15,22 @@
  */
 package org.glavo.nbt.io;
 
+import org.glavo.nbt.internal.snbt.LineBreakStrategyImpl;
 import org.glavo.nbt.tag.ParentTag;
 
 /// Line break strategy for SNBT.
-public final class LineBreakStrategy {
+public sealed interface LineBreakStrategy permits org.glavo.nbt.internal.snbt.LineBreakStrategyImpl {
 
-    /// Always break lines.
-    public static final LineBreakStrategy ALWAYS = new LineBreakStrategy(0);
-
-    /// Break lines if the size is greater than 0.
-    public static final LineBreakStrategy NOT_EMPTY = new LineBreakStrategy(1);
-
-    /// Never break lines.
-    public static final LineBreakStrategy NEVER = new LineBreakStrategy(Long.MAX_VALUE);
-
-    /// Break lines if the size is at least the given threshold.
-    public static LineBreakStrategy atLeast(long threshold) {
-        if (threshold < 0) {
-            throw new IllegalArgumentException("threshold must be non-negative");
-        }
-
-        if (threshold == 0) {
-            return ALWAYS;
-        } else if (threshold == Long.MAX_VALUE) {
-            return NEVER;
-        } else {
-            return new LineBreakStrategy(threshold);
-        }
+    /// Returns the default line break strategy.
+    static LineBreakStrategy defaultStrategy() {
+        return LineBreakStrategyImpl.DEFAULT;
     }
 
-    private final long threshold;
-
-    private LineBreakStrategy(long threshold) {
-        this.threshold = threshold;
+    /// Returns a line break strategy that never breaks lines.
+    static LineBreakStrategy never() {
+        return LineBreakStrategyImpl.NEVER;
     }
 
     /// Returns true if the elements of the tag need to be broken into separate lines.
-    public boolean shouldBreakLines(ParentTag<?> tag) {
-        return tag.size() >= threshold;
-    }
-
-    @Override
-    public int hashCode() {
-        return Long.hashCode(threshold);
-    }
-
-    @Override
-    public boolean equals(Object obj) {
-        return this == obj || obj instanceof LineBreakStrategy that && threshold == that.threshold;
-    }
-
-    @Override
-    public String toString() {
-        if (threshold == Long.MAX_VALUE) {
-            return "LineBreakStrategy.NEVER";
-        } else if (threshold == 0) {
-            return "LineBreakStrategy.ALWAYS";
-        } else {
-            return "LineBreakStrategy.atLeast(" + threshold + ")";
-        }
-    }
+    boolean shouldBreakLines(ParentTag<?> tag);
 }

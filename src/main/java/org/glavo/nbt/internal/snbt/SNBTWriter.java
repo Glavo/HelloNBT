@@ -59,7 +59,7 @@ public final class SNBTWriter {
     }
 
     private void writeCompoundTag(CompoundTag tag) throws IOException {
-        boolean shouldBreakLines = codec.getCompoundTagLineBreakStrategy().shouldBreakLines(tag);
+        boolean shouldBreakLines = codec.getLineBreakStrategy().shouldBreakLines(tag);
 
         appendable.append('{');
 
@@ -101,7 +101,7 @@ public final class SNBTWriter {
     }
 
     private void writeListTag(ListTag<?> tag) throws IOException {
-        boolean shouldBreakLines = codec.getListTagLineBreakStrategy().shouldBreakLines(tag);
+        boolean shouldBreakLines = codec.getLineBreakStrategy().shouldBreakLines(tag);
 
         appendable.append('[');
 
@@ -137,7 +137,7 @@ public final class SNBTWriter {
     }
 
     private <E extends Number, T extends ValueTag<E>> void writeArrayTag(ArrayTag<E, T, ?, ?> tag) throws IOException {
-        boolean shouldBreakLines = codec.getArrayTagLineBreakStrategy().shouldBreakLines(tag);
+        boolean shouldBreakLines = codec.getLineBreakStrategy().shouldBreakLines(tag);
 
         char suffix;
         if (tag instanceof ByteArrayTag) {

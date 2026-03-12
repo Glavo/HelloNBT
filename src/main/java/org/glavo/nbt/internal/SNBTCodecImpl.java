@@ -19,6 +19,9 @@ import org.glavo.nbt.internal.snbt.SNBTParser;
 import org.glavo.nbt.io.SNBTCodec;
 import org.glavo.nbt.tag.Tag;
 
+import java.io.IOException;
+import java.nio.CharBuffer;
+
 public record SNBTCodecImpl() implements SNBTCodec {
     public static final SNBTCodecImpl DEFAULT = new SNBTCodecImpl();
 
@@ -29,5 +32,22 @@ public record SNBTCodecImpl() implements SNBTCodec {
             throw new IllegalArgumentException("Unexpected end of input");
         }
         return tag;
+    }
+
+    @Override
+    public Tag readTag(Readable readable) throws IOException {
+        var builder = new StringBuilder();
+
+        CharBuffer buffer = CharBuffer.allocate(8192);
+        while (readable.read(buffer) != -1) {
+            buffer.flip();
+            builder.append(buffer);
+            buffer.clear();
+        }
+        try {
+            return parseTag(builder);
+        } catch (IllegalArgumentException e) {
+            throw new IOException(e);
+        }
     }
 }

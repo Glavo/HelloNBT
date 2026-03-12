@@ -17,6 +17,7 @@ package org.glavo.nbt.io;
 
 import org.glavo.nbt.internal.SNBTCodecImpl;
 import org.glavo.nbt.tag.Tag;
+import org.jetbrains.annotations.Contract;
 
 import java.io.IOException;
 
@@ -31,6 +32,7 @@ public sealed interface SNBTCodec permits SNBTCodecImpl {
     /// Parses a Stringified NBT data.
     ///
     /// @throws IllegalArgumentException if the input is not a valid Stringified NBT data.
+    @Contract(pure = true)
     default Tag parseTag(CharSequence input) throws IllegalArgumentException {
         return parseTag(input, 0, input.length());
     }
@@ -39,10 +41,12 @@ public sealed interface SNBTCodec permits SNBTCodecImpl {
     ///
     /// @throws IndexOutOfBoundsException if the range is out of bounds.
     /// @throws IllegalArgumentException  if the input is not a valid Stringified NBT data.
+    @Contract(pure = true)
     Tag parseTag(CharSequence input, int startInclusive, int endExclusive) throws IllegalArgumentException;
 
     /// Reads a Stringified NBT data from a readable source.
     ///
     /// @throws IOException if an I/O error occurs.
+    @Contract(mutates = "param1")
     Tag readTag(Readable readable) throws IOException;
 }

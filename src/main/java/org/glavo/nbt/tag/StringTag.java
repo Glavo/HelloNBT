@@ -83,12 +83,12 @@ public final class StringTag extends ValueTag<String> {
     }
 
     @Override
-    protected void readContent(DataReader reader) throws IOException {
+    void readContent(DataReader reader) throws IOException {
         set(reader.readString());
     }
 
     @Override
-    protected void writeContent(DataWriter writer) throws IOException {
+    void writeContent(DataWriter writer) throws IOException {
         writer.writeString(value);
     }
 
@@ -105,7 +105,7 @@ public final class StringTag extends ValueTag<String> {
     }
 
     @Override
-    protected void contentToString(StringBuilder builder) {
+    void contentToString(StringBuilder builder) {
         builder.append('"');
         appendString(builder, value);
         builder.append('"');

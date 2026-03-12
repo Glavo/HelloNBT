@@ -93,12 +93,12 @@ public final class ShortTag extends ValueTag<Short> {
     }
 
     @Override
-    protected void readContent(DataReader reader) throws IOException {
+    void readContent(DataReader reader) throws IOException {
         set(reader.readShort());
     }
 
     @Override
-    protected void writeContent(DataWriter writer) throws IOException {
+    void writeContent(DataWriter writer) throws IOException {
         writer.writeShort(value);
     }
 
@@ -115,7 +115,7 @@ public final class ShortTag extends ValueTag<Short> {
     }
 
     @Override
-    protected void contentToString(StringBuilder builder) {
+    void contentToString(StringBuilder builder) {
         builder.append(value);
     }
 

@@ -81,12 +81,12 @@ public final class DoubleTag extends ValueTag<Double> {
     }
 
     @Override
-    protected void readContent(DataReader reader) throws IOException {
+    void readContent(DataReader reader) throws IOException {
         set(reader.readDouble());
     }
 
     @Override
-    protected void writeContent(DataWriter writer) throws IOException {
+    void writeContent(DataWriter writer) throws IOException {
         writer.writeDouble(value);
     }
 
@@ -103,7 +103,7 @@ public final class DoubleTag extends ValueTag<Double> {
     }
 
     @Override
-    protected void contentToString(StringBuilder builder) {
+    void contentToString(StringBuilder builder) {
         builder.append(value);
     }
 

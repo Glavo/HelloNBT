@@ -91,12 +91,12 @@ public final class LongTag extends ValueTag<Long> {
     }
 
     @Override
-    protected void readContent(DataReader reader) throws IOException {
+    void readContent(DataReader reader) throws IOException {
         set(reader.readLong());
     }
 
     @Override
-    protected void writeContent(DataWriter writer) throws IOException {
+    void writeContent(DataWriter writer) throws IOException {
         writer.writeLong(value);
     }
 
@@ -113,7 +113,7 @@ public final class LongTag extends ValueTag<Long> {
     }
 
     @Override
-    protected void contentToString(StringBuilder builder) {
+    void contentToString(StringBuilder builder) {
         builder.append(value);
     }
 

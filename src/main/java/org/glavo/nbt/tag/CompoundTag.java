@@ -46,7 +46,7 @@ public final class CompoundTag extends ParentTag<Tag> {
     }
 
     @Override
-    protected void preUpdateSubTagName(Tag tag, String oldName, String newName) throws IllegalArgumentException {
+    void preUpdateSubTagName(Tag tag, String oldName, String newName) throws IllegalArgumentException {
         if (subTagsByName.containsKey(newName)) {
             throw new IllegalArgumentException("The name '" + newName + "' is already used by another subtag");
         }
@@ -240,7 +240,7 @@ public final class CompoundTag extends ParentTag<Tag> {
     }
 
     @Override
-    protected void readContent(DataReader reader) throws IOException {
+    void readContent(DataReader reader) throws IOException {
         int count = 0;
 
         Tag subTag;
@@ -255,7 +255,7 @@ public final class CompoundTag extends ParentTag<Tag> {
     }
 
     @Override
-    protected void writeContent(DataWriter writer) throws IOException {
+    void writeContent(DataWriter writer) throws IOException {
         for (int i = 0; i < size; i++) {
             NBTCodecImpl.writeTag(writer, tags[i]);
         }
@@ -275,7 +275,7 @@ public final class CompoundTag extends ParentTag<Tag> {
     }
 
     @Override
-    protected void contentToString(StringBuilder builder) {
+    void contentToString(StringBuilder builder) {
         builder.append('[');
 
         if (size > 0) {

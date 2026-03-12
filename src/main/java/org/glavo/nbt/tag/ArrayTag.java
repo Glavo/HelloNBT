@@ -55,13 +55,12 @@ public sealed abstract class ArrayTag<E extends Number, T extends ValueTag<E>, A
 
     A values = accessor().empty();
 
-    protected ArrayTag(String name) {
+    ArrayTag(String name) {
         super(name);
     }
 
-    @SuppressWarnings("ClassEscapesDefinedScope")
     @Contract(pure = true)
-    protected abstract ArrayAccessor<E, T, A, B> accessor();
+    abstract ArrayAccessor<E, T, A, B> accessor();
 
     private void removeValueFromArray(int index) {
         assert index >= 0 && index < size;
@@ -72,14 +71,14 @@ public sealed abstract class ArrayTag<E extends Number, T extends ValueTag<E>, A
         }
     }
 
-    protected void ensureValuesCapacityForAdd() {
+    final void ensureValuesCapacityForAdd() {
         if (accessor().getLength(values) == size) {
             values = accessor().copyOf(values, ArrayAccessor.nextCapacity(size, size + 1));
         }
     }
 
     @Override
-    protected final void preUpdateSubTagName(Tag tag, String oldName, String newName) throws IllegalArgumentException {
+    final void preUpdateSubTagName(Tag tag, String oldName, String newName) throws IllegalArgumentException {
         if (!newName.isEmpty()) {
             throw new IllegalArgumentException("The name of the subtag must be null for ArrayTag");
         }
@@ -363,7 +362,7 @@ public sealed abstract class ArrayTag<E extends Number, T extends ValueTag<E>, A
     }
 
     @Override
-    protected final void contentToString(StringBuilder builder) {
+    final void contentToString(StringBuilder builder) {
         accessor().toString(builder, values, 0, size);
     }
 

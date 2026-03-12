@@ -65,7 +65,7 @@ public final class ListTag<T extends Tag> extends ParentTag<T> {
     }
 
     @Override
-    protected void preUpdateSubTagName(Tag tag, String oldName, String newName) throws IllegalArgumentException {
+    void preUpdateSubTagName(Tag tag, String oldName, String newName) throws IllegalArgumentException {
         if (!newName.isEmpty()) {
             throw new IllegalArgumentException("The name of the subtag must be null for ListTag");
         }
@@ -223,7 +223,7 @@ public final class ListTag<T extends Tag> extends ParentTag<T> {
     }
 
     @Override
-    protected void readContent(DataReader reader) throws IOException {
+    void readContent(DataReader reader) throws IOException {
         byte elementTypeId = reader.readByte();
 
         TagType<?> elementType;
@@ -257,7 +257,7 @@ public final class ListTag<T extends Tag> extends ParentTag<T> {
     }
 
     @Override
-    protected void writeContent(DataWriter writer) throws IOException {
+    void writeContent(DataWriter writer) throws IOException {
         writer.writeByte(getElementType() != null ? getElementType().id() : 0);
         writer.writeInt(size());
 
@@ -296,7 +296,7 @@ public final class ListTag<T extends Tag> extends ParentTag<T> {
     }
 
     @Override
-    protected void contentToString(StringBuilder builder) {
+    void contentToString(StringBuilder builder) {
         builder.append('[');
         if (getElementType() != null)
             builder.append(getElementType().getFullName()).append(';');

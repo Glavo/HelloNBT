@@ -124,12 +124,12 @@ public final class ByteTag extends ValueTag<Byte> {
     }
 
     @Override
-    protected void readContent(DataReader reader) throws IOException {
+    void readContent(DataReader reader) throws IOException {
         set(reader.readByte());
     }
 
     @Override
-    protected void writeContent(DataWriter writer) throws IOException {
+    void writeContent(DataWriter writer) throws IOException {
         writer.writeByte(value);
     }
 
@@ -146,7 +146,7 @@ public final class ByteTag extends ValueTag<Byte> {
     }
 
     @Override
-    protected void contentToString(StringBuilder builder) {
+    void contentToString(StringBuilder builder) {
         builder.append(value);
     }
 

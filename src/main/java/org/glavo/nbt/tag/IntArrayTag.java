@@ -62,7 +62,7 @@ public final class IntArrayTag extends ArrayTag<Integer, IntTag, int[], IntBuffe
     }
 
     @Override
-    protected ArrayAccessor<Integer, IntTag, int[], IntBuffer> accessor() {
+    ArrayAccessor<Integer, IntTag, int[], IntBuffer> accessor() {
         return ArrayAccessor.INT_ARRAY;
     }
 
@@ -196,14 +196,14 @@ public final class IntArrayTag extends ArrayTag<Integer, IntTag, int[], IntBuffe
     }
 
     @Override
-    protected void readContent(DataReader reader) throws IOException {
+    void readContent(DataReader reader) throws IOException {
         clear();
         int len = reader.readInt();
         setArrayWithoutClone(reader.readIntArray(len), len);
     }
 
     @Override
-    protected void writeContent(DataWriter writer) throws IOException {
+    void writeContent(DataWriter writer) throws IOException {
         writer.writeInt(size);
         writer.writeIntArrayDirect(values, 0, size);
     }

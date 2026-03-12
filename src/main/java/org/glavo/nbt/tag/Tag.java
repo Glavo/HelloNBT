@@ -19,7 +19,6 @@ import org.glavo.nbt.NBTElement;
 import org.glavo.nbt.NBTParent;
 import org.glavo.nbt.internal.input.DataReader;
 import org.glavo.nbt.internal.output.DataWriter;
-import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.Nullable;
 
@@ -67,7 +66,7 @@ public sealed abstract class Tag implements NBTElement
     private transient @Nullable NBTParent<? extends Tag> parent;
     private transient int index = -1;
 
-    protected Tag(String name) {
+    Tag(String name) {
         this.name = Objects.requireNonNull(name, "name");
     }
 
@@ -143,16 +142,14 @@ public sealed abstract class Tag implements NBTElement
     }
 
     /// Internal method for reading the content of the tag.
-    @ApiStatus.Internal
-    protected abstract void readContent(DataReader reader) throws IOException;
+    abstract void readContent(DataReader reader) throws IOException;
 
     /// Internal method for writing the content of the tag.
-    @ApiStatus.Internal
-    protected abstract void writeContent(DataWriter writer) throws IOException;
+    abstract void writeContent(DataWriter writer) throws IOException;
 
-    protected abstract void contentToString(StringBuilder builder);
+    abstract void contentToString(StringBuilder builder);
 
-    protected final void appendString(StringBuilder builder, String value) {
+    final void appendString(StringBuilder builder, String value) {
         for (int i = 0; i < value.length(); i++) {
             char ch = value.charAt(i);
 
@@ -176,7 +173,7 @@ public sealed abstract class Tag implements NBTElement
         }
     }
 
-    protected final void toString(StringBuilder builder) {
+    final void toString(StringBuilder builder) {
         builder.append(getType().getFullName());
         if (!name.isEmpty()) {
             builder.append('(');

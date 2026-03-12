@@ -53,7 +53,7 @@ public final class ByteArrayTag extends ArrayTag<Byte, ByteTag, byte[], ByteBuff
     }
 
     @Override
-    protected ArrayAccessor<Byte, ByteTag, byte[], ByteBuffer> accessor() {
+    ArrayAccessor<Byte, ByteTag, byte[], ByteBuffer> accessor() {
         return ArrayAccessor.BYTE_ARRAY;
     }
 
@@ -154,14 +154,14 @@ public final class ByteArrayTag extends ArrayTag<Byte, ByteTag, byte[], ByteBuff
     }
 
     @Override
-    protected void readContent(DataReader reader) throws IOException {
+    void readContent(DataReader reader) throws IOException {
         clear();
         int len = reader.readInt();
         setArrayWithoutClone(reader.readByteArray(len), len);
     }
 
     @Override
-    protected void writeContent(DataWriter writer) throws IOException {
+    void writeContent(DataWriter writer) throws IOException {
         writer.writeInt(size);
         writer.writeByteArrayDirect(values, 0, size);
     }

@@ -58,7 +58,7 @@ public sealed abstract class ParentTag<T extends Tag> extends Tag
     Tag[] tags = EMPTY_TAGS;
     int size;
 
-    protected ParentTag(String name) {
+    ParentTag(String name) {
         super(name);
     }
 
@@ -67,15 +67,15 @@ public sealed abstract class ParentTag<T extends Tag> extends Tag
     /// Used internally by [Tag#setName(String)].
     ///
     /// @see Tag#setName(String)
-    protected abstract void preUpdateSubTagName(Tag tag, String oldName, String newName) throws IllegalArgumentException;
+    abstract void preUpdateSubTagName(Tag tag, String oldName, String newName) throws IllegalArgumentException;
 
-    protected final void ensureTagsCapacity(int minCapacity) {
+    final void ensureTagsCapacity(int minCapacity) {
         if (minCapacity > tags.length) {
             tags = Arrays.copyOf(tags, ArrayAccessor.nextCapacity(tags.length, minCapacity));
         }
     }
 
-    protected final void ensureTagsCapacityForAdd() {
+    final void ensureTagsCapacityForAdd() {
         if (size >= tags.length) {
             tags = Arrays.copyOf(tags, ArrayAccessor.nextCapacity(tags.length, size + 1));
         }
@@ -84,7 +84,7 @@ public sealed abstract class ParentTag<T extends Tag> extends Tag
     /// Removes the tag at the given index from the array, and decreases the size.
     ///
     /// @return The old tag at the given index.
-    protected final @UnknownNullability T removeTagFromArray(int index) {
+    final @UnknownNullability T removeTagFromArray(int index) {
         assert index >= 0 && index < size;
 
         if (index >= tags.length) {
@@ -105,7 +105,7 @@ public sealed abstract class ParentTag<T extends Tag> extends Tag
     }
 
     /// Updates the indexes of the subtags starting from the given index.
-    protected final void updateIndexes(int startIndex) {
+    final void updateIndexes(int startIndex) {
         for (int i = startIndex, end = Math.min(size, tags.length); i < end; i++) {
             Tag subTag = tags[i];
             if (subTag != null) {

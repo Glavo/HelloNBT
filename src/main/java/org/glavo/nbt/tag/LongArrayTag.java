@@ -56,7 +56,7 @@ public final class LongArrayTag extends ArrayTag<Long, LongTag, long[], LongBuff
     }
 
     @Override
-    protected ArrayAccessor<Long, LongTag, long[], LongBuffer> accessor() {
+    ArrayAccessor<Long, LongTag, long[], LongBuffer> accessor() {
         return ArrayAccessor.LONG_ARRAY;
     }
 
@@ -156,14 +156,14 @@ public final class LongArrayTag extends ArrayTag<Long, LongTag, long[], LongBuff
     }
 
     @Override
-    protected void readContent(DataReader reader) throws IOException {
+    void readContent(DataReader reader) throws IOException {
         clear();
         int len = reader.readInt();
         setArrayWithoutClone(reader.readLongArray(len), len);
     }
 
     @Override
-    protected void writeContent(DataWriter writer) throws IOException {
+    void writeContent(DataWriter writer) throws IOException {
         writer.writeInt(size);
         writer.writeLongArrayDirect(values, 0, size);
     }

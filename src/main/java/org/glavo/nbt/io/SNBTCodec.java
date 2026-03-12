@@ -36,6 +36,11 @@ public sealed interface SNBTCodec permits SNBTCodecImpl {
         return SNBTCodecImpl.COMPACT;
     }
 
+    /// Returns the pretty [SNBTCodec].
+    static SNBTCodec pretty() {
+        return SNBTCodecImpl.PRETTY;
+    }
+
     /// Returns a new codec with the specified line break strategy for all parent tags.
     ///
     /// This method is a shortcut for calling [withCompoundTagLineBreakStrategy][#withCompoundTagLineBreakStrategy()],
@@ -93,6 +98,14 @@ public sealed interface SNBTCodec permits SNBTCodecImpl {
     /// @see IllegalArgumentException if the indentation is not a positive integer.
     @Contract(value = "_ -> new", pure = true)
     SNBTCodec withIndentation(int spaces);
+
+    /// Returns the surrounding spaces for SNBT.
+    @Contract(pure = true)
+    SurroundingSpaces getSurroundingSpaces();
+
+    /// Returns a new codec with the specified surrounding spaces.
+    @Contract(value = "_ -> new", pure = true)
+    SNBTCodec withSurroundingSpaces(SurroundingSpaces surroundingSpaces);
 
     /// Reads a NBT tag from the Stringified NBT data.
     ///

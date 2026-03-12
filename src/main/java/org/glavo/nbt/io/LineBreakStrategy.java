@@ -13,7 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.glavo.nbt.internal.snbt;
+package org.glavo.nbt.io;
+
+import org.glavo.nbt.tag.ParentTag;
+import org.jetbrains.annotations.ApiStatus;
 
 /// Line break strategy for SNBT.
 public final class LineBreakStrategy {
@@ -21,10 +24,13 @@ public final class LineBreakStrategy {
     /// Always break lines.
     public static final LineBreakStrategy ALWAYS = new LineBreakStrategy(0);
 
+    /// Break lines if the size is greater than 0.
+    public static final LineBreakStrategy NOT_EMPTY = new LineBreakStrategy(1);
+
     /// Never break lines.
     public static final LineBreakStrategy NEVER = new LineBreakStrategy(Long.MAX_VALUE);
 
-    /// Break lines if the length is at least the given threshold.
+    /// Break lines if the size is at least the given threshold.
     public static LineBreakStrategy atLeast(long threshold) {
         if (threshold < 0) {
             throw new IllegalArgumentException("threshold must be non-negative");
@@ -45,8 +51,9 @@ public final class LineBreakStrategy {
         this.threshold = threshold;
     }
 
-    public boolean shouldBreak(long length) {
-        return length > threshold;
+    /// Returns true if the elements of the tag need to be broken into separate lines.
+    public boolean shouldBreak(ParentTag<?> tag) {
+        return tag.size() >= threshold;
     }
 
     @Override

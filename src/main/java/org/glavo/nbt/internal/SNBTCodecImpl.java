@@ -16,14 +16,69 @@
 package org.glavo.nbt.internal;
 
 import org.glavo.nbt.internal.snbt.SNBTParser;
+import org.glavo.nbt.io.LineBreakStrategy;
 import org.glavo.nbt.io.SNBTCodec;
 import org.glavo.nbt.tag.Tag;
+import org.jetbrains.annotations.Nullable;
 
 import java.io.IOException;
 import java.nio.CharBuffer;
 
-public record SNBTCodecImpl() implements SNBTCodec {
-    public static final SNBTCodecImpl DEFAULT = new SNBTCodecImpl();
+public record SNBTCodecImpl(
+        LineBreakStrategy defaultLineBreakStrategy,
+        @Nullable LineBreakStrategy compoundTagLineBreakStrategy,
+        @Nullable LineBreakStrategy listTagLineBreakStrategy,
+        @Nullable LineBreakStrategy arrayTagLineBreakStrategy
+) implements SNBTCodec {
+    public static final SNBTCodecImpl COMPACT = new SNBTCodecImpl(LineBreakStrategy.NEVER,
+            null,
+            null,
+            null);
+
+    public static final SNBTCodecImpl PRETTY = new SNBTCodecImpl(LineBreakStrategy.ALWAYS,
+            null,
+            null,
+            null);
+
+    @Override
+    public LineBreakStrategy getDefaultLineBreakStrategy() {
+        return defaultLineBreakStrategy;
+    }
+
+    @Override
+    public SNBTCodec withDefaultLineBreakStrategy(LineBreakStrategy strategy) {
+        return new SNBTCodecImpl(strategy, compoundTagLineBreakStrategy, listTagLineBreakStrategy, arrayTagLineBreakStrategy);
+    }
+
+    @Override
+    public @Nullable LineBreakStrategy getCompoundTagLineBreakStrategy() {
+        return compoundTagLineBreakStrategy;
+    }
+
+    @Override
+    public SNBTCodec withCompoundTagLineBreakStrategy(@Nullable LineBreakStrategy strategy) {
+        return new SNBTCodecImpl(defaultLineBreakStrategy, strategy, listTagLineBreakStrategy, arrayTagLineBreakStrategy);
+    }
+
+    @Override
+    public @Nullable LineBreakStrategy getListTagLineBreakStrategy() {
+        return listTagLineBreakStrategy;
+    }
+
+    @Override
+    public SNBTCodec withListTagLineBreakStrategy(@Nullable LineBreakStrategy strategy) {
+        return new SNBTCodecImpl(defaultLineBreakStrategy, compoundTagLineBreakStrategy, strategy, arrayTagLineBreakStrategy);
+    }
+
+    @Override
+    public @Nullable LineBreakStrategy getArrayTagLineBreakStrategy() {
+        return arrayTagLineBreakStrategy;
+    }
+
+    @Override
+    public SNBTCodec withArrayTagLineBreakStrategy(@Nullable LineBreakStrategy strategy) {
+        return new SNBTCodecImpl(defaultLineBreakStrategy, compoundTagLineBreakStrategy, listTagLineBreakStrategy, strategy);
+    }
 
     @Override
     public Tag readTag(CharSequence input, int startInclusive, int endExclusive) throws IOException {

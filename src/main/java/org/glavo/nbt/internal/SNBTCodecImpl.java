@@ -25,59 +25,52 @@ import java.io.IOException;
 import java.nio.CharBuffer;
 
 public record SNBTCodecImpl(
-        LineBreakStrategy defaultLineBreakStrategy,
-        @Nullable LineBreakStrategy compoundTagLineBreakStrategy,
-        @Nullable LineBreakStrategy listTagLineBreakStrategy,
-        @Nullable LineBreakStrategy arrayTagLineBreakStrategy
+        LineBreakStrategy compoundTagLineBreakStrategy,
+        LineBreakStrategy listTagLineBreakStrategy,
+        LineBreakStrategy arrayTagLineBreakStrategy
 ) implements SNBTCodec {
     public static final SNBTCodecImpl COMPACT = new SNBTCodecImpl(LineBreakStrategy.NEVER,
-            null,
-            null,
-            null);
+            LineBreakStrategy.NEVER,
+            LineBreakStrategy.NEVER);
 
     public static final SNBTCodecImpl PRETTY = new SNBTCodecImpl(LineBreakStrategy.ALWAYS,
-            null,
-            null,
-            null);
+            LineBreakStrategy.ALWAYS,
+            LineBreakStrategy.ALWAYS);
+
 
     @Override
-    public LineBreakStrategy getDefaultLineBreakStrategy() {
-        return defaultLineBreakStrategy;
+    public SNBTCodec withLineBreakStrategy(LineBreakStrategy strategy) {
+        return new SNBTCodecImpl(strategy, strategy, strategy);
     }
 
     @Override
-    public SNBTCodec withDefaultLineBreakStrategy(LineBreakStrategy strategy) {
-        return new SNBTCodecImpl(strategy, compoundTagLineBreakStrategy, listTagLineBreakStrategy, arrayTagLineBreakStrategy);
-    }
-
-    @Override
-    public @Nullable LineBreakStrategy getCompoundTagLineBreakStrategy() {
+    public LineBreakStrategy getCompoundTagLineBreakStrategy() {
         return compoundTagLineBreakStrategy;
     }
 
     @Override
-    public SNBTCodec withCompoundTagLineBreakStrategy(@Nullable LineBreakStrategy strategy) {
-        return new SNBTCodecImpl(defaultLineBreakStrategy, strategy, listTagLineBreakStrategy, arrayTagLineBreakStrategy);
+    public SNBTCodec withCompoundTagLineBreakStrategy(LineBreakStrategy strategy) {
+        return new SNBTCodecImpl(strategy, listTagLineBreakStrategy, arrayTagLineBreakStrategy);
     }
 
     @Override
-    public @Nullable LineBreakStrategy getListTagLineBreakStrategy() {
+    public LineBreakStrategy getListTagLineBreakStrategy() {
         return listTagLineBreakStrategy;
     }
 
     @Override
-    public SNBTCodec withListTagLineBreakStrategy(@Nullable LineBreakStrategy strategy) {
-        return new SNBTCodecImpl(defaultLineBreakStrategy, compoundTagLineBreakStrategy, strategy, arrayTagLineBreakStrategy);
+    public SNBTCodec withListTagLineBreakStrategy(LineBreakStrategy strategy) {
+        return new SNBTCodecImpl(compoundTagLineBreakStrategy, strategy, arrayTagLineBreakStrategy);
     }
 
     @Override
-    public @Nullable LineBreakStrategy getArrayTagLineBreakStrategy() {
+    public LineBreakStrategy getArrayTagLineBreakStrategy() {
         return arrayTagLineBreakStrategy;
     }
 
     @Override
-    public SNBTCodec withArrayTagLineBreakStrategy(@Nullable LineBreakStrategy strategy) {
-        return new SNBTCodecImpl(defaultLineBreakStrategy, compoundTagLineBreakStrategy, listTagLineBreakStrategy, strategy);
+    public SNBTCodec withArrayTagLineBreakStrategy(LineBreakStrategy strategy) {
+        return new SNBTCodecImpl(compoundTagLineBreakStrategy, listTagLineBreakStrategy, strategy);
     }
 
     @Override

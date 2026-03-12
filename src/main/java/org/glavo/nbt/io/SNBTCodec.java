@@ -31,7 +31,7 @@ public sealed interface SNBTCodec permits SNBTCodecImpl {
         return SNBTCodecImpl.DEFAULT;
     }
 
-    /// Parses a Stringified NBT data.
+    /// Reads a NBT tag from the Stringified NBT data.
     ///
     /// @throws IOException if the input is not a valid Stringified NBT data.
     @Contract(pure = true)
@@ -39,14 +39,14 @@ public sealed interface SNBTCodec permits SNBTCodecImpl {
         return readTag(input, 0, input.length());
     }
 
-    /// Parses a Stringified NBT data.
+    /// Reads a NBT tag from the Stringified NBT data.
     ///
     /// @throws IndexOutOfBoundsException if the range is out of bounds.
     /// @throws IOException               if the input is not a valid Stringified NBT data.
     @Contract(pure = true)
     Tag readTag(CharSequence input, int startInclusive, int endExclusive) throws IOException;
 
-    /// Reads a Stringified NBT data from a readable source.
+    /// Reads a NBT tag from the Stringified NBT data.
     ///
     /// @throws IOException if an I/O error occurs.
     @Contract(mutates = "param1")

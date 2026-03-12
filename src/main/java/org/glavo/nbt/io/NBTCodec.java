@@ -32,6 +32,8 @@ import java.nio.file.Path;
 import java.util.function.Function;
 
 /// The codec for reading and writing NBT data.
+///
+/// Each NBTCodec instance is immutable, thread-safe, and can be safely used by multiple threads.
 public sealed interface NBTCodec permits NBTCodecImpl {
 
     /// Returns the default [NBTCodec].

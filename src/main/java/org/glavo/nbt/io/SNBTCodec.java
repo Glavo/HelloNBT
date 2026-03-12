@@ -22,6 +22,8 @@ import org.jetbrains.annotations.Contract;
 import java.io.IOException;
 
 /// The codec for reading and writing Stringified NBT data.
+///
+/// Each SNBTCodec instance is immutable, thread-safe, and can be safely used by multiple threads.
 public sealed interface SNBTCodec permits SNBTCodecImpl {
 
     /// Returns the default [SNBTCodec].

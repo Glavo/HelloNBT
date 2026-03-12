@@ -193,11 +193,11 @@ public sealed interface NBTCodec permits NBTCodecImpl {
 
     /// Writes a NBT tag to the output stream.
     @Contract(mutates = "param1")
-    void writeTag(Tag tag, OutputStream outputStream) throws IOException;
+    void writeTag(OutputStream outputStream, Tag tag) throws IOException;
 
     /// Writes a NBT tag to the byte channel.
     @Contract(mutates = "param1")
-    void writeTag(Tag tag, WritableByteChannel channel) throws IOException;
+    void writeTag(WritableByteChannel channel, Tag tag) throws IOException;
 
     /// Reads a chunk region from a file.
     ///

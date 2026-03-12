@@ -48,7 +48,7 @@ public final class WriteTagTest {
             @Override
             public byte[] toByteArray(Tag tag) throws IOException {
                 ByteArrayOutputStream buffer = new ByteArrayOutputStream();
-                NBTCodec.of(edition).writeTag(tag, buffer);
+                NBTCodec.of(edition).writeTag(buffer, tag);
                 return buffer.toByteArray();
             }
         }
@@ -58,7 +58,7 @@ public final class WriteTagTest {
             public byte[] toByteArray(Tag tag) throws IOException {
                 ByteArrayOutputStream buffer = new ByteArrayOutputStream();
                 try (WritableByteChannel channel = Channels.newChannel(buffer)) {
-                    NBTCodec.of(edition).writeTag(tag, channel);
+                    NBTCodec.of(edition).writeTag(channel, tag);
                 }
                 return buffer.toByteArray();
             }

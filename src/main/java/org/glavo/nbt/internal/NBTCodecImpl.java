@@ -373,14 +373,14 @@ public record NBTCodecImpl(MinecraftEdition edition,
     }
 
     @Override
-    public void writeTag(Tag tag, OutputStream outputStream) throws IOException {
+    public void writeTag(OutputStream outputStream, Tag tag) throws IOException {
         try (var writer = new RawDataWriter(new OutputTarget.OfOutputStream(outputStream, false), edition)) {
             writeTag(writer, tag);
         }
     }
 
     @Override
-    public void writeTag(Tag tag, WritableByteChannel channel) throws IOException {
+    public void writeTag(WritableByteChannel channel, Tag tag) throws IOException {
         try (var writer = new RawDataWriter(new OutputTarget.OfByteChannel(channel, false), edition)) {
             writeTag(writer, tag);
         }

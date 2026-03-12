@@ -18,59 +18,64 @@
 package org.glavo.nbt.internal.path;
 
 import org.glavo.nbt.tag.CompoundTag;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Unmodifiable;
 
 public sealed interface NBTPathNode {
     @Unmodifiable
     CompoundTag EMPTY_COMPOUND_TAG = new CompoundTag();
 
-    final class RootNode implements NBTPathNode {
-        public static final RootNode EMPTY = new RootNode(EMPTY_COMPOUND_TAG);
+    default boolean needDot() {
+        return this instanceof NamedSubTag || this instanceof NamedSubCompoundTag;
+    }
 
-        private final @Unmodifiable CompoundTag tags;
+    void appendTo(StringBuilder builder);
 
-        public RootNode(@Unmodifiable CompoundTag tags) {
-            this.tags = tags;
+    record Root(@Unmodifiable CompoundTag tags) implements NBTPathNode {
+        public static final Root EMPTY = new Root(EMPTY_COMPOUND_TAG);
+
+        @Override
+        public void appendTo(StringBuilder builder) {
+            builder.append(tags); // TODO: SNBT
         }
     }
 
-    final class NamedSubTagNode implements NBTPathNode {
-        private final String name;
-
-        public NamedSubTagNode(String name) {
-            this.name = name;
+    record NamedSubTag(String name) implements NBTPathNode {
+        @Override
+        public void appendTo(StringBuilder builder) {
+            builder.append(name); // TODO: SNBT
         }
     }
 
-    final class NamedSubCompoundTagNode implements NBTPathNode {
-        private final String name;
-        private final @Unmodifiable CompoundTag tags;
-
-        public NamedSubCompoundTagNode(String name, @Unmodifiable CompoundTag tags) {
-            this.name = name;
-            this.tags = tags;
+    record NamedSubCompoundTag(String name, @Unmodifiable CompoundTag tags) implements NBTPathNode {
+        @Override
+        public void appendTo(StringBuilder builder) {
+            builder.append(name).append(tags); // TODO: SNBT
         }
     }
 
     final class AllElements implements NBTPathNode {
         public static final AllElements INSTANCE = new AllElements();
-    }
 
-    final class IndexNode implements NBTPathNode {
-        private final int index;
-
-        public IndexNode(int index) {
-            this.index = index;
+        @Override
+        public void appendTo(StringBuilder builder) {
+            builder.append("[]");
         }
     }
 
-    final class CompoundElementsNode implements NBTPathNode {
-        public static final CompoundElementsNode EMPTY = new CompoundElementsNode(EMPTY_COMPOUND_TAG);
+    record Index(int index) implements NBTPathNode {
+        @Override
+        public void appendTo(StringBuilder builder) {
+            builder.append('[').append(index).append(']');
+        }
+    }
 
-        private final @Unmodifiable CompoundTag tags;
+    record CompoundElements(@Unmodifiable CompoundTag tags) implements NBTPathNode {
+        public static final CompoundElements EMPTY = new CompoundElements(EMPTY_COMPOUND_TAG);
 
-        public CompoundElementsNode(@Unmodifiable CompoundTag tags) {
-            this.tags = tags;
+        @Override
+        public void appendTo(StringBuilder builder) {
+            builder.append("[{").append(tags).append("}]"); // TODO: SNBT
         }
     }
 }

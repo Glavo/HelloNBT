@@ -16,6 +16,43 @@
 package org.glavo.nbt.internal.path;
 
 import org.glavo.nbt.NBTPath;
+import org.jetbrains.annotations.Nullable;
+import org.jetbrains.annotations.Unmodifiable;
+
+import java.util.List;
 
 public final class NBTPathImpl implements NBTPath {
+    private final @Unmodifiable List<NBTPathNode> nodes;
+    private @Nullable String cachedString;
+
+    public NBTPathImpl(@Unmodifiable List<NBTPathNode> nodes) {
+        this.nodes = nodes;
+    }
+
+    public List<NBTPathNode> getNodes() {
+        return nodes;
+    }
+
+    @Override
+    public String toString() {
+        if (cachedString == null) {
+            StringBuilder builder = new StringBuilder();
+
+            boolean first = true;
+            for (NBTPathNode node : nodes) {
+                if (first) {
+                    first = false;
+                } else if (node.needDot()) {
+                    builder.append('.');
+                }
+
+                builder.append(node);
+            }
+            cachedString = builder.toString();
+        }
+
+        return cachedString;
+    }
 }
+
+

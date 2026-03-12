@@ -455,33 +455,33 @@ final class ValueTagTests {
 
     @Test
     void testToString() {
-        assertToString("TAG_Byte[0]", new ByteTag());
-        assertToString("TAG_Byte[114]", new ByteTag("", (byte) 114));
-        assertToString("TAG_Byte(Meow)[114]", new ByteTag("Meow", (byte) 114));
+        assertToString("0B", new ByteTag());
+        assertToString("114B", new ByteTag("", (byte) 114));
+        assertToString("Meow: 114B", new ByteTag("Meow", (byte) 114));
 
-        assertToString("TAG_Short[0]", new ShortTag());
-        assertToString("TAG_Short[114]", new ShortTag("", (short) 114));
-        assertToString("TAG_Short(Meow)[114]", new ShortTag("Meow", (short) 114));
+        assertToString("0S", new ShortTag());
+        assertToString("114S", new ShortTag("", (short) 114));
+        assertToString("Meow: 114S", new ShortTag("Meow", (short) 114));
 
-        assertToString("TAG_Int[0]", new IntTag());
-        assertToString("TAG_Int[114]", new IntTag("", 114));
-        assertToString("TAG_Int(Meow)[114]", new IntTag("Meow", 114));
+        assertToString("0I", new IntTag());
+        assertToString("114I", new IntTag("", 114));
+        assertToString("Meow: 114I", new IntTag("Meow", 114));
 
-        assertToString("TAG_Long[0]", new LongTag());
-        assertToString("TAG_Long[114]", new LongTag("", 114L));
-        assertToString("TAG_Long(Meow)[114]", new LongTag("Meow", 114L));
+        assertToString("0L", new LongTag());
+        assertToString("114L", new LongTag("", 114L));
+        assertToString("Meow: 114L", new LongTag("Meow", 114L));
 
-        assertToString("TAG_Float[0.0]", new FloatTag());
-        assertToString("TAG_Float[114.0]", new FloatTag("", 114.0f));
-        assertToString("TAG_Float(Meow)[114.0]", new FloatTag("Meow", 114.0f));
+        assertToString("0.0F", new FloatTag());
+        assertToString("114.0F", new FloatTag("", 114.0f));
+        assertToString("Meow: 114.0F", new FloatTag("Meow", 114.0f));
 
-        assertToString("TAG_Double[0.0]", new DoubleTag());
-        assertToString("TAG_Double[114.0]", new DoubleTag("", 114.0));
-        assertToString("TAG_Double(Meow)[114.0]", new DoubleTag("Meow", 114.0));
+        assertToString("0.0D", new DoubleTag());
+        assertToString("114.0D", new DoubleTag("", 114.0));
+        assertToString("Meow: 114.0D", new DoubleTag("Meow", 114.0));
 
-        assertToString("TAG_String[\"\"]", new StringTag());
-        assertToString("TAG_String[\"Hello\"]", new StringTag("", "Hello"));
-        assertToString("TAG_String(Meow)[\"Hello\"]", new StringTag("Meow", "Hello"));
-        assertToString("TAG_String(Meow)[\"\\0\\b\\t\\n\\f\\r\\n \\\"ABC你好世界\\ud83d\\ude04\"]", new StringTag("Meow", "\0\b\t\n\f\r\n \"ABC你好世界😄"));
+        assertToString("\"\"", new StringTag());
+        assertToString("Hello", new StringTag("", "Hello"));
+        assertToString("Meow: Hello", new StringTag("Meow", "Hello"));
+        assertToString("Meow: \"\\u0000\\b\\t\\n\\f\\r\\n \\\"ABC你好世界\\U0001F604\"", new StringTag("Meow", "\0\b\t\n\f\r\n \"ABC你好世界😄"));
     }
 }

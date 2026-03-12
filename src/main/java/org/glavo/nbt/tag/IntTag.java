@@ -125,11 +125,6 @@ public final class IntTag extends ValueTag<Integer> {
     }
 
     @Override
-    void contentToString(StringBuilder builder) {
-        builder.append(value);
-    }
-
-    @Override
     @Contract(value = "-> new", pure = true)
     public IntTag clone() {
         return new IntTag(name, value);

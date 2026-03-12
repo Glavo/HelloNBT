@@ -103,11 +103,6 @@ public final class FloatTag extends ValueTag<Float> {
     }
 
     @Override
-    void contentToString(StringBuilder builder) {
-        builder.append(value);
-    }
-
-    @Override
     @Contract(value = "-> new", pure = true)
     public FloatTag clone() {
         return new FloatTag(getName(), value);

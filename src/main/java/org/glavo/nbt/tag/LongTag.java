@@ -113,11 +113,6 @@ public final class LongTag extends ValueTag<Long> {
     }
 
     @Override
-    void contentToString(StringBuilder builder) {
-        builder.append(value);
-    }
-
-    @Override
     @Contract(value = "-> new", pure = true)
     public LongTag clone() {
         return new LongTag(getName(), value);

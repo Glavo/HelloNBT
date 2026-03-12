@@ -296,22 +296,6 @@ public final class ListTag<T extends Tag> extends ParentTag<T> {
     }
 
     @Override
-    void contentToString(StringBuilder builder) {
-        builder.append('[');
-        if (getElementType() != null)
-            builder.append(getElementType().getFullName()).append(';');
-
-        if (size > 0) {
-            tags[0].contentToString(builder);
-            for (int i = 1; i < size; i++) {
-                builder.append(", ");
-                tags[i].contentToString(builder);
-            }
-        }
-        builder.append(']');
-    }
-
-    @Override
     @Contract(value = "-> new", pure = true)
     @SuppressWarnings("unchecked")
     public ListTag<T> clone() {

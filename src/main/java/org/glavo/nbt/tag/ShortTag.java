@@ -115,11 +115,6 @@ public final class ShortTag extends ValueTag<Short> {
     }
 
     @Override
-    void contentToString(StringBuilder builder) {
-        builder.append(value);
-    }
-
-    @Override
     @Contract(value = "-> new", pure = true)
     public ShortTag clone() {
         return new ShortTag(getName(), value);

@@ -19,12 +19,30 @@ import org.glavo.nbt.io.QuoteStrategy;
 
 public final class QuoteStrategies {
 
-    public static final QuoteStrategy DEFAULT = new Smart(false, '"');
-
     static char getAnotherQuoteChar(char quoteChar) {
         assert quoteChar == '"' || quoteChar == '\'';
 
         return quoteChar == '"' ? '\'' : '"';
+    }
+
+    static int scanSimplePrefix(String value) {
+        assert !value.isEmpty();
+
+        char c = value.charAt(0);
+
+        if ((c < 'a' || c > 'z') && (c < 'A' || c > 'Z') && c != '_') {
+            return 0;
+        }
+
+        for (int i = 0; i < value.length(); i++) {
+            c = value.charAt(i);
+
+            if ((c < 'a' || c > 'z') && (c < 'A' || c > 'Z') && (c < '0' || c > '9') && c != '_' && c != '+' && c != '-') {
+                return i;
+            }
+        }
+
+        return value.length();
     }
 
     public record Always(char quoteChar) implements QuoteStrategy {
@@ -37,12 +55,22 @@ public final class QuoteStrategies {
         }
     }
 
-    public record Smart(boolean quoteByDefault, char preferredQuoteChar) implements QuoteStrategy {
-        private static boolean isSimpleChar(boolean isFirst, char c) {
-            return isFirst
-                    ? c >= 'a' && c <= 'z' || c >= 'A' && c <= 'Z' || c == '_'
-                    : c >= 'a' && c <= 'z' || c >= 'A' && c <= 'Z' || c >= '0' && c <= '9' || c == '_' || c == '+' || c == '-';
+    public record WhenNeeded(char preferredQuoteChar) implements QuoteStrategy {
+        public static final WhenNeeded DOUBLE_QUOTE = new WhenNeeded('"');
+        public static final WhenNeeded SINGLE_QUOTE = new WhenNeeded('\'');
+
+        @Override
+        public char getQuoteChar(String value) {
+            if (value.isEmpty()) {
+                return preferredQuoteChar;
+            }
+
+            int scanBegin = scanSimplePrefix(value);
+            return scanBegin != value.length() ? preferredQuoteChar : '\0';
         }
+    }
+
+    public record Smart(boolean quoteByDefault, char preferredQuoteChar) implements QuoteStrategy {
 
         @Override
         public char getQuoteChar(String value) {
@@ -52,20 +80,10 @@ public final class QuoteStrategies {
 
             int scanBegin = 0;
             if (!quoteByDefault) {
-                int i = 0;
-                while (i < value.length()) {
-                    char ch = value.charAt(i);
-                    if (!isSimpleChar(i == 0, ch)) {
-                        break;
-                    }
-                    i++;
-                }
-
-                if (i == value.length()) {
+                scanBegin = scanSimplePrefix(value);
+                if (scanBegin == value.length()) {
                     return '\0';
                 }
-
-                scanBegin = i;
             }
 
             char anotherQuoteChar = getAnotherQuoteChar(preferredQuoteChar);

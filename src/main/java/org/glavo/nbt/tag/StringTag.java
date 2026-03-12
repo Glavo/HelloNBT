@@ -105,13 +105,6 @@ public final class StringTag extends ValueTag<String> {
     }
 
     @Override
-    void contentToString(StringBuilder builder) {
-        builder.append('"');
-        appendString(builder, value);
-        builder.append('"');
-    }
-
-    @Override
     @Contract(value = "-> new", pure = true)
     public StringTag clone() {
         return new StringTag(name, value);

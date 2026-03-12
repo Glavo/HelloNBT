@@ -19,6 +19,8 @@ import org.glavo.nbt.NBTElement;
 import org.glavo.nbt.NBTParent;
 import org.glavo.nbt.internal.input.DataReader;
 import org.glavo.nbt.internal.output.DataWriter;
+import org.glavo.nbt.internal.snbt.SNBTWriter;
+import org.glavo.nbt.io.SNBTCodec;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.Nullable;
 
@@ -147,53 +149,14 @@ public sealed abstract class Tag implements NBTElement
     /// Internal method for writing the content of the tag.
     abstract void writeContent(DataWriter writer) throws IOException;
 
-    abstract void contentToString(StringBuilder builder);
-
-    final void appendString(StringBuilder builder, String value) {
-        for (int i = 0; i < value.length(); i++) {
-            char ch = value.charAt(i);
-
-            switch (ch) {
-                case '\0' -> builder.append("\\0");
-                case '\b' -> builder.append("\\b");
-                case '\t' -> builder.append("\\t");
-                case '\n' -> builder.append("\\n");
-                case '\f' -> builder.append("\\f");
-                case '\r' -> builder.append("\\r");
-                case '"' -> builder.append("\\\"");
-                case ' ' -> builder.append(' ');
-                default -> {
-                    if (Character.isJavaIdentifierPart(ch)) {
-                        builder.appendCodePoint(ch);
-                    } else {
-                        builder.append("\\u%04x".formatted((int) ch));
-                    }
-                }
-            }
-        }
-    }
-
-    final void toString(StringBuilder builder) {
-        builder.append(getType().getFullName());
-        if (!name.isEmpty()) {
-            builder.append('(');
-            appendString(builder, name);
-            builder.append(')');
-        }
-
-        if (this instanceof ParentTag<?>) {
-            this.contentToString(builder);
-        } else {
-            builder.append('[');
-            this.contentToString(builder);
-            builder.append(']');
-        }
-    }
-
     @Override
     public final String toString() {
         var builder = new StringBuilder();
-        toString(builder);
+        try {
+            new SNBTWriter(SNBTCodec.of(), builder).writeTagWithName(this);
+        } catch (IOException e) {
+            throw new AssertionError(e);
+        }
         return builder.toString();
     }
 

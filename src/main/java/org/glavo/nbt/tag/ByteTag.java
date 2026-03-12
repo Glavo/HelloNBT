@@ -146,11 +146,6 @@ public final class ByteTag extends ValueTag<Byte> {
     }
 
     @Override
-    void contentToString(StringBuilder builder) {
-        builder.append(value);
-    }
-
-    @Override
     @Contract(value = "-> new", pure = true)
     public ByteTag clone() {
         return new ByteTag(name, value);

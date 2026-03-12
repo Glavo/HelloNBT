@@ -17,13 +17,13 @@ package org.glavo.nbt.io;
 
 import org.glavo.nbt.internal.snbt.QuoteStrategies;
 
-public sealed interface QuoteStrategy permits QuoteStrategies.Always, QuoteStrategies.Smart {
+public sealed interface QuoteStrategy permits QuoteStrategies.Always, QuoteStrategies.Smart, QuoteStrategies.WhenNeeded {
 
     /// Returns the default quote strategy.
     ///
-    /// It is equivalent to [`smart(false, '"')`][#smart(boolean, char)].
+    /// It is equivalent to [`whenNeeded('"')`][#whenNeeded(char)].
     static QuoteStrategy defaultStrategy() {
-        return QuoteStrategies.DEFAULT;
+        return QuoteStrategies.WhenNeeded.DOUBLE_QUOTE;
     }
 
     /// Returns a quote strategy that always uses the specified quote character.
@@ -34,6 +34,17 @@ public sealed interface QuoteStrategy permits QuoteStrategies.Always, QuoteStrat
             case '"' -> QuoteStrategies.Always.DOUBLE_QUOTE;
             case '\'' -> QuoteStrategies.Always.SINGLE_QUOTE;
             default -> throw new IllegalArgumentException("Invalid quote char: " + quoteChar);
+        };
+    }
+
+    /// Returns a quote strategy that only uses the specified quote character when necessary.
+    ///
+    /// @throws IllegalArgumentException if the quote character is not a valid quote character.
+    static QuoteStrategy whenNeeded(char preferredQuoteChar) {
+        return switch (preferredQuoteChar) {
+            case '"' -> QuoteStrategies.WhenNeeded.DOUBLE_QUOTE;
+            case '\'' -> QuoteStrategies.WhenNeeded.SINGLE_QUOTE;
+            default -> throw new IllegalArgumentException("Invalid quote char: " + preferredQuoteChar);
         };
     }
 

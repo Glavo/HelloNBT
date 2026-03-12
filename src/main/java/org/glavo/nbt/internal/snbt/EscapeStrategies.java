@@ -29,8 +29,8 @@ public enum EscapeStrategies implements EscapeStrategy {
                 int cp = value.codePointAt(i);
 
                 if (cp != quoteChar
-                        && Character.isBmpCodePoint(cp)
-                        && (cp >= 0x20 && cp <= 0x7E) || Character.isJavaIdentifierPart(cp)) {
+                        && Character.isBmpCodePoint(cp) && !Character.isISOControl(cp)
+                        && ((cp >= 0x20 && cp <= 0x7E) || Character.isJavaIdentifierPart(cp))) {
                     appendable.append((char) cp);
                 } else {
                     appendEscaped(appendable, cp);

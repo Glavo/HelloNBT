@@ -103,11 +103,6 @@ public final class DoubleTag extends ValueTag<Double> {
     }
 
     @Override
-    void contentToString(StringBuilder builder) {
-        builder.append(value);
-    }
-
-    @Override
     @Contract(value = "-> new", pure = true)
     public DoubleTag clone() {
         return new DoubleTag(getName(), value);

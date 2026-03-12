@@ -371,11 +371,6 @@ public sealed abstract class ArrayTag<E extends Number, T extends ValueTag<E>, A
     }
 
     @Override
-    final void contentToString(StringBuilder builder) {
-        accessor().toString(builder, values, 0, size);
-    }
-
-    @Override
     public final boolean contentEquals(Tag other) {
         if (this.getClass() == other.getClass()) {
             @SuppressWarnings("unchecked")

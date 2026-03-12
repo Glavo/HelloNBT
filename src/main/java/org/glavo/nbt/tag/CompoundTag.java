@@ -504,20 +504,6 @@ public final class CompoundTag extends ParentTag<Tag> {
     }
 
     @Override
-    void contentToString(StringBuilder builder) {
-        builder.append('[');
-
-        if (size > 0) {
-            tags[0].toString(builder);
-            for (int i = 1; i < size; i++) {
-                builder.append(", ");
-                tags[i].toString(builder);
-            }
-        }
-        builder.append(']');
-    }
-
-    @Override
     @Contract(value = "-> new", pure = true)
     public CompoundTag clone() {
         var newTag = new CompoundTag(this.name);

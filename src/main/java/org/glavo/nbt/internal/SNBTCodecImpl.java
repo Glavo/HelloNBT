@@ -26,10 +26,15 @@ public record SNBTCodecImpl() implements SNBTCodec {
     public static final SNBTCodecImpl DEFAULT = new SNBTCodecImpl();
 
     @Override
-    public Tag parseTag(CharSequence input, int startInclusive, int endExclusive) throws IllegalArgumentException {
-        Tag tag = new SNBTParser(input, startInclusive, endExclusive).nextTag();
+    public Tag readTag(CharSequence input, int startInclusive, int endExclusive) throws IOException {
+        Tag tag;
+        try {
+            tag = new SNBTParser(input, startInclusive, endExclusive).nextTag();
+        } catch (IllegalArgumentException e) {
+            throw new IOException(e);
+        }
         if (tag == null) {
-            throw new IllegalArgumentException("Unexpected end of input");
+            throw new IOException("Unexpected end of input");
         }
         return tag;
     }
@@ -45,7 +50,7 @@ public record SNBTCodecImpl() implements SNBTCodec {
             buffer.clear();
         }
         try {
-            return parseTag(builder);
+            return readTag(builder);
         } catch (IllegalArgumentException e) {
             throw new IOException(e);
         }

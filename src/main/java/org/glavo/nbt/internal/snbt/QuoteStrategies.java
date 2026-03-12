@@ -21,12 +21,74 @@ public final class QuoteStrategies {
 
     public static final QuoteStrategy DEFAULT = new Smart(false, '"');
 
+    static char getAnotherQuoteChar(char quoteChar) {
+        assert quoteChar == '"' || quoteChar == '\'';
+
+        return quoteChar == '"' ? '\'' : '"';
+    }
+
     public record Always(char quoteChar) implements QuoteStrategy {
         public static final Always DOUBLE_QUOTE = new Always('"');
         public static final Always SINGLE_QUOTE = new Always('\'');
+
+        @Override
+        public char getQuoteChar(String value) {
+            return quoteChar;
+        }
     }
 
-    public record Smart(boolean quoteByDefault, char quoteChar) implements QuoteStrategy {
+    public record Smart(boolean quoteByDefault, char preferredQuoteChar) implements QuoteStrategy {
+        private static boolean isSimpleChar(boolean isFirst, char c) {
+            return isFirst
+                    ? c >= 'a' && c <= 'z' || c >= 'A' && c <= 'Z' || c == '_'
+                    : c >= 'a' && c <= 'z' || c >= 'A' && c <= 'Z' || c >= '0' && c <= '9' || c == '_' || c == '+' || c == '-';
+        }
+
+        @Override
+        public char getQuoteChar(String value) {
+            if (value.isEmpty()) {
+                return preferredQuoteChar;
+            }
+
+            int scanBegin = 0;
+            if (!quoteByDefault) {
+                int i = 0;
+                while (i < value.length()) {
+                    char ch = value.charAt(i);
+                    if (!isSimpleChar(i == 0, ch)) {
+                        break;
+                    }
+                    i++;
+                }
+
+                if (i == value.length()) {
+                    return '\0';
+                }
+
+                scanBegin = i;
+            }
+
+            char anotherQuoteChar = getAnotherQuoteChar(preferredQuoteChar);
+
+            boolean containsPreferred = false;
+            boolean containsAnother = false;
+
+            for (int i = scanBegin; i < value.length(); i++) {
+                char ch = value.charAt(i);
+                if (ch == preferredQuoteChar) {
+                    containsPreferred = true;
+                } else if (ch == anotherQuoteChar) {
+                    containsAnother = true;
+                    break;
+                }
+            }
+
+            if (!containsPreferred || containsAnother) {
+                return preferredQuoteChar;
+            } else {
+                return anotherQuoteChar;
+            }
+        }
     }
 
     private QuoteStrategies() {

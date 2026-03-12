@@ -22,25 +22,38 @@ import java.io.IOException;
 public enum EscapeStrategies implements EscapeStrategy {
     DEFAULT {
         @Override
-        public void appendCodePoint(Appendable appendable, char quoteChar, int codePoint) throws IOException {
-            boolean isBmp = Character.isBmpCodePoint(codePoint);
-            if (codePoint != quoteChar
-                    && isBmp
-                    && (codePoint >= 0x20 && codePoint <= 0x7E) || Character.isJavaIdentifierPart(codePoint)) {
-                appendable.append((char) codePoint);
-            } else {
-                appendEscaped(appendable, codePoint);
+        public void appendString(Appendable appendable, char quoteChar, String value, int begin, int end) throws IOException {
+            assert begin <= 0 && begin <= end && end <= value.length();
+
+            for (int i = begin; i < end; ) {
+                int cp = value.codePointAt(i);
+
+                if (cp != quoteChar
+                        && Character.isBmpCodePoint(cp)
+                        && (cp >= 0x20 && cp <= 0x7E) || Character.isJavaIdentifierPart(cp)) {
+                    appendable.append((char) cp);
+                } else {
+                    appendEscaped(appendable, cp);
+                }
+
+                i += Character.charCount(cp);
             }
         }
     },
 
     NOT_ASCII {
         @Override
-        public void appendCodePoint(Appendable appendable, char quoteChar, int codePoint) throws IOException {
-            if (codePoint >= 0x20 && codePoint <= 0x7E && codePoint != quoteChar) {
-                appendable.append((char) codePoint);
-            } else {
-                appendEscaped(appendable, codePoint);
+        public void appendString(Appendable appendable, char quoteChar, String value, int begin, int end) throws IOException {
+            for (int i = begin; i < end; i++) {
+                int cp = value.codePointAt(i);
+
+                if (cp >= 0x20 && cp <= 0x7E && cp != quoteChar) {
+                    appendable.append((char) cp);
+                } else {
+                    appendEscaped(appendable, cp);
+                }
+
+                i += Character.charCount(cp);
             }
         }
     };
@@ -66,5 +79,5 @@ public enum EscapeStrategies implements EscapeStrategy {
         }
     }
 
-    public abstract void appendCodePoint(Appendable appendable, char quoteChar, int codePoint) throws IOException;
+    public abstract void appendString(Appendable appendable, char quoteChar, String value, int begin, int end) throws IOException;
 }

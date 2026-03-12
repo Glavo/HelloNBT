@@ -52,4 +52,10 @@ public sealed interface QuoteStrategy permits QuoteStrategies.Always, QuoteStrat
         }
         return new QuoteStrategies.Smart(quoteByDefault, preferredQuoteChar);
     }
+
+    /// Returns the quote character for the given value.
+    ///
+    /// If the value should be written without quotes, this method returns `\0`;
+    /// otherwise, it returns the quote character.
+    char getQuoteChar(String value);
 }

@@ -195,6 +195,15 @@ public sealed abstract class ArrayTag<E extends Number, T extends ValueTag<E>, A
         return accessor().get(values, index);
     }
 
+    /// Returns the element at the given index as a string.
+    ///
+    /// @throws IndexOutOfBoundsException if the index is out of bounds.
+    @Contract(pure = true)
+    public final String getAsString(int index) throws IndexOutOfBoundsException {
+        Objects.checkIndex(index, size);
+        return accessor().getAsString(values, index);
+    }
+
     /// Returns the array as a readonly [Buffer].
     ///
     /// The buffer is readonly, the position is set to `0`, and the limit is set to the size of the array.

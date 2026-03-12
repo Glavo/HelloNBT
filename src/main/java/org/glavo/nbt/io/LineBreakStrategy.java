@@ -16,7 +16,6 @@
 package org.glavo.nbt.io;
 
 import org.glavo.nbt.tag.ParentTag;
-import org.jetbrains.annotations.ApiStatus;
 
 /// Line break strategy for SNBT.
 public final class LineBreakStrategy {
@@ -52,7 +51,7 @@ public final class LineBreakStrategy {
     }
 
     /// Returns true if the elements of the tag need to be broken into separate lines.
-    public boolean shouldBreak(ParentTag<?> tag) {
+    public boolean shouldBreakLines(ParentTag<?> tag) {
         return tag.size() >= threshold;
     }
 

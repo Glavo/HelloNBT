@@ -74,6 +74,8 @@ public abstract class ArrayAccessor<E extends Number, T extends ValueTag<E>, A, 
 
     public abstract E get(A array, int index);
 
+    public abstract String getAsString(A array, int index);
+
     public abstract void set(A array, int index, E value);
 
     public abstract void set(A array, int index, T tag);
@@ -104,6 +106,11 @@ public abstract class ArrayAccessor<E extends Number, T extends ValueTag<E>, A, 
         @Override
         public Byte get(byte[] array, int index) {
             return array[index];
+        }
+
+        @Override
+        public String getAsString(byte[] array, int index) {
+            return Byte.toString(array[index]);
         }
 
         @Override
@@ -184,6 +191,11 @@ public abstract class ArrayAccessor<E extends Number, T extends ValueTag<E>, A, 
         }
 
         @Override
+        public String getAsString(int[] array, int index) {
+            return Integer.toString(array[index]);
+        }
+
+        @Override
         public void set(int[] array, int index, Integer value) {
             array[index] = value;
         }
@@ -258,6 +270,11 @@ public abstract class ArrayAccessor<E extends Number, T extends ValueTag<E>, A, 
         @Override
         public Long get(long[] array, int index) {
             return array[index];
+        }
+
+        @Override
+        public String getAsString(long[] array, int index) {
+            return Long.toString(array[index]);
         }
 
         @Override

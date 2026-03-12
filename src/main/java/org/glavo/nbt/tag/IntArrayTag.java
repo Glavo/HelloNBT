@@ -91,7 +91,7 @@ public final class IntArrayTag extends ArrayTag<Integer, IntTag, int[], IntBuffe
 
     /// Returns the UUID value of the tag.
     ///
-    /// @throws IllegalStateException if the tag is not a UUID.
+    /// @throws IllegalStateException if the tag is not a [UUID][#isUUID()].
     @Contract(pure = true)
     public UUID getUUID() {
         if (!isUUID()) {
@@ -137,6 +137,8 @@ public final class IntArrayTag extends ArrayTag<Integer, IntTag, int[], IntBuffe
     }
 
     /// Sets the value of the tag from a UUID.
+    ///
+    /// Calling this method will clear the current array, all subtags will be removed.
     @Contract(mutates = "this")
     public void setUUID(UUID uuid) {
         int[] array = new int[4];

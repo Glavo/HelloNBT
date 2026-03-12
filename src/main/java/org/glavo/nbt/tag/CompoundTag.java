@@ -301,7 +301,7 @@ public final class CompoundTag extends ParentTag<Tag> {
     private <T extends Tag> T getOrPutTag(String name, TagType<T> tagType) throws IllegalStateException {
         Tag existingTag = get(name);
         if (existingTag != null) {
-            assert existingTag.getName().equalsIgnoreCase(name);
+            assert existingTag.getName().equals(name);
 
             if (existingTag.getType() == tagType) {
                 return (T) existingTag;

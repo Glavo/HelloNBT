@@ -118,11 +118,13 @@ public final class Chunk implements NBTParent<CompoundTag>, NBTElement {
         return rootTag != null ? Collections.singleton(rootTag).iterator() : Collections.emptyIterator();
     }
 
+    /// Returns the root tag of this chunk, or `null` if this chunk has no root tag.
     @Contract(pure = true)
     public @Nullable CompoundTag getRootTag() {
         return rootTag;
     }
 
+    /// Sets the root tag of this chunk.
     @Contract(mutates = "this,param1")
     public void setRootTag(@Nullable CompoundTag rootTag) {
         if (rootTag == this.rootTag) {

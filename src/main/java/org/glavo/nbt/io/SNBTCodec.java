@@ -18,7 +18,6 @@ package org.glavo.nbt.io;
 import org.glavo.nbt.internal.SNBTCodecImpl;
 import org.glavo.nbt.tag.Tag;
 import org.jetbrains.annotations.Contract;
-import org.jetbrains.annotations.Nullable;
 
 import java.io.IOException;
 
@@ -74,6 +73,26 @@ public sealed interface SNBTCodec permits SNBTCodecImpl {
     /// Returns a new codec with the specified line break strategy for array tags.
     @Contract(value = "_ -> new", pure = true)
     SNBTCodec withArrayTagLineBreakStrategy(LineBreakStrategy strategy);
+
+    /// Returns the indentation string before each line.
+    @Contract(pure = true)
+    String getIndentation();
+
+    /// Returns a new codec with the specified indentation string.
+    ///
+    /// The indentation string must be a sequence of spaces or tabs.
+    ///
+    /// @see IllegalArgumentException if the indentation string is not a sequence of spaces or tabs.
+    @Contract(value = "_ -> new", pure = true)
+    SNBTCodec withIndentation(String indentation);
+
+    /// Returns a new codec with the specified indentation.
+    ///
+    /// The indentation is a sequence of spaces.
+    ///
+    /// @see IllegalArgumentException if the indentation is not a positive integer.
+    @Contract(value = "_ -> new", pure = true)
+    SNBTCodec withIndentation(int spaces);
 
     /// Reads a NBT tag from the Stringified NBT data.
     ///

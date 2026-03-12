@@ -19,7 +19,6 @@ import org.glavo.nbt.internal.snbt.SNBTParser;
 import org.glavo.nbt.io.LineBreakStrategy;
 import org.glavo.nbt.io.SNBTCodec;
 import org.glavo.nbt.tag.Tag;
-import org.jetbrains.annotations.Nullable;
 
 import java.io.IOException;
 import java.nio.CharBuffer;
@@ -27,20 +26,27 @@ import java.nio.CharBuffer;
 public record SNBTCodecImpl(
         LineBreakStrategy compoundTagLineBreakStrategy,
         LineBreakStrategy listTagLineBreakStrategy,
-        LineBreakStrategy arrayTagLineBreakStrategy
+        LineBreakStrategy arrayTagLineBreakStrategy,
+        String indentation
 ) implements SNBTCodec {
-    public static final SNBTCodecImpl COMPACT = new SNBTCodecImpl(LineBreakStrategy.NEVER,
+    public static final SNBTCodecImpl COMPACT = new SNBTCodecImpl(
             LineBreakStrategy.NEVER,
-            LineBreakStrategy.NEVER);
+            LineBreakStrategy.NEVER,
+            LineBreakStrategy.NEVER,
+            "" // No indentation
+    );
 
-    public static final SNBTCodecImpl PRETTY = new SNBTCodecImpl(LineBreakStrategy.ALWAYS,
+    public static final SNBTCodecImpl PRETTY = new SNBTCodecImpl(
             LineBreakStrategy.ALWAYS,
-            LineBreakStrategy.ALWAYS);
+            LineBreakStrategy.ALWAYS,
+            LineBreakStrategy.ALWAYS,
+            "    " // 4 spaces
+    );
 
 
     @Override
     public SNBTCodec withLineBreakStrategy(LineBreakStrategy strategy) {
-        return new SNBTCodecImpl(strategy, strategy, strategy);
+        return new SNBTCodecImpl(strategy, strategy, strategy, indentation);
     }
 
     @Override
@@ -50,7 +56,7 @@ public record SNBTCodecImpl(
 
     @Override
     public SNBTCodec withCompoundTagLineBreakStrategy(LineBreakStrategy strategy) {
-        return new SNBTCodecImpl(strategy, listTagLineBreakStrategy, arrayTagLineBreakStrategy);
+        return new SNBTCodecImpl(strategy, listTagLineBreakStrategy, arrayTagLineBreakStrategy, indentation);
     }
 
     @Override
@@ -60,7 +66,7 @@ public record SNBTCodecImpl(
 
     @Override
     public SNBTCodec withListTagLineBreakStrategy(LineBreakStrategy strategy) {
-        return new SNBTCodecImpl(compoundTagLineBreakStrategy, strategy, arrayTagLineBreakStrategy);
+        return new SNBTCodecImpl(compoundTagLineBreakStrategy, strategy, arrayTagLineBreakStrategy, indentation);
     }
 
     @Override
@@ -70,7 +76,29 @@ public record SNBTCodecImpl(
 
     @Override
     public SNBTCodec withArrayTagLineBreakStrategy(LineBreakStrategy strategy) {
-        return new SNBTCodecImpl(compoundTagLineBreakStrategy, listTagLineBreakStrategy, strategy);
+        return new SNBTCodecImpl(compoundTagLineBreakStrategy, listTagLineBreakStrategy, strategy, indentation);
+    }
+
+    @Override
+    public String getIndentation() {
+        return indentation;
+    }
+
+    @Override
+    public SNBTCodec withIndentation(String indentation) {
+        for (int i = 0; i < indentation.length(); i++) {
+            char ch = indentation.charAt(i);
+            if (ch != ' ' && ch != '\t') {
+                throw new IllegalArgumentException("Indentation must be a sequence of spaces or tabs");
+            }
+        }
+
+        return new SNBTCodecImpl(compoundTagLineBreakStrategy, listTagLineBreakStrategy, arrayTagLineBreakStrategy, indentation);
+    }
+
+    @Override
+    public SNBTCodec withIndentation(int spaces) {
+        return new SNBTCodecImpl(compoundTagLineBreakStrategy, listTagLineBreakStrategy, arrayTagLineBreakStrategy, " ".repeat(spaces));
     }
 
     @Override

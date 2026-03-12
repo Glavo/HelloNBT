@@ -139,4 +139,27 @@ public sealed interface SNBTCodec permits SNBTCodecImpl {
     /// @throws IOException if an I/O error occurs.
     @Contract(mutates = "param1")
     Tag readTag(Readable readable) throws IOException;
+
+    /// Writes a NBT tag as Stringified NBT to the given [Appendable].
+    ///
+    /// @throws IOException if an I/O error occurs.
+    @Contract(mutates = "param1")
+    void writeTag(Appendable appendable, Tag tag) throws IOException;
+
+    /// Writes a NBT tag as Stringified NBT to the given [StringBuilder].
+    @Contract(mutates = "param1")
+    default void writeTag(StringBuilder builder, Tag tag) {
+        try {
+            writeTag((Appendable) builder, tag);
+        } catch (IOException e) {
+            throw new AssertionError(e);
+        }
+    }
+
+    /// Returns the Stringified NBT of the tag.
+    default String toString(Tag tag) {
+        var builder = new StringBuilder();
+        writeTag(builder, tag);
+        return builder.toString();
+    }
 }

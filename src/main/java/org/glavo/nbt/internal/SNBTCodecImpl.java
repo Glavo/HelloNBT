@@ -16,6 +16,7 @@
 package org.glavo.nbt.internal;
 
 import org.glavo.nbt.internal.snbt.SNBTParser;
+import org.glavo.nbt.internal.snbt.SNBTWriter;
 import org.glavo.nbt.io.*;
 import org.glavo.nbt.tag.Tag;
 
@@ -168,5 +169,10 @@ public record SNBTCodecImpl(
         } catch (IllegalArgumentException e) {
             throw new IOException(e);
         }
+    }
+
+    @Override
+    public void writeTag(Appendable appendable, Tag tag) throws IOException {
+        new SNBTWriter(this, appendable).writeTag(tag);
     }
 }

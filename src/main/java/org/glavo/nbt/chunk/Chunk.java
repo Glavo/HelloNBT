@@ -158,6 +158,10 @@ public final class Chunk implements NBTParent<CompoundTag>, NBTElement {
     }
 
     /// Set the timestamp of this chunk.
+    ///
+    /// @apiNote The timestamp can be set to any instant, but when written to a file,
+    /// it will only retain precision up to seconds.
+    /// Timestamps exceeding the range of unsigned 32-bit epoch seconds will be truncated to `2106-02-07T06:28:15Z`.
     @Contract(mutates = "this")
     public void setTimestamp(Instant timestamp) {
         this.timestamp = Objects.requireNonNull(timestamp, "timestamp");

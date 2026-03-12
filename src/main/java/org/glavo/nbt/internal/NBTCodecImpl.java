@@ -233,12 +233,12 @@ public record NBTCodecImpl(MinecraftEdition edition,
         int currentSector = 2; // Skip the header and the timestamp
         for (int i = 0; i < ChunkUtils.CHUNKS_PRE_REGION; i++) {
             Chunk chunk = region.getChunk(i);
-            long epochSeconds = chunk.getTimestamp().toEpochMilli() / 1000L;
-            if (epochSeconds > Integer.toUnsignedLong(-1)) {
-                throw new IOException("Timestamp too large: " + epochSeconds);
-            }
+            long epochSecondsLong = chunk.getTimestamp().toEpochMilli() / 1000L;
+            int epochSeconds = epochSecondsLong <= Integer.toUnsignedLong(-1)
+                    ? (int) epochSecondsLong
+                    : -1;
 
-            header.setTimestampEpochSeconds(i, (int) epochSeconds);
+            header.setTimestampEpochSeconds(i, epochSeconds);
 
             ByteBuffer buffer = buffers[i];
             if (buffer != null && buffer.hasRemaining()) {

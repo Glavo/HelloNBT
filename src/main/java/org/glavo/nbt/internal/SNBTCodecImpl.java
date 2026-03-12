@@ -15,8 +15,19 @@
  */
 package org.glavo.nbt.internal;
 
+import org.glavo.nbt.internal.snbt.SNBTParser;
 import org.glavo.nbt.io.SNBTCodec;
+import org.glavo.nbt.tag.Tag;
 
 public record SNBTCodecImpl() implements SNBTCodec {
     public static final SNBTCodecImpl DEFAULT = new SNBTCodecImpl();
+
+    @Override
+    public Tag parse(CharSequence input, int startInclusive, int endExclusive) throws IllegalArgumentException {
+        Tag tag = new SNBTParser(input, startInclusive, endExclusive).nextTag();
+        if (tag == null) {
+            throw new IllegalArgumentException("Unexpected end of input");
+        }
+        return tag;
+    }
 }

@@ -16,6 +16,7 @@
 package org.glavo.nbt.io;
 
 import org.glavo.nbt.internal.SNBTCodecImpl;
+import org.glavo.nbt.tag.Tag;
 
 /// The codec for reading and writing Stringified NBT data.
 public sealed interface SNBTCodec permits SNBTCodecImpl {
@@ -24,4 +25,16 @@ public sealed interface SNBTCodec permits SNBTCodecImpl {
     static SNBTCodec of() {
         return SNBTCodecImpl.DEFAULT;
     }
+
+    /// Parses a Stringified NBT data.
+    ///
+    /// @throws IllegalArgumentException if the input is not a valid Stringified NBT data.
+    default Tag parse(CharSequence input) throws IllegalArgumentException {
+        return parse(input, 0, input.length());
+    }
+
+    /// Parses a Stringified NBT data.
+    ///
+    /// @throws IllegalArgumentException if the input is not a valid Stringified NBT data.
+    Tag parse(CharSequence input, int startInclusive, int endExclusive) throws IllegalArgumentException;
 }

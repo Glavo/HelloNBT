@@ -298,6 +298,8 @@ public sealed abstract class ArrayTag<E extends Number, T extends ValueTag<E>, A
             }
         }
 
+        tag.setName("");
+
         ensureTagsCapacityForAdd();
 
         add(tag.getValue());

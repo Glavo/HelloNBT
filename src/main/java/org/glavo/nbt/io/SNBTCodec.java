@@ -76,7 +76,6 @@ public sealed interface SNBTCodec permits SNBTCodecImpl {
     @Contract(value = "_ -> new", pure = true)
     SNBTCodec withSurroundingSpaces(SurroundingSpaces surroundingSpaces);
 
-
     /// Returns the escape strategy for SNBT.
     @Contract(pure = true)
     EscapeStrategy getEscapeStrategy();

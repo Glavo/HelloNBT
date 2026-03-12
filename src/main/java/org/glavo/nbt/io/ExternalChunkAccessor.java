@@ -33,6 +33,10 @@ import java.util.regex.Matcher;
 ///
 /// Since Minecraft 19w34a, if a chunk is larger than 1 MiB, it will be stored in a separate file named `c.<chunkX>.<chunkZ>.mcc` in the same directory as the region file.
 /// This interface provides a way to locate the external chunk file for a given chunk in an Anvil file.
+///
+/// @see NBTCodec
+/// @see NBTCodec#getExternalChunkAccessorFactory()
+/// @see NBTCodec#withExternalChunkAccessorFactory(Function)
 public interface ExternalChunkAccessor {
 
     /// Returns a default factory for creating [ExternalChunkAccessor] for an Anvil file.

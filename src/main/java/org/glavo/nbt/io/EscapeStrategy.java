@@ -18,6 +18,13 @@ package org.glavo.nbt.io;
 import org.glavo.nbt.internal.snbt.EscapeStrategies;
 
 /// Strategy for escaping characters in SNBT.
+///
+/// When converting a Tag object to SNBT, this strategy is used to determine which characters need to be escaped,
+/// and how to escape them.
+///
+/// @see SNBTCodec
+/// @see SNBTCodec#getEscapeStrategy()
+/// @see SNBTCodec#withEscapeStrategy(EscapeStrategy)
 public sealed interface EscapeStrategy permits EscapeStrategies {
 
     /// Returns the default escape strategy.

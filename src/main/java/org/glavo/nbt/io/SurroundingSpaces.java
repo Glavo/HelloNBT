@@ -18,6 +18,10 @@ package org.glavo.nbt.io;
 import java.util.Objects;
 
 /// Represents the surrounding spaces for SNBT.
+///
+/// @see SNBTCodec
+/// @see SNBTCodec#getSurroundingSpaces()
+/// @see SNBTCodec#withSurroundingSpaces(SurroundingSpaces)
 public final class SurroundingSpaces {
     /// Surrounding spaces for compact SNBT.
     public static final SurroundingSpaces COMPACT = new SurroundingSpaces(0, 0, 0, 0);

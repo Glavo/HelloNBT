@@ -17,6 +17,14 @@ package org.glavo.nbt.io;
 
 import org.glavo.nbt.internal.snbt.QuoteStrategies;
 
+/// Represents the quote strategy for SNBT.
+///
+/// When converting a Tag object to SNBT, for the value of string tags and the names of compound tag sub-tags,
+/// this strategy is used to determine whether to use single quotes, double quotes, or no quotes.
+///
+/// @see SNBTCodec
+/// @see SNBTCodec#getNameQuoteStrategy()
+/// @see SNBTCodec#getValueQuoteStrategy()
 public sealed interface QuoteStrategy permits QuoteStrategies.Always, QuoteStrategies.Smart, QuoteStrategies.WhenNeeded {
 
     /// Returns the default quote strategy for tag names.

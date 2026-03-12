@@ -21,7 +21,14 @@ import org.glavo.nbt.tag.CompoundTag;
 import org.glavo.nbt.tag.ListTag;
 import org.glavo.nbt.tag.ParentTag;
 
-/// Line break strategy for SNBT.
+/// Strategy for breaking lines in SNBT.
+///
+/// When converting a Tag object to SNBT, this strategy is used to determine whether to break lines between the child tags
+/// of a [parent tag][ParentTag].
+///
+/// @see SNBTCodec
+/// @see SNBTCodec#getLineBreakStrategy()
+/// @see SNBTCodec#withLineBreakStrategy(LineBreakStrategy)
 public sealed interface LineBreakStrategy permits org.glavo.nbt.internal.snbt.LineBreakStrategyImpl {
 
     /// Returns the default line break strategy:

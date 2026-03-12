@@ -47,11 +47,11 @@ public sealed interface QuoteStrategy permits QuoteStrategies.Always, QuoteStrat
     /// Returns a quote strategy that only uses the specified quote character when necessary.
     ///
     /// @throws IllegalArgumentException if the quote character is not a valid quote character.
-    static QuoteStrategy whenNeeded(char preferredQuoteChar) {
-        return switch (preferredQuoteChar) {
+    static QuoteStrategy whenNeeded(char quoteChar) {
+        return switch (quoteChar) {
             case '"' -> QuoteStrategies.WhenNeeded.DOUBLE_QUOTE;
             case '\'' -> QuoteStrategies.WhenNeeded.SINGLE_QUOTE;
-            default -> throw new IllegalArgumentException("Invalid quote char: " + preferredQuoteChar);
+            default -> throw new IllegalArgumentException("Invalid quote char: " + quoteChar);
         };
     }
 

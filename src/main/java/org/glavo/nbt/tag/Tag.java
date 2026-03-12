@@ -64,8 +64,8 @@ public sealed abstract class Tag implements NBTElement
 
     String name;
 
-    private @Nullable NBTParent<? extends Tag> parent;
-    private int index = -1;
+    private transient @Nullable NBTParent<? extends Tag> parent;
+    private transient int index = -1;
 
     protected Tag(String name) {
         this.name = Objects.requireNonNull(name, "name");

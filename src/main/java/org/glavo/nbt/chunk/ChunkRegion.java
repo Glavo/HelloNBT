@@ -172,6 +172,21 @@ public final class ChunkRegion implements NBTParent<Chunk>, NBTElement, Iterable
     }
 
     @Override
+    @Contract(value = "-> new", pure = true)
+    public ChunkRegion clone() {
+        var newRegion = new ChunkRegion();
+
+        for (int i = 0; i < chunks.length; i++) {
+            Chunk chunk = chunks[i];
+            if (chunk != null) {
+                newRegion.setChunk(i, chunk.clone());
+            }
+        }
+
+        return newRegion;
+    }
+
+    @Override
     public int hashCode() {
         int hash = 0;
         for (Chunk chunk : this) {

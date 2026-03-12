@@ -45,4 +45,11 @@ public sealed interface NBTElement permits ChunkRegion, Chunk, Tag, NBTParent {
         return getParent() == null;
     }
 
+    /// Returns a clone of this element.
+    ///
+    /// This method always performs a deep copy.
+    ///
+    /// The returned element has the same content but not in a parent element.
+    @Contract(value = "-> new", pure = true)
+    NBTElement clone();
 }

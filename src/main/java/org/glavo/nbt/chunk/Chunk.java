@@ -188,6 +188,15 @@ public final class Chunk implements NBTParent<CompoundTag>, NBTElement {
     }
 
     @Override
+    @Contract(value = "-> new", pure = true)
+    public Chunk clone() {
+        Chunk newChunk = new Chunk();
+        newChunk.setTimestamp(getTimestamp());
+        newChunk.setRootTag(getRootTag() != null ? getRootTag().clone() : null);
+        return newChunk;
+    }
+
+    @Override
     public int hashCode() {
         return Objects.hash(timestamp, rootTag);
     }

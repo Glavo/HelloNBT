@@ -70,7 +70,7 @@ public sealed interface NBTPathNode {
     record Index(int index) implements NBTPathNode {
         @Override
         public void appendTo(SNBTWriter<StringBuilder> writer) throws IOException {
-            writer.getAppendable().append("[" + index + ']');
+            writer.getAppendable().append("[").append(index).append(']');
         }
     }
 

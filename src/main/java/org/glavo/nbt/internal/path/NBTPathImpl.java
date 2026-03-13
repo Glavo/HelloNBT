@@ -22,17 +22,16 @@ import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.Unmodifiable;
 
 import java.io.IOException;
-import java.util.List;
 
 public final class NBTPathImpl implements NBTPath {
-    private final @Unmodifiable List<NBTPathNode> nodes;
+    private final NBTPathNode @Unmodifiable [] nodes;
     private @Nullable String cachedString;
 
-    public NBTPathImpl(@Unmodifiable List<NBTPathNode> nodes) {
+    public NBTPathImpl(NBTPathNode @Unmodifiable [] nodes) {
         this.nodes = nodes;
     }
 
-    public List<NBTPathNode> getNodes() {
+    public NBTPathNode @Unmodifiable [] getNodes() {
         return nodes;
     }
 

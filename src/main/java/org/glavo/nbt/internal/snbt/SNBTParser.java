@@ -545,6 +545,8 @@ public final class SNBTParser {
 
                     if (peek == Token.SimpleToken.LEFT_BRACE) {
                         CompoundTag tag = nextCompoundTag(true);
+                        nextToken(Token.SimpleToken.RIGHT_BRACKET);
+
                         nodes.add(tag.isEmpty() ? NBTPathNode.CompoundElements.EMPTY : new NBTPathNode.CompoundElements(tag));
                     } else if (peek instanceof Token.IntegralToken integralToken) {
                         discardPeekedToken(integralToken);

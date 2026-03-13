@@ -22,8 +22,6 @@ import org.glavo.nbt.tag.TagType;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.stream.Stream;
-
 /// @see <a href="https://minecraft.wiki/w/NBT_path">NBT Path - Minecraft Wiki</a>
 public sealed interface NBTPath<T extends Tag> permits NBTPathImpl {
 
@@ -40,9 +38,5 @@ public sealed interface NBTPath<T extends Tag> permits NBTPathImpl {
     /// Returns a new path with the given tag type.
     @Contract(pure = true)
     <T2 extends Tag> NBTPath<T2> withTagType(TagType<T2> tagType);
-
-    /// Selects the tags that match the path from the given parent.
-    @Contract(pure = true)
-    Stream<T> select(NBTParent<?> parent);
 
 }

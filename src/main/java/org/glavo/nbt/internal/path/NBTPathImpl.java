@@ -33,6 +33,32 @@ import java.util.Objects;
 import java.util.stream.Stream;
 
 public final class NBTPathImpl<T extends Tag> implements NBTPath<T> {
+
+    @SuppressWarnings({"ReassignedVariable", "unchecked"})
+    public static <T extends Tag> Stream<T> select(NBTParent<?> parent, NBTPath<? extends T> path) {
+        Stream<? extends Tag> tags;
+        if (parent instanceof CompoundTag compoundTag) {
+            tags = Stream.of(compoundTag);
+        } else if (parent instanceof ChunkRegion chunkRegion) {
+            tags = chunkRegion.stream()
+                    .flatMap(chunk -> Stream.<Tag>ofNullable(chunk.getRootTag()));
+        } else if (parent instanceof Chunk chunk) {
+            tags = chunk.getRootTag() != null ? Stream.of(chunk.getRootTag()) : Stream.empty();
+        } else {
+            tags = Stream.empty();
+        }
+
+        for (NBTPathNode node : ((NBTPathImpl<T>) path).nodes) {
+            tags = node.operate(tags);
+        }
+
+        if (path.getTagType() != null) {
+            tags = tags.filter(tag -> path.getTagType().tagClass().isInstance(tag));
+        }
+
+        return (Stream<T>) tags;
+    }
+
     private final NBTPathNode @Unmodifiable [] nodes;
     private final @Nullable TagType<T> tagType;
 
@@ -57,31 +83,6 @@ public final class NBTPathImpl<T extends Tag> implements NBTPath<T> {
     @SuppressWarnings("unchecked")
     public <T2 extends Tag> NBTPath<T2> withTagType(TagType<T2> tagType) {
         return tagType == this.tagType ? (NBTPath<T2>) this : new NBTPathImpl<>(nodes, tagType);
-    }
-
-    @SuppressWarnings("unchecked")
-    public Stream<T> select(NBTParent<?> parent) {
-        Stream<? extends Tag> tags;
-        if (parent instanceof CompoundTag compoundTag) {
-            tags = Stream.of(compoundTag);
-        } else if (parent instanceof ChunkRegion chunkRegion) {
-            tags = chunkRegion.stream()
-                    .flatMap(chunk -> Stream.<Tag>ofNullable(chunk.getRootTag()));
-        } else if (parent instanceof Chunk chunk) {
-            tags = chunk.getRootTag() != null ? Stream.of(chunk.getRootTag()) : Stream.empty();
-        } else {
-            tags = Stream.empty();
-        }
-
-        for (NBTPathNode node : nodes) {
-            tags = node.operate(tags);
-        }
-
-        if (tagType != null) {
-            tags = tags.filter(tag -> tagType.tagClass().isInstance(tag));
-        }
-
-        return (Stream<T>) tags;
     }
 
     @Override

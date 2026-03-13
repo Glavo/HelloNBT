@@ -82,7 +82,16 @@ public final class NBTPathImpl<T extends Tag> implements NBTPath<T> {
     @Override
     @SuppressWarnings("unchecked")
     public <T2 extends Tag> NBTPath<T2> withTagType(TagType<T2> tagType) {
-        return tagType == this.tagType ? (NBTPath<T2>) this : new NBTPathImpl<>(nodes, tagType);
+        if (tagType == this.tagType) {
+            return (NBTPath<T2>) this;
+        }
+
+        TagType<?> expectedTagType = nodes[nodes.length - 1].getTagType();
+        if (expectedTagType == null || expectedTagType.equals(tagType)) {
+            return new NBTPathImpl<>(nodes, tagType);
+        } else {
+            throw new IllegalStateException("Path does not match the given tag type. Expected: " + expectedTagType + ", Actual: " + tagType);
+        }
     }
 
     @Override

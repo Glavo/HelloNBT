@@ -27,7 +27,7 @@ public sealed interface NBTPath<T extends Tag> permits NBTPathImpl {
 
     /// Parse a NBT path from a string.
     @Contract(pure = true)
-    static NBTPath<Tag> of(String path) throws IllegalArgumentException {
+    static NBTPath<?> of(String path) throws IllegalArgumentException {
         return new SNBTParser(path, 0, path.length()).nextPath();
     }
 
@@ -36,7 +36,15 @@ public sealed interface NBTPath<T extends Tag> permits NBTPathImpl {
     @Nullable TagType<T> getTagType();
 
     /// Returns a new path with the given tag type.
+    ///
+    /// Certain paths have a fixed tag type; for example, `{}`, `a.b{}``, and ``[{}]` can only match compound tags.
+    /// For these NBTPaths, you must use the corresponding tag type, otherwise an `IllegalStateException` will be thrown.
+    ///
+    /// In contrast, other paths such as `a.b`, `a[0]`, and `a[]` do not have a fixed tag type.
+    /// By default, [#getTagType()] will return null, allowing you to attach any tag type using this method.
+    ///
+    /// @throws IllegalStateException if the path does not match the given tag type.
     @Contract(pure = true)
-    <T2 extends Tag> NBTPath<T2> withTagType(TagType<T2> tagType);
+    <T2 extends Tag> NBTPath<T2> withTagType(TagType<T2> tagType) throws IllegalStateException;
 
 }

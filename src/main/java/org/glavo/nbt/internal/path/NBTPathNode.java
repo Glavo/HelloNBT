@@ -20,6 +20,7 @@ package org.glavo.nbt.internal.path;
 import org.glavo.nbt.internal.snbt.SNBTWriter;
 import org.glavo.nbt.io.SNBTCodec;
 import org.glavo.nbt.tag.*;
+import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.Unmodifiable;
 
 import java.io.IOException;
@@ -50,6 +51,8 @@ public sealed interface NBTPathNode {
 
     Stream<? extends Tag> operate(Stream<? extends Tag> tags);
 
+    @Nullable TagType<?> getTagType();
+
     default boolean needDot() {
         return this instanceof NamedSubTag || this instanceof NamedSubCompoundTag;
     }
@@ -62,6 +65,11 @@ public sealed interface NBTPathNode {
         @Override
         public Stream<? extends Tag> operate(Stream<? extends Tag> tags) {
             return tags.filter(tag -> match(tag, this.tags));
+        }
+
+        @Override
+        public @Nullable TagType<?> getTagType() {
+            return TagType.COMPOUND;
         }
 
         @Override
@@ -82,6 +90,11 @@ public sealed interface NBTPathNode {
             return tags.flatMap(tag -> tag instanceof CompoundTag compoundTag
                     ? Stream.ofNullable(compoundTag.get(name))
                     : Stream.empty());
+        }
+
+        @Override
+        public @Nullable TagType<?> getTagType() {
+            return null;
         }
 
         @Override
@@ -112,6 +125,11 @@ public sealed interface NBTPathNode {
         }
 
         @Override
+        public TagType<?> getTagType() {
+            return TagType.COMPOUND;
+        }
+
+        @Override
         public void appendTo(SNBTWriter<StringBuilder> writer) throws IOException {
             writer.writeTagName(name);
             writer.writeTag(tags);
@@ -135,6 +153,11 @@ public sealed interface NBTPathNode {
                     return Stream.empty();
                 }
             });
+        }
+
+        @Override
+        public @Nullable TagType<?> getTagType() {
+            return null;
         }
 
         @Override
@@ -170,6 +193,11 @@ public sealed interface NBTPathNode {
         }
 
         @Override
+        public @Nullable TagType<?> getTagType() {
+            return null;
+        }
+
+        @Override
         public void appendTo(SNBTWriter<StringBuilder> writer) throws IOException {
             writer.getAppendable().append("[").append(index).append(']');
         }
@@ -192,6 +220,11 @@ public sealed interface NBTPathNode {
 
                 return Stream.empty();
             });
+        }
+
+        @Override
+        public @Nullable TagType<?> getTagType() {
+            return TagType.COMPOUND;
         }
 
         @Override

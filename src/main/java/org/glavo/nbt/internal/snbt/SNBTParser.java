@@ -503,7 +503,7 @@ public final class SNBTParser {
         return tag;
     }
 
-    public NBTPath<Tag> nextPath() throws IllegalArgumentException {
+    public NBTPath<?> nextPath() throws IllegalArgumentException {
         var nodes = new ArrayList<NBTPathNode>();
 
         parsingPath = true;
@@ -555,7 +555,7 @@ public final class SNBTParser {
                             throw new IllegalArgumentException("Index out of range: " + integralToken);
                         }
 
-                       nodes.add(new NBTPathNode.Index((int) integralToken.value()));
+                        nodes.add(new NBTPathNode.Index((int) integralToken.value()));
                     } else if (peek == Token.SimpleToken.RIGHT_BRACKET) {
                         discardPeekedToken(peek);
                         nodes.add(NBTPathNode.AllElements.INSTANCE);
@@ -576,6 +576,9 @@ public final class SNBTParser {
             throw new IllegalArgumentException("Empty path");
         }
 
-        return new NBTPathImpl<>(nodes.toArray(new NBTPathNode[0]), null);
+        return new NBTPathImpl<>(
+                nodes.toArray(new NBTPathNode[0]),
+                nodes.get(nodes.size() - 1).getTagType()
+        );
     }
 }

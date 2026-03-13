@@ -23,21 +23,25 @@ import org.glavo.nbt.internal.snbt.SNBTWriter;
 import org.glavo.nbt.io.SNBTCodec;
 import org.glavo.nbt.tag.CompoundTag;
 import org.glavo.nbt.tag.Tag;
+import org.glavo.nbt.tag.TagType;
 import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.Unmodifiable;
 
 import java.io.IOException;
 import java.util.Arrays;
-import java.util.List;
+import java.util.Objects;
 import java.util.stream.Stream;
 
-public final class NBTPathImpl implements NBTPath {
+public final class NBTPathImpl<T extends Tag> implements NBTPath<T> {
     private final NBTPathNode @Unmodifiable [] nodes;
+    private final @Nullable TagType<T> tagType;
+
     private @Nullable String cachedString;
 
-    public NBTPathImpl(NBTPathNode @Unmodifiable [] nodes) {
+    public NBTPathImpl(NBTPathNode @Unmodifiable [] nodes, @Nullable TagType<T> tagType) {
         assert nodes.length > 0;
         this.nodes = nodes;
+        this.tagType = tagType;
     }
 
     public NBTPathNode @Unmodifiable [] getNodes() {
@@ -45,7 +49,7 @@ public final class NBTPathImpl implements NBTPath {
     }
 
     @SuppressWarnings("unchecked")
-    private Stream<Tag> select(NBTParent<?> parent) {
+    public Stream<Tag> select(NBTParent<?> parent) {
         Stream<? extends Tag> tags;
         if (parent instanceof CompoundTag compoundTag) {
             tags = Stream.of(compoundTag);
@@ -65,25 +69,27 @@ public final class NBTPathImpl implements NBTPath {
     }
 
     @Override
-    public List<Tag> selectAll(NBTParent<?> parent) {
-        return select(parent).toList();
-    }
-
-    @Override
     public boolean equals(Object obj) {
-        return this == obj || obj instanceof NBTPathImpl that
-                && Arrays.equals(nodes, that.nodes);
+        return this == obj || obj instanceof NBTPathImpl<?> that
+                && Arrays.equals(nodes, that.nodes)
+                && Objects.equals(tagType, that.tagType);
     }
 
     @Override
     public int hashCode() {
-        return Arrays.hashCode(nodes);
+        return Arrays.hashCode(nodes) ^ Objects.hashCode(tagType);
     }
 
     @Override
     public String toString() {
         if (cachedString == null) {
-            var writer = new SNBTWriter<>(SNBTCodec.ofCompact(), new StringBuilder());
+            StringBuilder builder = new StringBuilder();
+
+            if (tagType != null) {
+                builder.append("<").append(tagType).append("> ");
+            }
+
+            var writer = new SNBTWriter<>(SNBTCodec.ofCompact(), builder);
 
             boolean first = true;
             for (NBTPathNode node : nodes) {
@@ -99,7 +105,9 @@ public final class NBTPathImpl implements NBTPath {
                     throw new AssertionError(e);
                 }
             }
-            cachedString = writer.getAppendable().toString();
+
+            builder.append(']');
+            cachedString = builder.toString();
         }
 
         return cachedString;

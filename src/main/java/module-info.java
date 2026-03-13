@@ -18,7 +18,6 @@
 module org.glavo.nbt {
     requires static org.jetbrains.annotations;
     requires static org.lz4.java;
-    requires javafx.graphics;
 
     exports org.glavo.nbt;
     exports org.glavo.nbt.chunk;

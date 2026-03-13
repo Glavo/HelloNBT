@@ -17,7 +17,6 @@
  */
 package org.glavo.nbt.internal.path;
 
-import javafx.scene.shape.ArcType;
 import org.glavo.nbt.internal.snbt.SNBTWriter;
 import org.glavo.nbt.io.SNBTCodec;
 import org.glavo.nbt.tag.*;

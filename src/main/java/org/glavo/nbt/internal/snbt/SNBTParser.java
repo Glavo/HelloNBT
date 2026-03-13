@@ -503,7 +503,7 @@ public final class SNBTParser {
         return tag;
     }
 
-    public NBTPath nextPath() throws IllegalArgumentException {
+    public NBTPath<Tag> nextPath() throws IllegalArgumentException {
         var nodes = new ArrayList<NBTPathNode>();
 
         parsingPath = true;
@@ -576,6 +576,6 @@ public final class SNBTParser {
             throw new IllegalArgumentException("Empty path");
         }
 
-        return new NBTPathImpl(nodes.toArray(new NBTPathNode[0]));
+        return new NBTPathImpl<>(nodes.toArray(new NBTPathNode[0]), null);
     }
 }

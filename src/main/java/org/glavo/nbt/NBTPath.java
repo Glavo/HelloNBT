@@ -18,19 +18,21 @@ package org.glavo.nbt;
 import org.glavo.nbt.internal.path.NBTPathImpl;
 import org.glavo.nbt.internal.snbt.SNBTParser;
 import org.glavo.nbt.tag.Tag;
+import org.jetbrains.annotations.Contract;
 
-import java.util.List;
+import java.util.stream.Stream;
 
 /// @see <a href="https://minecraft.wiki/w/NBT_path">NBT Path - Minecraft Wiki</a>
-public sealed interface NBTPath permits NBTPathImpl {
+public sealed interface NBTPath<T extends Tag> permits NBTPathImpl {
 
     /// Parse a NBT path from a string.
-    static NBTPath of(String path) throws IllegalArgumentException {
+    @Contract(pure = true)
+    static NBTPath<Tag> of(String path) throws IllegalArgumentException {
         return new SNBTParser(path, 0, path.length()).nextPath();
     }
 
-
-    List<Tag> selectAll(NBTParent<?> parent);
-
+    /// Selects the tags that match the path from the given parent.
+    @Contract(pure = true)
+    Stream<Tag> select(NBTParent<?> parent);
 
 }

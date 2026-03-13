@@ -48,6 +48,17 @@ public final class NBTPathImpl<T extends Tag> implements NBTPath<T> {
         return nodes;
     }
 
+    @Override
+    public @Nullable TagType<T> getTagType() {
+        return tagType;
+    }
+
+    @Override
+    @SuppressWarnings("unchecked")
+    public <T2 extends Tag> NBTPath<T2> withTagType(TagType<T2> tagType) {
+        return tagType == this.tagType ? (NBTPath<T2>) this : new NBTPathImpl<>(nodes, tagType);
+    }
+
     @SuppressWarnings("unchecked")
     public Stream<Tag> select(NBTParent<?> parent) {
         Stream<? extends Tag> tags;

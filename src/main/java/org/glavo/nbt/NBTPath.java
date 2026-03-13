@@ -18,7 +18,9 @@ package org.glavo.nbt;
 import org.glavo.nbt.internal.path.NBTPathImpl;
 import org.glavo.nbt.internal.snbt.SNBTParser;
 import org.glavo.nbt.tag.Tag;
+import org.glavo.nbt.tag.TagType;
 import org.jetbrains.annotations.Contract;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.stream.Stream;
 
@@ -30,6 +32,14 @@ public sealed interface NBTPath<T extends Tag> permits NBTPathImpl {
     static NBTPath<Tag> of(String path) throws IllegalArgumentException {
         return new SNBTParser(path, 0, path.length()).nextPath();
     }
+
+    /// Returns the tag type of this path.
+    @Contract(pure = true)
+    @Nullable TagType<T> getTagType();
+
+    /// Returns a new path with the given tag type.
+    @Contract(pure = true)
+    <T2 extends Tag> NBTPath<T2> withTagType(TagType<T2> tagType);
 
     /// Selects the tags that match the path from the given parent.
     @Contract(pure = true)

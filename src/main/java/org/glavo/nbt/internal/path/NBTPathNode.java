@@ -17,11 +17,14 @@
  */
 package org.glavo.nbt.internal.path;
 
+import org.glavo.nbt.internal.snbt.SNBTWriter;
 import org.glavo.nbt.tag.CompoundTag;
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Unmodifiable;
 
+import java.io.IOException;
+
 public sealed interface NBTPathNode {
+
     @Unmodifiable
     CompoundTag EMPTY_COMPOUND_TAG = new CompoundTag();
 
@@ -29,28 +32,29 @@ public sealed interface NBTPathNode {
         return this instanceof NamedSubTag || this instanceof NamedSubCompoundTag;
     }
 
-    void appendTo(StringBuilder builder);
+    void appendTo(SNBTWriter<StringBuilder> writer) throws IOException;
 
     record Root(@Unmodifiable CompoundTag tags) implements NBTPathNode {
         public static final Root EMPTY = new Root(EMPTY_COMPOUND_TAG);
 
         @Override
-        public void appendTo(StringBuilder builder) {
-            builder.append(tags); // TODO: SNBT
+        public void appendTo(SNBTWriter<StringBuilder> writer) throws IOException {
+            writer.writeTag(tags);
         }
     }
 
     record NamedSubTag(String name) implements NBTPathNode {
         @Override
-        public void appendTo(StringBuilder builder) {
-            builder.append(name); // TODO: SNBT
+        public void appendTo(SNBTWriter<StringBuilder> writer) throws IOException {
+            writer.writeTagName(name);
         }
     }
 
     record NamedSubCompoundTag(String name, @Unmodifiable CompoundTag tags) implements NBTPathNode {
         @Override
-        public void appendTo(StringBuilder builder) {
-            builder.append(name).append(tags); // TODO: SNBT
+        public void appendTo(SNBTWriter<StringBuilder> writer) throws IOException {
+            writer.writeTagName(name);
+            writer.writeTag(tags);
         }
     }
 
@@ -58,15 +62,15 @@ public sealed interface NBTPathNode {
         public static final AllElements INSTANCE = new AllElements();
 
         @Override
-        public void appendTo(StringBuilder builder) {
-            builder.append("[]");
+        public void appendTo(SNBTWriter<StringBuilder> writer) throws IOException {
+            writer.getAppendable().append("[]");
         }
     }
 
     record Index(int index) implements NBTPathNode {
         @Override
-        public void appendTo(StringBuilder builder) {
-            builder.append('[').append(index).append(']');
+        public void appendTo(SNBTWriter<StringBuilder> writer) throws IOException {
+            writer.getAppendable().append("[" + index + ']');
         }
     }
 
@@ -74,8 +78,10 @@ public sealed interface NBTPathNode {
         public static final CompoundElements EMPTY = new CompoundElements(EMPTY_COMPOUND_TAG);
 
         @Override
-        public void appendTo(StringBuilder builder) {
-            builder.append("[{").append(tags).append("}]"); // TODO: SNBT
+        public void appendTo(SNBTWriter<StringBuilder> writer) throws IOException {
+            writer.getAppendable().append('[');
+            writer.writeTag(tags);
+            writer.getAppendable().append(']');
         }
     }
 }

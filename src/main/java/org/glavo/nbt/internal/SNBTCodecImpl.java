@@ -161,6 +161,6 @@ public record SNBTCodecImpl(
 
     @Override
     public void writeTag(Appendable appendable, Tag tag) throws IOException {
-        new SNBTWriter(this, appendable).writeTag(tag);
+        new SNBTWriter<>(this, appendable).writeTag(tag);
     }
 }

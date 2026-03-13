@@ -21,14 +21,18 @@ import org.glavo.nbt.tag.*;
 
 import java.io.IOException;
 
-public final class SNBTWriter {
+public final class SNBTWriter<A extends Appendable> {
     private final SNBTCodec codec;
-    private final Appendable appendable;
+    private final A appendable;
     private int identLevel = 0;
 
-    public SNBTWriter(SNBTCodec codec, Appendable appendable) {
+    public SNBTWriter(SNBTCodec codec, A appendable) {
         this.codec = codec;
         this.appendable = appendable;
+    }
+
+    public A getAppendable() {
+        return appendable;
     }
 
     private void writeString(QuoteStrategy quoteStrategy, String value) throws IOException {
@@ -43,7 +47,11 @@ public final class SNBTWriter {
         }
     }
 
-    private void writeStringValue(String value) throws IOException {
+    public void writeTagName(String value) throws IOException {
+        writeString(codec.getNameQuoteStrategy(), value);
+    }
+
+    public void writeStringValue(String value) throws IOException {
         writeString(codec.getValueQuoteStrategy(), value);
     }
 
@@ -78,7 +86,7 @@ public final class SNBTWriter {
                 writeIndent();
             }
 
-            writeString(codec.getNameQuoteStrategy(), subTag.getName());
+            writeTagName(subTag.getName());
 
             writeSpaces(codec.getSurroundingSpaces().getSpacesBeforeColon());
             appendable.append(':');
@@ -232,7 +240,7 @@ public final class SNBTWriter {
 
     public void writeTagWithName(Tag tag) throws IOException {
         if (!tag.getName().isEmpty()) {
-            writeString(codec.getNameQuoteStrategy(), tag.getName());
+            writeTagName(tag.getName());
             writeSpaces(codec.getSurroundingSpaces().getSpacesBeforeColon());
             appendable.append(':');
             writeSpaces(codec.getSurroundingSpaces().getSpacesAfterColon());

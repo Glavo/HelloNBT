@@ -16,9 +16,12 @@
 package org.glavo.nbt.internal.path;
 
 import org.glavo.nbt.NBTPath;
+import org.glavo.nbt.internal.snbt.SNBTWriter;
+import org.glavo.nbt.io.SNBTCodec;
 import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.Unmodifiable;
 
+import java.io.IOException;
 import java.util.List;
 
 public final class NBTPathImpl implements NBTPath {
@@ -36,19 +39,23 @@ public final class NBTPathImpl implements NBTPath {
     @Override
     public String toString() {
         if (cachedString == null) {
-            StringBuilder builder = new StringBuilder();
+            var writer = new SNBTWriter<>(SNBTCodec.ofCompact(), new StringBuilder());
 
             boolean first = true;
             for (NBTPathNode node : nodes) {
                 if (first) {
                     first = false;
                 } else if (node.needDot()) {
-                    builder.append('.');
+                    writer.getAppendable().append('.');
                 }
 
-                builder.append(node);
+                try {
+                    node.appendTo(writer);
+                } catch (IOException e) {
+                    throw new AssertionError(e);
+                }
             }
-            cachedString = builder.toString();
+            cachedString = writer.getAppendable().toString();
         }
 
         return cachedString;

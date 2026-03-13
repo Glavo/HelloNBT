@@ -19,11 +19,10 @@ package org.glavo.nbt.internal.snbt;
 
 import org.glavo.nbt.NBTPath;
 import org.glavo.nbt.internal.TextUtils;
-import org.glavo.nbt.internal.path.NBTPathImpl;
+import org.glavo.nbt.internal.path.NBTCompositePath;
 import org.glavo.nbt.internal.path.NBTPathNode;
 import org.glavo.nbt.tag.*;
 import org.jetbrains.annotations.Nullable;
-import org.jetbrains.annotations.Unmodifiable;
 import org.jetbrains.annotations.VisibleForTesting;
 
 import java.util.ArrayList;
@@ -569,10 +568,10 @@ public final class SNBTParser {
             parsingPath = false;
         }
 
-        if (nodes.isEmpty()) {
-            throw new IllegalArgumentException("Empty path");
-        }
-
-        return new NBTPathImpl(nodes.toArray(new NBTPathNode[0]));
+        return switch (nodes.size()) {
+            case 0 -> throw new IllegalArgumentException("Empty path");
+            case 1 -> nodes.get(0);
+            default -> new NBTCompositePath(nodes.toArray(new NBTPathNode[0]));
+        };
     }
 }

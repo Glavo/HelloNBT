@@ -17,16 +17,28 @@
  */
 package org.glavo.nbt.internal.path;
 
+import org.glavo.nbt.NBTPath;
 import org.glavo.nbt.internal.snbt.SNBTWriter;
+import org.glavo.nbt.io.SNBTCodec;
 import org.glavo.nbt.tag.CompoundTag;
 import org.jetbrains.annotations.Unmodifiable;
 
 import java.io.IOException;
 
-public sealed interface NBTPathNode {
+public sealed interface NBTPathNode extends NBTPath {
 
     @Unmodifiable
     CompoundTag EMPTY_COMPOUND_TAG = new CompoundTag();
+
+    private static String toString(NBTPathNode node) {
+        var writer = new SNBTWriter<>(SNBTCodec.ofCompact(), new StringBuilder());
+        try {
+            node.appendTo(writer);
+        } catch (IOException e) {
+            throw new AssertionError(e);
+        }
+        return writer.getAppendable().toString();
+    }
 
     default boolean needDot() {
         return this instanceof NamedSubTag || this instanceof NamedSubCompoundTag;
@@ -41,12 +53,22 @@ public sealed interface NBTPathNode {
         public void appendTo(SNBTWriter<StringBuilder> writer) throws IOException {
             writer.writeTag(tags);
         }
+
+        @Override
+        public String toString() {
+            return tags.isEmpty() ? "{}" : NBTPathNode.toString(this);
+        }
     }
 
     record NamedSubTag(String name) implements NBTPathNode {
         @Override
         public void appendTo(SNBTWriter<StringBuilder> writer) throws IOException {
             writer.writeTagName(name);
+        }
+
+        @Override
+        public String toString() {
+            return NBTPathNode.toString(this);
         }
     }
 
@@ -55,6 +77,11 @@ public sealed interface NBTPathNode {
         public void appendTo(SNBTWriter<StringBuilder> writer) throws IOException {
             writer.writeTagName(name);
             writer.writeTag(tags);
+        }
+
+        @Override
+        public String toString() {
+            return NBTPathNode.toString(this);
         }
     }
 
@@ -65,12 +92,22 @@ public sealed interface NBTPathNode {
         public void appendTo(SNBTWriter<StringBuilder> writer) throws IOException {
             writer.getAppendable().append("[]");
         }
+
+        @Override
+        public String toString() {
+            return "[]";
+        }
     }
 
     record Index(long index) implements NBTPathNode {
         @Override
         public void appendTo(SNBTWriter<StringBuilder> writer) throws IOException {
             writer.getAppendable().append("[").append(index).append(']');
+        }
+
+        @Override
+        public String toString() {
+            return "[" + index + "]";
         }
     }
 
@@ -82,6 +119,11 @@ public sealed interface NBTPathNode {
             writer.getAppendable().append('[');
             writer.writeTag(tags);
             writer.getAppendable().append(']');
+        }
+
+        @Override
+        public String toString() {
+            return NBTPathNode.toString(this);
         }
     }
 }

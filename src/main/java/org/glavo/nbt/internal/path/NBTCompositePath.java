@@ -24,11 +24,12 @@ import org.jetbrains.annotations.Unmodifiable;
 import java.io.IOException;
 import java.util.Arrays;
 
-public final class NBTPathImpl implements NBTPath {
+public final class NBTCompositePath implements NBTPath {
     private final NBTPathNode @Unmodifiable [] nodes;
     private @Nullable String cachedString;
 
-    public NBTPathImpl(NBTPathNode @Unmodifiable [] nodes) {
+    public NBTCompositePath(NBTPathNode @Unmodifiable [] nodes) {
+        assert nodes.length > 1;
         this.nodes = nodes;
     }
 
@@ -38,7 +39,7 @@ public final class NBTPathImpl implements NBTPath {
 
     @Override
     public boolean equals(Object obj) {
-        return this == obj || obj instanceof NBTPathImpl that
+        return this == obj || obj instanceof NBTCompositePath that
                 && Arrays.equals(nodes, that.nodes);
     }
 

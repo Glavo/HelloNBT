@@ -15,21 +15,28 @@
  */
 package org.glavo.nbt.internal.path;
 
+import org.glavo.nbt.NBTParent;
 import org.glavo.nbt.NBTPath;
+import org.glavo.nbt.chunk.Chunk;
+import org.glavo.nbt.chunk.ChunkRegion;
 import org.glavo.nbt.internal.snbt.SNBTWriter;
 import org.glavo.nbt.io.SNBTCodec;
+import org.glavo.nbt.tag.CompoundTag;
+import org.glavo.nbt.tag.Tag;
 import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.Unmodifiable;
 
 import java.io.IOException;
 import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Stream;
 
-public final class NBTCompositePath implements NBTPath {
+public final class NBTPathImpl implements NBTPath {
     private final NBTPathNode @Unmodifiable [] nodes;
     private @Nullable String cachedString;
 
-    public NBTCompositePath(NBTPathNode @Unmodifiable [] nodes) {
-        assert nodes.length > 1;
+    public NBTPathImpl(NBTPathNode @Unmodifiable [] nodes) {
+        assert nodes.length > 0;
         this.nodes = nodes;
     }
 
@@ -37,9 +44,34 @@ public final class NBTCompositePath implements NBTPath {
         return nodes;
     }
 
+    @SuppressWarnings("unchecked")
+    private Stream<Tag> select(NBTParent<?> parent) {
+        Stream<? extends Tag> tags;
+        if (parent instanceof CompoundTag compoundTag) {
+            tags = Stream.of(compoundTag);
+        } else if (parent instanceof ChunkRegion chunkRegion) {
+            tags = chunkRegion.stream()
+                    .flatMap(chunk -> Stream.<Tag>ofNullable(chunk.getRootTag()));
+        } else if (parent instanceof Chunk chunk) {
+            tags = chunk.getRootTag() != null ? Stream.of(chunk.getRootTag()) : Stream.empty();
+        } else {
+            tags = Stream.empty();
+        }
+
+        for (NBTPathNode node : nodes) {
+            tags = node.operate(tags);
+        }
+        return (Stream<Tag>) tags;
+    }
+
+    @Override
+    public List<Tag> selectAll(NBTParent<?> parent) {
+        return select(parent).toList();
+    }
+
     @Override
     public boolean equals(Object obj) {
-        return this == obj || obj instanceof NBTCompositePath that
+        return this == obj || obj instanceof NBTPathImpl that
                 && Arrays.equals(nodes, that.nodes);
     }
 

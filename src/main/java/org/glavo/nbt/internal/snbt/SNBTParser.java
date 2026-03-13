@@ -19,7 +19,7 @@ package org.glavo.nbt.internal.snbt;
 
 import org.glavo.nbt.NBTPath;
 import org.glavo.nbt.internal.TextUtils;
-import org.glavo.nbt.internal.path.NBTCompositePath;
+import org.glavo.nbt.internal.path.NBTPathImpl;
 import org.glavo.nbt.internal.path.NBTPathNode;
 import org.glavo.nbt.tag.*;
 import org.jetbrains.annotations.Nullable;
@@ -551,7 +551,11 @@ public final class SNBTParser {
                         discardPeekedToken(integralToken);
                         nextToken(Token.SimpleToken.RIGHT_BRACKET);
 
-                        nodes.add(new NBTPathNode.Index(integralToken.value()));
+                        if (integralToken.value() > Integer.MAX_VALUE || integralToken.value() < Integer.MIN_VALUE) {
+                            throw new IllegalArgumentException("Index out of range: " + integralToken);
+                        }
+
+                       nodes.add(new NBTPathNode.Index((int) integralToken.value()));
                     } else if (peek == Token.SimpleToken.RIGHT_BRACKET) {
                         discardPeekedToken(peek);
                         nodes.add(NBTPathNode.AllElements.INSTANCE);
@@ -568,10 +572,10 @@ public final class SNBTParser {
             parsingPath = false;
         }
 
-        return switch (nodes.size()) {
-            case 0 -> throw new IllegalArgumentException("Empty path");
-            case 1 -> nodes.get(0);
-            default -> new NBTCompositePath(nodes.toArray(new NBTPathNode[0]));
-        };
+        if (nodes.isEmpty()) {
+            throw new IllegalArgumentException("Empty path");
+        }
+
+        return new NBTPathImpl(nodes.toArray(new NBTPathNode[0]));
     }
 }

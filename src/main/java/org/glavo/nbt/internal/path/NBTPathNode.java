@@ -17,18 +17,27 @@
  */
 package org.glavo.nbt.internal.path;
 
-import org.glavo.nbt.NBTPath;
+import javafx.scene.shape.ArcType;
 import org.glavo.nbt.internal.snbt.SNBTWriter;
 import org.glavo.nbt.io.SNBTCodec;
-import org.glavo.nbt.tag.CompoundTag;
+import org.glavo.nbt.tag.*;
 import org.jetbrains.annotations.Unmodifiable;
 
 import java.io.IOException;
+import java.util.stream.Stream;
 
-public sealed interface NBTPathNode extends NBTPath {
+public sealed interface NBTPathNode {
 
     @Unmodifiable
     CompoundTag EMPTY_COMPOUND_TAG = new CompoundTag();
+
+    private static boolean match(Tag tag, CompoundTag expected) {
+        return tag instanceof CompoundTag compoundTag && compoundTag.equals(expected); // TODO
+    }
+
+    private static boolean isListOrArray(ParentTag<?> tag) {
+        return tag instanceof ListTag || tag instanceof ArrayTag;
+    }
 
     private static String toString(NBTPathNode node) {
         var writer = new SNBTWriter<>(SNBTCodec.ofCompact(), new StringBuilder());
@@ -40,6 +49,8 @@ public sealed interface NBTPathNode extends NBTPath {
         return writer.getAppendable().toString();
     }
 
+    Stream<? extends Tag> operate(Stream<? extends Tag> tags);
+
     default boolean needDot() {
         return this instanceof NamedSubTag || this instanceof NamedSubCompoundTag;
     }
@@ -48,6 +59,11 @@ public sealed interface NBTPathNode extends NBTPath {
 
     record Root(@Unmodifiable CompoundTag tags) implements NBTPathNode {
         public static final Root EMPTY = new Root(EMPTY_COMPOUND_TAG);
+
+        @Override
+        public Stream<? extends Tag> operate(Stream<? extends Tag> tags) {
+            return tags.filter(tag -> match(tag, this.tags));
+        }
 
         @Override
         public void appendTo(SNBTWriter<StringBuilder> writer) throws IOException {
@@ -62,6 +78,14 @@ public sealed interface NBTPathNode extends NBTPath {
 
     record NamedSubTag(String name) implements NBTPathNode {
         @Override
+        public Stream<? extends Tag> operate(Stream<? extends Tag> tags) {
+            //noinspection NullableProblems
+            return tags.flatMap(tag -> tag instanceof CompoundTag compoundTag
+                    ? Stream.ofNullable(compoundTag.get(name))
+                    : Stream.empty());
+        }
+
+        @Override
         public void appendTo(SNBTWriter<StringBuilder> writer) throws IOException {
             writer.writeTagName(name);
         }
@@ -73,6 +97,21 @@ public sealed interface NBTPathNode extends NBTPath {
     }
 
     record NamedSubCompoundTag(String name, @Unmodifiable CompoundTag tags) implements NBTPathNode {
+
+        @Override
+        public Stream<? extends Tag> operate(Stream<? extends Tag> tags) {
+            return tags.flatMap(tag -> {
+                if (tag instanceof CompoundTag compoundTag) {
+                    Tag subTag = compoundTag.get(name);
+                    if (subTag != null && NBTPathNode.match(subTag, this.tags)) {
+                        return Stream.of(subTag);
+                    }
+                }
+
+                return Stream.empty();
+            });
+        }
+
         @Override
         public void appendTo(SNBTWriter<StringBuilder> writer) throws IOException {
             writer.writeTagName(name);
@@ -89,6 +128,17 @@ public sealed interface NBTPathNode extends NBTPath {
         public static final AllElements INSTANCE = new AllElements();
 
         @Override
+        public Stream<? extends Tag> operate(Stream<? extends Tag> tags) {
+            return tags.flatMap(tag -> {
+                if (tag instanceof ParentTag<?> parentTag && isListOrArray(parentTag)) {
+                    return parentTag.stream();
+                } else {
+                    return Stream.empty();
+                }
+            });
+        }
+
+        @Override
         public void appendTo(SNBTWriter<StringBuilder> writer) throws IOException {
             writer.getAppendable().append("[]");
         }
@@ -99,7 +149,27 @@ public sealed interface NBTPathNode extends NBTPath {
         }
     }
 
-    record Index(long index) implements NBTPathNode {
+    record Index(int index) implements NBTPathNode {
+
+        @Override
+        public Stream<? extends Tag> operate(Stream<? extends Tag> tags) {
+            return tags.flatMap(tag -> {
+                if (tag instanceof ParentTag<?> parentTag && isListOrArray(parentTag)) {
+                    int actualIndex;
+                    if (index >= 0) {
+                        actualIndex = index;
+                    } else {
+                        actualIndex = parentTag.size() + index;
+                    }
+
+                    if (actualIndex >= 0 && actualIndex < parentTag.size()) {
+                        return Stream.of(parentTag.getTag(actualIndex));
+                    }
+                }
+                return Stream.empty();
+            });
+        }
+
         @Override
         public void appendTo(SNBTWriter<StringBuilder> writer) throws IOException {
             writer.getAppendable().append("[").append(index).append(']');
@@ -113,6 +183,17 @@ public sealed interface NBTPathNode extends NBTPath {
 
     record CompoundElements(@Unmodifiable CompoundTag tags) implements NBTPathNode {
         public static final CompoundElements EMPTY = new CompoundElements(EMPTY_COMPOUND_TAG);
+
+        @Override
+        public Stream<? extends Tag> operate(Stream<? extends Tag> tags) {
+            return tags.flatMap(tag -> {
+                if (tag instanceof ListTag<?> listTag) {
+                    return listTag.stream().filter(subTag -> match(subTag, this.tags));
+                }
+
+                return Stream.empty();
+            });
+        }
 
         @Override
         public void appendTo(SNBTWriter<StringBuilder> writer) throws IOException {

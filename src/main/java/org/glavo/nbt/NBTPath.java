@@ -15,16 +15,22 @@
  */
 package org.glavo.nbt;
 
-import org.glavo.nbt.internal.path.NBTCompositePath;
-import org.glavo.nbt.internal.path.NBTPathNode;
+import org.glavo.nbt.internal.path.NBTPathImpl;
 import org.glavo.nbt.internal.snbt.SNBTParser;
+import org.glavo.nbt.tag.Tag;
+
+import java.util.List;
 
 /// @see <a href="https://minecraft.wiki/w/NBT_path">NBT Path - Minecraft Wiki</a>
-public sealed interface NBTPath permits NBTCompositePath, NBTPathNode {
+public sealed interface NBTPath permits NBTPathImpl {
 
     /// Parse a NBT path from a string.
     static NBTPath of(String path) throws IllegalArgumentException {
         return new SNBTParser(path, 0, path.length()).nextPath();
     }
+
+
+    List<Tag> selectAll(NBTParent<?> parent);
+
 
 }

@@ -60,7 +60,7 @@ public final class NBTPathImpl<T extends Tag> implements NBTPath<T> {
     }
 
     @SuppressWarnings("unchecked")
-    public Stream<Tag> select(NBTParent<?> parent) {
+    public Stream<T> select(NBTParent<?> parent) {
         Stream<? extends Tag> tags;
         if (parent instanceof CompoundTag compoundTag) {
             tags = Stream.of(compoundTag);
@@ -76,7 +76,12 @@ public final class NBTPathImpl<T extends Tag> implements NBTPath<T> {
         for (NBTPathNode node : nodes) {
             tags = node.operate(tags);
         }
-        return (Stream<Tag>) tags;
+
+        if (tagType != null) {
+            tags = tags.filter(tag -> tagType.tagClass().isInstance(tag));
+        }
+
+        return (Stream<T>) tags;
     }
 
     @Override

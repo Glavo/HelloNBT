@@ -43,6 +43,6 @@ public sealed interface NBTPath<T extends Tag> permits NBTPathImpl {
 
     /// Selects the tags that match the path from the given parent.
     @Contract(pure = true)
-    Stream<Tag> select(NBTParent<?> parent);
+    Stream<T> select(NBTParent<?> parent);
 
 }

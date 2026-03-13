@@ -15,8 +15,14 @@
  */
 package org.glavo.nbt;
 
+import org.glavo.nbt.internal.snbt.SNBTParser;
+
 /// @see <a href="https://minecraft.wiki/w/NBT_path">NBT Path - Minecraft Wiki</a>
 public sealed interface NBTPath permits org.glavo.nbt.internal.path.NBTPathImpl {
 
+    /// Parse a NBT path from a string.
+    static NBTPath of(String path) throws IllegalArgumentException {
+        return new SNBTParser(path, 0, path.length()).nextPath();
+    }
 
 }

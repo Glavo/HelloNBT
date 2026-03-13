@@ -17,11 +17,16 @@
  */
 package org.glavo.nbt.internal.snbt;
 
+import org.glavo.nbt.NBTPath;
 import org.glavo.nbt.internal.TextUtils;
+import org.glavo.nbt.internal.path.NBTPathImpl;
+import org.glavo.nbt.internal.path.NBTPathNode;
 import org.glavo.nbt.tag.*;
 import org.jetbrains.annotations.Nullable;
+import org.jetbrains.annotations.Unmodifiable;
 import org.jetbrains.annotations.VisibleForTesting;
 
+import java.util.ArrayList;
 import java.util.Objects;
 import java.util.UUID;
 
@@ -321,7 +326,7 @@ public final class SNBTParser {
         }
 
         if (next == Token.SimpleToken.LEFT_BRACE) {
-            return nextCompoundTag();
+            return nextCompoundTag(false);
         } else if (next == Token.SimpleToken.LEFT_BRACKET) {
             return nextListTag();
         } else if (next instanceof Token.ArrayBeginToken) {
@@ -369,8 +374,13 @@ public final class SNBTParser {
         }
     }
 
-    private CompoundTag nextCompoundTag() throws IllegalArgumentException {
+    private CompoundTag nextCompoundTag(boolean shareEmpty) throws IllegalArgumentException {
         nextToken(Token.SimpleToken.LEFT_BRACE);
+
+        if (shareEmpty && peekToken() == Token.SimpleToken.RIGHT_BRACE) {
+            discardPeekedToken(Token.SimpleToken.RIGHT_BRACE);
+            return NBTPathNode.EMPTY_COMPOUND_TAG;
+        }
 
         var tag = new CompoundTag();
         while (true) {
@@ -490,5 +500,66 @@ public final class SNBTParser {
         }
 
         return tag;
+    }
+
+    public NBTPath nextPath() throws IllegalArgumentException {
+        var nodes = new ArrayList<NBTPathNode>();
+
+        if (peekToken() == Token.SimpleToken.LEFT_BRACE) {
+            CompoundTag tag = nextCompoundTag(true);
+            if (tag.isEmpty()) {
+                nodes.add(NBTPathNode.Root.EMPTY);
+            } else {
+                nodes.add(new NBTPathNode.Root(tag));
+            }
+        }
+
+        Token peek;
+        while ((peek = peekToken()) != Token.SimpleToken.EOF) {
+            boolean hasDot = false;
+            if (!nodes.isEmpty() && peek == Token.SimpleToken.DOT) {
+                discardPeekedToken(peek);
+                peek = peekToken();
+                if (peek == Token.SimpleToken.EOF) {
+                    throw new IllegalArgumentException("Unexpected end of path");
+                }
+                hasDot = true;
+            }
+
+            if (hasDot && peek instanceof Token.StringToken stringToken) {
+                discardPeekedToken(stringToken);
+
+                if (peekToken() == Token.SimpleToken.LEFT_BRACE) {
+                    nodes.add(new NBTPathNode.NamedSubCompoundTag(stringToken.value(), nextCompoundTag(true)));
+                } else {
+                    nodes.add(new NBTPathNode.NamedSubTag(stringToken.value()));
+                }
+            } else if (peek == Token.SimpleToken.LEFT_BRACKET) {
+                discardPeekedToken(peek);
+                peek = peekToken();
+
+                if (peek == Token.SimpleToken.LEFT_BRACE) {
+                    CompoundTag tag = nextCompoundTag(true);
+                    nodes.add(tag.isEmpty() ? NBTPathNode.CompoundElements.EMPTY : new NBTPathNode.CompoundElements(tag));
+                } else if (peek instanceof Token.IntegralToken integralToken) {
+                    nodes.add(new NBTPathNode.Index(integralToken.value()));
+                } else if (peek == Token.SimpleToken.RIGHT_BRACKET) {
+                    discardPeekedToken(peek);
+                    nodes.add(NBTPathNode.AllElements.INSTANCE);
+                } else {
+                    throw new IllegalArgumentException("Unexpected token: " + peek);
+                }
+
+            } else {
+                throw new IllegalArgumentException("Unexpected token: " + peek);
+            }
+
+        }
+
+        if (nodes.isEmpty()) {
+            throw new IllegalArgumentException("Empty path");
+        }
+
+        return new NBTPathImpl(nodes.toArray(new NBTPathNode[0]));
     }
 }

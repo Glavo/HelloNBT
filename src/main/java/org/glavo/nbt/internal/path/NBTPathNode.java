@@ -58,7 +58,7 @@ public sealed interface NBTPathNode {
         }
     }
 
-    final class AllElements implements NBTPathNode {
+    record AllElements() implements NBTPathNode {
         public static final AllElements INSTANCE = new AllElements();
 
         @Override
@@ -67,7 +67,7 @@ public sealed interface NBTPathNode {
         }
     }
 
-    record Index(int index) implements NBTPathNode {
+    record Index(long index) implements NBTPathNode {
         @Override
         public void appendTo(SNBTWriter<StringBuilder> writer) throws IOException {
             writer.getAppendable().append("[").append(index).append(']');

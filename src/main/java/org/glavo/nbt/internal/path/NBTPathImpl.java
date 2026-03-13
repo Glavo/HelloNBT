@@ -22,6 +22,7 @@ import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.Unmodifiable;
 
 import java.io.IOException;
+import java.util.Arrays;
 
 public final class NBTPathImpl implements NBTPath {
     private final NBTPathNode @Unmodifiable [] nodes;
@@ -33,6 +34,17 @@ public final class NBTPathImpl implements NBTPath {
 
     public NBTPathNode @Unmodifiable [] getNodes() {
         return nodes;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        return this == obj || obj instanceof NBTPathImpl that
+                && Arrays.equals(nodes, that.nodes);
+    }
+
+    @Override
+    public int hashCode() {
+        return Arrays.hashCode(nodes);
     }
 
     @Override

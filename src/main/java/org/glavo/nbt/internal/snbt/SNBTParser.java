@@ -34,6 +34,8 @@ public final class SNBTParser {
     private final CharSequence input;
     private final int endIndex;
 
+    private boolean parsingPath = false;
+
     @VisibleForTesting
     int cursor;
 
@@ -96,13 +98,13 @@ public final class SNBTParser {
         }
     }
 
-    private static boolean isUnquotedStringPart(int ch) {
+    private boolean isUnquotedStringPart(int ch) {
         return TextUtils.isAsciiDigit(ch)
                 || ch >= 'a' && ch <= 'z'
                 || ch >= 'A' && ch <= 'Z'
                 || ch == '_'
                 || ch == '-' || ch == '+'
-                || ch == '.';
+                || (ch == '.' && !parsingPath);
     }
 
     Token readNextToken() {
@@ -505,55 +507,64 @@ public final class SNBTParser {
     public NBTPath nextPath() throws IllegalArgumentException {
         var nodes = new ArrayList<NBTPathNode>();
 
-        if (peekToken() == Token.SimpleToken.LEFT_BRACE) {
-            CompoundTag tag = nextCompoundTag(true);
-            if (tag.isEmpty()) {
-                nodes.add(NBTPathNode.Root.EMPTY);
-            } else {
-                nodes.add(new NBTPathNode.Root(tag));
-            }
-        }
+        parsingPath = true;
 
-        Token peek;
-        while ((peek = peekToken()) != Token.SimpleToken.EOF) {
-            boolean hasDot = false;
-            if (!nodes.isEmpty() && peek == Token.SimpleToken.DOT) {
-                discardPeekedToken(peek);
-                peek = peekToken();
-                if (peek == Token.SimpleToken.EOF) {
-                    throw new IllegalArgumentException("Unexpected end of path");
-                }
-                hasDot = true;
-            }
-
-            if (hasDot && peek instanceof Token.StringToken stringToken) {
-                discardPeekedToken(stringToken);
-
-                if (peekToken() == Token.SimpleToken.LEFT_BRACE) {
-                    nodes.add(new NBTPathNode.NamedSubCompoundTag(stringToken.value(), nextCompoundTag(true)));
+        try {
+            if (peekToken() == Token.SimpleToken.LEFT_BRACE) {
+                CompoundTag tag = nextCompoundTag(true);
+                if (tag.isEmpty()) {
+                    nodes.add(NBTPathNode.Root.EMPTY);
                 } else {
-                    nodes.add(new NBTPathNode.NamedSubTag(stringToken.value()));
+                    nodes.add(new NBTPathNode.Root(tag));
                 }
-            } else if (peek == Token.SimpleToken.LEFT_BRACKET) {
-                discardPeekedToken(peek);
-                peek = peekToken();
+            }
 
-                if (peek == Token.SimpleToken.LEFT_BRACE) {
-                    CompoundTag tag = nextCompoundTag(true);
-                    nodes.add(tag.isEmpty() ? NBTPathNode.CompoundElements.EMPTY : new NBTPathNode.CompoundElements(tag));
-                } else if (peek instanceof Token.IntegralToken integralToken) {
-                    nodes.add(new NBTPathNode.Index(integralToken.value()));
-                } else if (peek == Token.SimpleToken.RIGHT_BRACKET) {
+            Token peek;
+            while ((peek = peekToken()) != Token.SimpleToken.EOF) {
+                boolean hasDot = false;
+                if (!nodes.isEmpty() && peek == Token.SimpleToken.DOT) {
                     discardPeekedToken(peek);
-                    nodes.add(NBTPathNode.AllElements.INSTANCE);
+                    peek = peekToken();
+                    if (peek == Token.SimpleToken.EOF) {
+                        throw new IllegalArgumentException("Unexpected end of path");
+                    }
+                    hasDot = true;
+                }
+
+                if (peek instanceof Token.StringToken stringToken && (hasDot || nodes.isEmpty())) {
+                    discardPeekedToken(stringToken);
+
+                    if (peekToken() == Token.SimpleToken.LEFT_BRACE) {
+                        nodes.add(new NBTPathNode.NamedSubCompoundTag(stringToken.value(), nextCompoundTag(true)));
+                    } else {
+                        nodes.add(new NBTPathNode.NamedSubTag(stringToken.value()));
+                    }
+                } else if (peek == Token.SimpleToken.LEFT_BRACKET) {
+                    discardPeekedToken(peek);
+                    peek = peekToken();
+
+                    if (peek == Token.SimpleToken.LEFT_BRACE) {
+                        CompoundTag tag = nextCompoundTag(true);
+                        nodes.add(tag.isEmpty() ? NBTPathNode.CompoundElements.EMPTY : new NBTPathNode.CompoundElements(tag));
+                    } else if (peek instanceof Token.IntegralToken integralToken) {
+                        discardPeekedToken(integralToken);
+                        nextToken(Token.SimpleToken.RIGHT_BRACKET);
+
+                        nodes.add(new NBTPathNode.Index(integralToken.value()));
+                    } else if (peek == Token.SimpleToken.RIGHT_BRACKET) {
+                        discardPeekedToken(peek);
+                        nodes.add(NBTPathNode.AllElements.INSTANCE);
+                    } else {
+                        throw new IllegalArgumentException("Unexpected token: " + peek);
+                    }
                 } else {
                     throw new IllegalArgumentException("Unexpected token: " + peek);
                 }
 
-            } else {
-                throw new IllegalArgumentException("Unexpected token: " + peek);
             }
 
+        } finally {
+            parsingPath = false;
         }
 
         if (nodes.isEmpty()) {

@@ -153,7 +153,7 @@ public sealed abstract class Tag implements NBTElement
     public final String toString() {
         var builder = new StringBuilder();
         try {
-            new SNBTWriter(SNBTCodec.of(), builder).writeTagWithName(this);
+            new SNBTWriter<>(SNBTCodec.of(), builder).writeTagWithName(this);
         } catch (IOException e) {
             throw new AssertionError(e);
         }

@@ -255,12 +255,11 @@ public final class NBTOutput {
                     }
                 }
 
-                long endOffset = sectorOffsetBytes + actualBytes;
+                tempOutputStream.reset();
 
+                long endOffset = sectorOffsetBytes + actualBytes;
                 assert channel.position() == startPosition + endOffset
                         : "Chunk content position mismatch for chunk %d: expected %d, got %d".formatted(i, startPosition + endOffset, channel.position());
-
-                tempOutputStream.reset();
 
                 if (i == ChunkUtils.CHUNKS_PRE_REGION - 1) {
                     // Truncate the channel to the end of the last chunk

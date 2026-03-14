@@ -120,7 +120,6 @@ import java.util.function.Function;
 /// For other variants (like [#readRegion(InputStream)]), the default behavior is not to support external chunk files.
 /// They will throw an exception when trying to access external chunk files.
 /// However, you can use [#readRegion(InputStream, ExternalChunkAccessor)] or [#readRegion(ReadableByteChannel, ExternalChunkAccessor)] to manually specify the external chunk accessor.
-///
 public sealed interface NBTCodec permits NBTCodecImpl {
 
     /// Returns the default [NBTCodec].

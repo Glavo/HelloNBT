@@ -24,6 +24,54 @@ import java.io.IOException;
 /// The codec for reading and writing Stringified NBT data.
 ///
 /// Each SNBTCodec instance is immutable and thread-safe.
+///
+/// # Getting SNBTCodec Instances
+///
+/// SNBTCodec provides two factory methods to obtain SNBTCodec instances:
+///
+/// - [SNBTCodec#of()] returns the default [SNBTCodec] with pretty formatting.
+/// - [SNBTCodec#ofCompact()] returns a [SNBTCodec] with compact formatting.
+///
+/// They are identical when reading SNBT, but when writing SNBT, the former adds line breaks and indentation, while the latter does not.
+///
+/// SNBTCodec also provides many options to control the output format, such as indentation, line breaks, quotes, etc.
+/// After obtaining an SNBTCodec instance, you can use various `withXxx` methods to modify these options:
+///
+/// - [SNBTCodec#withLineBreakStrategy(LineBreakStrategy)]:
+/// - [SNBTCodec#withIndentation(String)]
+/// - [SNBTCodec#withSurroundingSpaces(SurroundingSpaces)]
+/// - [SNBTCodec#withEscapeStrategy(EscapeStrategy)]
+/// - [SNBTCodec#withNameQuoteStrategy(QuoteStrategy)]
+/// - [SNBTCodec#withValueQuoteStrategy(QuoteStrategy)]
+///
+/// # Reading and Writing SNBT
+///
+/// SNBTCodec supports reading and writing Stringified NBT data:
+///
+/// ```java
+/// var codec = SNBTCodec.of();
+///
+/// String snbt;
+///
+/// // Read from a CharSequence
+/// snbt = codec.readTag("...");
+///
+/// // Read from a Readable
+/// try (var reader = Files.newBufferedReader(Path.of("/path/to/file"))) {
+///     snbt = codec.readTag(reader);
+/// }
+///
+/// // Write to a Appendable
+/// codec.writeTag(new StringBuilder(), tag);
+/// ```
+///
+/// You can also convert a Tag to an SNBT formatted string like this:
+///
+/// ```java
+/// String snbt = codec.toString(tag);
+/// ```
+///
+/// @see <a href="https://minecraft.wiki/w/NBT_format#SNBT_format">NBT format - Minecraft Wiki</a>
 public sealed interface SNBTCodec permits SNBTCodecImpl {
 
     /// Returns the default [SNBTCodec].
@@ -37,6 +85,9 @@ public sealed interface SNBTCodec permits SNBTCodecImpl {
     }
 
     /// Returns the line break strategy for all parent tags.
+    ///
+    /// @see #withLineBreakStrategy(LineBreakStrategy)
+    /// @see LineBreakStrategy
     @Contract(pure = true)
     LineBreakStrategy getLineBreakStrategy();
 
@@ -45,6 +96,9 @@ public sealed interface SNBTCodec permits SNBTCodecImpl {
     /// This method is a shortcut for calling [withCompoundTagLineBreakStrategy][#withCompoundTagLineBreakStrategy()],
     /// [withListTagLineBreakStrategy][#withListTagLineBreakStrategy()], and [withArrayTagLineBreakStrategy][#withArrayTagLineBreakStrategy()]
     /// with the same strategy.
+    ///
+    /// @see #getLineBreakStrategy()
+    /// @see LineBreakStrategy
     @Contract(value = "_ -> new", pure = true)
     SNBTCodec withLineBreakStrategy(LineBreakStrategy strategy);
 
@@ -56,15 +110,17 @@ public sealed interface SNBTCodec permits SNBTCodecImpl {
     ///
     /// The indentation string must be a sequence of spaces or tabs.
     ///
-    /// @see IllegalArgumentException if the indentation string is not a sequence of spaces or tabs.
+    /// @throws IllegalArgumentException if the indentation string is not a sequence of spaces or tabs.
+    /// @see #getIndentation()
     @Contract(value = "_ -> new", pure = true)
     SNBTCodec withIndentation(String indentation);
 
     /// Returns a new codec with the specified indentation.
     ///
-    /// The indentation is a sequence of spaces.
-    ///
-    /// @see IllegalArgumentException if the indentation is not a positive integer.
+    /// @param spaces The number of spaces for indentation.
+    /// @throws IllegalArgumentException if the indentation is not a positive integer.
+    /// @see #getIndentation()
+    /// @see #withIndentation(String)
     @Contract(value = "_ -> new", pure = true)
     SNBTCodec withIndentation(int spaces);
 
@@ -77,26 +133,44 @@ public sealed interface SNBTCodec permits SNBTCodecImpl {
     SNBTCodec withSurroundingSpaces(SurroundingSpaces surroundingSpaces);
 
     /// Returns the escape strategy for SNBT.
+    ///
+    /// @see #withEscapeStrategy(EscapeStrategy)
+    /// @see EscapeStrategy
     @Contract(pure = true)
     EscapeStrategy getEscapeStrategy();
 
     /// Returns a new codec with the specified escape strategy.
+    ///
+    /// @see #getEscapeStrategy()
+    /// @see EscapeStrategy
     @Contract(value = "_ -> new", pure = true)
     SNBTCodec withEscapeStrategy(EscapeStrategy escapeStrategy);
 
     /// Returns the quote strategy for SNBT tag names.
+    ///
+    /// @see #withNameQuoteStrategy(QuoteStrategy)
+    /// @see QuoteStrategy
     @Contract(pure = true)
     QuoteStrategy getNameQuoteStrategy();
 
     /// Returns a new codec with the specified quote strategy for tag names.
+    ///
+    /// @see #getNameQuoteStrategy()
+    /// @see QuoteStrategy
     @Contract(value = "_ -> new", pure = true)
     SNBTCodec withNameQuoteStrategy(QuoteStrategy quoteStrategy);
 
     /// Returns the quote strategy for SNBT tag values.
+    ///
+    /// @see #withValueQuoteStrategy(QuoteStrategy)
+    /// @see QuoteStrategy
     @Contract(pure = true)
     QuoteStrategy getValueQuoteStrategy();
 
     /// Returns a new codec with the specified quote strategy for tag values.
+    ///
+    /// @see #getValueQuoteStrategy()
+    /// @see QuoteStrategy
     @Contract(value = "_ -> new", pure = true)
     SNBTCodec withValueQuoteStrategy(QuoteStrategy quoteStrategy);
 

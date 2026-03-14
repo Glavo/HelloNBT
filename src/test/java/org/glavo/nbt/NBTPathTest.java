@@ -127,18 +127,19 @@ final class NBTPathTest {
         CompoundTag emptyRoot = new CompoundTag();
 
         assertSame(emptyRoot, emptyRoot.getFirstTag(NBTPath.of("{}").withTagType(TagType.COMPOUND)));
-        assertNull(root.getFirstTagOrNull(NBTPath.of("{}").withTagType(TagType.COMPOUND)));
 
         assertSame(root.get("empty"), root.getFirstTag(NBTPath.of("empty{}").withTagType(TagType.COMPOUND)));
-        assertNull(root.getFirstTagOrNull(NBTPath.of("player{}").withTagType(TagType.COMPOUND)));
+        assertSame(root.get("player"), root.getFirstTag(NBTPath.of("player{}").withTagType(TagType.COMPOUND)));
 
         assertSame(root.get("player"), root.getFirstTag(NBTPath.of("player{name:\"Alex\",score:42}").withTagType(TagType.COMPOUND)));
-        assertNull(root.getFirstTagOrNull(NBTPath.of("player{name:\"Alex\"}").withTagType(TagType.COMPOUND)));
+        assertSame(root.get("player"), root.getFirstTag(NBTPath.of("player{name:\"Alex\"}").withTagType(TagType.COMPOUND)));
+        assertNull(root.getFirstTagOrNull(NBTPath.of("player{name:\"Glavo\"}").withTagType(TagType.COMPOUND)));
 
-        assertEquals(1L, root.getAllTags(NBTPath.of("profiles[{}]").withTagType(TagType.COMPOUND)).count());
+        assertEquals(3L, root.getAllTags(NBTPath.of("profiles[{}]").withTagType(TagType.COMPOUND)).count());
         assertEquals("Alex", root.getFirstString(NBTPath.of("profiles[{name:\"Alex\"}].name").withTagType(TagType.STRING)));
         assertEquals(10, root.getFirstInt(NBTPath.of("profiles[{name:\"Alex\",score:10}].score").withTagType(TagType.INT)));
-        assertNull(root.getFirstTagOrNull(NBTPath.of("players[{name:\"Alex\"}]").withTagType(TagType.COMPOUND)));
+        assertEquals(10, root.getFirstInt(NBTPath.of("profiles[{name:\"Alex\"}].score").withTagType(TagType.INT)));
+        assertNull(root.getFirstTagOrNull(NBTPath.of("players[{name:\"Glavo\"}]").withTagType(TagType.COMPOUND)));
     }
 
     @Test

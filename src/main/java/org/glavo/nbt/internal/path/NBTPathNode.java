@@ -32,7 +32,28 @@ public sealed interface NBTPathNode {
     CompoundTag EMPTY_COMPOUND_TAG = new CompoundTag();
 
     private static boolean match(Tag tag, CompoundTag expected) {
-        return tag instanceof CompoundTag compoundTag && compoundTag.contentEquals(expected);
+        if (tag instanceof CompoundTag compoundTag) {
+            for (Tag expectedSubTag : expected) {
+                Tag actualSubTag = compoundTag.get(expectedSubTag.getName());
+                if (actualSubTag == null || expectedSubTag.getClass() != actualSubTag.getClass()) {
+                    return false;
+                }
+
+                if (expectedSubTag instanceof CompoundTag) {
+                    if (!match(actualSubTag, (CompoundTag) expectedSubTag)) {
+                        return false;
+                    }
+                } else {
+                    if (!expectedSubTag.contentEquals(actualSubTag)) {
+                        return false;
+                    }
+                }
+
+            }
+            return true;
+        } else {
+            return false;
+        }
     }
 
     private static boolean isListOrArray(ParentTag<?> tag) {
@@ -68,7 +89,7 @@ public sealed interface NBTPathNode {
         }
 
         @Override
-        public @Nullable TagType<?> getTagType() {
+        public TagType<?> getTagType() {
             return TagType.COMPOUND;
         }
 
@@ -223,7 +244,7 @@ public sealed interface NBTPathNode {
         }
 
         @Override
-        public @Nullable TagType<?> getTagType() {
+        public TagType<?> getTagType() {
             return TagType.COMPOUND;
         }
 

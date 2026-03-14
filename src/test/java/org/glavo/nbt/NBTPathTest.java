@@ -29,8 +29,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 final class NBTPathTest {
 
     private static CompoundTag createSampleRoot() {
-        CompoundTag value3 = new CompoundTag();
-        return value3.tap(root -> {
+        return new CompoundTag().tap(root -> {
             root.put("player", new CompoundTag().tap(player2 -> {
                 player2.setString("name", "Alex");
                 player2.setInt("score", 42);

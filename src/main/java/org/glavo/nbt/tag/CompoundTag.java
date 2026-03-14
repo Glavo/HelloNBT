@@ -235,6 +235,24 @@ public final class CompoundTag extends ParentTag<Tag> {
         return get(name) instanceof StringTag tag ? tag.get() : defaultValue;
     }
 
+    private void addTag0(Tag tag) {
+        assert tag.getParent() == null;
+
+        // If a tag with the same name already exists, remove it first.
+        Tag oldTag = subTagsByName.get(tag.getName());
+        if (oldTag != null) {
+            this.removeElement(oldTag);
+        }
+
+        // Set the parent and index of the tag.
+        tag.setParent(this, size);
+
+        // Add the tag to the subTags list and subTagsByName map.
+        ensureTagsCapacityForAdd();
+        tags[size++] = tag;
+        subTagsByName.put(tag.getName(), tag);
+    }
+
     /// {@inheritDoc}
     ///
     /// If another tag with the same name already exists, the old tag will be removed.
@@ -251,20 +269,14 @@ public final class CompoundTag extends ParentTag<Tag> {
             }
         }
 
-        // If a tag with the same name already exists, remove it first.
-        Tag oldTag = subTagsByName.get(tag.getName());
-        if (oldTag != null) {
-            this.removeElement(oldTag);
-        }
-
-        // Set the parent and index of the tag.
-        tag.setParent(this, size);
-
-        // Add the tag to the subTags list and subTagsByName map.
-        ensureTagsCapacityForAdd();
-        tags[size++] = tag;
-        subTagsByName.put(tag.getName(), tag);
+        addTag0(tag);
         return this;
+    }
+
+    private void addTag0(String name, Tag tag) {
+        assert tag.getParent() == null;
+        tag.setName0(name);
+        addTag0(tag);
     }
 
     /// Adds a tag with the given name to this compound tag.
@@ -272,7 +284,7 @@ public final class CompoundTag extends ParentTag<Tag> {
     /// If the tag is already a child of another tag, removes it from the old parent and adds it to this tag.
     ///
     /// If another tag with the same name already exists, the old tag will be removed.
-    @Contract(mutates = "this,param2")
+    @Contract(value = "_, _ -> this", mutates = "this,param2")
     public CompoundTag addTag(String name, Tag tag) {
         @SuppressWarnings("unchecked")
         var oldParent = (NBTParent<Tag>) tag.getParent();
@@ -280,8 +292,115 @@ public final class CompoundTag extends ParentTag<Tag> {
             oldParent.removeElement(tag);
         }
 
-        tag.setName0(name);
-        addTag(tag);
+        addTag0(name, tag);
+        return this;
+    }
+
+    /// Adds a byte tag with the given name and value to this compound tag.
+    ///
+    /// If another tag with the same name already exists, the old tag will be removed.
+    @Contract(value = "_, _ -> this", mutates = "this")
+    public CompoundTag addByte(String name, byte value) {
+        addTag0(name, new ByteTag(value));
+        return this;
+    }
+
+    /// Adds a byte tag with the given name and boolean value to this compound tag.
+    ///
+    /// If another tag with the same name already exists, the old tag will be removed.
+    @Contract(value = "_, _ -> this", mutates = "this")
+    public CompoundTag addBoolean(String name, boolean value) {
+        addTag0(name, new ByteTag(value));
+        return this;
+    }
+
+    /// Adds a short tag with the given name and value to this compound tag.
+    ///
+    /// If another tag with the same name already exists, the old tag will be removed.
+    @Contract(value = "_, _ -> this", mutates = "this")
+    public CompoundTag addShort(String name, short value) {
+        addTag0(name, new ShortTag(value));
+        return this;
+    }
+
+    /// Adds an int tag with the given name and value to this compound tag.
+    ///
+    /// If another tag with the same name already exists, the old tag will be removed.
+    @Contract(value = "_, _ -> this", mutates = "this")
+    public CompoundTag addInt(String name, int value) {
+        addTag0(name, new IntTag(value));
+        return this;
+    }
+
+    /// Adds a long tag with the given name and value to this compound tag.
+    ///
+    /// If another tag with the same name already exists, the old tag will be removed.
+    @Contract(value = "_, _ -> this", mutates = "this")
+    public CompoundTag addLong(String name, long value) {
+        addTag0(name, new LongTag(value));
+        return this;
+    }
+
+    /// Adds a float tag with the given name and value to this compound tag.
+    ///
+    /// If another tag with the same name already exists, the old tag will be removed.
+    @Contract(value = "_, _ -> this", mutates = "this")
+    public CompoundTag addFloat(String name, float value) {
+        addTag0(name, new FloatTag(value));
+        return this;
+    }
+
+    /// Adds a double tag with the given name and value to this compound tag.
+    ///
+    /// If another tag with the same name already exists, the old tag will be removed.
+    @Contract(value = "_, _ -> this", mutates = "this")
+    public CompoundTag addDouble(String name, double value) {
+        addTag0(name, new DoubleTag(value));
+        return this;
+    }
+
+    /// Adds a string tag with the given name and value to this compound tag.
+    ///
+    /// If another tag with the same name already exists, the old tag will be removed.
+    @Contract(value = "_, _ -> this", mutates = "this")
+    public CompoundTag addString(String name, String value) {
+        addTag0(name, new StringTag(value));
+        return this;
+    }
+
+    /// Adds a byte array tag with the given name and value to this compound tag.
+    ///
+    /// If another tag with the same name already exists, the old tag will be removed.
+    @Contract(value = "_, _ -> this", mutates = "this")
+    public CompoundTag addByteArray(String name, byte[] value) {
+        addTag0(name, new ByteArrayTag(value));
+        return this;
+    }
+
+    /// Adds an int array tag with the given name and value to this compound tag.
+    ///
+    /// If another tag with the same name already exists, the old tag will be removed.
+    @Contract(value = "_, _ -> this", mutates = "this")
+    public CompoundTag addIntArray(String name, int[] value) {
+        addTag0(name, new IntArrayTag(value));
+        return this;
+    }
+
+    /// Adds a long array tag with the given name and value to this compound tag.
+    ///
+    /// If another tag with the same name already exists, the old tag will be removed.
+    @Contract(value = "_, _ -> this", mutates = "this")
+    public CompoundTag addLongArray(String name, long[] value) {
+        addTag0(name, new LongArrayTag(value));
+        return this;
+    }
+
+    /// Adds an int array tag with the given name and UUID value to this compound tag.
+    ///
+    /// If another tag with the same name already exists, the old tag will be removed.
+    @Contract(value = "_, _ -> this", mutates = "this")
+    public CompoundTag addUUID(String name, UUID value) {
+        addTag0(name, new IntArrayTag(value));
         return this;
     }
 

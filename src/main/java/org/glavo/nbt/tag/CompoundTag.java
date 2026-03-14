@@ -24,6 +24,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.io.IOException;
 import java.util.*;
+import java.util.function.Consumer;
 
 /// A [parent tag][ParentTag] that holds an unordered collection of named tags.
 ///
@@ -63,6 +64,25 @@ public final class CompoundTag extends ParentTag<Tag> {
     @Contract(pure = true)
     public TagType<CompoundTag> getType() {
         return TagType.COMPOUND;
+    }
+
+    /// Executes the given action on this compound tag.
+    ///
+    /// This method is useful for configuring the tag.
+    ///
+    /// For example:
+    ///
+    /// ```java
+    /// var parent = new CompoundTag();
+    /// parent.put("sub", new CompoundTag().tap(t -> {
+    ///     t.setByte( "byte",  (byte)  1);
+    ///     t.setShort("short", (short) 2);
+    /// }));
+    /// ```
+    @Contract("_ -> this")
+    public CompoundTag tap(Consumer<? super CompoundTag> action) {
+        action.accept(this);
+        return this;
     }
 
     /// Returns the subtag with the given name, or `null` if no such subtag exists.

@@ -23,6 +23,7 @@ import org.jetbrains.annotations.Nullable;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.Objects;
+import java.util.function.Consumer;
 
 /// A [parent tag][ParentTag] that holds an ordered collection of isomorphic unnamed tags.
 ///
@@ -76,6 +77,25 @@ public final class ListTag<T extends Tag> extends ParentTag<T> {
     @Contract(pure = true)
     public TagType<ListTag<?>> getType() {
         return TagType.LIST;
+    }
+
+    /// Executes the given action on this list tag.
+    ///
+    /// This method is useful for configuring the tag.
+    ///
+    /// For example:
+    ///
+    /// ```java
+    /// var parent = new CompoundTag();
+    /// parent.put("sub", new ListTag<>(TagType.BYTE).tap(t -> {
+    ///     t.addTag(new ByteTag("", (byte) 1));
+    ///     t.addTag(new ByteTag("", (byte) 2));
+    /// }));
+    /// ```
+    @Contract("_ -> this")
+    public ListTag<T> tap(Consumer<? super ListTag<T>> action) {
+        action.accept(this);
+        return this;
     }
 
     /// Returns the type of the elements in the list.

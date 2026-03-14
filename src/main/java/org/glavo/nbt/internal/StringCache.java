@@ -20,7 +20,10 @@ import org.jetbrains.annotations.Nullable;
 import java.nio.ByteBuffer;
 import java.util.Arrays;
 
-/// A simple ASCII string cache pool.
+/// A simple immutable ASCII string cache pool.
+///
+/// This cache pool can accelerate the process of retrieving strings from byte[] or ByteBuffer slices.
+/// Considering the large number of repeated tag names in NBT data, using this cache pool can reduce memory usage and CPU overhead.
 public final class StringCache {
 
     private final @Nullable Object[] pool; // (String | String[] | null)[]

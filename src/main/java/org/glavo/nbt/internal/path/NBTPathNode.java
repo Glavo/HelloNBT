@@ -32,7 +32,7 @@ public sealed interface NBTPathNode {
     CompoundTag EMPTY_COMPOUND_TAG = new CompoundTag();
 
     private static boolean match(Tag tag, CompoundTag expected) {
-        return tag instanceof CompoundTag compoundTag && compoundTag.equals(expected); // TODO
+        return tag instanceof CompoundTag compoundTag && compoundTag.contentEquals(expected);
     }
 
     private static boolean isListOrArray(ParentTag<?> tag) {

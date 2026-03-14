@@ -95,7 +95,6 @@ public final class SNBTCodec {
             QuoteStrategy.defaultValueStrategy()
     );
 
-
     public static SNBTCodec of() {
         return PRETTY;
     }

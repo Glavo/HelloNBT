@@ -32,7 +32,7 @@ import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-abstract class ArrayTagTests<AT extends ArrayTag<E, T, A, B>, E extends Number, T extends ValueTag<E>, A, B extends Buffer> {
+abstract class ArrayTagTest<AT extends ArrayTag<E, T, A, B>, E extends Number, T extends ValueTag<E>, A, B extends Buffer> {
     abstract ArrayAccessor<E, T, A, B> accessor();
 
     abstract E valueOf(long value);
@@ -482,7 +482,7 @@ abstract class ArrayTagTests<AT extends ArrayTag<E, T, A, B>, E extends Number, 
         }
     }
 
-    static final class ByteArrayTagTests extends ArrayTagTests<ByteArrayTag, Byte, ByteTag, byte[], ByteBuffer> {
+    static final class ByteArrayTagTest extends ArrayTagTest<ByteArrayTag, Byte, ByteTag, byte[], ByteBuffer> {
 
         @Override
         ArrayAccessor<Byte, ByteTag, byte[], ByteBuffer> accessor() {
@@ -536,7 +536,7 @@ abstract class ArrayTagTests<AT extends ArrayTag<E, T, A, B>, E extends Number, 
         }
     }
 
-    static final class IntArrayTagTests extends ArrayTagTests<IntArrayTag, Integer, IntTag, int[], IntBuffer> {
+    static final class IntArrayTagTest extends ArrayTagTest<IntArrayTag, Integer, IntTag, int[], IntBuffer> {
 
         @Override
         ArrayAccessor<Integer, IntTag, int[], IntBuffer> accessor() {
@@ -632,7 +632,7 @@ abstract class ArrayTagTests<AT extends ArrayTag<E, T, A, B>, E extends Number, 
         }
     }
 
-    static final class LongArrayTagTests extends ArrayTagTests<LongArrayTag, Long, LongTag, long[], LongBuffer> {
+    static final class LongArrayTagTest extends ArrayTagTest<LongArrayTag, Long, LongTag, long[], LongBuffer> {
         @Override
         ArrayAccessor<Long, LongTag, long[], LongBuffer> accessor() {
             return ArrayAccessor.LONG_ARRAY;

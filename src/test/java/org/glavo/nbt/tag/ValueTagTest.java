@@ -22,7 +22,7 @@ import java.util.function.Supplier;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-final class ValueTagTests {
+final class ValueTagTest {
 
     @Test
     void testGetType() {

@@ -27,7 +27,7 @@ import static org.junit.jupiter.api.Assertions.assertIterableEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-final class NBTPathTests {
+final class NBTPathTest {
 
     private static <T> T with(T value, Consumer<T> consumer) {
         consumer.accept(value);

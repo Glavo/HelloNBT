@@ -56,7 +56,6 @@ final class CompoundTagTest {
     }
 
     @Test
-    @SuppressWarnings("DataFlowIssue")
     void testConstructorAndGetType() {
         var tag = new CompoundTag();
         assertEquals("", tag.getName());
@@ -214,7 +213,103 @@ final class CompoundTagTest {
     }
 
     @Test
-    @SuppressWarnings("DataFlowIssue")
+    void testTypedAdd() {
+        var tag = new CompoundTag();
+
+        tag.addByte("byte", (byte) 1)
+                .addBoolean("bool", true)
+                .addShort("short", (short) 2)
+                .addInt("int", 3)
+                .addLong("long", 4L)
+                .addFloat("float", 5.5f)
+                .addDouble("double", 6.5)
+                .addString("string", "hello");
+
+        ByteTag byteTag = assertInstanceOf(ByteTag.class, tag.get("byte"));
+        assertEquals((byte) 1, byteTag.get());
+        assertEquals("byte", byteTag.getName());
+        assertAttached(tag, byteTag, 0);
+
+        ByteTag boolTag = assertInstanceOf(ByteTag.class, tag.get("bool"));
+        assertTrue(boolTag.getBoolean());
+        assertEquals("bool", boolTag.getName());
+        assertAttached(tag, boolTag, 1);
+
+        ShortTag shortTag = assertInstanceOf(ShortTag.class, tag.get("short"));
+        assertEquals((short) 2, shortTag.get());
+        assertEquals("short", shortTag.getName());
+        assertAttached(tag, shortTag, 2);
+
+        IntTag intTag = assertInstanceOf(IntTag.class, tag.get("int"));
+        assertEquals(3, intTag.get());
+        assertEquals("int", intTag.getName());
+        assertAttached(tag, intTag, 3);
+
+        LongTag longTag = assertInstanceOf(LongTag.class, tag.get("long"));
+        assertEquals(4L, longTag.get());
+        assertEquals("long", longTag.getName());
+        assertAttached(tag, longTag, 4);
+
+        FloatTag floatTag = assertInstanceOf(FloatTag.class, tag.get("float"));
+        assertEquals(5.5f, floatTag.get());
+        assertEquals("float", floatTag.getName());
+        assertAttached(tag, floatTag, 5);
+
+        DoubleTag doubleTag = assertInstanceOf(DoubleTag.class, tag.get("double"));
+        assertEquals(6.5, doubleTag.get());
+        assertEquals("double", doubleTag.getName());
+        assertAttached(tag, doubleTag, 6);
+
+        StringTag stringTag = assertInstanceOf(StringTag.class, tag.get("string"));
+        assertEquals("hello", stringTag.get());
+        assertEquals("string", stringTag.getName());
+        assertAttached(tag, stringTag, 7);
+
+        byte[] bytes = {1, 2, 3};
+        tag.addByteArray("bytes", bytes);
+        bytes[0] = 9;
+        ByteArrayTag bytesTag = assertInstanceOf(ByteArrayTag.class, tag.get("bytes"));
+        assertArrayEquals(new byte[]{1, 2, 3}, bytesTag.getArray());
+        assertAttached(tag, bytesTag, 8);
+
+        int[] ints = {4, 5, 6};
+        tag.addIntArray("ints", ints);
+        ints[0] = 9;
+        IntArrayTag intsTag = assertInstanceOf(IntArrayTag.class, tag.get("ints"));
+        assertArrayEquals(new int[]{4, 5, 6}, intsTag.getArray());
+        assertAttached(tag, intsTag, 9);
+
+        long[] longs = {7L, 8L, 9L};
+        tag.addLongArray("longs", longs);
+        longs[0] = 99L;
+        LongArrayTag longsTag = assertInstanceOf(LongArrayTag.class, tag.get("longs"));
+        assertArrayEquals(new long[]{7L, 8L, 9L}, longsTag.getArray());
+        assertAttached(tag, longsTag, 10);
+
+        UUID uuid = UUID.fromString("12345678-1234-5678-90ab-cdef12345678");
+        tag.addUUID("uuid", uuid);
+        IntArrayTag uuidTag = assertInstanceOf(IntArrayTag.class, tag.get("uuid"));
+        assertTrue(uuidTag.isUUID());
+        assertEquals(uuid, uuidTag.getUUID());
+        assertAttached(tag, uuidTag, 11);
+
+        tag.setInt("int", 30);
+        assertSame(intTag, tag.get("int"));
+        assertEquals(30, intTag.get());
+        assertAttached(tag, intTag, 3);
+
+        tag.addString("conflict", "text");
+        StringTag oldConflict = assertInstanceOf(StringTag.class, tag.get("conflict"));
+        assertAttached(tag, oldConflict, 12);
+
+        tag.addInt("conflict", 114);
+        assertDetached(oldConflict);
+        IntTag newConflict = assertInstanceOf(IntTag.class, tag.get("conflict"));
+        assertEquals(114, newConflict.get());
+        assertAttached(tag, newConflict, 12);
+    }
+
+    @Test
     void testTypedSetters() {
         var tag = new CompoundTag();
 
@@ -282,7 +377,6 @@ final class CompoundTagTest {
     }
 
     @Test
-    @SuppressWarnings("DataFlowIssue")
     void testCloneEqualsAndToString() {
         var tag = new CompoundTag().setName("root");
         tag.addTag("answer", new ByteTag((byte) 42));

@@ -146,14 +146,14 @@ final class SNBTParserTest {
 
         assertEquals(new CompoundTag(), parseTag("{}"));
         assertEquals(new CompoundTag()
-                        .setString("name", "Glavo")
-                        .setInt("age", 9)
-                        .setUUID("id", UUID.fromString("01bb64c8-2a2f-4509-931b-366513bfb5a8"))
-                        .setBoolean("bool", true)
+                        .addString("name", "Glavo")
+                        .addInt("age", 9)
+                        .addUUID("id", UUID.fromString("01bb64c8-2a2f-4509-931b-366513bfb5a8"))
+                        .addBoolean("bool", true)
                         .addTag("nested", new CompoundTag()
                                 .addTag("very", new CompoundTag()
                                         .addTag("deep", new CompoundTag()
-                                                .setString("structure", "ok")))),
+                                                .addString("structure", "ok")))),
                 parseTag("""
                         {
                             name: 'Glavo',

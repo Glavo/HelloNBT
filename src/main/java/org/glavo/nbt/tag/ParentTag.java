@@ -143,6 +143,29 @@ public sealed abstract class ParentTag<T extends Tag> extends Tag
         return tag;
     }
 
+    final void moveTagToLast(T tag) {
+        assert tag.getParent() == this;
+
+        int index = tag.getIndex();
+
+        if (tag.getIndex() == this.size() - 1) {
+            // The tag is already the last child of this tag, so we don't need to do anything.
+
+            assert tag == tags[index];
+        } else {
+            // Move the tag to the end of the subTags list.
+
+            Tag oldTag = removeTagFromArray(index);
+            if (oldTag != tag) {
+                throw new AssertionError("Expected " + tag + ", but got " + oldTag);
+            }
+
+            tags[size - 1] = tag;
+
+            updateIndexes(index);
+        }
+    }
+
     /// Adds the `tag` to this tag.
     ///
     /// If the `tag` is already a child of this tag, move it to the end of the list.

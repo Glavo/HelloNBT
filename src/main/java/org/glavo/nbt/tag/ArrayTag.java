@@ -282,6 +282,7 @@ public sealed abstract class ArrayTag<E extends Number, T extends ValueTag<E>, A
 
                 if (tag.getIndex() == this.size() - 1) {
                     // The tag is already the last child of this tag, so we don't need to do anything.
+                    assert tag == tags[index];
                 } else {
                     // Move the tag to the end of the subTags list.
 

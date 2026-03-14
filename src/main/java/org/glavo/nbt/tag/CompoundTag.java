@@ -241,24 +241,7 @@ public final class CompoundTag extends ParentTag<Tag> {
     public void addTag(Tag tag) {
         if (tag.getParentTag() != null) {
             if (tag.getParentTag() == this) {
-                int index = tag.getIndex();
-
-                if (tag.getIndex() == this.size() - 1) {
-                    // The tag is already the last child of this tag, so we don't need to do anything.
-                } else {
-                    // Move the tag to the end of the subTags list.
-
-                    Tag oldTag = removeTagFromArray(index);
-                    if (oldTag != tag) {
-                        throw new AssertionError("Expected " + tag + ", but got " + oldTag);
-                    }
-
-                    tags[size - 1] = tag;
-
-                    updateIndexes(index);
-                }
-
-                return;
+                moveTagToLast(tag);
             } else {
                 // Remove the tag from its old parent.
                 tag.getParentTag().removeElement(tag);

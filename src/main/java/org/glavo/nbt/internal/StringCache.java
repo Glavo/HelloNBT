@@ -32,7 +32,7 @@ public final class StringCache {
     public StringCache(String... strings) {
         assert strings.length > 0 : "Empty string cache";
 
-        this.pool = new Object[strings.length << 1];
+        this.pool = new Object[strings.length + (strings.length >>> 1)];
 
         for (String str : strings) {
             add(str);

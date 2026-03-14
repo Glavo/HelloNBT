@@ -116,6 +116,13 @@ public sealed abstract class ParentTag<T extends Tag> extends Tag
     @Override
     public abstract TagType<? extends ParentTag<?>> getType();
 
+    @Override
+    @Contract(value = "_ -> this", mutates = "this")
+    public ParentTag<T> setName(String name) throws IllegalArgumentException {
+        setName0(name);
+        return this;
+    }
+
     /// Returns `true` if this tag has no subtags, `false` otherwise.
     @Override
     @Contract(pure = true)

@@ -56,6 +56,13 @@ public final class IntTag extends ValueTag<Integer> {
         return TagType.INT;
     }
 
+    @Override
+    @Contract(value = "_ -> this", mutates = "this")
+    public IntTag setName(String name) throws IllegalArgumentException {
+        setName0(name);
+        return this;
+    }
+
     /// Returns the value of the tag.
     @Contract(pure = true)
     public int get() {

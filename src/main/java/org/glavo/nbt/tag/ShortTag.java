@@ -56,6 +56,13 @@ public final class ShortTag extends ValueTag<Short> {
         return TagType.SHORT;
     }
 
+    @Override
+    @Contract(value = "_ -> this", mutates = "this")
+    public ShortTag setName(String name) throws IllegalArgumentException {
+        setName0(name);
+        return this;
+    }
+
     /// Returns the value of the tag.
     @Contract(pure = true)
     public short get() {

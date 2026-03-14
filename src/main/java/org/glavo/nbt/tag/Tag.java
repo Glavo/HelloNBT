@@ -83,15 +83,7 @@ public sealed abstract class Tag implements NBTElement
         return name;
     }
 
-    /// Set the name of the tag.
-    ///
-    /// If this tag is a child of a compound tag, the new name must not be used by any other subtag of the compound tag.
-    ///
-    /// If this tag is a child of a list tag, the new name must be empty.
-    ///
-    /// @throws IllegalArgumentException if this tag is a child of a parent tag and the name is not valid for the parent tag.
-    @Contract(mutates = "this")
-    public final void setName(String name) throws IllegalArgumentException {
+    final void setName0(String name) {
         // If the name is the same as the current name, do nothing.
         if (name.equals(this.name)) { // implicit null check
             return;
@@ -102,6 +94,20 @@ public sealed abstract class Tag implements NBTElement
         }
 
         this.name = name;
+    }
+
+    /// Set the name of the tag.
+    ///
+    /// If this tag is a child of a compound tag, the new name must not be used by any other subtag of the compound tag.
+    ///
+    /// If this tag is a child of a list tag, the new name must be empty.
+    ///
+    /// @throws IllegalArgumentException if this tag is a child of a parent tag and the name is not valid for the parent tag.
+    /// @return this tag.
+    @Contract(value = "_ -> this", mutates = "this")
+    public Tag setName(String name) throws IllegalArgumentException {
+        setName0(name);
+        return this;
     }
 
     /// If the tag is a child of a [parent][NBTParent], returns the index of the tag in its parent; otherwise, returns `-1`.

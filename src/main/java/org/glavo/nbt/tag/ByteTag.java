@@ -61,6 +61,13 @@ public final class ByteTag extends ValueTag<Byte> {
         return TagType.BYTE;
     }
 
+    @Override
+    @Contract(value = "_ -> this", mutates = "this")
+    public ByteTag setName(String name) throws IllegalArgumentException {
+        setName0(name);
+        return this;
+    }
+
     /// Returns the value of the tag.
     @Contract(pure = true)
     public byte get() {

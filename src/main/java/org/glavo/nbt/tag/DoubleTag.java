@@ -56,6 +56,13 @@ public final class DoubleTag extends ValueTag<Double> {
         return TagType.DOUBLE;
     }
 
+    @Override
+    @Contract(value = "_ -> this", mutates = "this")
+    public DoubleTag setName(String name) throws IllegalArgumentException {
+        setName0(name);
+        return this;
+    }
+
     /// Returns the value of the tag.
     @Contract(pure = true)
     public double get() {

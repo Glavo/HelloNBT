@@ -66,6 +66,13 @@ public final class LongArrayTag extends ArrayTag<Long, LongTag, long[], LongBuff
         return TagType.LONG_ARRAY;
     }
 
+    @Override
+    @Contract(value = "_ -> this", mutates = "this")
+    public LongArrayTag setName(String name) throws IllegalArgumentException {
+        setName0(name);
+        return this;
+    }
+
     /// Returns the element at the given index.
     ///
     /// @throws IndexOutOfBoundsException if the index is out of bounds.

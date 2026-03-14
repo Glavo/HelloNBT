@@ -56,6 +56,13 @@ public final class FloatTag extends ValueTag<Float> {
         return TagType.FLOAT;
     }
 
+    @Override
+    @Contract(value = "_ -> this", mutates = "this")
+    public FloatTag setName(String name) throws IllegalArgumentException {
+        setName0(name);
+        return this;
+    }
+
     /// Returns the value of the tag.
     @Contract(pure = true)
     public float get() {

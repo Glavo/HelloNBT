@@ -79,6 +79,13 @@ public final class ListTag<T extends Tag> extends ParentTag<T> {
         return TagType.LIST;
     }
 
+    @Override
+    @Contract(value = "_ -> this", mutates = "this")
+    public ListTag<T> setName(String name) throws IllegalArgumentException {
+        setName0(name);
+        return this;
+    }
+
     /// Executes the given action on this list tag.
     ///
     /// This method is useful for configuring the tag.

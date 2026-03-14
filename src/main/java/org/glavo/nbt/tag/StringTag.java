@@ -52,6 +52,13 @@ public final class StringTag extends ValueTag<String> {
         return TagType.STRING;
     }
 
+    @Override
+    @Contract(value = "_ -> this", mutates = "this")
+    public StringTag setName(String name) throws IllegalArgumentException {
+        setName0(name);
+        return this;
+    }
+
     /// Returns the value of the tag.
     @Contract(pure = true)
     public String get() {

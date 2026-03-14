@@ -56,6 +56,13 @@ public final class LongTag extends ValueTag<Long> {
         return TagType.LONG;
     }
 
+    @Override
+    @Contract(value = "_ -> this", mutates = "this")
+    public LongTag setName(String name) throws IllegalArgumentException {
+        setName0(name);
+        return this;
+    }
+
     /// Returns the value of the tag.
     @Contract(pure = true)
     public long get() {

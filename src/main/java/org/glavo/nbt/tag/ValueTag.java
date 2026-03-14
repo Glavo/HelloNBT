@@ -46,6 +46,13 @@ public sealed abstract class ValueTag<V> extends Tag
     @Contract(pure = true)
     public abstract TagType<? extends ValueTag<V>> getType();
 
+    @Override
+    @Contract(value = "_ -> this", mutates = "this")
+    public ValueTag<V> setName(String name) throws IllegalArgumentException {
+        setName0(name);
+        return this;
+    }
+
     /// Returns the value of the tag.
     @Contract(pure = true)
     public abstract V getValue();

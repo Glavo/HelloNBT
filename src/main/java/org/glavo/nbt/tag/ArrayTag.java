@@ -87,6 +87,13 @@ public sealed abstract class ArrayTag<E extends Number, T extends ValueTag<E>, A
     @Contract(pure = true)
     public abstract TagType<? extends ArrayTag<E, T, A, B>> getType();
 
+    @Override
+    @Contract(value = "_ -> this", mutates = "this")
+    public ArrayTag<E, T, A, B> setName(String name) throws IllegalArgumentException {
+        setName0(name);
+        return this;
+    }
+
     private @Nullable List<E> listView = null;
 
     /// Returns a view of the values of this array as a list.
@@ -306,7 +313,7 @@ public sealed abstract class ArrayTag<E extends Number, T extends ValueTag<E>, A
             }
         }
 
-        tag.setName("");
+        tag.setName0("");
 
         ensureTagsCapacityForAdd();
 

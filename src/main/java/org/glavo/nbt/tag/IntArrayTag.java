@@ -70,6 +70,13 @@ public final class IntArrayTag extends ArrayTag<Integer, IntTag, int[], IntBuffe
         return TagType.INT_ARRAY;
     }
 
+    @Override
+    @Contract(value = "_ -> this", mutates = "this")
+    public IntArrayTag setName(String name) throws IllegalArgumentException {
+        setName0(name);
+        return this;
+    }
+
     /// Returns true if the tag is a UUID.
     ///
     /// All int array tags with length 4 are treated as UUIDs.

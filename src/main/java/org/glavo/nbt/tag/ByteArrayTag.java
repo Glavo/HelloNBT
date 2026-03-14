@@ -61,6 +61,13 @@ public final class ByteArrayTag extends ArrayTag<Byte, ByteTag, byte[], ByteBuff
         return TagType.BYTE_ARRAY;
     }
 
+    @Override
+    @Contract(value = "_ -> this", mutates = "this")
+    public ByteArrayTag setName(String name) throws IllegalArgumentException {
+        setName0(name);
+        return this;
+    }
+
     /// Returns the element at the given index.
     ///
     /// @throws IndexOutOfBoundsException if the index is out of bounds.

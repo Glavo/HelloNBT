@@ -66,6 +66,13 @@ public final class CompoundTag extends ParentTag<Tag> {
         return TagType.COMPOUND;
     }
 
+    @Override
+    @Contract(value = "_ -> this", mutates = "this")
+    public CompoundTag setName(String name) throws IllegalArgumentException {
+        setName0(name);
+        return this;
+    }
+
     /// Executes the given action on this compound tag.
     ///
     /// This method is useful for configuring the tag.
@@ -297,7 +304,7 @@ public final class CompoundTag extends ParentTag<Tag> {
             oldParent.removeElement(tag);
         }
 
-        tag.setName(name);
+        tag.setName0(name);
         addTag(tag);
     }
 
@@ -314,7 +321,7 @@ public final class CompoundTag extends ParentTag<Tag> {
             }
         } else {
             T tag = tagType.createTag();
-            tag.setName(name);
+            tag.setName0(name);
             addTag(tag);
             return tag;
         }

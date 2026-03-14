@@ -30,8 +30,8 @@ public final class RawDataReader extends DataReader implements Closeable {
 
     // Used for reading UTF-8 strings
     private static final StringCache DEFAULT_CACHE = new StringCache(
-            "data", "Data", "DataVersion"
-            // TODO: More tag names
+            // Minecraft level.dat tags
+            "Data", "allowCommands", "clearWeatherTime", "CustomBossEvents", "Players", "Color", "CreateWorldFog", "DarkenScreen", "Max", "Value", "Name", "Overlay", "PlayBossMusic", "Visible", "DataPacks", "Disabled", "Enabled", "DataVersion", "DayTime", "Difficulty", "DifficultyLocked", "DimensionData", "DragonFight", "ExitPortalLocation", "1", "X", "Y", "Z", "Gateways", "DragonKilled", "DragonUUIDLeast", "DragonUUIDMost", "PreviouslyKilled", "game", "Rule", "WorldGenSettings", "bonus", "seed", "generate", "dimensions", "GameType", "generatorName", "generatorOptions", "generatorVersion", "hardcore", "initialized", "LastPlayed", "LevelName", "MapFeatures", "Player", "raining", "rainTime", "RandomSeed", "SizeOnDisk", "SpawnX", "SpawnY", "SpawnZ", "spawn", "dimension", "pitch", "yaw", "pos", "thundering", "thunderTime", "Time", "version", "Version", "Id", "Series", "Snapshot", "WanderingTraderSpawnChance", "WanderingTraderSpawnDelay", "WasModded"
     );
 
     public final InputSource source;

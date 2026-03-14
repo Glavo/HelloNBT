@@ -31,7 +31,6 @@ import java.util.stream.LongStream;
 import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 
 abstract class ArrayTagTests<AT extends ArrayTag<E, T, A, B>, E extends Number, T extends ValueTag<E>, A, B extends Buffer> {
     abstract ArrayAccessor<E, T, A, B> accessor();
@@ -256,6 +255,159 @@ abstract class ArrayTagTests<AT extends ArrayTag<E, T, A, B>, E extends Number, 
         assertValueEquals(emptyArray(), tag);
         assertEquals(0, getLength(tag.values));
         assertEquals(0, tag.tags.length);
+    }
+
+    @Test
+    void testValuesView() {
+        var tag = create("", arrayOf(1L, 2L, 3L));
+        List<E> values = tag.values();
+
+        T subTag0 = tag.getTag(0);
+        T subTag1 = tag.getTag(1);
+        T subTag2 = tag.getTag(2);
+
+        assertEquals(3, values.size());
+        assertEquals(valueOf(1L), values.get(0));
+        assertEquals(valueOf(2L), values.set(1, valueOf(20L)));
+        assertEquals(valueOf(20L), subTag1.getValue());
+        assertValueEquals(arrayOf(1L, 20L, 3L), tag);
+
+        assertTrue(values.add(valueOf(4L)));
+        assertValueEquals(arrayOf(1L, 20L, 3L, 4L), tag);
+
+        assertEquals(valueOf(1L), values.remove(0));
+        assertValueEquals(arrayOf(20L, 3L, 4L), tag);
+        assertNull(subTag0.getParent());
+        assertEquals(-1, subTag0.getIndex());
+        assertSame(subTag1, tag.getTag(0));
+        assertSame(subTag2, tag.getTag(1));
+        assertEquals(0, subTag1.getIndex());
+        assertEquals(1, subTag2.getIndex());
+
+        values.clear();
+        assertTrue(tag.isEmpty());
+        assertValueEquals(emptyArray(), tag);
+        assertNull(subTag1.getParent());
+        assertNull(subTag2.getParent());
+        assertEquals(-1, subTag1.getIndex());
+        assertEquals(-1, subTag2.getIndex());
+    }
+
+    @Test
+    void testSetAllArray() {
+        var tag = create("", arrayOf(1L, 2L, 3L));
+        T subTag0 = tag.getTag(0);
+        T subTag2 = tag.getTag(2);
+
+        A source = arrayOf(7L, 8L, 9L, 10L);
+        tag.setAll(source);
+
+        assertEquals(0, tag.tags.length);
+        assertNotSame(source, tag.values);
+        assertValueEquals(arrayOf(7L, 8L, 9L, 10L), tag);
+        assertNull(subTag0.getParent());
+        assertNull(subTag2.getParent());
+        assertEquals(-1, subTag0.getIndex());
+        assertEquals(-1, subTag2.getIndex());
+
+        set(source, 0, 114L);
+        assertValueEquals(arrayOf(7L, 8L, 9L, 10L), tag);
+    }
+
+    @Test
+    void testSetAllBuffer() {
+        var tag = create("", arrayOf(1L, 2L, 3L));
+        T subTag = tag.getTag(1);
+
+        B buffer = accessor().getReadOnlyView(arrayOf(9L, 8L, 7L, 6L, 5L), 1, 3);
+        int limit = buffer.limit();
+
+        tag.setAll(buffer);
+
+        assertEquals(limit, buffer.position());
+        assertEquals(0, tag.tags.length);
+        assertValueEquals(arrayOf(8L, 7L, 6L), tag);
+        assertNull(subTag.getParent());
+        assertEquals(-1, subTag.getIndex());
+    }
+
+    @Test
+    void testRemoveTagAtWithoutCachedSubTag() {
+        var tag = create("", arrayOf(10L, 20L, 30L, 40L));
+        T lastTag = tag.getTag(3);
+
+        T removed = tag.removeTagAt(1);
+
+        assertEquals("", removed.getName());
+        assertEquals(valueOf(20L), removed.getValue());
+        assertNull(removed.getParent());
+        assertEquals(-1, removed.getIndex());
+        assertValueEquals(arrayOf(10L, 30L, 40L), tag);
+        assertSame(lastTag, tag.getTag(2));
+        assertEquals(2, lastTag.getIndex());
+        assertNotSame(removed, tag.getTag(1));
+        assertEquals(valueOf(30L), tag.getTag(1).getValue());
+    }
+
+    @Test
+    void testAddTagMovesFromOtherParent() {
+        var source = create();
+        var target = create();
+
+        T moved = createSubTag();
+        moved.setValue(valueOf(11L));
+        T remaining = createSubTag();
+        remaining.setValue(valueOf(22L));
+
+        source.addTag(moved);
+        source.addTag(remaining);
+
+        target.addTag(moved);
+
+        assertValueEquals(arrayOf(22L), source);
+        assertValueEquals(arrayOf(11L), target);
+        assertSame(target, moved.getParentTag());
+        assertEquals(0, moved.getIndex());
+        assertSame(source, remaining.getParentTag());
+        assertEquals(0, remaining.getIndex());
+        assertSame(moved, target.getTag(0));
+        assertSame(remaining, source.getTag(0));
+    }
+
+    @Test
+    void testArrayAndBufferSnapshots() {
+        var tag = create("", arrayOf(5L, 6L, 7L));
+
+        A array = tag.getArray();
+        set(array, 1, 100L);
+        assertValueEquals(arrayOf(5L, 6L, 7L), tag);
+
+        B buffer1 = tag.getBuffer();
+        B buffer2 = tag.getBuffer();
+        assertNotSame(buffer1, buffer2);
+        assertEquals(0, buffer1.position());
+        assertEquals(0, buffer2.position());
+        assertEquals(tag.size(), buffer1.limit());
+        assertEquals(tag.size(), buffer2.limit());
+        assertArrayEquals(arrayOf(5L, 6L, 7L), accessor().get(buffer1));
+        assertEquals(buffer1.limit(), buffer1.position());
+        assertEquals(0, buffer2.position());
+    }
+
+    @Test
+    void testInvalidIndexesAndRemoveTagValidation() {
+        var tag = create("", arrayOf(1L, 2L, 3L));
+
+        assertThrows(IndexOutOfBoundsException.class, () -> tag.getTag(-1));
+        assertThrows(IndexOutOfBoundsException.class, () -> tag.getValue(3));
+        assertThrows(IndexOutOfBoundsException.class, () -> tag.getAsString(3));
+        assertThrows(IndexOutOfBoundsException.class, () -> tag.set(3, valueOf(0L)));
+        assertThrows(IndexOutOfBoundsException.class, () -> tag.removeAt(3));
+        assertThrows(IndexOutOfBoundsException.class, () -> tag.removeTagAt(3));
+
+        T foreignTag = createSubTag();
+        foreignTag.setValue(valueOf(1L));
+        assertThrows(IllegalArgumentException.class, () -> tag.removeTag(foreignTag));
     }
 
     @ParameterizedTest

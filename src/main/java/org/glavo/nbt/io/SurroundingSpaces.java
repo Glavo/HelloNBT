@@ -15,6 +15,8 @@
  */
 package org.glavo.nbt.io;
 
+import org.jetbrains.annotations.Contract;
+
 import java.util.Objects;
 
 /// Represents the surrounding spaces for SNBT.
@@ -28,6 +30,11 @@ public final class SurroundingSpaces {
 
     /// Surrounding spaces for pretty SNBT.
     public static final SurroundingSpaces PRETTY = new SurroundingSpaces(0, 1, 0, 1);
+
+    /// Creates a new builder for [SurroundingSpaces].
+    public static SurroundingSpaces.Builder newBuilder() {
+        return new SurroundingSpaces.Builder();
+    }
 
     private final int spacesBeforeColon;
     private final int spacesAfterColon;
@@ -79,5 +86,61 @@ public final class SurroundingSpaces {
     public String toString() {
         return "Surrounding[spacesBeforeColon=%d, spacesAfterColon=%d, spacesBeforeComma=%d, spacesAfterComma=%d]".formatted(
                 spacesBeforeColon, spacesAfterColon, spacesBeforeComma, spacesAfterComma);
+    }
+
+    /// Builder for [SurroundingSpaces].
+    public static final class Builder {
+        int spacesBeforeColon;
+        int spacesAfterColon;
+        int spacesBeforeComma;
+        int spacesAfterComma;
+
+        Builder() {
+        }
+
+        /// Builds a new [SurroundingSpaces] instance.
+        @Contract(pure = true)
+        public SurroundingSpaces build() {
+            return new SurroundingSpaces(spacesBeforeColon, spacesAfterColon, spacesBeforeComma, spacesAfterComma);
+        }
+
+        /// Sets the number of spaces before the colon.
+        @Contract(value = "_ -> this", mutates = "this")
+        public Builder setSpacesBeforeColon(int spacesBeforeColon) {
+            if (spacesBeforeColon < 0) {
+                throw new IllegalArgumentException("spacesBeforeColon must be non-negative");
+            }
+            this.spacesBeforeColon = spacesBeforeColon;
+            return this;
+        }
+
+        /// Sets the number of spaces after the colon.
+        @Contract(value = "_ -> this", mutates = "this")
+        public Builder setSpacesAfterColon(int spacesAfterColon) {
+            if (spacesAfterColon < 0) {
+                throw new IllegalArgumentException("spacesAfterColon must be non-negative");
+            }
+            this.spacesAfterColon = spacesAfterColon;
+            return this;
+        }
+
+        /// Sets the number of spaces before the comma.
+        @Contract(value = "_ -> this", mutates = "this")
+        public Builder setSpacesBeforeComma(int spacesBeforeComma) {
+            if (spacesBeforeComma < 0) {
+                throw new IllegalArgumentException("spacesBeforeComma must be non-negative");
+            }
+            this.spacesBeforeComma = spacesBeforeComma;
+            return this;
+        }
+
+        @Contract(value = "_ -> this", mutates = "this")
+        public Builder setSpacesAfterComma(int spacesAfterComma) {
+            if (spacesAfterComma < 0) {
+                throw new IllegalArgumentException("spacesAfterComma must be non-negative");
+            }
+            this.spacesAfterComma = spacesAfterComma;
+            return this;
+        }
     }
 }

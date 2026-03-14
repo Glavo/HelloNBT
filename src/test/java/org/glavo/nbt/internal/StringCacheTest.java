@@ -32,16 +32,12 @@ public final class StringCacheTest {
         return value.getBytes(StandardCharsets.US_ASCII);
     }
 
-    private static @Nullable String get(StringCache cache, ByteBuffer buffer, int offset, int len) {
-        return cache.get(buffer, offset, len);
-    }
-
     private static @Nullable String get(StringCache cache, byte[] bytes) {
-        return get(cache, ByteBuffer.wrap(bytes), 0, bytes.length);
+        return cache.get(ByteBuffer.wrap(bytes), 0, bytes.length);
     }
 
     private static @Nullable String get(StringCache cache, byte[] bytes, int offset, int len) {
-        return get(cache, ByteBuffer.wrap(bytes), offset, len);
+        return cache.get(ByteBuffer.wrap(bytes), offset, len);
     }
 
     @Test
@@ -115,15 +111,15 @@ public final class StringCacheTest {
         direct.put((byte) 3);
         direct.put((byte) 4);
 
-        assertSame(value, get(cache, direct, 2, bytes.length));
+        assertSame(value, cache.get(direct, 2, bytes.length));
 
         ByteBuffer window = direct.duplicate();
         window.position(2);
         window.limit(2 + bytes.length);
 
         ByteBuffer slice = window.slice();
-        assertSame(value, get(cache, slice, 0, bytes.length));
-        assertSame(value, get(cache, slice.asReadOnlyBuffer(), 0, bytes.length));
+        assertSame(value, cache.get(slice, 0, bytes.length));
+        assertSame(value, cache.get(slice.asReadOnlyBuffer(), 0, bytes.length));
     }
 
 }

@@ -48,7 +48,7 @@ abstract class WriteChunkRegionTest {
 
         byte[] bytes = writeToByteArray(expected);
 
-        assertTrue((bytes.length % ChunkUtils.SECTOR_BYTES) == 0);
+        assertEquals(0, (bytes.length % ChunkUtils.SECTOR_BYTES));
 
         ChunkRegion actual = NBTCodec.of().readRegion(new ByteArrayInputStream(bytes));
         assertEquals(expected, actual);

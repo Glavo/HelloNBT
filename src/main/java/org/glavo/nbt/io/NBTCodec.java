@@ -124,11 +124,14 @@ import java.util.function.Function;
 public sealed interface NBTCodec permits NBTCodecImpl {
 
     /// Returns the default [NBTCodec].
+    ///
+    /// The default edition is [MinecraftEdition#JAVA_EDITION].
     @Contract(pure = true)
     static NBTCodec of() {
         return NBTCodecImpl.JE;
     }
 
+    /// Returns a [NBTCodec] for the specified [MinecraftEdition].
     @Contract(pure = true)
     static NBTCodec of(MinecraftEdition edition) {
         return edition == MinecraftEdition.JAVA_EDITION
@@ -139,18 +142,32 @@ public sealed interface NBTCodec permits NBTCodecImpl {
     /// Returns the Minecraft edition of the NBT data.
     ///
     /// The default edition is [MinecraftEdition#JAVA_EDITION].
+    ///
+    /// @see #withEdition(MinecraftEdition)
+    /// @see MinecraftEdition
     @Contract(pure = true)
     MinecraftEdition getEdition();
 
     /// Returns a new [NBTCodec] with the specified edition.
+    ///
+    /// @see #getEdition()
+    /// @see MinecraftEdition
     @Contract(pure = true)
     NBTCodec withEdition(MinecraftEdition edition);
 
     /// Returns the factory for getting [ExternalChunkAccessor] for an Anvil file.
+    ///
+    /// The default factory is [ExternalChunkAccessor#defaultFactory()].
+    ///
+    /// @see #withExternalChunkAccessorFactory(Function)
+    /// @see ExternalChunkAccessor
     @Contract(pure = true)
     Function<Path, ExternalChunkAccessor> getExternalChunkAccessorFactory();
 
     /// Returns a new [NBTCodec] with the specified factory for getting [ExternalChunkAccessor].
+    ///
+    /// @see #getExternalChunkAccessorFactory()
+    /// @see ExternalChunkAccessor
     @Contract(pure = true)
     NBTCodec withExternalChunkAccessorFactory(Function<Path, ExternalChunkAccessor> factory);
 

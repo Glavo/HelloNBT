@@ -18,7 +18,7 @@ repositories {
 }
 
 dependencies {
-    compileOnly(libs.jetbrains.annotations)
+    compileOnlyApi(libs.jetbrains.annotations)
     compileOnly(libs.lz4)
 
     testImplementation(libs.junit.jupiter)

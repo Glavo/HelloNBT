@@ -434,4 +434,21 @@ public final class NBTCodec {
     public void writeRegion(SeekableByteChannel channel, ChunkRegion region, ExternalChunkAccessor accessor) throws IOException {
         NBTOutput.writeRegion(channel, region, accessor);
     }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(getEdition(), getExternalChunkAccessorFactory());
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        return obj instanceof NBTCodec that
+                && this.getEdition().equals(that.getEdition())
+                && this.getExternalChunkAccessorFactory().equals(that.getExternalChunkAccessorFactory());
+    }
+
+    @Override
+    public String toString() {
+        return "NBTCodec[edition=%s, externalChunkAccessorFactory=%s]".formatted(getEdition(), getExternalChunkAccessorFactory());
+    }
 }

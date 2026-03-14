@@ -34,6 +34,93 @@ import java.util.function.Function;
 /// The codec for reading and writing NBT data.
 ///
 /// Each NBTCodec instance is immutable, thread-safe, and can be safely used by multiple threads.
+///
+/// # Getting NBTCodec Instances
+///
+/// NBTCodec provides two factory methods to obtain NBTCodec instances:
+///
+/// - [NBTCodec#of()] returns the default [NBTCodec] with big-endian byte order for reading and writing NBT.
+/// - [NBTCodec#of(MinecraftEdition)] returns a [NBTCodec] for the specified [MinecraftEdition].
+///   If the edition is [MinecraftEdition#JAVA_EDITION], it uses big-endian byte order;
+///   If the edition is [MinecraftEdition#BEDROCK_EDITION], it uses little-endian byte order.
+///
+/// Beyond just [MinecraftEdition], NBTCodec offers additional configuration options.
+/// To adjust these settings, you can obtain an instance via a factory method and then call
+/// a `withXxx` method (such as [#withEdition(MinecraftEdition)]) to create a new [NBTCodec] instance.
+///
+/// # Reading and Writing NBT Data
+///
+/// NBTCodec supports reading NBT data from multiple sources:
+///
+/// ```java
+/// var codec = NBTCodec.of();
+///
+/// Tag tag;
+///
+/// // Read from a byte array
+/// tag = codec.readTag(new byte[]{...});
+///
+/// // Read from a byte buffer
+/// tag = codec.readTag(ByteBuffer.wrap(new byte[]{...}));
+///
+/// // Read from an input stream
+/// tag = codec.readTag(new ByteArrayInputStream(new byte[]{...}));
+///
+/// // Read from a readable byte channel
+/// tag = codec.readTag(Channels.newChannel(...));
+///
+/// // Read from a file
+/// tag = codec.readTag(Path.of("/path/to/file"));
+/// ```
+///
+/// When reading NBT data, NBTCodec automatically detects whether the data is compressed with GZip or LZ4 and decompresses it transparently.
+///
+/// When reading a `Tag`, you can pass in a `TagType` to specify the expected `Tag` type.
+/// An `IOException` will be thrown if the data does not meet expectations:
+///
+/// ```java
+/// CompoundTag levelDat = codec.readTag(Path.of("level.dat"), TagType.COMPOUND);
+/// ```
+///
+/// You can also easily write a `Tag` to an output stream or a byte channel:
+///
+/// ```java
+/// try (var outputStream = new FileOutputStream("/path/to/file")) {
+///     codec.writeTag(outputStream, tag);
+/// }
+///
+/// // or
+/// try (var channel = FileChannel.open(Path.of("/path/to/file"), StandardOpenOption.WRITE)) {
+///     codec.writeTag(channel, tag);
+/// }
+/// ```
+///
+/// Currently, NBTCodec does not support automatic data compression.
+/// When data needs to be compressed, the output stream should be wrapped with `GZipOutputStream` or `LZ4BlockOutputStream` before being passed to the `writeTag` method.
+///
+/// # Reading Anvil files and region files
+///
+/// NBTCodec also supports reading and writing chunk regions from Anvil files or region files:
+///
+/// ```java
+/// // Read a chunk region from a file
+/// ChunkRegion region = codec.readRegion(Path.of("/path/to/region"));
+///
+/// try (var outputStream = new FileOutputStream("/path/to/region")) {
+///     codec.writeRegion(outputStream, region);
+/// }
+/// ```
+///
+/// Starting from Minecraft 1.15 (19w34a), if the chunk data exceeds 1020KiB, it will be split and saved to another file.
+/// NBTCodec uses [ExternalChunkAccessor] to read and write external chunk files.
+///
+/// For [#readRegion(Path)], it will use the [#getExternalChunkAccessorFactory()] to get the external chunk accessor for the file.
+/// By default, it is [ExternalChunkAccessor#defaultFactory()], which returns an accessor for external chunk files if the file name matches the pattern `r.<regionX>.<regionZ>.mca`.
+///
+/// For other variants (like [#readRegion(InputStream)]), the default behavior is not to support external chunk files.
+/// They will throw an exception when trying to access external chunk files.
+/// However, you can use [#readRegion(InputStream, ExternalChunkAccessor)] or [#readRegion(ReadableByteChannel, ExternalChunkAccessor)] to manually specify the external chunk accessor.
+///
 public sealed interface NBTCodec permits NBTCodecImpl {
 
     /// Returns the default [NBTCodec].

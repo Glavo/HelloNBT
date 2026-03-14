@@ -30,6 +30,24 @@ import java.util.*;
 ///
 /// All elements in the compound tag must have a unique name.
 ///
+/// `CompoundTag` supports fluent addition/setting operations. It has two families of APIs for adding/setting subtags:
+///
+/// - The `add` family of APIs, used to add new subtags.
+///   If a subtag with the same name already exists, the old subtag will be removed first.
+/// - The `set` family of APIs, used to set the value of a subtag.
+///   If no subtag with the same name exists, a new subtag will be created.
+///
+/// Although both can be used to add subtags, they have different behaviors for existing subtags:
+///
+/// - The `add` family of APIs will not throw exceptions.
+///   When a subtag with the same name exists, it will overwrite the old tag.
+///   These methods are more suitable for use when constructing a `CompoundTag`.
+/// - The `set` family of APIs will not remove any tags from the current `CompoundTag`.
+///   This means that subtags previously obtained through the `get` method will not be invalidated by the `set` method.
+///   However, if the type of the subtag does not match the value being set (for example, if there is already a StringTag named `foo`,
+///   but you try to call `setInt("foo", ...)`), an `IllegalStateException` will be thrown.
+///   These methods are more suitable for modifying existing tags.
+///
 /// @see Tag
 /// @see ParentTag
 public final class CompoundTag extends ParentTag<Tag> {

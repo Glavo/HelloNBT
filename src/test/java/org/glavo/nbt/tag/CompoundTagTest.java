@@ -66,22 +66,20 @@ final class CompoundTagTest {
         assertNull(tag.get("missing"));
         assertDetached(tag);
 
-        tag = new CompoundTag("root");
+        tag = new CompoundTag().setName("root");
         assertEquals("root", tag.getName());
         assertSame(TagType.COMPOUND, tag.getType());
         assertTrue(tag.isEmpty());
         assertEquals(0, tag.size());
         assertNull(tag.get("missing"));
         assertDetached(tag);
-
-        assertThrows(NullPointerException.class, () -> new CompoundTag(null));
     }
 
     @Test
-    void testAddPutRenameRemoveAndClear() {
-        var root = new CompoundTag("root");
+    void testAddRenameRemoveAndClear() {
+        var root = new CompoundTag().setName("root");
 
-        var number = new IntTag("number", 1);
+        var number = new IntTag(1).setName("number");
         var text = new StringTag("text", "hello");
         root.addTag(number);
         root.addTag(text);
@@ -103,7 +101,7 @@ final class CompoundTagTest {
         assertAttached(root, text, 0);
         assertAttached(root, number, 1);
 
-        var replacement = new LongTag("answer", 2L);
+        var replacement = new LongTag(2L).setName("answer");
         root.addTag(replacement);
         assertEquals(2, root.size());
         assertDetached(number);
@@ -112,10 +110,10 @@ final class CompoundTagTest {
         assertAttached(root, text, 0);
         assertAttached(root, replacement, 1);
 
-        var other = new CompoundTag("other");
-        var moved = new ByteTag("old", (byte) 9);
+        var other = new CompoundTag().setName("other");
+        var moved = new ByteTag((byte) 9).setName("old");
         other.addTag(moved);
-        root.put("moved", moved);
+        root.addTag("moved", moved);
 
         assertTrue(other.isEmpty());
         assertEquals("moved", moved.getName());
@@ -149,13 +147,13 @@ final class CompoundTagTest {
     void testTypedGetters() {
         var tag = new CompoundTag();
         tag.addTags(
-                new ByteTag("byte", (byte) 7),
-                new ShortTag("short", (short) 8),
-                new IntTag("int", 9),
-                new LongTag("long", 10L),
-                new FloatTag("float", 1.5f),
-                new DoubleTag("double", 2.5),
-                new StringTag("string", "hello")
+                new ByteTag((byte) 7).setName("byte"),
+                new ShortTag((short) 8).setName("short"),
+                new IntTag(9).setName("int"),
+                new LongTag(10L).setName("long"),
+                new FloatTag(1.5f).setName("float"),
+                new DoubleTag(2.5).setName("double"),
+                new StringTag("string", "hello") // TODO
         );
 
         assertEquals((byte) 7, tag.getByte("byte"));
@@ -286,18 +284,18 @@ final class CompoundTagTest {
     @Test
     @SuppressWarnings("DataFlowIssue")
     void testCloneEqualsAndToString() {
-        var tag = new CompoundTag("root");
-        tag.addTag(new ByteTag("answer", (byte) 42));
+        var tag = new CompoundTag().setName("root");
+        tag.addTag("answer", new ByteTag((byte) 42));
 
-        var child = new CompoundTag("child");
+        var child = new CompoundTag().setName("child");
         child.addTag(new StringTag("message", "hello"));
         tag.addTag(child);
 
-        var sameContentDifferentOrder = new CompoundTag("root");
-        var child2 = new CompoundTag("child");
+        var sameContentDifferentOrder = new CompoundTag().setName("root");
+        var child2 = new CompoundTag().setName("child");
         child2.addTag(new StringTag("message", "hello"));
         sameContentDifferentOrder.addTag(child2);
-        sameContentDifferentOrder.addTag(new ByteTag("answer", (byte) 42));
+        sameContentDifferentOrder.addTag("answer", new ByteTag((byte) 42));
 
         assertEquals(tag, sameContentDifferentOrder);
         assertEquals(tag.hashCode(), sameContentDifferentOrder.hashCode());
@@ -308,8 +306,8 @@ final class CompoundTagTest {
         assertNotEquals(tag, differentName);
         assertContentEquals(tag, differentName);
 
-        var differentContent = new CompoundTag("root");
-        differentContent.addTag(new ByteTag("answer", (byte) 41));
+        var differentContent = new CompoundTag().setName("root");
+        differentContent.addTag("answer", new ByteTag((byte) 41));
         differentContent.addTag(child2.clone());
         assertNotEquals(tag, differentContent);
         assertContentNotEquals(tag, differentContent);

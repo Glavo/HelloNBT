@@ -41,22 +41,15 @@ public final class IntArrayTag extends ArrayTag<Integer, IntTag, int[], IntBuffe
     public IntArrayTag() {
     }
 
-    /// Creates a new IntArrayTag with the given name and an empty array.
-    public IntArrayTag(String name) {
-        setName(name);
-    }
-
-    /// Creates a new IntArrayTag with the given name and value.
+    /// Creates a new IntArrayTag with an empty name and the given value.
     ///
     /// The value is cloned to avoid external modifications.
-    public IntArrayTag(String name, int[] value) {
-        setName(name);
+    public IntArrayTag(int[] value) {
         setAll(value);
     }
 
-    /// Create a new IntArrayTag with the name and a UUID value.
-    public IntArrayTag(String name, UUID uuid) {
-        setName(name);
+    /// Create a new IntArrayTag with an empty name and a UUID value.
+    public IntArrayTag(UUID uuid) {
         setUUID(uuid);
     }
 
@@ -219,7 +212,8 @@ public final class IntArrayTag extends ArrayTag<Integer, IntTag, int[], IntBuffe
     @Override
     @Contract(value = "-> new", pure = true)
     public IntArrayTag clone() {
-        IntArrayTag tag = new IntArrayTag(name);
+        IntArrayTag tag = new IntArrayTag();
+        tag.setName0(name);
         if (size > 0) {
             tag.values = Arrays.copyOf(values, size);
         }

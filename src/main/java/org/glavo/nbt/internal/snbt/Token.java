@@ -296,10 +296,10 @@ sealed interface Token {
         @Override
         public ValueTag<? extends Number> toTag() {
             return switch (type) {
-                case BYTE -> new ByteTag("", (byte) value);
-                case SHORT -> new ShortTag("", (short) value);
-                case INT -> new IntTag("", (int) value);
-                case LONG -> new LongTag("", value);
+                case BYTE -> new ByteTag((byte) value);
+                case SHORT -> new ShortTag((short) value);
+                case INT -> new IntTag((int) value);
+                case LONG -> new LongTag(value);
             };
         }
 
@@ -309,8 +309,8 @@ sealed interface Token {
         @Override
         public ValueTag<? extends Number> toTag() {
             return switch (type) {
-                case FLOAT -> new FloatTag("", (float) value);
-                case DOUBLE -> new DoubleTag("", value);
+                case FLOAT -> new FloatTag((float) value);
+                case DOUBLE -> new DoubleTag(value);
             };
         }
     }

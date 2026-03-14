@@ -39,19 +39,12 @@ public final class LongArrayTag extends ArrayTag<Long, LongTag, long[], LongBuff
 
     /// Creates a new LongArrayTag with an empty name and an empty array.
     public LongArrayTag() {
-        this("");
     }
 
-    /// Creates a new LongArrayTag with the given name and an empty array.
-    public LongArrayTag(String name) {
-        setName(name);
-    }
-
-    /// Creates a new LongArrayTag with the given name and value.
+    /// Creates a new LongArrayTag with an empty name and the given value.
     ///
     /// The value is cloned to avoid external modifications.
-    public LongArrayTag(String name, long[] values) {
-        setName(name);
+    public LongArrayTag(long[] values) {
         setAll(values);
     }
 
@@ -178,7 +171,8 @@ public final class LongArrayTag extends ArrayTag<Long, LongTag, long[], LongBuff
     @Override
     @Contract(value = "-> new", pure = true)
     public LongArrayTag clone() {
-        LongArrayTag tag = new LongArrayTag(name);
+        LongArrayTag tag = new LongArrayTag();
+        tag.setName0(name);
         if (size > 0) {
             tag.values = Arrays.copyOf(values, size);
         }

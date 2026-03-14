@@ -345,7 +345,7 @@ public final class SNBTParser {
                 Tag tag;
                 if (stringToken.equals(Token.StringToken.OP_UUID)) {
                     if (valueToken instanceof Token.StringToken valueStringToken) {
-                        tag = new IntArrayTag("", UUID.fromString(valueStringToken.value()));
+                        tag = new IntArrayTag(UUID.fromString(valueStringToken.value()));
                     } else {
                         throw new IllegalArgumentException("Unexpected token: " + valueToken);
                     }
@@ -398,7 +398,7 @@ public final class SNBTParser {
                 throw new IllegalArgumentException("Unexpected end of input");
             }
 
-            tag.put(nameToken.value(), value);
+            tag.addTag(nameToken.value(), value);
 
             Token peek = peekToken();
             if (peek == Token.SimpleToken.COMMA) {

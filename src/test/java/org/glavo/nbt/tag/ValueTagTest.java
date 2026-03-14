@@ -94,16 +94,9 @@ final class ValueTagTest {
             assertEquals("", tag.getName());
             assertIntegralEquals((byte) 0, tag);
 
-            tag = new ByteTag("Meow");
-            assertEquals("Meow", tag.getName());
-            assertIntegralEquals((byte) 0, tag);
-
-            tag = new ByteTag("Meow", (byte) 114);
-            assertEquals("Meow", tag.getName());
+            tag = new ByteTag((byte) 114);
+            assertEquals("", tag.getName());
             assertIntegralEquals((byte) 114, tag);
-
-            assertThrows(NullPointerException.class, () -> new ByteTag(null));
-            assertThrows(NullPointerException.class, () -> new ByteTag(null, (byte) 114));
         }
 
         {
@@ -111,16 +104,9 @@ final class ValueTagTest {
             assertEquals("", tag.getName());
             assertIntegralEquals((short) 0, tag);
 
-            tag = new ShortTag("Meow");
-            assertEquals("Meow", tag.getName());
-            assertIntegralEquals((short) 0, tag);
-
-            tag = new ShortTag("Meow", (short) 114);
-            assertEquals("Meow", tag.getName());
+            tag = new ShortTag((short) 114);
+            assertEquals("", tag.getName());
             assertIntegralEquals((short) 114, tag);
-
-            assertThrows(NullPointerException.class, () -> new ShortTag(null));
-            assertThrows(NullPointerException.class, () -> new ShortTag(null, (short) 114));
         }
 
         {
@@ -128,16 +114,9 @@ final class ValueTagTest {
             assertEquals("", tag.getName());
             assertIntegralEquals(0, tag);
 
-            tag = new IntTag("Meow");
-            assertEquals("Meow", tag.getName());
-            assertIntegralEquals(0, tag);
-
-            tag = new IntTag("Meow", 114);
-            assertEquals("Meow", tag.getName());
+            tag = new IntTag(114);
+            assertEquals("", tag.getName());
             assertIntegralEquals(114, tag);
-
-            assertThrows(NullPointerException.class, () -> new IntTag(null));
-            assertThrows(NullPointerException.class, () -> new IntTag(null, 114));
         }
 
         {
@@ -145,16 +124,9 @@ final class ValueTagTest {
             assertEquals("", tag.getName());
             assertIntegralEquals(0L, tag);
 
-            tag = new LongTag("Meow");
-            assertEquals("Meow", tag.getName());
-            assertIntegralEquals(0L, tag);
-
-            tag = new LongTag("Meow", 114L);
-            assertEquals("Meow", tag.getName());
+            tag = new LongTag(114L);
+            assertEquals("", tag.getName());
             assertIntegralEquals(114L, tag);
-
-            assertThrows(NullPointerException.class, () -> new LongTag(null));
-            assertThrows(NullPointerException.class, () -> new LongTag(null, 114L));
         }
 
         {
@@ -162,16 +134,9 @@ final class ValueTagTest {
             assertEquals("", tag.getName());
             assertFloatingEquals(0.0f, tag);
 
-            tag = new FloatTag("Meow");
-            assertEquals("Meow", tag.getName());
-            assertFloatingEquals(0.0f, tag);
-
-            tag = new FloatTag("Meow", 114.0f);
-            assertEquals("Meow", tag.getName());
+            tag = new FloatTag(114.0f);
+            assertEquals("", tag.getName());
             assertFloatingEquals(114.0f, tag);
-
-            assertThrows(NullPointerException.class, () -> new FloatTag(null));
-            assertThrows(NullPointerException.class, () -> new FloatTag(null, 114.0f));
         }
 
         {
@@ -179,17 +144,9 @@ final class ValueTagTest {
             assertEquals("", tag.getName());
             assertFloatingEquals(0.0, tag);
 
-            tag = new DoubleTag("Meow");
-            assertEquals("Meow", tag.getName());
-            assertFloatingEquals(0.0, tag);
-
-            tag = new DoubleTag("Meow", 114.0);
-            assertEquals("Meow", tag.getName());
+            tag = new DoubleTag(114.0);
+            assertEquals("", tag.getName());
             assertFloatingEquals(114.0, tag);
-
-
-            assertThrows(NullPointerException.class, () -> new DoubleTag(null));
-            assertThrows(NullPointerException.class, () -> new DoubleTag(null, 114.0));
         }
 
         {
@@ -199,21 +156,14 @@ final class ValueTagTest {
             assertEquals("", tag.getValue());
             assertEquals("", tag.getAsString());
 
-            tag = new StringTag("Meow");
-            assertEquals("Meow", tag.getName());
-            assertEquals("", tag.get());
-            assertEquals("", tag.getValue());
-            assertEquals("", tag.getAsString());
-
-            tag = new StringTag("Meow", "Hello");
-            assertEquals("Meow", tag.getName());
-            assertEquals("Hello", tag.get());
-            assertEquals("Hello", tag.getValue());
-            assertEquals("Hello", tag.getAsString());
+            // TODO
+//            tag = new StringTag("Hello");
+//            assertEquals("", tag.getName());
+//            assertEquals("Hello", tag.get());
+//            assertEquals("Hello", tag.getValue());
+//            assertEquals("Hello", tag.getAsString());
 
             assertThrows(NullPointerException.class, () -> new StringTag(null));
-            assertThrows(NullPointerException.class, () -> new StringTag(null, "Hello"));
-            assertThrows(NullPointerException.class, () -> new StringTag("Meow", null));
         }
     }
 
@@ -301,7 +251,7 @@ final class ValueTagTest {
     @Test
     void testClone() {
         {
-            var tag = new ByteTag("Meow", (byte) 114);
+            var tag = new ByteTag((byte) 114).setName("Meow");
             var clone = tag.clone();
 
             assertNotSame(tag, clone);
@@ -310,7 +260,7 @@ final class ValueTagTest {
         }
 
         {
-            var tag = new ShortTag("Meow", (short) 114);
+            var tag = new ShortTag((short) 114).setName("Meow");
             var clone = tag.clone();
 
             assertNotSame(tag, clone);
@@ -319,7 +269,7 @@ final class ValueTagTest {
         }
 
         {
-            var tag = new IntTag("Meow", 114);
+            var tag = new IntTag(114).setName("Meow");
             var clone = tag.clone();
 
             assertNotSame(tag, clone);
@@ -328,7 +278,7 @@ final class ValueTagTest {
         }
 
         {
-            var tag = new LongTag("Meow", 114L);
+            var tag = new LongTag(114L).setName("Meow");
             var clone = tag.clone();
 
             assertNotSame(tag, clone);
@@ -337,7 +287,7 @@ final class ValueTagTest {
         }
 
         {
-            var tag = new FloatTag("Meow", 114.0f);
+            var tag = new FloatTag((float) 114.0).setName("Meow");
             var clone = tag.clone();
 
             assertNotSame(tag, clone);
@@ -346,7 +296,7 @@ final class ValueTagTest {
         }
 
         {
-            var tag = new DoubleTag("Meow", 114.0);
+            var tag = new DoubleTag(114.0).setName("Meow");
             var clone = tag.clone();
 
             assertNotSame(tag, clone);
@@ -384,44 +334,45 @@ final class ValueTagTest {
 
     @Test
     void testContentEquals() {
-        assertContentEquals(new ByteTag("Meow", (byte) 114), new ByteTag("Meow", (byte) 114));
-        assertContentEquals(new ByteTag("Meow", (byte) 114), new ByteTag("MeowMeow", (byte) 114));
-        assertContentNotEquals(new ByteTag("Meow", (byte) 114), new ByteTag("Meow", (byte) 514));
-        assertContentNotEquals(new ByteTag("Meow", (byte) 114), new ByteTag("MeowMeow", (byte) 514));
+        assertContentEquals(new ByteTag((byte) 114).setName("Meow"), new ByteTag((byte) 114).setName("Meow"));
+        assertContentEquals(new ByteTag((byte) 114).setName("Meow"), new ByteTag((byte) 114).setName("MeowMeow"));
+        assertContentNotEquals(new ByteTag((byte) 114).setName("Meow"), new ByteTag((byte) 514).setName("Meow"));
+        assertContentNotEquals(new ByteTag((byte) 114).setName("Meow"), new ByteTag((byte) 514).setName("MeowMeow"));
 
-        assertContentEquals(new ShortTag("Meow", (short) 114), new ShortTag("Meow", (short) 114));
-        assertContentEquals(new ShortTag("Meow", (short) 114), new ShortTag("MeowMeow", (short) 114));
-        assertContentNotEquals(new ShortTag("Meow", (short) 114), new ShortTag("Meow", (short) 514));
-        assertContentNotEquals(new ShortTag("Meow", (short) 114), new ShortTag("MeowMeow", (short) 514));
+        assertContentEquals(new ShortTag((short) 114).setName("Meow"), new ShortTag((short) 114).setName("Meow"));
+        assertContentEquals(new ShortTag((short) 114).setName("Meow"), new ShortTag((short) 114).setName("MeowMeow"));
+        assertContentNotEquals(new ShortTag((short) 114).setName("Meow"), new ShortTag((short) 514).setName("Meow"));
+        assertContentNotEquals(new ShortTag((short) 114).setName("Meow"), new ShortTag((short) 514).setName("MeowMeow"));
 
-        assertContentEquals(new IntTag("Meow", 114), new IntTag("Meow", 114));
-        assertContentEquals(new IntTag("Meow", 114), new IntTag("MeowMeow", 114));
-        assertContentNotEquals(new IntTag("Meow", 114), new IntTag("Meow", 514));
-        assertContentNotEquals(new IntTag("Meow", 114), new IntTag("MeowMeow", 514));
+        assertContentEquals(new IntTag(114).setName("Meow"), new IntTag(114).setName("Meow"));
+        assertContentEquals(new IntTag(114).setName("Meow"), new IntTag(114).setName("MeowMeow"));
+        assertContentNotEquals(new IntTag(114).setName("Meow"), new IntTag(514).setName("Meow"));
+        assertContentNotEquals(new IntTag(114).setName("Meow"), new IntTag(514).setName("MeowMeow"));
 
-        assertContentEquals(new LongTag("Meow", 114L), new LongTag("Meow", 114L));
-        assertContentEquals(new LongTag("Meow", 114L), new LongTag("MeowMeow", 114L));
-        assertContentNotEquals(new LongTag("Meow", 114L), new LongTag("Meow", 514L));
-        assertContentNotEquals(new LongTag("Meow", 114L), new LongTag("MeowMeow", 514L));
+        assertContentEquals(new LongTag(114L).setName("Meow"), new LongTag(114L).setName("Meow"));
+        assertContentEquals(new LongTag(114L).setName("Meow"), new LongTag(114L).setName("MeowMeow"));
+        assertContentNotEquals(new LongTag(114L).setName("Meow"), new LongTag(514L).setName("Meow"));
+        assertContentNotEquals(new LongTag(114L).setName("Meow"), new LongTag(514L).setName("MeowMeow"));
 
-        assertContentEquals(new FloatTag("Meow", 114.0f), new FloatTag("Meow", 114.0f));
-        assertContentEquals(new FloatTag("Meow", 114.0f), new FloatTag("MeowMeow", 114.0f));
-        assertContentEquals(new FloatTag("Meow", Float.NaN), new FloatTag("Meow", Float.NaN));
-        assertContentEquals(new FloatTag("Meow", Float.NaN), new FloatTag("Meow", Float.intBitsToFloat(0x7f800001)));
-        assertContentEquals(new FloatTag("Meow", Float.POSITIVE_INFINITY), new FloatTag("Meow", Float.POSITIVE_INFINITY));
-        assertContentEquals(new FloatTag("Meow", Float.NEGATIVE_INFINITY), new FloatTag("Meow", Float.NEGATIVE_INFINITY));
-        assertContentNotEquals(new FloatTag("Meow", 114.0f), new FloatTag("Meow", 514.0f));
-        assertContentNotEquals(new FloatTag("Meow", 114.0f), new FloatTag("MeowMeow", 514.0f));
+        assertContentEquals(new FloatTag(114.0f).setName("Meow"), new FloatTag(114.0f).setName("Meow"));
+        assertContentEquals(new FloatTag(114.0f).setName("Meow"), new FloatTag(114.0f).setName("MeowMeow"));
+        assertContentEquals(new FloatTag(Float.NaN).setName("Meow"), new FloatTag(Float.NaN).setName("Meow"));
+        assertContentEquals(new FloatTag(Float.NaN).setName("Meow"), new FloatTag(Float.intBitsToFloat(0x7f800001)).setName("Meow"));
+        assertContentEquals(new FloatTag(Float.POSITIVE_INFINITY).setName("Meow"), new FloatTag(Float.POSITIVE_INFINITY).setName("Meow"));
+        assertContentEquals(new FloatTag(Float.NEGATIVE_INFINITY).setName("Meow"), new FloatTag(Float.NEGATIVE_INFINITY).setName("Meow"));
+        assertContentNotEquals(new FloatTag(114.0f).setName("Meow"), new FloatTag(514.0f).setName("Meow"));
+        assertContentNotEquals(new FloatTag(114.0f).setName("Meow"), new FloatTag(514.0f).setName("MeowMeow"));
 
-        assertContentEquals(new DoubleTag("Meow", 114.0), new DoubleTag("Meow", 114.0));
-        assertContentEquals(new DoubleTag("Meow", 114.0), new DoubleTag("MeowMeow", 114.0));
-        assertContentEquals(new DoubleTag("Meow", Double.NaN), new DoubleTag("Meow", Double.NaN));
-        assertContentEquals(new DoubleTag("Meow", Double.NaN), new DoubleTag("Meow", Double.longBitsToDouble(0x7FF800000000DEADL)));
-        assertContentEquals(new DoubleTag("Meow", Double.POSITIVE_INFINITY), new DoubleTag("Meow", Double.POSITIVE_INFINITY));
-        assertContentEquals(new DoubleTag("Meow", Double.NEGATIVE_INFINITY), new DoubleTag("Meow", Double.NEGATIVE_INFINITY));
-        assertContentNotEquals(new DoubleTag("Meow", 114.0), new DoubleTag("Meow", 514.0));
-        assertContentNotEquals(new DoubleTag("Meow", 114.0), new DoubleTag("MeowMeow", 514.0));
+        assertContentEquals(new DoubleTag(114.0).setName("Meow"), new DoubleTag(114.0).setName("Meow"));
+        assertContentEquals(new DoubleTag(114.0).setName("Meow"), new DoubleTag(114.0).setName("MeowMeow"));
+        assertContentEquals(new DoubleTag(Double.NaN).setName("Meow"), new DoubleTag(Double.NaN).setName("Meow"));
+        assertContentEquals(new DoubleTag(Double.NaN).setName("Meow"), new DoubleTag(Double.longBitsToDouble(0x7FF800000000DEADL)).setName("Meow"));
+        assertContentEquals(new DoubleTag(Double.POSITIVE_INFINITY).setName("Meow"), new DoubleTag(Double.POSITIVE_INFINITY).setName("Meow"));
+        assertContentEquals(new DoubleTag(Double.NEGATIVE_INFINITY).setName("Meow"), new DoubleTag(Double.NEGATIVE_INFINITY).setName("Meow"));
+        assertContentNotEquals(new DoubleTag(114.0).setName("Meow"), new DoubleTag(514.0).setName("Meow"));
+        assertContentNotEquals(new DoubleTag(114.0).setName("Meow"), new DoubleTag(514.0).setName("MeowMeow"));
 
+        // TODO
         assertContentEquals(new StringTag("Meow", "Hello"), new StringTag("Meow", "Hello"));
         assertContentEquals(new StringTag("Meow", "Hello"), new StringTag("MeowMeow", "Hello"));
         assertContentNotEquals(new StringTag("Meow", "Hello"), new StringTag("Meow", "World"));
@@ -429,13 +380,13 @@ final class ValueTagTest {
 
 
         List<ValueTag<?>> tags = List.of(
-                new ByteTag("Meow", (byte) 1),
-                new ShortTag("Meow", (short) 2),
-                new IntTag("Meow", 3),
-                new LongTag("Meow", 4L),
-                new FloatTag("Meow", 5.0f),
-                new DoubleTag("Meow", 6.0),
-                new StringTag("Meow", "Hello")
+                new ByteTag((byte) 1).setName("Meow"),
+                new ShortTag((short) 2).setName("Meow"),
+                new IntTag(3).setName("Meow"),
+                new LongTag(4L).setName("Meow"),
+                new FloatTag(5.0f).setName("Meow"),
+                new DoubleTag(6.0).setName("Meow"),
+                new StringTag("Meow", "Hello") // TODO
         );
 
         for (ValueTag<?> tag1 : tags) {
@@ -456,28 +407,28 @@ final class ValueTagTest {
     @Test
     void testToString() {
         assertToString("0B", new ByteTag());
-        assertToString("114B", new ByteTag("", (byte) 114));
-        assertToString("Meow: 114B", new ByteTag("Meow", (byte) 114));
+        assertToString("114B", new ByteTag((byte) 114));
+        assertToString("Meow: 114B", new ByteTag((byte) 114).setName("Meow"));
 
         assertToString("0S", new ShortTag());
-        assertToString("114S", new ShortTag("", (short) 114));
-        assertToString("Meow: 114S", new ShortTag("Meow", (short) 114));
+        assertToString("114S", new ShortTag((short) 114));
+        assertToString("Meow: 114S", new ShortTag((short) 114).setName("Meow"));
 
         assertToString("0I", new IntTag());
-        assertToString("114I", new IntTag("", 114));
-        assertToString("Meow: 114I", new IntTag("Meow", 114));
+        assertToString("114I", new IntTag(114));
+        assertToString("Meow: 114I", new IntTag(114).setName("Meow"));
 
         assertToString("0L", new LongTag());
-        assertToString("114L", new LongTag("", 114L));
-        assertToString("Meow: 114L", new LongTag("Meow", 114L));
+        assertToString("114L", new LongTag(114L));
+        assertToString("Meow: 114L", new LongTag(114L).setName("Meow"));
 
         assertToString("0.0F", new FloatTag());
-        assertToString("114.0F", new FloatTag("", 114.0f));
-        assertToString("Meow: 114.0F", new FloatTag("Meow", 114.0f));
+        assertToString("114.0F", new FloatTag(114.0f));
+        assertToString("Meow: 114.0F", new FloatTag(114.0f).setName("Meow"));
 
         assertToString("0.0D", new DoubleTag());
-        assertToString("114.0D", new DoubleTag("", 114.0));
-        assertToString("Meow: 114.0D", new DoubleTag("Meow", 114.0));
+        assertToString("114.0D", new DoubleTag(114.0));
+        assertToString("Meow: 114.0D", new DoubleTag(114.0).setName("Meow"));
 
         assertToString("\"\"", new StringTag());
         assertToString("\"Hello\"", new StringTag("", "Hello"));

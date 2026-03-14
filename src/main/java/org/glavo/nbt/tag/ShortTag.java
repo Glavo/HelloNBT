@@ -38,18 +38,6 @@ public final class ShortTag extends ValueTag<Short> {
         this.value = value;
     }
 
-    /// Creates a new ShortTag with the given name and a value of `0`.
-    public ShortTag(String name) {
-        this();
-        setName(name);
-    }
-
-    /// Creates a new ShortTag with the given name and value.
-    public ShortTag(String name, short value) {
-        this(value);
-        setName(name);
-    }
-
     @Override
     @Contract(pure = true)
     public TagType<ShortTag> getType() {
@@ -130,6 +118,6 @@ public final class ShortTag extends ValueTag<Short> {
     @Override
     @Contract(value = "-> new", pure = true)
     public ShortTag clone() {
-        return new ShortTag(getName(), value);
+        return new ShortTag(value).setName(getName());
     }
 }

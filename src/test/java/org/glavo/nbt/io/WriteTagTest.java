@@ -75,16 +75,16 @@ public final class WriteTagTest {
     @ParameterizedTest
     @MethodSource("validators")
     void testWriteSimpleTag(Validator validator) throws IOException {
-        validator.assertTagEquals(new com.github.steveice10.opennbt.tag.builtin.ByteTag("Meow", (byte) 42), new ByteTag("Meow", (byte) 42));
-        validator.assertTagEquals(new com.github.steveice10.opennbt.tag.builtin.ShortTag("Meow", (short) 42), new ShortTag("Meow", (short) 42));
-        validator.assertTagEquals(new com.github.steveice10.opennbt.tag.builtin.IntTag("Meow", 42), new IntTag("Meow", 42));
-        validator.assertTagEquals(new com.github.steveice10.opennbt.tag.builtin.LongTag("Meow", 42L), new LongTag("Meow", 42L));
-        validator.assertTagEquals(new com.github.steveice10.opennbt.tag.builtin.FloatTag("Meow", 42.0f), new FloatTag("Meow", 42.0f));
-        validator.assertTagEquals(new com.github.steveice10.opennbt.tag.builtin.DoubleTag("Meow", 42.0), new DoubleTag("Meow", 42.0));
+        validator.assertTagEquals(new com.github.steveice10.opennbt.tag.builtin.ByteTag("Meow", (byte) 42), new ByteTag((byte) 42).setName("Meow"));
+        validator.assertTagEquals(new com.github.steveice10.opennbt.tag.builtin.ShortTag("Meow", (short) 42), new ShortTag((short) 42).setName("Meow"));
+        validator.assertTagEquals(new com.github.steveice10.opennbt.tag.builtin.IntTag("Meow", 42), new IntTag(42).setName("Meow"));
+        validator.assertTagEquals(new com.github.steveice10.opennbt.tag.builtin.LongTag("Meow", 42L), new LongTag(42L).setName("Meow"));
+        validator.assertTagEquals(new com.github.steveice10.opennbt.tag.builtin.FloatTag("Meow", 42.0f), new FloatTag(42.0f).setName("Meow"));
+        validator.assertTagEquals(new com.github.steveice10.opennbt.tag.builtin.DoubleTag("Meow", 42.0), new DoubleTag(42.0).setName("Meow"));
         validator.assertTagEquals(new com.github.steveice10.opennbt.tag.builtin.StringTag("Meow", "Glavo"), new StringTag("Meow", "Glavo"));
-        validator.assertTagEquals(new com.github.steveice10.opennbt.tag.builtin.ByteArrayTag("Meow", new byte[]{1, 2, 3}), new ByteArrayTag("Meow", new byte[]{1, 2, 3}));
-        validator.assertTagEquals(new com.github.steveice10.opennbt.tag.builtin.IntArrayTag("Meow", new int[]{1, 2, 3}), new IntArrayTag("Meow", new int[]{1, 2, 3}));
-        validator.assertTagEquals(new com.github.steveice10.opennbt.tag.builtin.LongArrayTag("Meow", new long[]{1, 2, 3}), new LongArrayTag("Meow", new long[]{1, 2, 3}));
+        validator.assertTagEquals(new com.github.steveice10.opennbt.tag.builtin.ByteArrayTag("Meow", new byte[]{1, 2, 3}), new ByteArrayTag(new byte[]{1, 2, 3}).setName("Meow"));
+        validator.assertTagEquals(new com.github.steveice10.opennbt.tag.builtin.IntArrayTag("Meow", new int[]{1, 2, 3}), new IntArrayTag(new int[]{1, 2, 3}).setName("Meow"));
+        validator.assertTagEquals(new com.github.steveice10.opennbt.tag.builtin.LongArrayTag("Meow", new long[]{1, 2, 3}), new LongArrayTag(new long[]{1, 2, 3}).setName("Meow"));
 
         {
             var expected = new com.github.steveice10.opennbt.tag.builtin.ListTag("Meow", com.github.steveice10.opennbt.tag.builtin.IntTag.class);
@@ -92,7 +92,7 @@ public final class WriteTagTest {
 
             for (int i = 0; i < 10000; i++) {
                 expected.add(new com.github.steveice10.opennbt.tag.builtin.IntTag("", i));
-                actual.addTag(new IntTag("", i));
+                actual.addTag(new IntTag(i));
             }
 
             validator.assertTagEquals(expected, actual);
@@ -123,26 +123,26 @@ public final class WriteTagTest {
                 expected.put(sub11);
             }
 
-            var actual = new CompoundTag("Meow");
-            actual.addTag(new ByteTag("Sub0", (byte) 42));
-            actual.addTag(new ShortTag("Sub1", (short) 42));
-            actual.addTag(new IntTag("Sub2", 42));
-            actual.addTag(new LongTag("Sub3", 42L));
-            actual.addTag(new FloatTag("Sub4", 42.0f));
-            actual.addTag(new DoubleTag("Sub5", 42.0));
-            actual.addTag(new StringTag("Sub6", "Glavo"));
-            actual.addTag(new ByteArrayTag("Sub7", new byte[]{1, 2, 3}));
-            actual.addTag(new IntArrayTag("Sub8", new int[]{1, 2, 3}));
-            actual.addTag(new LongArrayTag("Sub9", new long[]{1, 2, 3}));
+            var actual = new CompoundTag().setName("Meow");
+            actual.addTag("Sub0", new ByteTag((byte) 42));
+            actual.addTag("Sub1", new ShortTag((short) 42));
+            actual.addTag("Sub2", new IntTag(42));
+            actual.addTag("Sub3", new LongTag(42L));
+            actual.addTag("Sub4", new FloatTag(42.0f));
+            actual.addTag("Sub5", new DoubleTag(42.0));
+            actual.addTag("Sub6", new StringTag("", "Glavo"));
+            actual.addTag("Sub7", new ByteArrayTag(new byte[]{1, 2, 3}));
+            actual.addTag("Sub8", new IntArrayTag(new int[]{1, 2, 3}));
+            actual.addTag("Sub9", new LongArrayTag(new long[]{1, 2, 3}));
             {
-                var sub10 = new CompoundTag("Sub10");
-                sub10.addTag(new ByteTag("Sub10Sub0", (byte) 42));
+                var sub10 = new CompoundTag().setName("Sub10");
+                sub10.addTag("Sub10Sub0", new ByteTag((byte) 42));
                 actual.addTag(sub10);
             }
             {
-                var sub11 = new ListTag<>("Sub11", TagType.INT);
+                var sub11 = new ListTag<>(TagType.INT).setName("Sub11");
                 for (int i = 0; i < 10000; i++) {
-                    sub11.addTag(new IntTag("", i));
+                    sub11.addTag(new IntTag(i));
                 }
                 actual.addTag(sub11);
             }

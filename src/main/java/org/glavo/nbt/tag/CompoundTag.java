@@ -41,11 +41,6 @@ public final class CompoundTag extends ParentTag<Tag> {
     public CompoundTag() {
     }
 
-    /// Creates a new empty compound tag with the given name.
-    public CompoundTag(String name) {
-        setName(name);
-    }
-
     @Override
     void preUpdateSubTagName(Tag tag, String oldName, String newName) throws IllegalArgumentException {
         if (subTagsByName.containsKey(newName)) {
@@ -297,7 +292,7 @@ public final class CompoundTag extends ParentTag<Tag> {
     ///
     /// If another tag with the same name already exists, the old tag will be removed.
     @Contract(mutates = "this,param2")
-    public void put(String name, Tag tag) {
+    public void addTag(String name, Tag tag) {
         @SuppressWarnings("unchecked")
         var oldParent = (NBTParent<Tag>) tag.getParent();
         if (oldParent != null) {
@@ -517,7 +512,8 @@ public final class CompoundTag extends ParentTag<Tag> {
     @Override
     @Contract(value = "-> new", pure = true)
     public CompoundTag clone() {
-        var newTag = new CompoundTag(this.name);
+        var newTag = new CompoundTag();
+        newTag.setName0(this.name);
         for (int i = 0; i < size; i++) {
             newTag.addTag(tags[i].clone());
         }

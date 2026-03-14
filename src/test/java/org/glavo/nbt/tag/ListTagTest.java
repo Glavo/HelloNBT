@@ -96,8 +96,8 @@ final class ListTagTest {
     void testAddTagMoveRemoveAndClear() {
         var root = new ListTag<>("root");
 
-        var first = new IntTag("first", 1);
-        var second = new IntTag("second", 2);
+        var first = new IntTag(1).setName("first");
+        var second = new IntTag(2).setName("second");
         root.addTag(first);
         root.addTag(second);
 
@@ -114,7 +114,7 @@ final class ListTagTest {
         assertAttached(root, first, 1);
 
         var other = new ListTag<>(TagType.INT);
-        var moved = new IntTag("old", 9);
+        var moved = new IntTag(9).setName("old");
         other.addTag(moved);
         root.addTag(moved);
 
@@ -156,13 +156,13 @@ final class ListTagTest {
         assertNull(empty.getElementType());
 
         var nonEmpty = new ListTag<>();
-        nonEmpty.addTag(new IntTag("number", 1));
+        nonEmpty.addTag(new IntTag(1).setName("number"));
         assertThrows(IllegalStateException.class, () -> nonEmpty.setElementType(null));
         assertThrows(IllegalStateException.class, () -> nonEmpty.setElementType(TagType.STRING));
 
         var list = new ListTag<>();
-        var first = new IntTag("a", 1);
-        var second = new IntTag("b", 2);
+        var first = new IntTag(1).setName("a");
+        var second = new IntTag(2).setName("b");
         list.addTags(first, second);
         list.setElementType(TagType.COMPOUND);
 
@@ -195,14 +195,14 @@ final class ListTagTest {
 
         var mismatchedEmpty = new ListTag<>();
         mismatchedEmpty.setElementType(TagType.STRING);
-        var number = new IntTag("number", 42);
+        var number = new IntTag(42).setName("number");
         mismatchedEmpty.addAny(number);
         assertSame(TagType.INT, mismatchedEmpty.getElementType());
         assertEquals(1, mismatchedEmpty.size());
         assertAttached(mismatchedEmpty, number, 0);
 
         var heterogeneous = new ListTag<>();
-        var intTag = new IntTag("x", 1);
+        var intTag = new IntTag(1).setName("x");
         var stringTag = new StringTag("y", "two");
         heterogeneous.addAny(intTag);
         heterogeneous.addAny(stringTag);

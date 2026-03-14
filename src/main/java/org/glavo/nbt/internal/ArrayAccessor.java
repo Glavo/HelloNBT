@@ -169,7 +169,7 @@ public abstract class ArrayAccessor<E extends Number, T extends ValueTag<E>, A, 
 
         @Override
         public ByteTag newTagFromElement(byte[] array, int index) {
-            return new ByteTag("", array[index]);
+            return new ByteTag(array[index]);
         }
     };
 
@@ -251,7 +251,7 @@ public abstract class ArrayAccessor<E extends Number, T extends ValueTag<E>, A, 
 
         @Override
         public IntTag newTagFromElement(int[] array, int index) {
-            return new IntTag("", array[index]);
+            return new IntTag(array[index]);
         }
     };
 
@@ -333,7 +333,7 @@ public abstract class ArrayAccessor<E extends Number, T extends ValueTag<E>, A, 
 
         @Override
         public LongTag newTagFromElement(long[] array, int index) {
-            return new LongTag("", array[index]);
+            return new LongTag(array[index]);
         }
     };
 

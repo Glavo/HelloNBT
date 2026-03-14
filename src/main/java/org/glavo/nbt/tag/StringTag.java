@@ -35,6 +35,7 @@ public final class StringTag extends ValueTag<String> {
     }
 
     /// Creates a new StringTag with the given name and a value of `""`.
+    @Deprecated
     public StringTag(String name) {
         setName(name);
         this.value = "";

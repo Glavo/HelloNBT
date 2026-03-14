@@ -32,12 +32,12 @@ final class NBTPathTest {
 
     private static CompoundTag createSampleRoot() {
         return new CompoundTag().tap(root -> {
-            root.put("player", new CompoundTag().tap(player2 -> {
+            root.addTag("player", new CompoundTag().tap(player2 -> {
                 player2.setString("name", "Alex");
                 player2.setInt("score", 42);
             }));
 
-            root.put("players", new ListTag<>(TagType.COMPOUND).tap(players -> {
+            root.addTag("players", new ListTag<>(TagType.COMPOUND).tap(players -> {
                 players.addTag(new CompoundTag().tap(player1 -> {
                     player1.setString("name", "Alex");
                     player1.setInt("score", 10);
@@ -48,7 +48,7 @@ final class NBTPathTest {
                 }));
             }));
 
-            root.put("profiles", new ListTag<>(TagType.COMPOUND).tap(profiles -> {
+            root.addTag("profiles", new ListTag<>(TagType.COMPOUND).tap(profiles -> {
                 profiles.addTag(new CompoundTag());
                 profiles.addTag(new CompoundTag().tap(profile -> profile.setString("name", "Alex")));
                 profiles.addTag(new CompoundTag().tap(profile -> {
@@ -57,8 +57,8 @@ final class NBTPathTest {
                 }));
             }));
 
-            root.put("empty", new CompoundTag());
-            root.put("metadata", new CompoundTag().tap(metadata -> {
+            root.addTag("empty", new CompoundTag());
+            root.addTag("metadata", new CompoundTag().tap(metadata -> {
                 metadata.setString("display name", "Alex The Great");
                 metadata.setString("quote\"key", "Escaped");
             }));

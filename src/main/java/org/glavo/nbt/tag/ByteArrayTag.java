@@ -38,16 +38,10 @@ public final class ByteArrayTag extends ArrayTag<Byte, ByteTag, byte[], ByteBuff
     public ByteArrayTag() {
     }
 
-    /// Creates a new ByteArrayTag with the given name and an empty array.
-    public ByteArrayTag(String name) {
-        setName(name);
-    }
-
-    /// Creates a new ByteArrayTag with the given name and value.
+    /// Creates a new ByteArrayTag with an empty name and the given value.
     ///
     /// The value is cloned to avoid external modifications.
-    public ByteArrayTag(String name, byte[] values) {
-        setName(name);
+    public ByteArrayTag(byte[] values) {
         setAll(values);
     }
 
@@ -175,7 +169,8 @@ public final class ByteArrayTag extends ArrayTag<Byte, ByteTag, byte[], ByteBuff
     @Override
     @Contract(value = "-> new", pure = true)
     public ByteArrayTag clone() {
-        ByteArrayTag tag = new ByteArrayTag(name);
+        ByteArrayTag tag = new ByteArrayTag();
+        tag.setName0(name);
         if (size > 0) {
             tag.values = Arrays.copyOf(values, size);
         }

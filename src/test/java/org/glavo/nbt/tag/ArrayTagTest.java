@@ -39,9 +39,7 @@ abstract class ArrayTagTest<AT extends ArrayTag<E, T, A, B>, E extends Number, T
 
     abstract AT create();
 
-    abstract AT create(String name);
-
-    abstract AT create(String name, A array);
+    abstract AT create(A array);
 
     abstract T createSubTag();
 
@@ -135,18 +133,14 @@ abstract class ArrayTagTest<AT extends ArrayTag<E, T, A, B>, E extends Number, T
         assertEquals("", tag.getName());
         assertValueEquals(emptyArray(), tag);
 
-        tag = create("test");
-        assertEquals("test", tag.getName());
-        assertValueEquals(emptyArray(), tag);
-
-        tag = create("test", accessor().empty());
-        assertEquals("test", tag.getName());
+        tag = create(accessor().empty());
+        assertEquals("", tag.getName());
         assertValueEquals(emptyArray(), tag);
 
         Random random = new Random(0);
         A array = randomArray(random, 10);
-        tag = create("test", array);
-        assertEquals("test", tag.getName());
+        tag = create(array);
+        assertEquals("", tag.getName());
         assertEquals(10, tag.size());
         assertNotSame(array, tag.values);
         assertValueEquals(array, tag);
@@ -259,7 +253,7 @@ abstract class ArrayTagTest<AT extends ArrayTag<E, T, A, B>, E extends Number, T
 
     @Test
     void testValuesView() {
-        var tag = create("", arrayOf(1L, 2L, 3L));
+        var tag = create(arrayOf(1L, 2L, 3L));
         List<E> values = tag.values();
 
         T subTag0 = tag.getTag(0);
@@ -295,7 +289,7 @@ abstract class ArrayTagTest<AT extends ArrayTag<E, T, A, B>, E extends Number, T
 
     @Test
     void testSetAllArray() {
-        var tag = create("", arrayOf(1L, 2L, 3L));
+        var tag = create(arrayOf(1L, 2L, 3L));
         T subTag0 = tag.getTag(0);
         T subTag2 = tag.getTag(2);
 
@@ -316,7 +310,7 @@ abstract class ArrayTagTest<AT extends ArrayTag<E, T, A, B>, E extends Number, T
 
     @Test
     void testSetAllBuffer() {
-        var tag = create("", arrayOf(1L, 2L, 3L));
+        var tag = create(arrayOf(1L, 2L, 3L));
         T subTag = tag.getTag(1);
 
         B buffer = accessor().getReadOnlyView(arrayOf(9L, 8L, 7L, 6L, 5L), 1, 3);
@@ -333,7 +327,7 @@ abstract class ArrayTagTest<AT extends ArrayTag<E, T, A, B>, E extends Number, T
 
     @Test
     void testRemoveTagAtWithoutCachedSubTag() {
-        var tag = create("", arrayOf(10L, 20L, 30L, 40L));
+        var tag = create(arrayOf(10L, 20L, 30L, 40L));
         T lastTag = tag.getTag(3);
 
         T removed = tag.removeTagAt(1);
@@ -376,7 +370,7 @@ abstract class ArrayTagTest<AT extends ArrayTag<E, T, A, B>, E extends Number, T
 
     @Test
     void testArrayAndBufferSnapshots() {
-        var tag = create("", arrayOf(5L, 6L, 7L));
+        var tag = create(arrayOf(5L, 6L, 7L));
 
         A array = tag.getArray();
         set(array, 1, 100L);
@@ -396,7 +390,7 @@ abstract class ArrayTagTest<AT extends ArrayTag<E, T, A, B>, E extends Number, T
 
     @Test
     void testInvalidIndexesAndRemoveTagValidation() {
-        var tag = create("", arrayOf(1L, 2L, 3L));
+        var tag = create(arrayOf(1L, 2L, 3L));
 
         assertThrows(IndexOutOfBoundsException.class, () -> tag.getTag(-1));
         assertThrows(IndexOutOfBoundsException.class, () -> tag.getValue(3));
@@ -422,7 +416,7 @@ abstract class ArrayTagTest<AT extends ArrayTag<E, T, A, B>, E extends Number, T
             set(data, i, i);
         }
 
-        var tag = create("", data);
+        var tag = create(data);
 
         // No child tags should be allocated when no child tags are used.
         assertEquals(0, tag.tags.length);
@@ -500,13 +494,8 @@ abstract class ArrayTagTest<AT extends ArrayTag<E, T, A, B>, E extends Number, T
         }
 
         @Override
-        ByteArrayTag create(String name) {
-            return new ByteArrayTag(name);
-        }
-
-        @Override
-        ByteArrayTag create(String name, byte[] array) {
-            return new ByteArrayTag(name, array);
+        ByteArrayTag create(byte[] array) {
+            return new ByteArrayTag(array);
         }
 
         @Override
@@ -554,13 +543,8 @@ abstract class ArrayTagTest<AT extends ArrayTag<E, T, A, B>, E extends Number, T
         }
 
         @Override
-        IntArrayTag create(String name) {
-            return new IntArrayTag(name);
-        }
-
-        @Override
-        IntArrayTag create(String name, int[] array) {
-            return new IntArrayTag(name, array);
+        IntArrayTag create(int[] array) {
+            return new IntArrayTag(array);
         }
 
         @Override
@@ -649,13 +633,8 @@ abstract class ArrayTagTest<AT extends ArrayTag<E, T, A, B>, E extends Number, T
         }
 
         @Override
-        LongArrayTag create(String name) {
-            return new LongArrayTag(name);
-        }
-
-        @Override
-        LongArrayTag create(String name, long[] array) {
-            return new LongArrayTag(name, array);
+        LongArrayTag create(long[] array) {
+            return new LongArrayTag(array);
         }
 
         @Override

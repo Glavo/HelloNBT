@@ -43,18 +43,6 @@ public final class ByteTag extends ValueTag<Byte> {
         this((byte) (value ? 1 : 0));
     }
 
-    /// Creates a new ByteTag with the given name and a value of `0`.
-    public ByteTag(String name) {
-        this();
-        setName(name);
-    }
-
-    /// Creates a new ByteTag with the given name and value.
-    public ByteTag(String name, byte value) {
-        this(value);
-        setName(name);
-    }
-
     @Override
     @Contract(pure = true)
     public TagType<ByteTag> getType() {
@@ -160,6 +148,6 @@ public final class ByteTag extends ValueTag<Byte> {
     @Override
     @Contract(value = "-> new", pure = true)
     public ByteTag clone() {
-        return new ByteTag(name, value);
+        return new ByteTag(value).setName(name);
     }
 }

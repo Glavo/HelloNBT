@@ -38,18 +38,6 @@ public final class IntTag extends ValueTag<Integer> {
         this.value = value;
     }
 
-    /// Creates a new IntTag with the given name and a value of `0`.
-    public IntTag(String name) {
-        this();
-        setName(name);
-    }
-
-    /// Creates a new IntTag with the given name and value.
-    public IntTag(String name, int value) {
-        this(value);
-        setName(name);
-    }
-
     @Override
     @Contract(pure = true)
     public TagType<IntTag> getType() {
@@ -140,6 +128,6 @@ public final class IntTag extends ValueTag<Integer> {
     @Override
     @Contract(value = "-> new", pure = true)
     public IntTag clone() {
-        return new IntTag(name, value);
+        return new IntTag(value).setName(name);
     }
 }

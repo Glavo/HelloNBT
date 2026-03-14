@@ -38,18 +38,6 @@ public final class DoubleTag extends ValueTag<Double> {
         this.value = value;
     }
 
-    /// Creates a new DoubleTag with the given name and a value of `0.0`.
-    public DoubleTag(String name) {
-        this();
-        setName(name);
-    }
-
-    /// Creates a new DoubleTag with the given name and value.
-    public DoubleTag(String name, double value) {
-        this(value);
-        setName(name);
-    }
-
     @Override
     @Contract(pure = true)
     public TagType<DoubleTag> getType() {
@@ -118,6 +106,6 @@ public final class DoubleTag extends ValueTag<Double> {
     @Override
     @Contract(value = "-> new", pure = true)
     public DoubleTag clone() {
-        return new DoubleTag(getName(), value);
+        return new DoubleTag(value).setName(name);
     }
 }

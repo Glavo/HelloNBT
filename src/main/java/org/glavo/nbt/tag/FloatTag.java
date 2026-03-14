@@ -38,18 +38,6 @@ public final class FloatTag extends ValueTag<Float> {
         this.value = value;
     }
 
-    /// Creates a new FloatTag with the given name and a value of `0.0`.
-    public FloatTag(String name) {
-        this();
-        setName(name);
-    }
-
-    /// Creates a new FloatTag with the given name and value.
-    public FloatTag(String name, float value) {
-        this(value);
-        setName(name);
-    }
-
     @Override
     @Contract(pure = true)
     public TagType<FloatTag> getType() {
@@ -118,6 +106,6 @@ public final class FloatTag extends ValueTag<Float> {
     @Override
     @Contract(value = "-> new", pure = true)
     public FloatTag clone() {
-        return new FloatTag(getName(), value);
+        return new FloatTag(value).setName(name);
     }
 }

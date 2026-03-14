@@ -38,18 +38,6 @@ public final class LongTag extends ValueTag<Long> {
         this.value = value;
     }
 
-    /// Creates a new LongTag with the given name and a value of `0`.
-    public LongTag(String name) {
-        this();
-        setName(name);
-    }
-
-    /// Creates a new LongTag with the given name and value.
-    public LongTag(String name, long value) {
-        this(value);
-        setName(name);
-    }
-
     @Override
     @Contract(pure = true)
     public TagType<LongTag> getType() {
@@ -128,6 +116,6 @@ public final class LongTag extends ValueTag<Long> {
     @Override
     @Contract(value = "-> new", pure = true)
     public LongTag clone() {
-        return new LongTag(getName(), value);
+        return new LongTag(value).setName(name);
     }
 }

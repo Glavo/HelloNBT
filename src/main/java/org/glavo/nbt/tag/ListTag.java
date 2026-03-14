@@ -211,7 +211,7 @@ public final class ListTag<T extends Tag> extends ParentTag<T> {
             setElementType(TagType.COMPOUND);
 
             CompoundTag subTag = new CompoundTag();
-            subTag.put("", tag);
+            subTag.addTag("", tag);
             addTag((T) subTag);
         }
     }

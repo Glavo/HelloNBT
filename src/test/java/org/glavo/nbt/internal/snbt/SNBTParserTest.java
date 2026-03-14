@@ -116,23 +116,23 @@ final class SNBTParserTest {
         assertEquals(new ByteTag((byte) 123), parseTag("123b"));
         assertEquals(new ByteTag(true), parseTag("true"));
         assertEquals(new ByteTag(false), parseTag("false"));
-        assertEquals(new ShortTag("", (short) 123), parseTag("123s"));
-        assertEquals(new IntTag("", 123), parseTag("123"));
-        assertEquals(new LongTag("", 123L), parseTag("123L"));
-        assertEquals(new FloatTag("", 123.0f), parseTag("123.0f"));
-        assertEquals(new DoubleTag("", 123.0), parseTag("123.0d"));
+        assertEquals(new ShortTag((short) 123), parseTag("123s"));
+        assertEquals(new IntTag(123), parseTag("123"));
+        assertEquals(new LongTag(123L), parseTag("123L"));
+        assertEquals(new FloatTag(123.0f), parseTag("123.0f"));
+        assertEquals(new DoubleTag(123.0), parseTag("123.0d"));
         assertEquals(new StringTag("", "Hello"), parseTag("Hello"));
         assertEquals(new StringTag("", "Hello"), parseTag("'Hello'"));
         assertEquals(new StringTag("", "Hello"), parseTag("\"Hello\""));
         assertEquals(new ByteArrayTag(), parseTag("[B;]"));
         assertEquals(new IntArrayTag(), parseTag("[I;]"));
         assertEquals(new LongArrayTag(), parseTag("[L;]"));
-        assertEquals(new ByteArrayTag("", new byte[]{1, 2, 3}), parseTag("[B; 1, 2, 3]"));
-        assertEquals(new ByteArrayTag("", new byte[]{1, 2, 3}), parseTag("[B; 1, 2, 3, ]"));
-        assertEquals(new IntArrayTag("", new int[]{1, 2, 3}), parseTag("[I; 1, 2, 3]"));
-        assertEquals(new IntArrayTag("", new int[]{1, 2, 3}), parseTag("[I; 1, 2, 3, ]"));
-        assertEquals(new LongArrayTag("", new long[]{1L, 2L, 3L}), parseTag("[L; 1L, 2L, 3L]"));
-        assertEquals(new LongArrayTag("", new long[]{1L, 2L, 3L}), parseTag("[L; 1L, 2L, 3L, ]"));
+        assertEquals(new ByteArrayTag(new byte[]{1, 2, 3}), parseTag("[B; 1, 2, 3]"));
+        assertEquals(new ByteArrayTag(new byte[]{1, 2, 3}), parseTag("[B; 1, 2, 3, ]"));
+        assertEquals(new IntArrayTag(new int[]{1, 2, 3}), parseTag("[I; 1, 2, 3]"));
+        assertEquals(new IntArrayTag(new int[]{1, 2, 3}), parseTag("[I; 1, 2, 3, ]"));
+        assertEquals(new LongArrayTag(new long[]{1L, 2L, 3L}), parseTag("[L; 1L, 2L, 3L]"));
+        assertEquals(new LongArrayTag(new long[]{1L, 2L, 3L}), parseTag("[L; 1L, 2L, 3L, ]"));
 
         assertEquals(new ListTag<>(), parseTag("[]"));
         assertEquals(new ListTag<>().tap(l -> {
@@ -150,9 +150,9 @@ final class SNBTParserTest {
             c.setInt("age", 9);
             c.setUUID("id", UUID.fromString("01bb64c8-2a2f-4509-931b-366513bfb5a8"));
             c.setBoolean("bool", true);
-            c.put("nested", new CompoundTag().tap(c2 -> {
-                c2.put("very", new CompoundTag().tap(c3 -> {
-                    c3.put("deep", new CompoundTag().tap(c4 -> {
+            c.addTag("nested", new CompoundTag().tap(c2 -> {
+                c2.addTag("very", new CompoundTag().tap(c3 -> {
+                    c3.addTag("deep", new CompoundTag().tap(c4 -> {
                         c4.setString("structure", "ok");
                     }));
                 }));

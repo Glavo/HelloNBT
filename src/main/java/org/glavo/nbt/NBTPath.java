@@ -22,7 +22,10 @@ import org.glavo.nbt.tag.TagType;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.Nullable;
 
+/// An NBT path is a descriptive string used to specify one or more particular elements from an NBT data tree.
+///
 /// @see <a href="https://minecraft.wiki/w/NBT_path">NBT Path - Minecraft Wiki</a>
+/// @see NBTParent#getAllTags(NBTPath)
 public sealed interface NBTPath<T extends Tag> permits NBTPathImpl {
 
     /// Parse a NBT path from a string.

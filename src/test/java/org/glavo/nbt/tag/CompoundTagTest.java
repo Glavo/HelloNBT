@@ -52,6 +52,7 @@ final class CompoundTagTest {
 
         assertFalse(expected.contentEquals(actual), errorMessage);
         assertFalse(actual.contentEquals(expected), errorMessage);
+        assertNotEquals(expected.contentHashCode(), actual.contentHashCode(), errorMessage);
     }
 
     @Test

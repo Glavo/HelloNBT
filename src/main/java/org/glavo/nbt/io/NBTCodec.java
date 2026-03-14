@@ -145,6 +145,7 @@ public final class NBTCodec {
     /// Returns a [NBTCodec] for the specified [MinecraftEdition].
     @Contract(pure = true)
     public static NBTCodec of(MinecraftEdition edition) {
+        Objects.requireNonNull(edition, "edition");
         return edition == MinecraftEdition.JAVA_EDITION
                 ? JE
                 : BE;

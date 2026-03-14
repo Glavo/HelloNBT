@@ -16,7 +16,12 @@
 package org.glavo.nbt.io;
 
 import org.glavo.nbt.chunk.ChunkRegion;
-import org.glavo.nbt.internal.NBTCodecImpl;
+import org.glavo.nbt.internal.input.InputSource;
+import org.glavo.nbt.internal.input.NBTInput;
+import org.glavo.nbt.internal.input.RawDataReader;
+import org.glavo.nbt.internal.output.NBTOutput;
+import org.glavo.nbt.internal.output.OutputTarget;
+import org.glavo.nbt.internal.output.RawDataWriter;
 import org.glavo.nbt.tag.Tag;
 import org.glavo.nbt.tag.TagType;
 import org.jetbrains.annotations.Contract;
@@ -26,10 +31,14 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.nio.ByteBuffer;
+import java.nio.channels.FileChannel;
 import java.nio.channels.ReadableByteChannel;
 import java.nio.channels.SeekableByteChannel;
 import java.nio.channels.WritableByteChannel;
+import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.StandardOpenOption;
+import java.util.Objects;
 import java.util.function.Function;
 
 /// The codec for reading and writing NBT data.
@@ -121,22 +130,32 @@ import java.util.function.Function;
 /// For other variants (like [#readRegion(InputStream)]), the default behavior is not to support external chunk files.
 /// They will throw an exception when trying to access external chunk files.
 /// However, you can use [#readRegion(InputStream, ExternalChunkAccessor)] or [#readRegion(ReadableByteChannel, ExternalChunkAccessor)] to manually specify the external chunk accessor.
-public sealed interface NBTCodec permits NBTCodecImpl {
+public final class NBTCodec {
+    private static final NBTCodec JE = new NBTCodec(MinecraftEdition.JAVA_EDITION, ExternalChunkAccessor.defaultFactory());
+    private static final NBTCodec BE = new NBTCodec(MinecraftEdition.BEDROCK_EDITION, ExternalChunkAccessor.defaultFactory());
 
     /// Returns the default [NBTCodec].
     ///
     /// The default edition is [MinecraftEdition#JAVA_EDITION].
     @Contract(pure = true)
-    static NBTCodec of() {
-        return NBTCodecImpl.JE;
+    public static NBTCodec of() {
+        return JE;
     }
 
     /// Returns a [NBTCodec] for the specified [MinecraftEdition].
     @Contract(pure = true)
-    static NBTCodec of(MinecraftEdition edition) {
+    public static NBTCodec of(MinecraftEdition edition) {
         return edition == MinecraftEdition.JAVA_EDITION
-                ? NBTCodecImpl.JE
-                : NBTCodecImpl.BE;
+                ? JE
+                : BE;
+    }
+
+    private final MinecraftEdition edition;
+    private final Function<Path, ExternalChunkAccessor> externalChunkAccessorFactory;
+
+    private NBTCodec(MinecraftEdition edition, Function<Path, ExternalChunkAccessor> externalChunkAccessorFactory) {
+        this.edition = edition;
+        this.externalChunkAccessorFactory = externalChunkAccessorFactory;
     }
 
     /// Returns the Minecraft edition of the NBT data.
@@ -146,14 +165,19 @@ public sealed interface NBTCodec permits NBTCodecImpl {
     /// @see #withEdition(MinecraftEdition)
     /// @see MinecraftEdition
     @Contract(pure = true)
-    MinecraftEdition getEdition();
+    public MinecraftEdition getEdition() {
+        return edition;
+    }
 
     /// Returns a new [NBTCodec] with the specified edition.
     ///
     /// @see #getEdition()
     /// @see MinecraftEdition
     @Contract(pure = true)
-    NBTCodec withEdition(MinecraftEdition edition);
+    public NBTCodec withEdition(MinecraftEdition edition) {
+        Objects.requireNonNull(edition, "edition");
+        return edition == this.edition ? this : new NBTCodec(edition, externalChunkAccessorFactory);
+    }
 
     /// Returns the factory for getting [ExternalChunkAccessor] for an Anvil file.
     ///
@@ -162,14 +186,26 @@ public sealed interface NBTCodec permits NBTCodecImpl {
     /// @see #withExternalChunkAccessorFactory(Function)
     /// @see ExternalChunkAccessor
     @Contract(pure = true)
-    Function<Path, ExternalChunkAccessor> getExternalChunkAccessorFactory();
+    public Function<Path, ExternalChunkAccessor> getExternalChunkAccessorFactory() {
+        return externalChunkAccessorFactory;
+    }
 
     /// Returns a new [NBTCodec] with the specified factory for getting [ExternalChunkAccessor].
     ///
     /// @see #getExternalChunkAccessorFactory()
     /// @see ExternalChunkAccessor
     @Contract(pure = true)
-    NBTCodec withExternalChunkAccessorFactory(Function<Path, ExternalChunkAccessor> factory);
+    public NBTCodec withExternalChunkAccessorFactory(Function<Path, ExternalChunkAccessor> factory) {
+        Objects.requireNonNull(factory, "factory");
+        return factory == this.externalChunkAccessorFactory ? this : new NBTCodec(edition, factory);
+    }
+
+    private Tag check(@Nullable Tag tag) throws IOException {
+        if (tag == null) {
+            throw new IOException("Unexpected TAG_END");
+        }
+        return tag;
+    }
 
     private static <T extends Tag> T check(@Nullable Tag tag, Class<T> tagClass) throws IOException {
         if (tag == null) {
@@ -184,35 +220,39 @@ public sealed interface NBTCodec permits NBTCodecImpl {
 
     /// Reads a NBT tag from a byte array.
     @Contract(pure = true)
-    Tag readTag(byte[] array) throws IOException;
+    public Tag readTag(byte[] array) throws IOException {
+        try (var reader = new RawDataReader(new InputSource.OfByteBuffer(array), getEdition())) {
+            return check(NBTInput.readTagAutoDecompress(reader));
+        }
+    }
 
     /// Reads the specified NBT tag from a byte array.
     @Contract(pure = true)
-    default <T extends Tag> T readTag(byte[] array, TagType<T> tagType) throws IOException {
+    public <T extends Tag> T readTag(byte[] array, TagType<T> tagType) throws IOException {
         return check(readTag(array), tagType.tagClass());
     }
 
     /// Reads the specified NBT tag from a byte array.
     @Contract(pure = true)
-    default <T extends Tag> T readTag(byte[] array, Class<T> tagClass) throws IOException {
+    public <T extends Tag> T readTag(byte[] array, Class<T> tagClass) throws IOException {
         return check(readTag(array), tagClass);
     }
 
     /// Reads a NBT tag from a byte array with the specified offset and length.
     @Contract(pure = true)
-    default Tag readTag(byte[] array, int offset, int length) throws IOException {
+    public Tag readTag(byte[] array, int offset, int length) throws IOException {
         return readTag(ByteBuffer.wrap(array, offset, length));
     }
 
     /// Reads the specified NBT tag from a byte array with the specified offset and length.
     @Contract(pure = true)
-    default <T extends Tag> T readTag(byte[] array, int offset, int length, TagType<T> tagType) throws IOException {
+    public <T extends Tag> T readTag(byte[] array, int offset, int length, TagType<T> tagType) throws IOException {
         return check(readTag(array, offset, length), tagType.tagClass());
     }
 
     /// Reads the specified NBT tag from a byte array with the specified offset and length.
     @Contract(pure = true)
-    default <T extends Tag> T readTag(byte[] array, int offset, int length, Class<T> tagClass) throws IOException {
+    public <T extends Tag> T readTag(byte[] array, int offset, int length, Class<T> tagClass) throws IOException {
         return check(readTag(array, offset, length), tagClass);
     }
 
@@ -220,13 +260,17 @@ public sealed interface NBTCodec permits NBTCodecImpl {
     ///
     /// This method does not change the position and the limit of the buffer.
     @Contract(pure = true)
-    Tag readTag(ByteBuffer buffer) throws IOException;
+    public Tag readTag(ByteBuffer buffer) throws IOException {
+        try (var reader = new RawDataReader(new InputSource.OfByteBuffer(buffer), getEdition())) {
+            return check(NBTInput.readTagAutoDecompress(reader));
+        }
+    }
 
     /// Reads the specified NBT tag from a byte buffer.
     ///
     /// This method does not change the position and the limit of the buffer.
     @Contract(pure = true)
-    default <T extends Tag> T readTag(ByteBuffer buffer, TagType<T> tagType) throws IOException {
+    public <T extends Tag> T readTag(ByteBuffer buffer, TagType<T> tagType) throws IOException {
         return check(readTag(buffer), tagType.tagClass());
     }
 
@@ -234,7 +278,7 @@ public sealed interface NBTCodec permits NBTCodecImpl {
     ///
     /// This method does not change the position and the limit of the buffer.
     @Contract(pure = true)
-    default <T extends Tag> T readTag(ByteBuffer buffer, Class<T> tagClass) throws IOException {
+    public <T extends Tag> T readTag(ByteBuffer buffer, Class<T> tagClass) throws IOException {
         return check(readTag(buffer), tagClass);
     }
 
@@ -242,13 +286,17 @@ public sealed interface NBTCodec permits NBTCodecImpl {
     ///
     /// After this method is called, the state of the `inputStream` is undefined.
     @Contract(mutates = "param1")
-    Tag readTag(InputStream inputStream) throws IOException;
+    public Tag readTag(InputStream inputStream) throws IOException {
+        try (var reader = new RawDataReader(new InputSource.OfInputStream(inputStream, false), getEdition())) {
+            return check(NBTInput.readTagAutoDecompress(reader));
+        }
+    }
 
     /// Reads the specified NBT tag from an input stream.
     ///
     /// After this method is called, the state of the `inputStream` is undefined.
     @Contract(mutates = "param1")
-    default <T extends Tag> T readTag(InputStream inputStream, TagType<T> tagType) throws IOException {
+    public <T extends Tag> T readTag(InputStream inputStream, TagType<T> tagType) throws IOException {
         return check(readTag(inputStream), tagType.tagClass());
     }
 
@@ -256,7 +304,7 @@ public sealed interface NBTCodec permits NBTCodecImpl {
     ///
     /// After this method is called, the state of the `inputStream` is undefined.
     @Contract(mutates = "param1")
-    default <T extends Tag> T readTag(InputStream inputStream, Class<T> tagClass) throws IOException {
+    public <T extends Tag> T readTag(InputStream inputStream, Class<T> tagClass) throws IOException {
         return check(readTag(inputStream), tagClass);
     }
 
@@ -264,13 +312,17 @@ public sealed interface NBTCodec permits NBTCodecImpl {
     ///
     /// After this method is called, the state of the `channel` is undefined.
     @Contract(mutates = "param1")
-    Tag readTag(ReadableByteChannel channel) throws IOException;
+    public Tag readTag(ReadableByteChannel channel) throws IOException {
+        try (var reader = new RawDataReader(new InputSource.OfByteChannel(channel, false), getEdition())) {
+            return check(NBTInput.readTagAutoDecompress(reader));
+        }
+    }
 
     /// Reads the specified NBT tag from a readable byte channel.
     ///
     /// After this method is called, the state of the `channel` is undefined.
     @Contract(mutates = "param1")
-    default <T extends Tag> T readTag(ReadableByteChannel channel, TagType<T> tagType) throws IOException {
+    public <T extends Tag> T readTag(ReadableByteChannel channel, TagType<T> tagType) throws IOException {
         return check(readTag(channel), tagType.tagClass());
     }
 
@@ -278,36 +330,49 @@ public sealed interface NBTCodec permits NBTCodecImpl {
     ///
     /// After this method is called, the state of the `channel` is undefined.
     @Contract(mutates = "param1")
-    default <T extends Tag> T readTag(ReadableByteChannel channel, Class<T> tagClass) throws IOException {
+    public <T extends Tag> T readTag(ReadableByteChannel channel, Class<T> tagClass) throws IOException {
         return check(readTag(channel), tagClass);
     }
 
     /// Reads a NBT tag from a file.
-    Tag readTag(Path path) throws IOException;
+    public Tag readTag(Path path) throws IOException {
+        try (var channel = Files.newByteChannel(path, StandardOpenOption.READ);
+             var reader = new RawDataReader(new InputSource.OfByteChannel(channel, false), getEdition())) {
+            return check(NBTInput.readTagAutoDecompress(reader));
+        }
+    }
 
     /// Reads the specified NBT tag from a file.
-    default <T extends Tag> T readTag(Path path, TagType<T> tagType) throws IOException {
+    public <T extends Tag> T readTag(Path path, TagType<T> tagType) throws IOException {
         return check(readTag(path), tagType.tagClass());
     }
 
     /// Reads the specified NBT tag from a file.
-    default <T extends Tag> T readTag(Path path, Class<T> tagClass) throws IOException {
+    public <T extends Tag> T readTag(Path path, Class<T> tagClass) throws IOException {
         return check(readTag(path), tagClass);
     }
 
     /// Writes a NBT tag to the output stream.
     @Contract(mutates = "param1")
-    void writeTag(OutputStream outputStream, Tag tag) throws IOException;
+    public void writeTag(OutputStream outputStream, Tag tag) throws IOException {
+        try (var writer = new RawDataWriter(new OutputTarget.OfOutputStream(outputStream, false), getEdition())) {
+            NBTOutput.writeTag(writer, tag);
+        }
+    }
 
     /// Writes a NBT tag to the byte channel.
     @Contract(mutates = "param1")
-    void writeTag(WritableByteChannel channel, Tag tag) throws IOException;
+    public void writeTag(WritableByteChannel channel, Tag tag) throws IOException {
+        try (var writer = new RawDataWriter(new OutputTarget.OfByteChannel(channel, false), getEdition())) {
+            NBTOutput.writeTag(writer, tag);
+        }
+    }
 
     /// Reads a chunk region from a file.
     ///
     /// @see #getExternalChunkAccessorFactory()
     /// @see #withExternalChunkAccessorFactory(Function)
-    default ChunkRegion readRegion(Path path) throws IOException {
+    public ChunkRegion readRegion(Path path) throws IOException {
         return readRegion(path, getExternalChunkAccessorFactory().apply(path));
     }
 
@@ -315,37 +380,58 @@ public sealed interface NBTCodec permits NBTCodecImpl {
     ///
     /// @see #getExternalChunkAccessorFactory()
     /// @see #withExternalChunkAccessorFactory(Function)
-    ChunkRegion readRegion(Path path, ExternalChunkAccessor accessor) throws IOException;
+    public ChunkRegion readRegion(Path path, ExternalChunkAccessor accessor) throws IOException {
+        try (var channel = FileChannel.open(path, StandardOpenOption.READ);
+             var reader = new RawDataReader(new InputSource.OfByteChannel(channel, true), MinecraftEdition.JAVA_EDITION)) {
+            return NBTInput.readRegion(reader, accessor);
+        }
+    }
 
     /// Reads a chunk region from an input stream.
-    default ChunkRegion readRegion(InputStream inputStream) throws IOException {
+    public ChunkRegion readRegion(InputStream inputStream) throws IOException {
         return readRegion(inputStream, ExternalChunkAccessor.emptyAccessor());
     }
 
     /// Reads a chunk region from an input stream.
-    ChunkRegion readRegion(InputStream inputStream, ExternalChunkAccessor accessor) throws IOException;
+    public ChunkRegion readRegion(InputStream inputStream, ExternalChunkAccessor accessor) throws IOException {
+        Objects.requireNonNull(inputStream, "inputStream");
+        try (var reader = new RawDataReader(new InputSource.OfInputStream(inputStream, false), MinecraftEdition.JAVA_EDITION)) {
+            return NBTInput.readRegion(reader, accessor);
+        }
+    }
 
     /// Reads a chunk region from a readable byte channel.
-    default ChunkRegion readRegion(ReadableByteChannel channel) throws IOException {
+    public ChunkRegion readRegion(ReadableByteChannel channel) throws IOException {
         return readRegion(channel, ExternalChunkAccessor.emptyAccessor());
     }
 
     /// Reads a chunk region from a readable byte channel.
-    ChunkRegion readRegion(ReadableByteChannel channel, ExternalChunkAccessor accessor) throws IOException;
+    public ChunkRegion readRegion(ReadableByteChannel channel, ExternalChunkAccessor accessor) throws IOException {
+        Objects.requireNonNull(channel, "channel");
+        try (var reader = new RawDataReader(new InputSource.OfByteChannel(channel, false), MinecraftEdition.JAVA_EDITION)) {
+            return NBTInput.readRegion(reader, accessor);
+        }
+    }
 
     /// Writes a chunk region to an output stream.
-    default void writeRegion(OutputStream outputStream, ChunkRegion region) throws IOException {
+    public void writeRegion(OutputStream outputStream, ChunkRegion region) throws IOException {
         writeRegion(outputStream, region, ExternalChunkAccessor.emptyAccessor());
     }
 
     /// Writes a chunk region to an output stream.
-    void writeRegion(OutputStream outputStream, ChunkRegion region, ExternalChunkAccessor accessor) throws IOException;
+    public void writeRegion(OutputStream outputStream, ChunkRegion region, ExternalChunkAccessor accessor) throws IOException {
+        try (var writer = new RawDataWriter(new OutputTarget.OfOutputStream(outputStream, false), MinecraftEdition.JAVA_EDITION)) {
+            NBTOutput.writeRegion(writer, region, accessor);
+        }
+    }
 
     /// Writes a chunk region to a seekable byte channel.
-    default void writeRegion(SeekableByteChannel channel, ChunkRegion region) throws IOException {
+    public void writeRegion(SeekableByteChannel channel, ChunkRegion region) throws IOException {
         writeRegion(channel, region, ExternalChunkAccessor.emptyAccessor());
     }
 
     /// Writes a chunk region to a seekable byte channel.
-    void writeRegion(SeekableByteChannel channel, ChunkRegion region, ExternalChunkAccessor accessor) throws IOException;
+    public void writeRegion(SeekableByteChannel channel, ChunkRegion region, ExternalChunkAccessor accessor) throws IOException {
+        NBTOutput.writeRegion(channel, region, accessor);
+    }
 }

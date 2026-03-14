@@ -45,6 +45,16 @@ public sealed interface NBTElement permits ChunkRegion, Chunk, Tag, NBTParent {
         return getParent() == null;
     }
 
+    /// Returns the root element of this element.
+    @Contract(pure = true)
+    default NBTElement getRoot() {
+        NBTElement element = this;
+        while (element.getParent() != null) {
+            element = element.getParent();
+        }
+        return element;
+    }
+
     /// Returns a clone of this element.
     ///
     /// This method always performs a deep copy.

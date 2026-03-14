@@ -25,7 +25,7 @@ final class EscapeStrategyTest {
         return SNBTCodec.ofCompact()
                 .withEscapeStrategy(strategy)
                 .withValueQuoteStrategy(QuoteStrategy.always(quoteChar))
-                .toString(new StringTag("", value));
+                .toString(new StringTag(value));
     }
 
     @Test

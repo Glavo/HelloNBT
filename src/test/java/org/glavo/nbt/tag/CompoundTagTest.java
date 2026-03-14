@@ -80,7 +80,7 @@ final class CompoundTagTest {
         var root = new CompoundTag().setName("root");
 
         var number = new IntTag(1).setName("number");
-        var text = new StringTag("text", "hello");
+        var text = new StringTag("hello").setName("text");
         root.addTag(number);
         root.addTag(text);
 
@@ -153,7 +153,7 @@ final class CompoundTagTest {
                 new LongTag(10L).setName("long"),
                 new FloatTag(1.5f).setName("float"),
                 new DoubleTag(2.5).setName("double"),
-                new StringTag("string", "hello") // TODO
+                new StringTag("hello").setName("string")
         );
 
         assertEquals((byte) 7, tag.getByte("byte"));
@@ -288,12 +288,12 @@ final class CompoundTagTest {
         tag.addTag("answer", new ByteTag((byte) 42));
 
         var child = new CompoundTag().setName("child");
-        child.addTag(new StringTag("message", "hello"));
+        child.addTag("message", new StringTag("hello"));
         tag.addTag(child);
 
         var sameContentDifferentOrder = new CompoundTag().setName("root");
         var child2 = new CompoundTag().setName("child");
-        child2.addTag(new StringTag("message", "hello"));
+        child2.addTag("message", new StringTag("hello"));
         sameContentDifferentOrder.addTag(child2);
         sameContentDifferentOrder.addTag("answer", new ByteTag((byte) 42));
 

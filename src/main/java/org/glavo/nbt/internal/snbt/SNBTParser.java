@@ -366,7 +366,7 @@ public final class SNBTParser {
                 return tag;
             }
 
-            return new StringTag("", stringToken.value());
+            return new StringTag(stringToken.value());
         } else if (next instanceof Token.BooleanToken booleanToken) {
             discardPeekedToken(booleanToken);
             return new ByteTag(booleanToken.value);

@@ -81,7 +81,7 @@ public final class WriteTagTest {
         validator.assertTagEquals(new com.github.steveice10.opennbt.tag.builtin.LongTag("Meow", 42L), new LongTag(42L).setName("Meow"));
         validator.assertTagEquals(new com.github.steveice10.opennbt.tag.builtin.FloatTag("Meow", 42.0f), new FloatTag(42.0f).setName("Meow"));
         validator.assertTagEquals(new com.github.steveice10.opennbt.tag.builtin.DoubleTag("Meow", 42.0), new DoubleTag(42.0).setName("Meow"));
-        validator.assertTagEquals(new com.github.steveice10.opennbt.tag.builtin.StringTag("Meow", "Glavo"), new StringTag("Meow", "Glavo"));
+        validator.assertTagEquals(new com.github.steveice10.opennbt.tag.builtin.StringTag("Meow", "Glavo"), new StringTag("Glavo").setName("Meow"));
         validator.assertTagEquals(new com.github.steveice10.opennbt.tag.builtin.ByteArrayTag("Meow", new byte[]{1, 2, 3}), new ByteArrayTag(new byte[]{1, 2, 3}).setName("Meow"));
         validator.assertTagEquals(new com.github.steveice10.opennbt.tag.builtin.IntArrayTag("Meow", new int[]{1, 2, 3}), new IntArrayTag(new int[]{1, 2, 3}).setName("Meow"));
         validator.assertTagEquals(new com.github.steveice10.opennbt.tag.builtin.LongArrayTag("Meow", new long[]{1, 2, 3}), new LongArrayTag(new long[]{1, 2, 3}).setName("Meow"));
@@ -130,7 +130,7 @@ public final class WriteTagTest {
             actual.addTag("Sub3", new LongTag(42L));
             actual.addTag("Sub4", new FloatTag(42.0f));
             actual.addTag("Sub5", new DoubleTag(42.0));
-            actual.addTag("Sub6", new StringTag("", "Glavo"));
+            actual.addTag("Sub6", new StringTag("Glavo"));
             actual.addTag("Sub7", new ByteArrayTag(new byte[]{1, 2, 3}));
             actual.addTag("Sub8", new IntArrayTag(new int[]{1, 2, 3}));
             actual.addTag("Sub9", new LongArrayTag(new long[]{1, 2, 3}));
@@ -157,7 +157,7 @@ public final class WriteTagTest {
         String value = "ABCǾ喵喵喵🐱ABC123";
 
         var expected = new com.github.steveice10.opennbt.tag.builtin.StringTag("Meow", value);
-        var actual = new StringTag("Meow", value);
+        var actual = new StringTag(value).setName("Meow");
         validator.assertTagEquals(expected, actual);
     }
 }

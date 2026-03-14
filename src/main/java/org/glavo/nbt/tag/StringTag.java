@@ -35,16 +35,8 @@ public final class StringTag extends ValueTag<String> {
     }
 
     /// Creates a new StringTag with the given name and a value of `""`.
-    @Deprecated
-    public StringTag(String name) {
-        setName(name);
-        this.value = "";
-    }
-
-    /// Creates a new StringTag with the given name and value.
-    public StringTag(String name, String value) {
+    public StringTag(String value) {
         this.value = Objects.requireNonNull(value, "value");
-        setName(name);
     }
 
     @Override
@@ -115,6 +107,6 @@ public final class StringTag extends ValueTag<String> {
     @Override
     @Contract(value = "-> new", pure = true)
     public StringTag clone() {
-        return new StringTag(name, value);
+        return new StringTag(value).setName(name);
     }
 }

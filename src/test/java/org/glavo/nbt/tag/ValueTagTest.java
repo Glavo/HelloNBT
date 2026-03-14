@@ -156,12 +156,11 @@ final class ValueTagTest {
             assertEquals("", tag.getValue());
             assertEquals("", tag.getAsString());
 
-            // TODO
-//            tag = new StringTag("Hello");
-//            assertEquals("", tag.getName());
-//            assertEquals("Hello", tag.get());
-//            assertEquals("Hello", tag.getValue());
-//            assertEquals("Hello", tag.getAsString());
+            tag = new StringTag("Hello");
+            assertEquals("", tag.getName());
+            assertEquals("Hello", tag.get());
+            assertEquals("Hello", tag.getValue());
+            assertEquals("Hello", tag.getAsString());
 
             assertThrows(NullPointerException.class, () -> new StringTag(null));
         }
@@ -305,7 +304,7 @@ final class ValueTagTest {
         }
 
         {
-            var tag = new StringTag("Meow", "Hello");
+            var tag = new StringTag("Hello").setName("Meow");
             var clone = tag.clone();
 
             assertNotSame(tag, clone);
@@ -372,11 +371,10 @@ final class ValueTagTest {
         assertContentNotEquals(new DoubleTag(114.0).setName("Meow"), new DoubleTag(514.0).setName("Meow"));
         assertContentNotEquals(new DoubleTag(114.0).setName("Meow"), new DoubleTag(514.0).setName("MeowMeow"));
 
-        // TODO
-        assertContentEquals(new StringTag("Meow", "Hello"), new StringTag("Meow", "Hello"));
-        assertContentEquals(new StringTag("Meow", "Hello"), new StringTag("MeowMeow", "Hello"));
-        assertContentNotEquals(new StringTag("Meow", "Hello"), new StringTag("Meow", "World"));
-        assertContentNotEquals(new StringTag("Meow", "Hello"), new StringTag("MeowMeow", "World"));
+        assertContentEquals(new StringTag("Hello").setName("Meow"), new StringTag("Hello").setName("Meow"));
+        assertContentEquals(new StringTag("Hello").setName("Meow"), new StringTag("Hello").setName("MeowMeow"));
+        assertContentNotEquals(new StringTag("Hello").setName("Meow"), new StringTag("World").setName("Meow"));
+        assertContentNotEquals(new StringTag("Hello").setName("Meow"), new StringTag("World").setName("MeowMeow"));
 
 
         List<ValueTag<?>> tags = List.of(
@@ -386,7 +384,7 @@ final class ValueTagTest {
                 new LongTag(4L).setName("Meow"),
                 new FloatTag(5.0f).setName("Meow"),
                 new DoubleTag(6.0).setName("Meow"),
-                new StringTag("Meow", "Hello") // TODO
+                new StringTag("Hello").setName("Meow")
         );
 
         for (ValueTag<?> tag1 : tags) {
@@ -431,8 +429,8 @@ final class ValueTagTest {
         assertToString("Meow: 114.0D", new DoubleTag(114.0).setName("Meow"));
 
         assertToString("\"\"", new StringTag());
-        assertToString("\"Hello\"", new StringTag("", "Hello"));
-        assertToString("Meow: \"Hello\"", new StringTag("Meow", "Hello"));
-        assertToString("Meow: \"\\u0000\\b\\t\\n\\f\\r\\n \\\"ABC你好世界\\U0001F604\"", new StringTag("Meow", "\0\b\t\n\f\r\n \"ABC你好世界😄"));
+        assertToString("\"Hello\"", new StringTag("Hello"));
+        assertToString("Meow: \"Hello\"", new StringTag("Hello").setName("Meow"));
+        assertToString("Meow: \"\\u0000\\b\\t\\n\\f\\r\\n \\\"ABC你好世界\\U0001F604\"", new StringTag("\0\b\t\n\f\r\n \"ABC你好世界😄").setName("Meow"));
     }
 }

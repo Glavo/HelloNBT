@@ -144,7 +144,7 @@ final class ListTagTest {
         assertEquals(0, root.size());
         assertSame(TagType.INT, root.getElementType());
         assertDetached(moved);
-        assertThrows(IllegalArgumentException.class, () -> root.addTag(new StringTag("text", "hello")));
+        assertThrows(IllegalArgumentException.class, () -> root.addTag(new StringTag("hello").setName("text")));
     }
 
     @Test
@@ -187,7 +187,7 @@ final class ListTagTest {
     @Test
     void testAddAny() {
         var typedEmpty = new ListTag<>(TagType.STRING);
-        var hello = new StringTag("hello", "world");
+        var hello = new StringTag("world").setName("hello");
         typedEmpty.addAny(hello);
         assertSame(TagType.STRING, typedEmpty.getElementType());
         assertEquals(1, typedEmpty.size());
@@ -203,7 +203,7 @@ final class ListTagTest {
 
         var heterogeneous = new ListTag<>();
         var intTag = new IntTag(1).setName("x");
-        var stringTag = new StringTag("y", "two");
+        var stringTag = new StringTag("two").setName("y");
         heterogeneous.addAny(intTag);
         heterogeneous.addAny(stringTag);
 
@@ -226,16 +226,16 @@ final class ListTagTest {
     @Test
     void testCloneEqualsAndIndependentChildren() {
         var tag = new ListTag<>("root");
-        tag.addTag(new StringTag("greeting", "hello"));
-        tag.addTag(new StringTag("target", "world"));
+        tag.addTag(new StringTag("hello").setName("greeting"));
+        tag.addTag(new StringTag("world").setName("target"));
 
         var sameContent = new ListTag<>("ignored", TagType.STRING);
-        sameContent.addTag(new StringTag("a", "hello"));
-        sameContent.addTag(new StringTag("b", "world"));
+        sameContent.addTag(new StringTag("hello").setName("a"));
+        sameContent.addTag(new StringTag("world").setName("b"));
 
         var different = new ListTag<>("root");
-        different.addTag(new StringTag("a", "hello"));
-        different.addTag(new StringTag("b", "copilot"));
+        different.addTag(new StringTag("hello").setName("a"));
+        different.addTag(new StringTag("copilot").setName("b"));
 
         assertContentEquals(tag, sameContent);
         assertContentNotEquals(tag, different);

@@ -102,7 +102,7 @@ public final class ReadTagTest {
         validator.assertTagEquals(new LongTag(42L).setName("Meow"), new com.github.steveice10.opennbt.tag.builtin.LongTag("Meow", 42L));
         validator.assertTagEquals(new FloatTag(42.0f).setName("Meow"), new com.github.steveice10.opennbt.tag.builtin.FloatTag("Meow", 42.0f));
         validator.assertTagEquals(new DoubleTag(42.0).setName("Meow"), new com.github.steveice10.opennbt.tag.builtin.DoubleTag("Meow", 42.0));
-        validator.assertTagEquals(new StringTag("Meow", "Glavo"), new com.github.steveice10.opennbt.tag.builtin.StringTag("Meow", "Glavo"));
+        validator.assertTagEquals(new StringTag("Glavo").setName("Meow"), new com.github.steveice10.opennbt.tag.builtin.StringTag("Meow", "Glavo"));
         validator.assertTagEquals(new ByteArrayTag(new byte[]{1, 2, 3}).setName("Meow"), new com.github.steveice10.opennbt.tag.builtin.ByteArrayTag("Meow", new byte[]{1, 2, 3}));
         validator.assertTagEquals(new IntArrayTag(new int[]{1, 2, 3}).setName("Meow"), new com.github.steveice10.opennbt.tag.builtin.IntArrayTag("Meow", new int[]{1, 2, 3}));
         validator.assertTagEquals(new LongArrayTag(new long[]{1, 2, 3}).setName("Meow"), new com.github.steveice10.opennbt.tag.builtin.LongArrayTag("Meow", new long[]{1, 2, 3}));
@@ -127,7 +127,7 @@ public final class ReadTagTest {
             expected.addTag("Sub3", new LongTag(42L));
             expected.addTag("Sub4", new FloatTag(42.0f));
             expected.addTag("Sub5", new DoubleTag(42.0));
-            expected.addTag("Sub6", new StringTag("", "Glavo"));
+            expected.addTag("Sub6", new StringTag("Glavo"));
             expected.addTag("Sub7", new ByteArrayTag(new byte[]{1, 2, 3}));
             expected.addTag("Sub8", new IntArrayTag(new int[]{1, 2, 3}));
             expected.addTag("Sub9", new LongArrayTag(new long[]{1, 2, 3}));
@@ -177,7 +177,7 @@ public final class ReadTagTest {
     void testReadModifiedUTF8String(Validator validator) throws IOException {
         String value = "ABCǾ喵喵喵🐱ABC123";
 
-        var expected = new StringTag("Meow", value);
+        var expected = new StringTag(value).setName("Meow");
         var actual = new com.github.steveice10.opennbt.tag.builtin.StringTag("Meow", value);
         validator.assertTagEquals(expected, actual);
     }

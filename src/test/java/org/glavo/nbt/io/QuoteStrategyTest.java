@@ -24,7 +24,7 @@ final class QuoteStrategyTest {
     private static String toSNBT(QuoteStrategy strategy, String value) {
         return SNBTCodec.ofCompact()
                 .withValueQuoteStrategy(strategy)
-                .toString(new StringTag("", value));
+                .toString(new StringTag(value));
     }
 
     @Test

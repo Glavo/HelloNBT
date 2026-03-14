@@ -121,9 +121,9 @@ final class SNBTParserTest {
         assertEquals(new LongTag(123L), parseTag("123L"));
         assertEquals(new FloatTag(123.0f), parseTag("123.0f"));
         assertEquals(new DoubleTag(123.0), parseTag("123.0d"));
-        assertEquals(new StringTag("", "Hello"), parseTag("Hello"));
-        assertEquals(new StringTag("", "Hello"), parseTag("'Hello'"));
-        assertEquals(new StringTag("", "Hello"), parseTag("\"Hello\""));
+        assertEquals(new StringTag("Hello"), parseTag("Hello"));
+        assertEquals(new StringTag("Hello"), parseTag("'Hello'"));
+        assertEquals(new StringTag("Hello"), parseTag("\"Hello\""));
         assertEquals(new ByteArrayTag(), parseTag("[B;]"));
         assertEquals(new IntArrayTag(), parseTag("[I;]"));
         assertEquals(new LongArrayTag(), parseTag("[L;]"));
@@ -136,12 +136,12 @@ final class SNBTParserTest {
 
         assertEquals(new ListTag<>(), parseTag("[]"));
         assertEquals(new ListTag<>().tap(l -> {
-            l.addTag(new StringTag("", "Hello"));
-            l.addTag(new StringTag("", "Glavo"));
+            l.addTag(new StringTag("Hello"));
+            l.addTag(new StringTag("Glavo"));
         }), parseTag("[Hello, 'Glavo']"));
         assertEquals(new ListTag<>().tap(l -> {
-            l.addTag(new StringTag("", "Hello"));
-            l.addTag(new StringTag("", "Glavo"));
+            l.addTag(new StringTag("Hello"));
+            l.addTag(new StringTag("Glavo"));
         }), parseTag("[Hello, 'Glavo',]"));
 
         assertEquals(new CompoundTag(), parseTag("{}"));

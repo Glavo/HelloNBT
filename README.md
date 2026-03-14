@@ -11,6 +11,7 @@ It supports:
 - Supports reading and writing Anvil files and region files, including chunk data over 1MiB.
 - Supports reading NBT compressed by GZip, Zlib, and LZ4.
 - Supports reading and writing SNBT (Stringified Named Binary Tag).
+- Supports [NBTPath](https://minecraft.wiki/w/NBT_path) (a query language for NBT data).
 
 This library is used for the [Hello! Minecraft Launcher](https://github.com/HMCL-Dev-HMCL).
 The API is currently unstable.

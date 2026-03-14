@@ -160,8 +160,8 @@ public final class ListTag<T extends Tag> extends ParentTag<T> {
     ///
     /// @throws IllegalArgumentException if the type of the tag is not the same as the element type of this list.
     @Override
-    @Contract(mutates = "this,param1")
-    public void addTag(T tag) {
+    @Contract(value = "_ -> this", mutates = "this,param1")
+    public ListTag<T> addTag(T tag) {
         if (tag.getType() != elementType) { // implicit null check
             if (this.elementType == null) {
                 assert isEmpty();
@@ -174,7 +174,7 @@ public final class ListTag<T extends Tag> extends ParentTag<T> {
         if (tag.getParentTag() != null) {
             if (tag.getParentTag() == this) {
                 moveTagToLast(tag);
-                return;
+                return this;
             } else {
                 tag.getParentTag().removeElement(tag);
             }
@@ -189,6 +189,7 @@ public final class ListTag<T extends Tag> extends ParentTag<T> {
         // Add the tag to the subTags list.
         ensureTagsCapacityForAdd();
         tags[size++] = tag;
+        return this;
     }
 
     /// For the heterogeneous list in SNBT, this method can be used to add any tag to the list.

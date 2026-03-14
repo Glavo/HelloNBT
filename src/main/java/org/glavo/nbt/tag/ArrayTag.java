@@ -279,9 +279,10 @@ public sealed abstract class ArrayTag<E extends Number, T extends ValueTag<E>, A
                              E value);
 
     @Override
-    @Contract(mutates = "this,param1")
-    public final void addTag(@Flow(targetIsContainer = true)
-                             T tag) throws IllegalArgumentException {
+    @MustBeInvokedByOverriders
+    @Contract(value = "_ -> this", mutates = "this,param1")
+    public ArrayTag<E, T, A, B> addTag(@Flow(targetIsContainer = true)
+                                       T tag) throws IllegalArgumentException {
         if (tag.getParentTag() != null) {
             if (tag.getParentTag() == this) {
                 int index = tag.getIndex();
@@ -306,7 +307,7 @@ public sealed abstract class ArrayTag<E extends Number, T extends ValueTag<E>, A
                     updateIndexes(index);
                 }
 
-                return;
+                return this;
             } else {
                 // Remove the tag from its old parent.
                 tag.getParentTag().removeElement(tag);
@@ -320,6 +321,8 @@ public sealed abstract class ArrayTag<E extends Number, T extends ValueTag<E>, A
         add(tag.getValue());
         tag.setParent(this, size - 1);
         tags[size - 1] = tag;
+
+        return this;
     }
 
     @Override

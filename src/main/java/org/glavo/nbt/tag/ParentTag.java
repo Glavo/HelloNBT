@@ -177,8 +177,8 @@ public sealed abstract class ParentTag<T extends Tag> extends Tag
     /// If the `tag` is already a child of this tag, move it to the end of the list.
     ///
     /// If the `tag` is already a child of another tag, removes it from old parent and adds it to this tag.
-    @Contract(mutates = "this,param1")
-    public abstract void addTag(@Flow(targetIsContainer = true)
+    @Contract(value = "_ -> this", mutates = "this,param1")
+    public abstract ParentTag<T> addTag(@Flow(targetIsContainer = true)
                                 T tag) throws IllegalArgumentException;
 
     /// Adds all `tags` to this tag.

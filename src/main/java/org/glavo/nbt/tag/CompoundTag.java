@@ -259,12 +259,12 @@ public final class CompoundTag extends ParentTag<Tag> {
     ///
     /// If another tag with the same name already exists, the old tag will be removed.
     @Override
-    @Contract(mutates = "this,param1")
-    public void addTag(Tag tag) {
+    @Contract(value = "_ -> this", mutates = "this,param1")
+    public CompoundTag addTag(Tag tag) {
         if (tag.getParentTag() != null) {
             if (tag.getParentTag() == this) {
                 moveTagToLast(tag);
-                return;
+                return this;
             } else {
                 // Remove the tag from its old parent.
                 tag.getParentTag().removeElement(tag);
@@ -284,6 +284,7 @@ public final class CompoundTag extends ParentTag<Tag> {
         ensureTagsCapacityForAdd();
         tags[size++] = tag;
         subTagsByName.put(tag.getName(), tag);
+        return this;
     }
 
     /// Adds a tag with the given name to this compound tag.

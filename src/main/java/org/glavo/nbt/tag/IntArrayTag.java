@@ -168,6 +168,13 @@ public final class IntArrayTag extends ArrayTag<Integer, IntTag, int[], IntBuffe
     }
 
     @Override
+    @Contract(value = "_ -> this", mutates = "this,param1")
+    public IntArrayTag addTag(IntTag tag) throws IllegalArgumentException {
+        super.addTag(tag);
+        return this;
+    }
+
+    @Override
     public PrimitiveIterator.OfInt valueIterator() {
         final int[] array = this.values;
         final int size = this.size;

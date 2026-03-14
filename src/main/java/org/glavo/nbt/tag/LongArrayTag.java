@@ -127,6 +127,13 @@ public final class LongArrayTag extends ArrayTag<Long, LongTag, long[], LongBuff
     }
 
     @Override
+    @Contract(value = "_ -> this", mutates = "this,param1")
+    public LongArrayTag addTag(LongTag tag) throws IllegalArgumentException {
+        super.addTag(tag);
+        return this;
+    }
+
+    @Override
     public PrimitiveIterator.OfLong valueIterator() {
         final long[] array = this.values;
         final int size = this.size;

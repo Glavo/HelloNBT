@@ -123,6 +123,13 @@ public final class ByteArrayTag extends ArrayTag<Byte, ByteTag, byte[], ByteBuff
     }
 
     @Override
+    @Contract(value = "_ -> this", mutates = "this,param1")
+    public ByteArrayTag addTag(ByteTag tag) throws IllegalArgumentException {
+        super.addTag(tag);
+        return this;
+    }
+
+    @Override
     public Iterator<Byte> valueIterator() {
         final byte[] array = this.values;
         final int size = this.size;

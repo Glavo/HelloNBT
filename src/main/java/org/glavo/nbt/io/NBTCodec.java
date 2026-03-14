@@ -33,7 +33,7 @@ import java.util.function.Function;
 
 /// The codec for reading and writing NBT data.
 ///
-/// Each NBTCodec instance is immutable, thread-safe, and can be safely used by multiple threads.
+/// Each NBTCodec instance is immutable and thread-safe.
 ///
 /// # Getting NBTCodec Instances
 ///

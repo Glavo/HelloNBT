@@ -106,20 +106,22 @@ public final class ByteArrayTag extends ArrayTag<Byte, ByteTag, byte[], ByteBuff
     }
 
     /// Appends the specified value to the end of this array.
-    @Contract(mutates = "this")
-    public void add(byte value) {
+    @Contract(value = "_ -> this", mutates = "this")
+    public ByteArrayTag add(byte value) {
         ensureValuesCapacityForAdd();
         values[size++] = value;
+        return this;
     }
 
     /// {@inheritDoc}
     ///
     /// @see #add(byte)
     @Override
-    @Contract(mutates = "this")
+    @Contract(value = "_ -> this", mutates = "this")
     @ApiStatus.Obsolete
-    public void add(Byte value) {
+    public ByteArrayTag add(Byte value) {
         add(value.byteValue());
+        return this;
     }
 
     @Override

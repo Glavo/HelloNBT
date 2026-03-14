@@ -110,20 +110,22 @@ public final class LongArrayTag extends ArrayTag<Long, LongTag, long[], LongBuff
     }
 
     /// Appends the specified value to the end of this array.
-    @Contract(mutates = "this")
-    public void add(long value) {
+    @Contract(value = "_ -> this", mutates = "this")
+    public LongArrayTag add(long value) {
         ensureValuesCapacityForAdd();
         values[size++] = value;
+        return this;
     }
 
     /// {@inheritDoc}
     ///
     /// @see #add(long)
     @Override
-    @Contract(mutates = "this")
+    @Contract(value = "_ -> this", mutates = "this")
     @ApiStatus.Obsolete
-    public void add(Long value) {
+    public LongArrayTag add(Long value) {
         add(value.longValue());
+        return this;
     }
 
     @Override

@@ -151,20 +151,22 @@ public final class IntArrayTag extends ArrayTag<Integer, IntTag, int[], IntBuffe
     }
 
     /// Appends the specified value to the end of this array.
-    @Contract(mutates = "this")
-    public void add(int value) {
+    @Contract(value = "_ -> this", mutates = "this")
+    public IntArrayTag add(int value) {
         ensureValuesCapacityForAdd();
         values[size++] = value;
+        return this;
     }
 
     /// {@inheritDoc}
     ///
     /// @see #add(int)
     @Override
-    @Contract(mutates = "this")
+    @Contract(value = "_ -> this", mutates = "this")
     @ApiStatus.Obsolete
-    public void add(Integer value) {
+    public IntArrayTag add(Integer value) {
         add(value.intValue());
+        return this;
     }
 
     @Override

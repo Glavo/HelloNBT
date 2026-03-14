@@ -274,8 +274,8 @@ public sealed abstract class ArrayTag<E extends Number, T extends ValueTag<E>, A
     }
 
     /// Appends the specified value to the end of this array.
-    @Contract(mutates = "this")
-    public abstract void add(@Flow(targetIsContainer = true)
+    @Contract(value = "_ -> this", mutates = "this")
+    public abstract ArrayTag<E, T, A, B> add(@Flow(targetIsContainer = true)
                              E value);
 
     @Override

@@ -113,9 +113,9 @@ final class SNBTParserTest {
     @Test
     void testNextTag() {
         assertNull(parseTag(""));
-        assertEquals(new ByteTag("", (byte) 123), parseTag("123b"));
-        assertEquals(new ByteTag("", true), parseTag("true"));
-        assertEquals(new ByteTag("", false), parseTag("false"));
+        assertEquals(new ByteTag((byte) 123), parseTag("123b"));
+        assertEquals(new ByteTag(true), parseTag("true"));
+        assertEquals(new ByteTag(false), parseTag("false"));
         assertEquals(new ShortTag("", (short) 123), parseTag("123s"));
         assertEquals(new IntTag("", 123), parseTag("123"));
         assertEquals(new LongTag("", 123L), parseTag("123L"));

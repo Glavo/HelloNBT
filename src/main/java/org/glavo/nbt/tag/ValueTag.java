@@ -39,8 +39,7 @@ import org.jetbrains.annotations.Contract;
 /// @see StringTag
 public sealed abstract class ValueTag<V> extends Tag
         permits ByteTag, ShortTag, IntTag, LongTag, FloatTag, DoubleTag, StringTag {
-    ValueTag(String name) {
-        super(name);
+    ValueTag() {
     }
 
     @Override

@@ -62,7 +62,7 @@ public final class ListTag<T extends Tag> extends ParentTag<T> {
     /// @param name        The name of the list tag.
     /// @param elementType The type of the elements in the list.
     public ListTag(String name, @Nullable TagType<? super T> elementType) {
-        super(name);
+        setName(name);
         this.elementType = elementType;
     }
 

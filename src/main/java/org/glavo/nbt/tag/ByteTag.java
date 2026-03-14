@@ -30,24 +30,29 @@ public final class ByteTag extends ValueTag<Byte> {
 
     /// Creates a new ByteTag with an empty name and a value of `0`.
     public ByteTag() {
-        this("", (byte) 0);
+        this((byte) 0);
+    }
+
+    /// Creates a new ByteTag with the given value.
+    public ByteTag(byte value) {
+        this.value = value;
+    }
+
+    /// Creates a new ByteTag with the given boolean value.
+    public ByteTag(boolean value) {
+        this((byte) (value ? 1 : 0));
     }
 
     /// Creates a new ByteTag with the given name and a value of `0`.
     public ByteTag(String name) {
-        this(name, (byte) 0);
+        this();
+        setName(name);
     }
 
     /// Creates a new ByteTag with the given name and value.
     public ByteTag(String name, byte value) {
-        super(name);
-        this.value = value;
-    }
-
-    /// Creates a new ByteTag with the given name and boolean value.
-    public ByteTag(String name, boolean value) {
-        super(name);
-        this.value = (byte) (value ? 1 : 0);
+        this(value);
+        setName(name);
     }
 
     @Override

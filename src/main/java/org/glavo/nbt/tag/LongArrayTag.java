@@ -44,14 +44,14 @@ public final class LongArrayTag extends ArrayTag<Long, LongTag, long[], LongBuff
 
     /// Creates a new LongArrayTag with the given name and an empty array.
     public LongArrayTag(String name) {
-        super(name);
+        setName(name);
     }
 
     /// Creates a new LongArrayTag with the given name and value.
     ///
     /// The value is cloned to avoid external modifications.
     public LongArrayTag(String name, long[] values) {
-        super(name);
+        setName(name);
         setAll(values);
     }
 

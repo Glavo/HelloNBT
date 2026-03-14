@@ -39,25 +39,24 @@ import java.util.stream.IntStream;
 public final class IntArrayTag extends ArrayTag<Integer, IntTag, int[], IntBuffer> {
     /// Creates a new IntArrayTag with an empty name and an empty array.
     public IntArrayTag() {
-        this("");
     }
 
     /// Creates a new IntArrayTag with the given name and an empty array.
     public IntArrayTag(String name) {
-        super(name);
+        setName(name);
     }
 
     /// Creates a new IntArrayTag with the given name and value.
     ///
     /// The value is cloned to avoid external modifications.
     public IntArrayTag(String name, int[] value) {
-        super(name);
+        setName(name);
         setAll(value);
     }
 
     /// Create a new IntArrayTag with the name and a UUID value.
     public IntArrayTag(String name, UUID uuid) {
-        super(name);
+        setName(name);
         setUUID(uuid);
     }
 

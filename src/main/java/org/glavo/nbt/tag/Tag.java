@@ -63,13 +63,12 @@ import java.util.Objects;
 public sealed abstract class Tag implements NBTElement
         permits ValueTag, ParentTag {
 
-    String name;
+    String name = "";
 
     private transient @Nullable NBTParent<? extends Tag> parent;
     private transient int index = -1;
 
-    Tag(String name) {
-        this.name = Objects.requireNonNull(name, "name");
+    Tag() {
     }
 
     /// Returns the type of the tag.

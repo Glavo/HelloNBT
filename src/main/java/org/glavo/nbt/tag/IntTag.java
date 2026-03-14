@@ -30,18 +30,24 @@ public final class IntTag extends ValueTag<Integer> {
 
     /// Creates a new IntTag with an empty name and a value of `0`.
     public IntTag() {
-        this("", 0);
+        this(0);
+    }
+
+    /// Creates a new IntTag with the given value.
+    public IntTag(int value) {
+        this.value = value;
     }
 
     /// Creates a new IntTag with the given name and a value of `0`.
     public IntTag(String name) {
-        this(name, 0);
+        this();
+        setName(name);
     }
 
     /// Creates a new IntTag with the given name and value.
     public IntTag(String name, int value) {
-        super(name);
-        this.value = value;
+        this(value);
+        setName(name);
     }
 
     @Override

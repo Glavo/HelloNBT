@@ -55,8 +55,7 @@ public sealed abstract class ArrayTag<E extends Number, T extends ValueTag<E>, A
 
     A values = accessor().empty();
 
-    ArrayTag(String name) {
-        super(name);
+    ArrayTag() {
     }
 
     @Contract(pure = true)

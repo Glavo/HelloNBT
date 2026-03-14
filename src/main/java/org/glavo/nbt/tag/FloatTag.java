@@ -30,18 +30,24 @@ public final class FloatTag extends ValueTag<Float> {
 
     /// Creates a new FloatTag with an empty name and a value of `0.0`.
     public FloatTag() {
-        this("", 0.0f);
+        this(0.0f);
+    }
+
+    /// Creates a new FloatTag with the given value.
+    public FloatTag(float value) {
+        this.value = value;
     }
 
     /// Creates a new FloatTag with the given name and a value of `0.0`.
     public FloatTag(String name) {
-        this(name, 0.0f);
+        this();
+        setName(name);
     }
 
     /// Creates a new FloatTag with the given name and value.
     public FloatTag(String name, float value) {
-        super(name);
-        this.value = value;
+        this(value);
+        setName(name);
     }
 
     @Override

@@ -36,19 +36,18 @@ import java.util.stream.StreamSupport;
 public final class ByteArrayTag extends ArrayTag<Byte, ByteTag, byte[], ByteBuffer> {
     /// Creates a new ByteArrayTag with an empty name and an empty array.
     public ByteArrayTag() {
-        this("");
     }
 
     /// Creates a new ByteArrayTag with the given name and an empty array.
     public ByteArrayTag(String name) {
-        super(name);
+        setName(name);
     }
 
     /// Creates a new ByteArrayTag with the given name and value.
     ///
     /// The value is cloned to avoid external modifications.
     public ByteArrayTag(String name, byte[] values) {
-        super(name);
+        setName(name);
         setAll(values);
     }
 

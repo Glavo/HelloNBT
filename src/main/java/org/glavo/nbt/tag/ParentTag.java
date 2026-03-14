@@ -58,8 +58,7 @@ public sealed abstract class ParentTag<T extends Tag> extends Tag
     Tag[] tags = EMPTY_TAGS;
     int size;
 
-    ParentTag(String name) {
-        super(name);
+    ParentTag() {
     }
 
     /// Prepares to update the name of the given subtag.

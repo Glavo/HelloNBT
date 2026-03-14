@@ -39,12 +39,11 @@ public final class CompoundTag extends ParentTag<Tag> {
 
     /// Creates a new empty compound tag with an empty name.
     public CompoundTag() {
-        this("");
     }
 
     /// Creates a new empty compound tag with the given name.
     public CompoundTag(String name) {
-        super(name);
+        setName(name);
     }
 
     @Override

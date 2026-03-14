@@ -31,19 +31,19 @@ public final class StringTag extends ValueTag<String> {
 
     /// Creates a new StringTag with an empty name and a value of `""`.
     public StringTag() {
-        this("", "");
+        this.value = "";
     }
 
     /// Creates a new StringTag with the given name and a value of `""`.
     public StringTag(String name) {
-        super(name);
+        setName(name);
         this.value = "";
     }
 
     /// Creates a new StringTag with the given name and value.
     public StringTag(String name, String value) {
-        super(name);
         this.value = Objects.requireNonNull(value, "value");
+        setName(name);
     }
 
     @Override

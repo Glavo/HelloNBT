@@ -30,18 +30,24 @@ public final class ShortTag extends ValueTag<Short> {
 
     /// Creates a new ShortTag with an empty name and a value of `0`.
     public ShortTag() {
-        this("", (short) 0);
+        this((short) 0);
+    }
+
+    /// Creates a new ShortTag with the given value.
+    public ShortTag(short value) {
+        this.value = value;
     }
 
     /// Creates a new ShortTag with the given name and a value of `0`.
     public ShortTag(String name) {
-        this(name, (short) 0);
+        this();
+        setName(name);
     }
 
     /// Creates a new ShortTag with the given name and value.
     public ShortTag(String name, short value) {
-        super(name);
-        this.value = value;
+        this(value);
+        setName(name);
     }
 
     @Override

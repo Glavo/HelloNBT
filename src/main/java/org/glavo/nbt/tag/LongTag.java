@@ -30,18 +30,24 @@ public final class LongTag extends ValueTag<Long> {
 
     /// Creates a new LongTag with an empty name and a value of `0`.
     public LongTag() {
-        this("", 0L);
+        this(0L);
+    }
+
+    /// Creates a new LongTag with the given value.
+    public LongTag(long value) {
+        this.value = value;
     }
 
     /// Creates a new LongTag with the given name and a value of `0`.
     public LongTag(String name) {
-        this(name, 0L);
+        this();
+        setName(name);
     }
 
     /// Creates a new LongTag with the given name and value.
     public LongTag(String name, long value) {
-        super(name);
-        this.value = value;
+        this(value);
+        setName(name);
     }
 
     @Override

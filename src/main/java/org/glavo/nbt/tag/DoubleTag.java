@@ -30,18 +30,24 @@ public final class DoubleTag extends ValueTag<Double> {
 
     /// Creates a new DoubleTag with an empty name and a value of `0.0`.
     public DoubleTag() {
-        this("", 0.0);
+        this(0.0);
+    }
+
+    /// Creates a new DoubleTag with the given value.
+    public DoubleTag(double value) {
+        this.value = value;
     }
 
     /// Creates a new DoubleTag with the given name and a value of `0.0`.
     public DoubleTag(String name) {
-        this(name, 0.0);
+        this();
+        setName(name);
     }
 
     /// Creates a new DoubleTag with the given name and value.
     public DoubleTag(String name, double value) {
-        super(name);
-        this.value = value;
+        this(value);
+        setName(name);
     }
 
     @Override

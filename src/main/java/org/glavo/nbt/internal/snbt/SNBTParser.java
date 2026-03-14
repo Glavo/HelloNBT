@@ -351,9 +351,9 @@ public final class SNBTParser {
                     }
                 } else if (stringToken.equals(Token.StringToken.OP_BOOL)) {
                     if (valueToken instanceof Token.BooleanToken booleanToken) {
-                        tag = new ByteTag("", booleanToken.value);
+                        tag = new ByteTag(booleanToken.value);
                     } else if (valueToken instanceof Token.IntegralToken integralToken) {
-                        tag = new ByteTag("", integralToken.value() != 0L);
+                        tag = new ByteTag(integralToken.value() != 0L);
                     } else {
                         throw new IllegalArgumentException("Unexpected token: " + valueToken);
                     }
@@ -369,7 +369,7 @@ public final class SNBTParser {
             return new StringTag("", stringToken.value());
         } else if (next instanceof Token.BooleanToken booleanToken) {
             discardPeekedToken(booleanToken);
-            return new ByteTag("", booleanToken.value);
+            return new ByteTag(booleanToken.value);
         } else {
             throw new IllegalArgumentException("Unexpected token: " + next);
         }

@@ -27,6 +27,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.nio.ByteBuffer;
 import java.nio.channels.ReadableByteChannel;
+import java.nio.channels.SeekableByteChannel;
 import java.nio.channels.WritableByteChannel;
 import java.nio.file.Path;
 import java.util.function.Function;
@@ -339,4 +340,12 @@ public sealed interface NBTCodec permits NBTCodecImpl {
 
     /// Writes a chunk region to an output stream.
     void writeRegion(OutputStream outputStream, ChunkRegion region, ExternalChunkAccessor accessor) throws IOException;
+
+    /// Writes a chunk region to a seekable byte channel.
+    default void writeRegion(SeekableByteChannel channel, ChunkRegion region) throws IOException {
+        writeRegion(channel, region, ExternalChunkAccessor.emptyAccessor());
+    }
+
+    /// Writes a chunk region to a seekable byte channel.
+    void writeRegion(SeekableByteChannel channel, ChunkRegion region, ExternalChunkAccessor accessor) throws IOException;
 }

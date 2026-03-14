@@ -17,8 +17,9 @@ package org.glavo.nbt.tag;
 
 import org.glavo.nbt.NBTParent;
 import org.glavo.nbt.internal.input.DataReader;
-import org.glavo.nbt.internal.NBTCodecImpl;
+import org.glavo.nbt.internal.input.NBTInput;
 import org.glavo.nbt.internal.output.DataWriter;
+import org.glavo.nbt.internal.output.NBTOutput;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.Nullable;
 
@@ -477,7 +478,7 @@ public final class CompoundTag extends ParentTag<Tag> {
         int count = 0;
 
         Tag subTag;
-        while ((subTag = NBTCodecImpl.readTag(reader)) != null) {
+        while ((subTag = NBTInput.readTag(reader)) != null) {
             count++;
             addTag(subTag);
         }
@@ -490,7 +491,7 @@ public final class CompoundTag extends ParentTag<Tag> {
     @Override
     void writeContent(DataWriter writer) throws IOException {
         for (int i = 0; i < size; i++) {
-            NBTCodecImpl.writeTag(writer, tags[i]);
+            NBTOutput.writeTag(writer, tags[i]);
         }
         writer.writeByte((byte) 0x00);
     }

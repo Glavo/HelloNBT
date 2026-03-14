@@ -37,31 +37,31 @@ public final class NBTCodecTest {
     enum Loader {
         BYTE_ARRAY {
             @Override
-            <T extends Tag> T load(Path file, Class<T> tagClass) throws IOException {
+            <T extends Tag> T loadTag(Path file, Class<T> tagClass) throws IOException {
                 return NBTCodec.of().readTag(Files.readAllBytes(file), tagClass);
             }
         },
         HEAP_BYTE_BUFFER {
             @Override
-            <T extends Tag> T load(Path file, Class<T> tagClass) throws IOException {
+            <T extends Tag> T loadTag(Path file, Class<T> tagClass) throws IOException {
                 return NBTCodec.of().readTag(ByteBuffer.wrap(Files.readAllBytes(file)), tagClass);
             }
         },
         DIRECT_BYTE_BUFFER {
             @Override
-            <T extends Tag> T load(Path file, Class<T> tagClass) throws IOException {
+            <T extends Tag> T loadTag(Path file, Class<T> tagClass) throws IOException {
                 return NBTCodec.of().readTag(ByteBuffer.allocateDirect((int) Files.size(file)).put(Files.readAllBytes(file)).flip(), tagClass);
             }
         },
         INPUT_STREAM {
             @Override
-            <T extends Tag> T load(Path file, Class<T> tagClass) throws IOException {
+            <T extends Tag> T loadTag(Path file, Class<T> tagClass) throws IOException {
                 return NBTCodec.of().readTag(file, tagClass);
             }
         },
         FILE_CHANNEL {
             @Override
-            <T extends Tag> T load(Path file, Class<T> tagClass) throws IOException {
+            <T extends Tag> T loadTag(Path file, Class<T> tagClass) throws IOException {
                 try (FileChannel channel = FileChannel.open(file, StandardOpenOption.READ)) {
                     return NBTCodec.of().readTag(channel, tagClass);
                 }
@@ -69,7 +69,7 @@ public final class NBTCodecTest {
         },
         READABLE_BYTE_CHANNEL {
             @Override
-            <T extends Tag> T load(Path file, Class<T> tagClass) throws IOException {
+            <T extends Tag> T loadTag(Path file, Class<T> tagClass) throws IOException {
                 try (ReadableByteChannel channel = Channels.newChannel(Files.newInputStream(file))) {
                     return NBTCodec.of().readTag(channel, tagClass);
                 }
@@ -77,12 +77,12 @@ public final class NBTCodecTest {
         },
         PATH {
             @Override
-            <T extends Tag> T load(Path file, Class<T> tagClass) throws IOException {
+            <T extends Tag> T loadTag(Path file, Class<T> tagClass) throws IOException {
                 return NBTCodec.of().readTag(file, tagClass);
             }
         };
 
-        abstract <T extends Tag> T load(Path file, Class<T> tagClass) throws IOException;
+        abstract <T extends Tag> T loadTag(Path file, Class<T> tagClass) throws IOException;
     }
 
     /// Loads a level.dat file (compressed with gzip)
@@ -90,7 +90,7 @@ public final class NBTCodecTest {
     @EnumSource
     void testReadLevelDat(Loader loader) throws IOException {
         Path levelDatPath = TestResources.getResource("/assets/nbt/level.dat");
-        CompoundTag levelDat = loader.load(levelDatPath, CompoundTag.class);
+        CompoundTag levelDat = loader.loadTag(levelDatPath, CompoundTag.class);
         assertEquals("", levelDat.getName());
         assertEquals(1, levelDat.size());
 
@@ -104,7 +104,7 @@ public final class NBTCodecTest {
     @EnumSource
     void testReadLevelDatRaw(Loader loader) throws IOException {
         Path levelDatPath = TestResources.getResource("/assets/nbt/level.dat.raw");
-        CompoundTag levelDat = loader.load(levelDatPath, CompoundTag.class);
+        CompoundTag levelDat = loader.loadTag(levelDatPath, CompoundTag.class);
         assertEquals("", levelDat.getName());
         assertEquals(1, levelDat.size());
 

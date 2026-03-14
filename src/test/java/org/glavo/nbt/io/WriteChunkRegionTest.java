@@ -15,6 +15,8 @@
  */
 package org.glavo.nbt.io;
 
+import com.google.common.jimfs.Configuration;
+import com.google.common.jimfs.Jimfs;
 import org.glavo.nbt.TestResources;
 import org.glavo.nbt.chunk.ChunkRegion;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -23,11 +25,16 @@ import org.junit.jupiter.params.provider.ValueSource;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.nio.channels.FileChannel;
 import java.nio.file.Path;
+import java.nio.file.StandardOpenOption;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-public final class WriteChunkRegionTest {
+abstract class WriteChunkRegionTest {
+
+    abstract ChunkRegion writeAndRead(ChunkRegion region) throws IOException;
+
     @ParameterizedTest
     @ValueSource(strings = {"/assets/region/zlib.mca", "/assets/region/lz4.mca"})
     public void testWriteRegion(String path) throws IOException {
@@ -36,10 +43,29 @@ public final class WriteChunkRegionTest {
         NBTCodec codec = NBTCodec.of();
         ChunkRegion expected = codec.readRegion(resource);
 
-        var buffer = new ByteArrayOutputStream();
-        codec.writeRegion(buffer, expected);
-
-        ChunkRegion actual = codec.readRegion(new ByteArrayInputStream(buffer.toByteArray()));
+        ChunkRegion actual = writeAndRead(expected);
         assertEquals(expected, actual);
+    }
+
+    static final class WriteToOutputStreamTest extends WriteChunkRegionTest {
+        @Override
+        ChunkRegion writeAndRead(ChunkRegion region) throws IOException {
+            var buffer = new ByteArrayOutputStream();
+            NBTCodec.of().writeRegion(buffer, region);
+            return NBTCodec.of().readRegion(new ByteArrayInputStream(buffer.toByteArray()));
+        }
+    }
+
+    static final class WriteToFileChannelTest extends WriteChunkRegionTest {
+        @Override
+        ChunkRegion writeAndRead(ChunkRegion region) throws IOException {
+            try (var fs = Jimfs.newFileSystem(Configuration.unix())) {
+                Path file = fs.getPath("/test.mca");
+                try (var channel = FileChannel.open(file, StandardOpenOption.CREATE, StandardOpenOption.WRITE)) {
+                    NBTCodec.of().writeRegion(channel, region);
+                }
+                return NBTCodec.of().readRegion(file);
+            }
+        }
     }
 }

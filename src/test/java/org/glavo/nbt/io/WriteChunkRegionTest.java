@@ -19,6 +19,7 @@ import com.google.common.jimfs.Configuration;
 import com.google.common.jimfs.Jimfs;
 import org.glavo.nbt.TestResources;
 import org.glavo.nbt.chunk.ChunkRegion;
+import org.glavo.nbt.internal.ChunkUtils;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 
@@ -26,14 +27,16 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.nio.channels.FileChannel;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 abstract class WriteChunkRegionTest {
 
-    abstract ChunkRegion writeAndRead(ChunkRegion region) throws IOException;
+    abstract byte[] writeToByteArray(ChunkRegion region) throws IOException;
 
     @ParameterizedTest
     @ValueSource(strings = {"/assets/region/zlib.mca", "/assets/region/lz4.mca"})
@@ -43,28 +46,34 @@ abstract class WriteChunkRegionTest {
         NBTCodec codec = NBTCodec.of();
         ChunkRegion expected = codec.readRegion(resource);
 
-        ChunkRegion actual = writeAndRead(expected);
+        byte[] bytes = writeToByteArray(expected);
+
+        assertTrue((bytes.length % ChunkUtils.SECTOR_BYTES) == 0);
+
+        ChunkRegion actual = NBTCodec.of().readRegion(new ByteArrayInputStream(bytes));
         assertEquals(expected, actual);
     }
 
     static final class WriteToOutputStreamTest extends WriteChunkRegionTest {
+
         @Override
-        ChunkRegion writeAndRead(ChunkRegion region) throws IOException {
-            var buffer = new ByteArrayOutputStream();
+        byte[] writeToByteArray(ChunkRegion region) throws IOException {
+            var buffer = new ByteArrayOutputStream(8192);
             NBTCodec.of().writeRegion(buffer, region);
-            return NBTCodec.of().readRegion(new ByteArrayInputStream(buffer.toByteArray()));
+            return buffer.toByteArray();
         }
     }
 
     static final class WriteToFileChannelTest extends WriteChunkRegionTest {
+
         @Override
-        ChunkRegion writeAndRead(ChunkRegion region) throws IOException {
+        byte[] writeToByteArray(ChunkRegion region) throws IOException {
             try (var fs = Jimfs.newFileSystem(Configuration.unix())) {
                 Path file = fs.getPath("/test.mca");
                 try (var channel = FileChannel.open(file, StandardOpenOption.CREATE, StandardOpenOption.WRITE)) {
                     NBTCodec.of().writeRegion(channel, region);
                 }
-                return NBTCodec.of().readRegion(file);
+                return Files.readAllBytes(file);
             }
         }
     }

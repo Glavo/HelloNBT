@@ -24,7 +24,6 @@ import org.junit.jupiter.api.Test;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
-import java.util.function.Consumer;
 
 import static org.glavo.nbt.internal.snbt.FloatingType.DOUBLE;
 import static org.glavo.nbt.internal.snbt.FloatingType.FLOAT;
@@ -107,11 +106,6 @@ final class SNBTParserTest {
                 }""");
     }
 
-    private static <T> T with(T value, Consumer<T> consumer) {
-        consumer.accept(value);
-        return value;
-    }
-
     private static Tag parseTag(String input) {
         return new SNBTParser(input, 0, input.length()).nextTag();
     }
@@ -141,24 +135,24 @@ final class SNBTParserTest {
         assertEquals(new LongArrayTag("", new long[]{1L, 2L, 3L}), parseTag("[L; 1L, 2L, 3L, ]"));
 
         assertEquals(new ListTag<>(), parseTag("[]"));
-        assertEquals(with(new ListTag<>(), l -> {
+        assertEquals(new ListTag<>().tap(l -> {
             l.addTag(new StringTag("", "Hello"));
             l.addTag(new StringTag("", "Glavo"));
         }), parseTag("[Hello, 'Glavo']"));
-        assertEquals(with(new ListTag<>(), l -> {
+        assertEquals(new ListTag<>().tap(l -> {
             l.addTag(new StringTag("", "Hello"));
             l.addTag(new StringTag("", "Glavo"));
         }), parseTag("[Hello, 'Glavo',]"));
 
         assertEquals(new CompoundTag(), parseTag("{}"));
-        assertEquals(with(new CompoundTag(), c -> {
+        assertEquals(new CompoundTag().tap(c -> {
             c.setString("name", "Glavo");
             c.setInt("age", 9);
             c.setUUID("id", UUID.fromString("01bb64c8-2a2f-4509-931b-366513bfb5a8"));
             c.setBoolean("bool", true);
-            c.put("nested", with(new CompoundTag(), c2 -> {
-                c2.put("very", with(new CompoundTag(), c3 -> {
-                    c3.put("deep", with(new CompoundTag(), c4 -> {
+            c.put("nested", new CompoundTag().tap(c2 -> {
+                c2.put("very", new CompoundTag().tap(c3 -> {
+                    c3.put("deep", new CompoundTag().tap(c4 -> {
                         c4.setString("structure", "ok");
                     }));
                 }));

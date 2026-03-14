@@ -20,7 +20,6 @@ import org.glavo.nbt.tag.*;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
-import java.util.function.Consumer;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertIterableEquals;
@@ -29,24 +28,20 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 
 final class NBTPathTest {
 
-    private static <T> T with(T value, Consumer<T> consumer) {
-        consumer.accept(value);
-        return value;
-    }
-
     private static CompoundTag createSampleRoot() {
-        return with(new CompoundTag(), root -> {
-            root.put("player", with(new CompoundTag(), player -> {
-                player.setString("name", "Alex");
-                player.setInt("score", 42);
+        CompoundTag value3 = new CompoundTag();
+        return value3.tap(root -> {
+            root.put("player", new CompoundTag().tap(player2 -> {
+                player2.setString("name", "Alex");
+                player2.setInt("score", 42);
             }));
 
-            root.put("players", with(new ListTag<>(TagType.COMPOUND), players -> {
-                players.addTag(with(new CompoundTag(), player -> {
-                    player.setString("name", "Alex");
-                    player.setInt("score", 10);
+            root.put("players", new ListTag<>(TagType.COMPOUND).tap(players -> {
+                players.addTag(new CompoundTag().tap(player1 -> {
+                    player1.setString("name", "Alex");
+                    player1.setInt("score", 10);
                 }));
-                players.addTag(with(new CompoundTag(), player -> {
+                players.addTag(new CompoundTag().tap(player -> {
                     player.setString("name", "Steve");
                     player.setInt("score", 20);
                 }));

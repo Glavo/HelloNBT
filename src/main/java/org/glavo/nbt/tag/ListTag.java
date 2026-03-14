@@ -21,6 +21,7 @@ import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.Objects;
 
 /// A [parent tag][ParentTag] that holds an ordered collection of isomorphic unnamed tags.
@@ -103,7 +104,7 @@ public final class ListTag<T extends Tag> extends ParentTag<T> {
         } else if (elementType != TagType.COMPOUND) {
             throw new IllegalStateException("Cannot set element type to " + elementType + " for a " + this.elementType + " list");
         } else {
-            var oldTags = tags.clone();
+            var oldTags = Arrays.copyOf(tags, size);
 
             this.clear();
             this.elementType = elementType;
@@ -146,6 +147,7 @@ public final class ListTag<T extends Tag> extends ParentTag<T> {
         if (tag.getParentTag() != null) {
             if (tag.getParentTag() == this) {
                 moveTagToLast(tag);
+                return;
             } else {
                 tag.getParentTag().removeElement(tag);
             }

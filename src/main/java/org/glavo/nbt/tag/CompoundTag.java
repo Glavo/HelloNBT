@@ -242,6 +242,7 @@ public final class CompoundTag extends ParentTag<Tag> {
         if (tag.getParentTag() != null) {
             if (tag.getParentTag() == this) {
                 moveTagToLast(tag);
+                return;
             } else {
                 // Remove the tag from its old parent.
                 tag.getParentTag().removeElement(tag);

@@ -31,41 +31,30 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 final class NBTPathTest {
 
     private static CompoundTag createSampleRoot() {
-        return new CompoundTag().tap(root -> {
-            root.addTag("player", new CompoundTag().tap(player2 -> {
-                player2.setString("name", "Alex");
-                player2.setInt("score", 42);
-            }));
-
-            root.addTag("players", new ListTag<>(TagType.COMPOUND).tap(players -> {
-                players.addTag(new CompoundTag().tap(player1 -> {
-                    player1.setString("name", "Alex");
-                    player1.setInt("score", 10);
-                }));
-                players.addTag(new CompoundTag().tap(player -> {
-                    player.setString("name", "Steve");
-                    player.setInt("score", 20);
-                }));
-            }));
-
-            root.addTag("profiles", new ListTag<>(TagType.COMPOUND).tap(profiles -> {
-                profiles.addTag(new CompoundTag());
-                profiles.addTag(new CompoundTag().tap(profile -> profile.setString("name", "Alex")));
-                profiles.addTag(new CompoundTag().tap(profile -> {
-                    profile.setString("name", "Alex");
-                    profile.setInt("score", 10);
-                }));
-            }));
-
-            root.addTag("empty", new CompoundTag());
-            root.addTag("metadata", new CompoundTag().tap(metadata -> {
-                metadata.setString("display name", "Alex The Great");
-                metadata.setString("quote\"key", "Escaped");
-            }));
-            root.setString("player.name", "literal");
-            root.setIntArray("numbers", new int[]{3, 5, 8});
-            root.setLongArray("longs", new long[]{13L, 21L});
-        });
+        return new CompoundTag()
+                .addTag("player", new CompoundTag()
+                        .setString("name", "Alex")
+                        .setInt("score", 42))
+                .addTag("players", new ListTag<>(TagType.COMPOUND)
+                        .addTag(new CompoundTag()
+                                .setString("name", "Alex")
+                                .setInt("score", 10))
+                        .addTag(new CompoundTag()
+                                .setString("name", "Steve")
+                                .setInt("score", 20)))
+                .addTag("profiles", new ListTag<>(TagType.COMPOUND)
+                        .addTag(new CompoundTag())
+                        .addTag(new CompoundTag().setString("name", "Alex"))
+                        .addTag(new CompoundTag()
+                                .setString("name", "Alex")
+                                .setInt("score", 10)))
+                .addTag("empty", new CompoundTag())
+                .addTag("metadata", new CompoundTag()
+                        .setString("display name", "Alex The Great")
+                        .setString("quote\"key", "Escaped"))
+                .setString("player.name", "literal")
+                .setIntArray("numbers", new int[]{3, 5, 8})
+                .setLongArray("longs", new long[]{13L, 21L});
     }
 
     @Test

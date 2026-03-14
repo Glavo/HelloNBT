@@ -135,35 +135,32 @@ final class SNBTParserTest {
         assertEquals(new LongArrayTag(new long[]{1L, 2L, 3L}), parseTag("[L; 1L, 2L, 3L, ]"));
 
         assertEquals(new ListTag<>(), parseTag("[]"));
-        assertEquals(new ListTag<>().tap(l -> {
-            l.addTag(new StringTag("Hello"));
-            l.addTag(new StringTag("Glavo"));
-        }), parseTag("[Hello, 'Glavo']"));
-        assertEquals(new ListTag<>().tap(l -> {
-            l.addTag(new StringTag("Hello"));
-            l.addTag(new StringTag("Glavo"));
-        }), parseTag("[Hello, 'Glavo',]"));
+        assertEquals(new ListTag<>()
+                        .addTag(new StringTag("Hello"))
+                        .addTag(new StringTag("Glavo")),
+                parseTag("[Hello, 'Glavo']"));
+        assertEquals(new ListTag<>()
+                        .addTag(new StringTag("Hello"))
+                        .addTag(new StringTag("Glavo")),
+                parseTag("[Hello, 'Glavo',]"));
 
         assertEquals(new CompoundTag(), parseTag("{}"));
-        assertEquals(new CompoundTag().tap(c -> {
-            c.setString("name", "Glavo");
-            c.setInt("age", 9);
-            c.setUUID("id", UUID.fromString("01bb64c8-2a2f-4509-931b-366513bfb5a8"));
-            c.setBoolean("bool", true);
-            c.addTag("nested", new CompoundTag().tap(c2 -> {
-                c2.addTag("very", new CompoundTag().tap(c3 -> {
-                    c3.addTag("deep", new CompoundTag().tap(c4 -> {
-                        c4.setString("structure", "ok");
-                    }));
-                }));
-            }));
-        }), parseTag("""
-                {
-                    name: 'Glavo',
-                    age: 9,
-                    id: uuid('01bb64c8-2a2f-4509-931b-366513bfb5a8'),
-                    bool: true,
-                    nested: {very:{deep:{structure:"ok"}}}
-                }"""));
+        assertEquals(new CompoundTag()
+                        .setString("name", "Glavo")
+                        .setInt("age", 9)
+                        .setUUID("id", UUID.fromString("01bb64c8-2a2f-4509-931b-366513bfb5a8"))
+                        .setBoolean("bool", true)
+                        .addTag("nested", new CompoundTag()
+                                .addTag("very", new CompoundTag()
+                                        .addTag("deep", new CompoundTag()
+                                                .setString("structure", "ok")))),
+                parseTag("""
+                        {
+                            name: 'Glavo',
+                            age: 9,
+                            id: uuid('01bb64c8-2a2f-4509-931b-366513bfb5a8'),
+                            bool: true,
+                            nested: {very:{deep:{structure:"ok"}}}
+                        }"""));
     }
 }

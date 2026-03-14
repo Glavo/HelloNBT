@@ -15,11 +15,14 @@
  */
 package org.glavo.nbt.io;
 
-import org.glavo.nbt.internal.SNBTCodecImpl;
+import org.glavo.nbt.internal.snbt.SNBTParser;
+import org.glavo.nbt.internal.snbt.SNBTWriter;
 import org.glavo.nbt.tag.Tag;
 import org.jetbrains.annotations.Contract;
 
 import java.io.IOException;
+import java.nio.CharBuffer;
+import java.util.Objects;
 
 /// The codec for reading and writing Stringified NBT data.
 ///
@@ -72,16 +75,50 @@ import java.io.IOException;
 /// ```
 ///
 /// @see <a href="https://minecraft.wiki/w/NBT_format#SNBT_format">NBT format - Minecraft Wiki</a>
-public sealed interface SNBTCodec permits SNBTCodecImpl {
+public final class SNBTCodec {
 
-    /// Returns the default [SNBTCodec].
-    static SNBTCodec of() {
-        return SNBTCodecImpl.PRETTY;
+    private static final SNBTCodec COMPACT = new SNBTCodec(
+            LineBreakStrategy.never(),
+            "", // No indentation
+            SurroundingSpaces.COMPACT,
+            EscapeStrategy.defaultStrategy(),
+            QuoteStrategy.defaultNameStrategy(),
+            QuoteStrategy.defaultValueStrategy()
+    );
+
+    private static final SNBTCodec PRETTY = new SNBTCodec(
+            LineBreakStrategy.defaultStrategy(),
+            "    ", // 4 spaces
+            SurroundingSpaces.PRETTY,
+            EscapeStrategy.defaultStrategy(),
+            QuoteStrategy.defaultNameStrategy(),
+            QuoteStrategy.defaultValueStrategy()
+    );
+
+
+    public static SNBTCodec of() {
+        return PRETTY;
     }
 
     /// Returns a [SNBTCodec] with compact formatting.
-    static SNBTCodec ofCompact() {
-        return SNBTCodecImpl.COMPACT;
+    public static SNBTCodec ofCompact() {
+        return COMPACT;
+    }
+
+    private final LineBreakStrategy lineBreakStrategy;
+    private final String indentation;
+    private final SurroundingSpaces surroundingSpaces;
+    private final EscapeStrategy escapeStrategy;
+    private final QuoteStrategy nameQuoteStrategy;
+    private final QuoteStrategy valueQuoteStrategy;
+
+    private SNBTCodec(LineBreakStrategy lineBreakStrategy, String indentation, SurroundingSpaces surroundingSpaces, EscapeStrategy escapeStrategy, QuoteStrategy nameQuoteStrategy, QuoteStrategy valueQuoteStrategy) {
+        this.lineBreakStrategy = lineBreakStrategy;
+        this.indentation = indentation;
+        this.surroundingSpaces = surroundingSpaces;
+        this.escapeStrategy = escapeStrategy;
+        this.nameQuoteStrategy = nameQuoteStrategy;
+        this.valueQuoteStrategy = valueQuoteStrategy;
     }
 
     /// Returns the line break strategy for all parent tags.
@@ -89,7 +126,9 @@ public sealed interface SNBTCodec permits SNBTCodecImpl {
     /// @see #withLineBreakStrategy(LineBreakStrategy)
     /// @see LineBreakStrategy
     @Contract(pure = true)
-    LineBreakStrategy getLineBreakStrategy();
+    public LineBreakStrategy getLineBreakStrategy() {
+        return lineBreakStrategy;
+    }
 
     /// Returns a new codec with the specified line break strategy for all parent tags.
     ///
@@ -100,11 +139,16 @@ public sealed interface SNBTCodec permits SNBTCodecImpl {
     /// @see #getLineBreakStrategy()
     /// @see LineBreakStrategy
     @Contract(value = "_ -> new", pure = true)
-    SNBTCodec withLineBreakStrategy(LineBreakStrategy strategy);
+    public SNBTCodec withLineBreakStrategy(LineBreakStrategy strategy) {
+        Objects.requireNonNull(strategy, "strategy");
+        return new SNBTCodec(strategy, indentation, surroundingSpaces, escapeStrategy, nameQuoteStrategy, valueQuoteStrategy);
+    }
 
     /// Returns the indentation string before each line.
     @Contract(pure = true)
-    String getIndentation();
+    public String getIndentation() {
+        return indentation;
+    }
 
     /// Returns a new codec with the specified indentation string.
     ///
@@ -113,7 +157,17 @@ public sealed interface SNBTCodec permits SNBTCodecImpl {
     /// @throws IllegalArgumentException if the indentation string is not a sequence of spaces or tabs.
     /// @see #getIndentation()
     @Contract(value = "_ -> new", pure = true)
-    SNBTCodec withIndentation(String indentation);
+    public SNBTCodec withIndentation(String indentation) {
+        for (int i = 0; i < indentation.length(); i++) { // implicit null check of indentation
+            char ch = indentation.charAt(i);
+            if (ch != ' ' && ch != '\t') {
+                throw new IllegalArgumentException("Indentation must be a sequence of spaces or tabs");
+            }
+        }
+
+        return new SNBTCodec(lineBreakStrategy, indentation, surroundingSpaces, escapeStrategy, nameQuoteStrategy, valueQuoteStrategy);
+
+    }
 
     /// Returns a new codec with the specified indentation.
     ///
@@ -122,63 +176,85 @@ public sealed interface SNBTCodec permits SNBTCodecImpl {
     /// @see #getIndentation()
     /// @see #withIndentation(String)
     @Contract(value = "_ -> new", pure = true)
-    SNBTCodec withIndentation(int spaces);
+    public SNBTCodec withIndentation(int spaces) {
+        return new SNBTCodec(lineBreakStrategy, " ".repeat(spaces), surroundingSpaces, escapeStrategy, nameQuoteStrategy, valueQuoteStrategy);
+    }
 
     /// Returns the surrounding spaces for SNBT.
     @Contract(pure = true)
-    SurroundingSpaces getSurroundingSpaces();
+    public SurroundingSpaces getSurroundingSpaces() {
+        return surroundingSpaces;
+    }
 
     /// Returns a new codec with the specified surrounding spaces.
     @Contract(value = "_ -> new", pure = true)
-    SNBTCodec withSurroundingSpaces(SurroundingSpaces surroundingSpaces);
+    public SNBTCodec withSurroundingSpaces(SurroundingSpaces surroundingSpaces) {
+        Objects.requireNonNull(surroundingSpaces, "surroundingSpaces");
+        return new SNBTCodec(lineBreakStrategy, indentation, surroundingSpaces, escapeStrategy, nameQuoteStrategy, valueQuoteStrategy);
+    }
 
     /// Returns the escape strategy for SNBT.
     ///
     /// @see #withEscapeStrategy(EscapeStrategy)
     /// @see EscapeStrategy
     @Contract(pure = true)
-    EscapeStrategy getEscapeStrategy();
+    public EscapeStrategy getEscapeStrategy() {
+        return escapeStrategy;
+    }
 
     /// Returns a new codec with the specified escape strategy.
     ///
     /// @see #getEscapeStrategy()
     /// @see EscapeStrategy
     @Contract(value = "_ -> new", pure = true)
-    SNBTCodec withEscapeStrategy(EscapeStrategy escapeStrategy);
+    public SNBTCodec withEscapeStrategy(EscapeStrategy escapeStrategy) {
+        Objects.requireNonNull(escapeStrategy, "escapeStrategy");
+        return new SNBTCodec(lineBreakStrategy, indentation, surroundingSpaces, escapeStrategy, nameQuoteStrategy, valueQuoteStrategy);
+    }
 
     /// Returns the quote strategy for SNBT tag names.
     ///
     /// @see #withNameQuoteStrategy(QuoteStrategy)
     /// @see QuoteStrategy
     @Contract(pure = true)
-    QuoteStrategy getNameQuoteStrategy();
+    public QuoteStrategy getNameQuoteStrategy() {
+        return nameQuoteStrategy;
+    }
 
     /// Returns a new codec with the specified quote strategy for tag names.
     ///
     /// @see #getNameQuoteStrategy()
     /// @see QuoteStrategy
     @Contract(value = "_ -> new", pure = true)
-    SNBTCodec withNameQuoteStrategy(QuoteStrategy quoteStrategy);
+    public SNBTCodec withNameQuoteStrategy(QuoteStrategy quoteStrategy) {
+        Objects.requireNonNull(quoteStrategy, "quoteStrategy");
+        return new SNBTCodec(lineBreakStrategy, indentation, surroundingSpaces, escapeStrategy, quoteStrategy, valueQuoteStrategy);
+    }
 
     /// Returns the quote strategy for SNBT tag values.
     ///
     /// @see #withValueQuoteStrategy(QuoteStrategy)
     /// @see QuoteStrategy
     @Contract(pure = true)
-    QuoteStrategy getValueQuoteStrategy();
+    public QuoteStrategy getValueQuoteStrategy() {
+        return valueQuoteStrategy;
+    }
 
     /// Returns a new codec with the specified quote strategy for tag values.
     ///
     /// @see #getValueQuoteStrategy()
     /// @see QuoteStrategy
     @Contract(value = "_ -> new", pure = true)
-    SNBTCodec withValueQuoteStrategy(QuoteStrategy quoteStrategy);
+    public SNBTCodec withValueQuoteStrategy(QuoteStrategy quoteStrategy) {
+        Objects.requireNonNull(quoteStrategy, "quoteStrategy");
+        return new SNBTCodec(lineBreakStrategy, indentation, surroundingSpaces, escapeStrategy, nameQuoteStrategy, quoteStrategy);
+    }
 
     /// Reads a NBT tag from the Stringified NBT data.
     ///
     /// @throws IOException if the input is not a valid Stringified NBT data.
     @Contract(pure = true)
-    default Tag readTag(CharSequence input) throws IOException {
+    public Tag readTag(CharSequence input) throws IOException {
         return readTag(input, 0, input.length());
     }
 
@@ -187,23 +263,50 @@ public sealed interface SNBTCodec permits SNBTCodecImpl {
     /// @throws IndexOutOfBoundsException if the range is out of bounds.
     /// @throws IOException               if the input is not a valid Stringified NBT data.
     @Contract(pure = true)
-    Tag readTag(CharSequence input, int startInclusive, int endExclusive) throws IOException;
+    public Tag readTag(CharSequence input, int startInclusive, int endExclusive) throws IOException {
+        Tag tag;
+        try {
+            tag = new SNBTParser(input, startInclusive, endExclusive).nextTag();
+        } catch (IllegalArgumentException e) {
+            throw new IOException(e);
+        }
+        if (tag == null) {
+            throw new IOException("Unexpected end of input");
+        }
+        return tag;
+    }
 
     /// Reads a NBT tag from the Stringified NBT data.
     ///
     /// @throws IOException if an I/O error occurs.
     @Contract(mutates = "param1")
-    Tag readTag(Readable readable) throws IOException;
+    public Tag readTag(Readable readable) throws IOException {
+        var builder = new StringBuilder();
+
+        CharBuffer buffer = CharBuffer.allocate(8192);
+        while (readable.read(buffer) != -1) {
+            buffer.flip();
+            builder.append(buffer);
+            buffer.clear();
+        }
+        try {
+            return readTag(builder);
+        } catch (IllegalArgumentException e) {
+            throw new IOException(e);
+        }
+    }
 
     /// Writes a NBT tag as Stringified NBT to the given [Appendable].
     ///
     /// @throws IOException if an I/O error occurs.
     @Contract(mutates = "param1")
-    void writeTag(Appendable appendable, Tag tag) throws IOException;
+    public void writeTag(Appendable appendable, Tag tag) throws IOException {
+        new SNBTWriter<>(this, appendable).writeTag(tag);
+    }
 
     /// Writes a NBT tag as Stringified NBT to the given [StringBuilder].
     @Contract(mutates = "param1")
-    default void writeTag(StringBuilder builder, Tag tag) {
+    public void writeTag(StringBuilder builder, Tag tag) {
         try {
             writeTag((Appendable) builder, tag);
         } catch (IOException e) {
@@ -212,9 +315,32 @@ public sealed interface SNBTCodec permits SNBTCodecImpl {
     }
 
     /// Returns the Stringified NBT of the tag.
-    default String toString(Tag tag) {
+    public String toString(Tag tag) {
         var builder = new StringBuilder();
         writeTag(builder, tag);
         return builder.toString();
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        return this == o || o instanceof SNBTCodec that
+                && this.lineBreakStrategy.equals(that.lineBreakStrategy)
+                && this.indentation.equals(that.indentation)
+                && this.surroundingSpaces.equals(that.surroundingSpaces)
+                && this.escapeStrategy.equals(that.escapeStrategy)
+                && this.nameQuoteStrategy.equals(that.nameQuoteStrategy)
+                && this.valueQuoteStrategy.equals(that.valueQuoteStrategy);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(lineBreakStrategy, indentation, surroundingSpaces, escapeStrategy, nameQuoteStrategy, valueQuoteStrategy);
+    }
+
+    @Override
+    public String toString() {
+        return "SNBTCodec[lineBreakStrategy=%s, indentation=%s, surroundingSpaces=%s, escapeStrategy=%s, nameQuoteStrategy=%s, valueQuoteStrategy=%s]".formatted(
+                lineBreakStrategy, indentation, surroundingSpaces, escapeStrategy, nameQuoteStrategy, valueQuoteStrategy
+        );
     }
 }

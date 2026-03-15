@@ -180,9 +180,9 @@ public final class ListTag<T extends Tag> extends ParentTag<T> {
     /// - If the list is empty, the element type of this list will be set to the type of the tag, and the tag will be added.
     /// - If the list is not empty, the element type of this list will be set to the [TagType#COMPOUND],
     /// and all existing tags and the new tag will be converted to compound tags with a single unnamed subtag.
-    @Contract(mutates = "this,param1")
+    @Contract(value = "_ -> this", mutates = "this,param1")
     @SuppressWarnings("unchecked")
-    public void addAny(T tag) {
+    public ListTag<T> addAny(T tag) {
         if (elementType == null || tag.getType() == elementType) {
             addTag(tag);
         } else if (this.isEmpty()) {
@@ -195,6 +195,7 @@ public final class ListTag<T extends Tag> extends ParentTag<T> {
             subTag.addTag("", tag);
             addTag((T) subTag);
         }
+        return this;
     }
 
     @Override

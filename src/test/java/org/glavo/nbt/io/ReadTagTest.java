@@ -108,7 +108,7 @@ public final class ReadTagTest {
         validator.assertTagEquals(new LongArrayTag(new long[]{1, 2, 3}).setName("Meow"), new com.github.steveice10.opennbt.tag.builtin.LongArrayTag("Meow", new long[]{1, 2, 3}));
 
         {
-            var expected = new ListTag<>("Meow", TagType.INT);
+            var expected = new ListTag<>(TagType.INT).setName("Meow");
             var actual = new com.github.steveice10.opennbt.tag.builtin.ListTag("Meow", com.github.steveice10.opennbt.tag.builtin.IntTag.class);
 
             for (int i = 0; i < 10000; i++) {

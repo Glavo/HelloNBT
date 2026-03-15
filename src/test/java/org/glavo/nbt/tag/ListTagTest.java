@@ -71,30 +71,11 @@ final class ListTagTest {
         assertEquals(0, tag.size());
         assertSame(TagType.INT, tag.getElementType());
         assertDetached(tag);
-
-        tag = new ListTag<>("root");
-        assertEquals("root", tag.getName());
-        assertSame(TagType.LIST, tag.getType());
-        assertTrue(tag.isEmpty());
-        assertEquals(0, tag.size());
-        assertNull(tag.getElementType());
-        assertDetached(tag);
-
-        tag = new ListTag<>("root", TagType.STRING);
-        assertEquals("root", tag.getName());
-        assertSame(TagType.LIST, tag.getType());
-        assertTrue(tag.isEmpty());
-        assertEquals(0, tag.size());
-        assertSame(TagType.STRING, tag.getElementType());
-        assertDetached(tag);
-
-        assertThrows(NullPointerException.class, () -> new ListTag<>((String) null));
-        assertThrows(NullPointerException.class, () -> new ListTag<>(null, TagType.INT));
     }
 
     @Test
     void testAddTagMoveRemoveAndClear() {
-        var root = new ListTag<>("root");
+        var root = new ListTag<>().setName("root");
 
         var first = new IntTag(1).setName("first");
         var second = new IntTag(2).setName("second");
@@ -225,15 +206,15 @@ final class ListTagTest {
 
     @Test
     void testCloneEqualsAndIndependentChildren() {
-        var tag = new ListTag<>("root");
+        var tag = new ListTag<>().setName("root");
         tag.addTag(new StringTag("hello").setName("greeting"));
         tag.addTag(new StringTag("world").setName("target"));
 
-        var sameContent = new ListTag<>("ignored", TagType.STRING);
+        var sameContent = new ListTag<>(TagType.STRING).setName("ignored");
         sameContent.addTag(new StringTag("hello").setName("a"));
         sameContent.addTag(new StringTag("world").setName("b"));
 
-        var different = new ListTag<>("root");
+        var different = new ListTag<>().setName("root");
         different.addTag(new StringTag("hello").setName("a"));
         different.addTag(new StringTag("copilot").setName("b"));
 

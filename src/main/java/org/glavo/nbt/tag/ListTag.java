@@ -39,29 +39,13 @@ public final class ListTag<T extends Tag> extends ParentTag<T> {
 
     /// Creates a new empty list tag with an empty name and no element type.
     public ListTag() {
-        this("", null);
+        this(null);
     }
 
     /// Creates a new empty list tag with the given element type.
     ///
     /// @param elementType The type of the elements in the list.
     public ListTag(@Nullable TagType<? super T> elementType) {
-        this("", elementType);
-    }
-
-    /// Creates a new empty list tag with the given name and no element type.
-    ///
-    /// @param name The name of the list tag.
-    public ListTag(String name) {
-        this(name, null);
-    }
-
-    /// Creates a new empty list tag with the given name and element type.
-    ///
-    /// @param name        The name of the list tag.
-    /// @param elementType The type of the elements in the list.
-    public ListTag(String name, @Nullable TagType<? super T> elementType) {
-        setName(name);
         this.elementType = elementType;
     }
 
@@ -294,7 +278,7 @@ public final class ListTag<T extends Tag> extends ParentTag<T> {
     @Contract(value = "-> new", pure = true)
     @SuppressWarnings("unchecked")
     public ListTag<T> clone() {
-        var newTag = new ListTag<>(this.name, (TagType<T>) this.elementType);
+        var newTag = new ListTag<>((TagType<T>) this.elementType).setName(this.name);
         if (size > 0) {
             Tag[] newArray = new Tag[size];
             for (int i = 0; i < size; i++) {

@@ -430,7 +430,7 @@ public final class SNBTParser {
             if (value == null) {
                 throw new IllegalArgumentException("Unexpected end of input");
             }
-            tag.addAny(value);
+            tag.addAnyTag(value);
 
             peek = peekToken();
             if (peek == Token.SimpleToken.COMMA) {

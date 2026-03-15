@@ -185,10 +185,10 @@ final class ListTagTest {
     }
 
     @Test
-    void testAddAny() {
+    void testAddAnyTag() {
         var typedEmpty = new ListTag<>(TagType.STRING);
         var hello = new StringTag("world").setName("hello");
-        typedEmpty.addAny(hello);
+        typedEmpty.addAnyTag(hello);
         assertSame(TagType.STRING, typedEmpty.getElementType());
         assertEquals(1, typedEmpty.size());
         assertAttached(typedEmpty, hello, 0);
@@ -196,7 +196,7 @@ final class ListTagTest {
         var mismatchedEmpty = new ListTag<>();
         mismatchedEmpty.setElementType(TagType.STRING);
         var number = new IntTag(42).setName("number");
-        mismatchedEmpty.addAny(number);
+        mismatchedEmpty.addAnyTag(number);
         assertSame(TagType.INT, mismatchedEmpty.getElementType());
         assertEquals(1, mismatchedEmpty.size());
         assertAttached(mismatchedEmpty, number, 0);
@@ -204,8 +204,8 @@ final class ListTagTest {
         var heterogeneous = new ListTag<>();
         var intTag = new IntTag(1).setName("x");
         var stringTag = new StringTag("two").setName("y");
-        heterogeneous.addAny(intTag);
-        heterogeneous.addAny(stringTag);
+        heterogeneous.addAnyTag(intTag);
+        heterogeneous.addAnyTag(stringTag);
 
         assertSame(TagType.COMPOUND, heterogeneous.getElementType());
         assertEquals(2, heterogeneous.size());

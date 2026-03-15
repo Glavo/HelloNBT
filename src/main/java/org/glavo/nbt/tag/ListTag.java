@@ -28,7 +28,7 @@ import java.util.Objects;
 ///
 /// All elements in the list must have the same type, and its name will always be empty.
 ///
-/// For heterogeneous lists in SNBT, the [ListTag#addAny(Tag)] method can be used to simulate their behavior.
+/// For heterogeneous lists in SNBT, the [ListTag#addAnyTag(Tag)] method can be used to simulate their behavior.
 ///
 /// @see Tag
 /// @see ParentTag
@@ -182,7 +182,7 @@ public final class ListTag<T extends Tag> extends ParentTag<T> {
     /// and all existing tags and the new tag will be converted to compound tags with a single unnamed subtag.
     @Contract(value = "_ -> this", mutates = "this,param1")
     @SuppressWarnings("unchecked")
-    public ListTag<T> addAny(T tag) {
+    public ListTag<T> addAnyTag(T tag) {
         if (elementType == null || tag.getType() == elementType) {
             addTag(tag);
         } else if (this.isEmpty()) {

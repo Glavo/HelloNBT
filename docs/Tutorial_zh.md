@@ -70,38 +70,48 @@ ListTag<IntTag> listTag = new ListTag<>(TagType.INT);
 var intTag = new IntTag().set(123);
 ```
 
-对于 `CompoundTag`，可以通过 `add` 系列方法添加子元素：
+对于 `CompoundTag`，可以通过 `add` 系列方法添加子标签：
 
 ```java
 var compoundTag = new CompoundTag()
-        .addInt("int", 123)             // 添加一个 IntTag 子元素，其名称为 "int"，值为 123
-        .addString("str", "HelloNBT")   // 添加一个 StringTag 子元素，其名称为 "str"，值为 "HelloNBT"
-        .addTag("compound", new CompoundTag()   // addTag 方法可以添加任意子元素
+        // 添加一个 IntTag 子标签，其名称为 "int"，值为 123
+        .addInt("int", 123)
+        // 添加一个 StringTag 子标签，其名称为 "str"，值为 "HelloNBT"
+        .addString("str", "HelloNBT")
+        // addTag 方法可以添加任意子标签
+        .addTag("compound", new CompoundTag()
                 .addInt("nestedInt", 456));
 ```
 
 `add` 系列的方法支持链式调用，可以方便地构建复杂的 NBT 树。
 当添加的新元素与已存在的元素具有相同的名称时，新元素会覆盖旧元素。
 
-此外，`CompoundTag` 还提供了 `set` 系列的方法，用于修改已存在的子元素的值。
+此外，`CompoundTag` 还提供了 `set` 系列的方法，用于修改已存在的子标签的值。
 
 `set` 系列的方法与 `add` 系列的方法类似，但不会覆盖已存在的元素，而是修改其值：
 
 ```java
-// 先获取 IntTag 子元素
+// 先获取 "int" 子标签
 var intSubTag = (IntTag) compoundTag.get("int");
 
-compoundTag.setInt("int",233);
+// 修改 "int" 子标签的值
+compoundTag.setInt("int", 233);
 
-assert intSubTag.get() ==233;
+// 子标签的值被修改，而不是被新的子标签替换
+assert intSubTag.get() == 233;
+
+// 如果使用 addInt 方法，则会使用新的子标签替换 intSubTag，intSubTag 的值不会随之变化
+compoundTag.addInt("int", 456);
+assert intSubTag.get() == 233;
+
 ```
 
-在不存在该子元素时，`set` 系列的方法会创建一个新的子元素并添加到 `CompoundTag` 中：
+在不存在该子标签时，`set` 系列的方法会创建一个新的子标签并添加到 `CompoundTag` 中：
 
 ```java
 assert compoundTag.getTag("anotherInt") == null;
 
-compoundTag.setInt("anotherInt",456);
+compoundTag.setInt("anotherInt", 456);
 
 assert ((IntTag) compoundTag.getTag("anotherInt")).get() == 456;
 ```

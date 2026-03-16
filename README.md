@@ -29,6 +29,7 @@ dependencies {
 ```
 
 Maven:
+
 ```xml
 <dependency>
     <groupId>org.glavo</groupId>
@@ -36,3 +37,7 @@ Maven:
     <version>0.1.0</version>
 </dependency>
 ```
+
+## Getting Started
+
+- Tutorial ([中文](docs/Tutorial_zh.md))

@@ -31,6 +31,7 @@ dependencies {
 Maven:
 
 ```xml
+
 <dependency>
     <groupId>org.glavo</groupId>
     <artifactId>HelloNBT</artifactId>
@@ -42,3 +43,7 @@ Maven:
 
 - Quick Start ([中文](docs/QuickStart_zh.md))
 - Tutorial ([中文](docs/Tutorial_zh.md))
+
+## License
+
+This project is licensed under the Apache License, Version 2.0.

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-/// This package contains classes for representing NBT tags.
+/// Provides classes for representing NBT tags.
 ///
 /// For more information about NBT tags, see the documentation of the [org.glavo.nbt.tag.Tag] class.
 ///

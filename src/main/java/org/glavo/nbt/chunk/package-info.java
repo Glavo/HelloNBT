@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-/// Base package for NBT chunks.
+/// Provides classes for representing NBT chunks and regions.
 ///
 /// @see org.glavo.nbt.chunk.ChunkRegion
 /// @see org.glavo.nbt.chunk.Chunk

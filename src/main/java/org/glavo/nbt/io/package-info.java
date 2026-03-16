@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-/// Base package for input/output operations for NBT elements.
+/// Provides APIs for reading and writing NBT data.
 ///
 /// - For reading and writing binary NBT data, see [NBTCodec][org.glavo.nbt.io.NBTCodec].
 /// - For reading and writing Stringified NBT data, see [SNBTCodec][org.glavo.nbt.io.SNBTCodec].

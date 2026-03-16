@@ -198,8 +198,8 @@ Tag tag = NBTCodec.of().readTag(Path.of("level.dat"));
 > 
 > lz4-java 官方已经放弃维护，推荐使用以下社区维护的分支：
 > 
-> - [Glavo/lz4-java](https://github.com/Glavo/lz4-java) (lz4-java 的轻量级分支，仅提供纯 Java 的安全实现)
-> - [yawkat/lz4-java](https://github.com/yawkat/lz4-java) (lz4-java 的原版分支，提供基于 `Unsafe` 和 JNI 的高性能实现，但体积较大)
+> - [Glavo/lz4-java](https://github.com/Glavo/lz4-java) (轻量级分支，提供经过优化的纯 Java 安全实现，体积较小（约 80KiB）)
+> - [yawkat/lz4-java](https://github.com/yawkat/lz4-java) (原版分支，提供基于 `Unsafe` 和 JNI 的高性能实现，但体积较大（约 770KiB）)
 
 除了从文件中读取，`readTag` 方法还支持从其他来源读取数据，
 包括 `InputStream`、`ReadableByteChannel`、`byte[]`、和 `ByteBuffer` 等等：

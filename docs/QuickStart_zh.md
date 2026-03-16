@@ -95,7 +95,7 @@ try (var channel = Files.newByteChannel(Path.of("region/r.0.0.mca"),
 }
 ```
 
-由于区域文件格式的限制，很难流式地写入区域文件，所以以 `OutputStream` 为目标时 HelloNBT 会先在内存中构建完整的区域文件，
+由于区域文件格式的限制，无法实现流式写入，所以以 `OutputStream` 为目标时 HelloNBT 会先在内存中构建完整的区域文件，
 再写入到输出流中，这可能会导致内存占用较大。
 我们更建议使用 `SeekableByteChannel` 作为目标，这样 HelloNBT 可以逐个区块写入通道，避免额外的内存占用。
 

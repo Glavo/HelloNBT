@@ -70,15 +70,17 @@ public final class FloatTag extends ValueTag<Float> {
     }
 
     /// Sets the value of the tag.
-    @Contract(mutates = "this")
-    public void set(float value) {
+    @Contract(value = "_ -> this", mutates = "this")
+    public FloatTag set(float value) {
         this.value = value;
+        return this;
     }
 
     @Override
-    @Contract(mutates = "this")
-    public void setValue(Float value) {
+    @Contract(value = "_ -> this", mutates = "this")
+    public FloatTag setValue(Float value) {
         this.value = value;
+        return this;
     }
 
     @Override

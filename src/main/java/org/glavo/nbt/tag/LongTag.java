@@ -74,8 +74,8 @@ public final class LongTag extends ValueTag<Long> {
     }
 
     /// Sets the value of the tag.
-    @Contract(mutates = "this")
-    public void set(long value) {
+    @Contract(value = "_ -> this", mutates = "this")
+    public LongTag set(long value) {
         if (getParent() instanceof LongArrayTag parent) {
             assert parent.getTagOrNull(getIndex()) == this;
 
@@ -83,12 +83,14 @@ public final class LongTag extends ValueTag<Long> {
         }
 
         setDirect(value);
+        return this;
     }
 
     @Override
-    @Contract(mutates = "this")
-    public void setValue(Long value) {
+    @Contract(value = "_ -> this", mutates = "this")
+    public LongTag setValue(Long value) {
         set(value);
+        return this;
     }
 
     @Override

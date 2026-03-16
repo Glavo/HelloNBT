@@ -71,15 +71,17 @@ public final class StringTag extends ValueTag<String> {
     }
 
     /// Sets the value of the tag.
-    @Contract(mutates = "this")
-    public void set(String value) {
+    @Contract(value = "_ -> this", mutates = "this")
+    public StringTag set(String value) {
         this.value = Objects.requireNonNull(value);
+        return this;
     }
 
     @Override
-    @Contract(mutates = "this")
-    public void setValue(String value) {
+    @Contract(value = "_ -> this", mutates = "this")
+    public StringTag setValue(String value) {
         this.value = Objects.requireNonNull(value);
+        return this;
     }
 
     @Override

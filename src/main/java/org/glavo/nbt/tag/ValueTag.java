@@ -62,8 +62,8 @@ public sealed abstract class ValueTag<V> extends Tag
     public abstract String getAsString();
 
     /// Sets the value of the tag.
-    @Contract(mutates = "this")
-    public abstract void setValue(V value);
+    @Contract(value = "_ -> this", mutates = "this")
+    public abstract ValueTag<V> setValue(V value);
 
     @Override
     @Contract(value = "-> new", pure = true)

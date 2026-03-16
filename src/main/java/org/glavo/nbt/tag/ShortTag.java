@@ -76,21 +76,24 @@ public final class ShortTag extends ValueTag<Short> {
     }
 
     /// Sets the value of the tag.
-    @Contract(mutates = "this")
-    public void set(short value) {
+    @Contract(value = "_ -> this", mutates = "this")
+    public ShortTag set(short value) {
         this.value = value;
+        return this;
     }
 
     /// Sets the value of the tag from an unsigned integer.
-    @Contract(mutates = "this")
-    public void setUnsigned(int value) {
+    @Contract(value = "_ -> this", mutates = "this")
+    public ShortTag setUnsigned(int value) {
         this.value = (short) value;
+        return this;
     }
 
     @Override
-    @Contract(mutates = "this")
-    public void setValue(Short value) {
+    @Contract(value = "_ -> this", mutates = "this")
+    public ShortTag setValue(Short value) {
         this.value = value;
+        return this;
     }
 
     @Override

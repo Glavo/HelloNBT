@@ -70,15 +70,17 @@ public final class DoubleTag extends ValueTag<Double> {
     }
 
     /// Sets the value of the tag.
-    @Contract(mutates = "this")
-    public void set(double value) {
+    @Contract(value = "_ -> this", mutates = "this")
+    public DoubleTag set(double value) {
         this.value = value;
+        return this;
     }
 
     @Override
-    @Contract(mutates = "this")
-    public void setValue(Double value) {
+    @Contract(value = "_ -> this", mutates = "this")
+    public DoubleTag setValue(Double value) {
         this.value = value;
+        return this;
     }
 
     @Override

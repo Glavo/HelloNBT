@@ -80,8 +80,8 @@ public final class IntTag extends ValueTag<Integer> {
     }
 
     /// Sets the value of the tag.
-    @Contract(mutates = "this")
-    public void set(int value) {
+    @Contract(value = "_ -> this", mutates = "this")
+    public IntTag set(int value) {
         if (getParent() instanceof IntArrayTag parent) {
             assert parent.getTagOrNull(getIndex()) == this;
 
@@ -89,18 +89,21 @@ public final class IntTag extends ValueTag<Integer> {
         }
 
         setDirect(value);
+        return this;
     }
 
     /// Sets the value of the tag from an unsigned long.
-    @Contract(mutates = "this")
-    public void setUnsigned(long value) {
+    @Contract(value = "_ -> this", mutates = "this")
+    public IntTag setUnsigned(long value) {
         set((int) value);
+        return this;
     }
 
     @Override
-    @Contract(mutates = "this")
-    public void setValue(Integer value) {
+    @Contract(value = "_ -> this", mutates = "this")
+    public IntTag setValue(Integer value) {
         set(value);
+        return this;
     }
 
     @Override

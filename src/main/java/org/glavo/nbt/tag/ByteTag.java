@@ -92,8 +92,8 @@ public final class ByteTag extends ValueTag<Byte> {
     }
 
     /// Sets the value of the tag.
-    @Contract(mutates = "this")
-    public void set(byte value) {
+    @Contract(value = "_ -> this", mutates = "this")
+    public ByteTag set(byte value) {
         if (getParent() instanceof ByteArrayTag parent) {
             assert parent.getTagOrNull(getIndex()) == this;
 
@@ -101,26 +101,30 @@ public final class ByteTag extends ValueTag<Byte> {
         }
 
         setDirect(value);
+        return this;
     }
 
     /// Sets the value of the tag from an unsigned integer.
-    @Contract(mutates = "this")
-    public void setUnsigned(int value) {
+    @Contract(value = "_ -> this", mutates = "this")
+    public ByteTag setUnsigned(int value) {
         set((byte) value);
+        return this;
     }
 
     @Override
-    @Contract(mutates = "this")
-    public void setValue(Byte value) {
+    @Contract(value = "_ -> this", mutates = "this")
+    public ByteTag setValue(Byte value) {
         set(value);
+        return this;
     }
 
     /// Sets the boolean value of the tag.
     ///
     /// If the `value` is `true`, the tag will be set to `1`; otherwise, it will be set to `0`.
-    @Contract(mutates = "this")
-    public void setBoolean(boolean value) {
+    @Contract(value = "_ -> this", mutates = "this")
+    public ByteTag setBoolean(boolean value) {
         set((byte) (value ? 1 : 0));
+        return this;
     }
 
     @Override

@@ -218,4 +218,55 @@ public abstract class OutputTarget implements Closeable, Flushable {
             }
         }
     }
+
+    public static final class OfByteBuffer extends OutputTarget {
+        private final ByteBuffer targetBuffer;
+        private long position;
+
+        public OfByteBuffer(ByteBuffer targetBuffer) {
+            this.targetBuffer = targetBuffer;
+        }
+
+        @Override
+        public long position() {
+            return position;
+        }
+
+        @Override
+        protected void closeImpl() {
+        }
+
+        @Override
+        public void write(OutputBuffer buffer) throws IOException {
+            ensureOpen();
+            OutputBuffer.assertStatus(buffer);
+
+            int pending = buffer.pending();
+            if (targetBuffer.remaining() < pending) {
+                throw new IOException("Not enough space in target buffer");
+            }
+
+            targetBuffer.put(buffer.getByteBuffer().flip());
+            buffer.getByteBuffer().clear();
+            position += pending;
+        }
+
+        @Override
+        public void skip(long bytes) throws IOException {
+            ensureOpen();
+            if (bytes < 0) {
+                throw new IllegalArgumentException("Negative skip length: " + bytes);
+            }
+            if (bytes == 0) {
+                return;
+            }
+
+            if (targetBuffer.remaining() < bytes) {
+                throw new IOException("Not enough space in target buffer");
+            }
+
+            targetBuffer.position(targetBuffer.position() + (int) bytes);
+            position += bytes;
+        }
+    }
 }

@@ -445,6 +445,37 @@ public final class NBTCodec {
         }
     }
 
+    /// Writes a NBT tag to the byte buffer.
+    ///
+    /// `buffer.remaining()` must be greater than or equal to [`byteSize(tag)`](#byteSize(Tag)),
+    /// otherwise an `IOException` will be thrown, and the state of the `buffer` is undefined.
+    ///
+    /// After the method call, `buffer.position()` will increase by [`byteSize(tag)`](#byteSize(Tag)).
+    public void writeTag(ByteBuffer buffer, Tag tag) throws IOException {
+        try (var writer = new RawDataWriter(new OutputTarget.OfByteBuffer(buffer), getEdition())) {
+            NBTOutput.writeTag(writer, tag);
+        }
+    }
+
+    /// Writes a NBT tag to a byte array.
+    ///
+    /// The returned byte array will have a length equal to [`byteSize(tag)`](#byteSize(Tag)).
+    public byte[] writeTagToByteArray(Tag tag) throws IOException {
+        ByteBuffer buffer = ByteBuffer.allocate((int) byteSize(tag));
+
+        try {
+            writeTag(buffer, tag);
+        } catch (IOException e) {
+            throw new AssertionError("Unexpected error when writing tag to byte array", e);
+        }
+
+        if (buffer.remaining() != 0) {
+            throw new AssertionError("Unexpected remaining bytes in buffer: " + buffer.remaining());
+        }
+
+        return buffer.array();
+    }
+
     /// Reads a chunk region from a file.
     ///
     /// @see #getExternalChunkAccessorFactory()

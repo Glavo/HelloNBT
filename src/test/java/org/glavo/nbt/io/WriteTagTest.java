@@ -67,12 +67,20 @@ public final class WriteTagTest {
                 return buffer.toByteArray();
             }
         }
+
+        record ByteBuffer(MinecraftEdition edition) implements Validator {
+            @Override
+            public byte[] toByteArray(Tag tag) throws IOException {
+                return NBTCodec.of(edition).writeTagToByteArray(tag);
+            }
+        }
     }
 
     static Stream<Validator> validators() {
         return Stream.of(MinecraftEdition.values()).flatMap(edition -> Stream.of(
                 new Validator.OutputStream(edition),
-                new Validator.ByteChannel(edition)
+                new Validator.ByteChannel(edition),
+                new Validator.ByteBuffer(edition)
         ));
     }
 

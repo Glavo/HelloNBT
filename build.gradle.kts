@@ -51,9 +51,12 @@ tasks.javadoc {
         it.addStringOption("link", "https://docs.oracle.com/en/java/javase/25/docs/api/")
         it.addBooleanOption("html5", true)
         it.addStringOption("Xdoclint:none", "-quiet")
-        it.addStringOption("tag", "apiNote:a:API Note:")
-        it.addStringOption("tag", "implNote:a:Implementation Note:")
-        it.addStringOption("tag", "implSpec:a:Implementation Specification:")
+
+        it.tags!!.addAll(listOf(
+            "apiNote:a:API Note:",
+            "implNote:a:Implementation Note:",
+            "implSpec:a:Implementation Specification:",
+        ))
     }
 }
 

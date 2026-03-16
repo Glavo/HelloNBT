@@ -1,6 +1,7 @@
 # HelloNBT
 
 [![codecov](https://codecov.io/gh/Glavo/HelloNBT/graph/badge.svg?token=M1XJHATTPN)](https://codecov.io/gh/Glavo/HelloNBT)
+[![](https://img.shields.io/maven-central/v/org.glavo/HelloNBT?label=Maven%20Central)](https://search.maven.org/artifact/org.glavo/HelloNBT)
 
 A powerful library for reading and writing Minecraft NBT data.
 

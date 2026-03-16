@@ -192,6 +192,15 @@ Tag tag = NBTCodec.of().readTag(Path.of("level.dat"));
 
 `readTag` 方法支持自动检测 NBT 数据是否被压缩，并会自动解压使用 `GZip` 或 `LZ4` 算法压缩的数据。
 
+> [!NOTE]
+> 
+> HelloNBT 需要运行时存在 [lz4-java](https://github.com/lz4/lz4-java) 库才能读取使用 LZ4 压缩的 NBT 数据。
+> 
+> lz4-java 官方已经放弃维护，推荐使用以下社区维护的分支：
+> 
+> - [Glavo/lz4-java](https://github.com/Glavo/lz4-java) (lz4-java 的轻量级分支，仅提供纯 Java 的安全实现)
+> - [yawkat/lz4-java](https://github.com/yawkat/lz4-java) (lz4-java 的原版分支，提供基于 `Unsafe` 和 JNI 的高性能实现，但体积较大)
+
 除了从文件中读取，`readTag` 方法还支持从其他来源读取数据，
 包括 `InputStream`、`ReadableByteChannel`、`byte[]`、和 `ByteBuffer` 等等：
 

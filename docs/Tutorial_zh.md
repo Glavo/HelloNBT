@@ -6,7 +6,7 @@
 
 ## 基础
 
-HelloNBT 提供了对 NBT 元素树的基本抽象。
+HelloNBT 提供了对 NBT 树的基本抽象。
 
 所有 NBT 元素都实现了 `NBTElement` 接口，该接口有以下实现：
 
@@ -40,8 +40,8 @@ HelloNBT 提供了对 NBT 元素树的基本抽象。
 尝试将一个 `NBTElement` 添加到另一个 `NBTParent` 中时，它会先被从当前父元素中移除，再添加到新的父元素中。
 
 所有 `NBTElement` 都支持 `clone` 方法进行复制。
-`clone` 方法会递归复制其所有子元素，返回的副本将与原元素具有相同的内容，但是与原元素完全独立，且没有父元素。
-用户可以 `clone` 出的元素添加至其他 `NBTParent` 中。
+`clone` 方法会递归复制其所有子元素，返回的副本将与原元素具有相同的内容，但是与原元素完全独立，且是没有父级的根元素。
+用户可以将 `clone` 出的元素添加至其他 `NBTParent` 中，从而避免影响原 NBT 树。
 
 ## 构造 NBT Tag
 
@@ -106,7 +106,7 @@ assert compoundTag.getTag("anotherInt") instanceof IntTag;
 assert ((IntTag) compoundTag.getTag("anotherInt")).get() == 456;
 ```
 
-如果已存在的子类型与要设置的类型不匹配，`set` 系列的方法会抛出 `IllegalStateException`：
+如果已存在的子标签类型与要设置的值类型不匹配，`set` 系列的方法会抛出 `IllegalStateException`：
 
 ```java
 try {

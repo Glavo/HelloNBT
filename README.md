@@ -15,7 +15,12 @@ It supports:
 - Supports reading and writing SNBT (Stringified Named Binary Tag).
 - Supports [NBTPath](https://minecraft.wiki/w/NBT_path) (a query language for NBT data).
 
-We provide detailed documentation for all APIs, which can be found here:
+To get started, check out the following documents:
+
+- Quick Start ([中文](docs/QuickStart_zh.md))
+- Tutorial ([中文](docs/Tutorial_zh.md))
+
+We also provide detailed documentation for all APIs, which can be found here:
 [HelloNBT Javadoc](https://javadoc.io/doc/org.glavo/HelloNBT).
 
 This library is used for the [Hello! Minecraft Launcher](https://github.com/HMCL-Dev-HMCL).
@@ -41,11 +46,6 @@ Maven:
     <version>0.2.0</version>
 </dependency>
 ```
-
-## Getting Started
-
-- Quick Start ([中文](docs/QuickStart_zh.md))
-- Tutorial ([中文](docs/Tutorial_zh.md))
 
 ## License
 

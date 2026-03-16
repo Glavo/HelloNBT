@@ -12,27 +12,26 @@ HelloNBT 提供了对 NBT 树的基本抽象。
 
 - `NBTElement`: 代表任意 NBT元素。
     - `ChunkRegion`: 代表一个区域（Region）。一个区域中包含 32 x 32 个区块。
-    - `Chunk`: 代表一个区块。区块中会包含其最后更新时间，以及一个可选的表示其 NBT 数据的 `CompoundTag`。
-    - `Tag`: 代表一个 NBT Tag。
-        - `ParentTag`: 代表可以包含其他 NBT Tag 的 NBT Tag。
-            - `CompoundTag`: 代表一个复合 NBT Tag。其中可以包含多个具有不同名称的 NBT Tag。
-            - `ListTag`: 代表一个列表 NBT Tag。所有 NBT Tag 不包含名称，且类型相同。
-            - `ArrayTag`: 代表一个数组 NBT Tag。所有 NBT Tag 不包含名称，且类型相同。
-                - `ByteArrayTag`: 代表包含一系列 `ByteTag` 的数组 NBT Tag。
-                - `IntArrayTag`: 代表包含一系列 `IntTag` 的数组 NBT Tag。Minecraft 也会用它来存储 UUID。
-                - `LongArrayTag`: 代表包含一系列 `LongTag` 的数组 NBT Tag。
-        - `ValueTag`: 代表包含一个值的 NBT Tag。
-            - `ByteTag`: 包含一个单字节整数的 NBT Tag。Minecraft 也会用它来存储布尔值。
-            - `ShortTag`: 包含一个双字节整数的 NBT Tag。
-            - `IntTag`: 包含一个四字节整数的 NBT Tag。
-            - `LongTag`: 包含一个八字节整数的 NBT Tag。
-            - `FloatTag`: 包含一个单精度浮点数的 NBT Tag。
-            - `DoubleTag`: 包含一个双精度浮点数的 NBT Tag。
-            - `StringTag`: 包含一个字符串的 NBT Tag。
+    - `Chunk`: 代表一个区块。`Chunk` 对象中中记录了对区块的最后更新时间，以及一个可选的用于存储 NBT 数据的 `CompoundTag`。
+    - `Tag`: 代表一个 NBT 标签。
+        - `ParentTag`: 代表可以包含其他 NBT 标签的 NBT 标签。
+            - `CompoundTag`: 代表一个复合 NBT 标签。其中可以包含多个具有不同名称的 NBT 标签。
+            - `ListTag`: 代表一个列表 NBT 标签。所有 NBT 标签不包含名称，且类型相同。
+            - `ArrayTag`: 代表一个数组 NBT 标签。所有 NBT 标签不包含名称，且类型相同。
+                - `ByteArrayTag`: 代表包含一系列 `ByteTag` 的数组 NBT 标签。
+                - `IntArrayTag`: 代表包含一系列 `IntTag` 的数组 NBT 标签。Minecraft 也会用它来存储 UUID。
+                - `LongArrayTag`: 代表包含一系列 `LongTag` 的数组 NBT 标签。
+        - `ValueTag`: 代表包含一个值的 NBT 标签。
+            - `ByteTag`: 包含一个单字节整数的 NBT 标签。Minecraft 也会用它来存储布尔值。
+            - `ShortTag`: 包含一个双字节整数的 NBT 标签。
+            - `IntTag`: 包含一个四字节整数的 NBT 标签。
+            - `LongTag`: 包含一个八字节整数的 NBT 标签。
+            - `FloatTag`: 包含一个单精度浮点数的 NBT 标签。
+            - `DoubleTag`: 包含一个双精度浮点数的 NBT 标签。
+            - `StringTag`: 包含一个字符串的 NBT 标签。
 
-其中 `ChunkRegion`、`Chunk`、`CompoundTag`、`ListTag`、`ByteArrayTag`、`IntArrayTag` 和 `LongArrayTag` 可以包含其他
-`NBTElement` 作为子元素，
-这些可以作为父元素的 `NBTElement` 都实现了 `NBTParent` 接口。
+其中 `ChunkRegion`、`Chunk`、`CompoundTag`、`ListTag`、`ByteArrayTag`、`IntArrayTag` 和 `LongArrayTag` 
+可以包含其他 `NBTElement` 作为子元素，这些可以作为父元素的 `NBTElement` 都实现了 `NBTParent` 接口。
 
 一个没有父元素的 `NBTElement` 称为根元素（Root Element）。根元素及其所有子元素共同构成了一个 NBT 树。
 
@@ -44,23 +43,19 @@ HelloNBT 提供了对 NBT 树的基本抽象。
 `clone` 方法会递归复制其所有子元素，返回的副本将与原元素具有相同的内容，但是与原元素完全独立，且是没有父级的根元素。
 用户可以将 `clone` 出的元素添加至其他 `NBTParent` 中，从而避免影响原 NBT 树。
 
-## 构造 NBT Tag
+## 构造 NBT 标签
 
 大部分 `Tag` 都可以简单的通过构造方法创建：
 
 ```java
 // 创建一个 IntTag
-new IntTag();
+var _ = new IntTag();
 
 // 创建一个值为 123 的 IntTag
-new
-
-IntTag(123);
+var _ = new IntTag(123);
 
 // 创建一个空的 CompoundTag
-new
-
-CompoundTag();
+var _ = new CompoundTag();
 ```
 
 构造 `ListTag` 时需要传入其元素类型：
@@ -72,10 +67,7 @@ ListTag<IntTag> listTag = new ListTag<>(TagType.INT);
 对于 `ValueTag`，除了可以在构造时传入值，也可以通过 `set` 方法修改其值：
 
 ```java
-var intTag = new IntTag();
-intTag.
-
-set(123);
+var intTag = new IntTag().set(123);
 ```
 
 对于 `CompoundTag`，可以通过 `add` 系列方法添加子元素：
@@ -99,41 +91,29 @@ var compoundTag = new CompoundTag()
 // 先获取 IntTag 子元素
 var intSubTag = (IntTag) compoundTag.get("int");
 
-compoundTag.
+compoundTag.setInt("int",233);
 
-setInt("int",233);
-
-assert intSubTag.
-
-get() ==233;
+assert intSubTag.get() ==233;
 ```
 
 在不存在该子元素时，`set` 系列的方法会创建一个新的子元素并添加到 `CompoundTag` 中：
 
 ```java
-assert compoundTag.getTag("anotherInt") ==null;
-        compoundTag.
+assert compoundTag.getTag("anotherInt") == null;
 
-setInt("anotherInt",456);
-assert compoundTag.
+compoundTag.setInt("anotherInt",456);
 
-getTag("anotherInt") instanceof IntTag;
-assert((IntTag)compoundTag.
-
-getTag("anotherInt")).
-
-get() ==456;
+assert ((IntTag) compoundTag.getTag("anotherInt")).get() == 456;
 ```
 
 如果已存在的子标签类型与要设置的值类型不匹配，`set` 系列的方法会抛出 `IllegalStateException`：
 
 ```java
-try{
-        compoundTag.setInt("string",233);
-}catch(
-IllegalStateException e){
-        // Expected IllegalStateException
-        }
+try {
+    compoundTag.setInt("string", 233);
+} catch (IllegalStateException e) {
+    // Expected IllegalStateException
+}
 ```
 
 ## NBTPath
@@ -197,8 +177,7 @@ NBTCodec codec = NBTCodec.of()
         // 设置 Minecraft Edition
         .withEdition(MinecraftEdition.BEDROCK)
         // 设置外部区块文件访问器工厂
-        .withExternalChunkAccessorFactory(ExternalChunkAccessor.emptyFactory())
-        ;
+        .withExternalChunkAccessorFactory(ExternalChunkAccessor.emptyFactory());
 ```
 
 `with` 系列方法不会修改原 `NBTCodec` 实例，每次调用都会返回一个新的 `NBTCodec` 实例。

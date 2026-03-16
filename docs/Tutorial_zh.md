@@ -156,9 +156,9 @@ List<IntTag> _ = compoundTag.getAllTags(path).toList();
 IntTag _ = compoundTag.getFirstTag(path);
 
 // 获取第一个匹配的 NBT Tag 的值
-int _ = compoundTag.getFirstInt(path); // 如果不存在则抛出 NoSuchElementException
-Integer _ = compoundTag.getFirstIntOrNull(path); // 如果不存在则返回 null
-int _ = compoundTag.getFirstIntOrDefault(path, 0); // 如果不存在则返回默认值
+int _       = compoundTag.getFirstInt(path);             // 如果不存在则抛出 NoSuchElementException
+Integer _   = compoundTag.getFirstIntOrNull(path);       // 如果不存在则返回 null
+int _       = compoundTag.getFirstIntOrDefault(path, 0); // 如果不存在则返回默认值
 ```
 
 ## 读写 NBT 数据

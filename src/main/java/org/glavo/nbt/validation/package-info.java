@@ -14,14 +14,8 @@
  * limitations under the License.
  */
 
-/// Base module for the [HelloNBT](https://github.com/Glavo/HelloNBT).
-module org.glavo.nbt {
-    requires static org.jetbrains.annotations;
-    requires static org.lz4.java;
+/// @see org.glavo.nbt.validation.NBTValidator
+@NotNullByDefault
+package org.glavo.nbt.validation;
 
-    exports org.glavo.nbt;
-    exports org.glavo.nbt.chunk;
-    exports org.glavo.nbt.tag;
-    exports org.glavo.nbt.io;
-    exports org.glavo.nbt.validation;
-}
+import org.jetbrains.annotations.NotNullByDefault;

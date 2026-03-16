@@ -138,6 +138,13 @@ public final class IntArrayTag extends ArrayTag<Integer, IntTag, int[], IntBuffe
         return this;
     }
 
+    @Override
+    @Contract(value = "_ -> this", mutates = "this,param1")
+    public IntArrayTag setAll(IntBuffer buffer) {
+        super.setAll(buffer);
+        return this;
+    }
+
     /// Sets the value of the tag from a UUID.
     ///
     /// Calling this method will clear the current array, all subtags will be removed.

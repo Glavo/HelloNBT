@@ -108,6 +108,13 @@ public final class ByteArrayTag extends ArrayTag<Byte, ByteTag, byte[], ByteBuff
         return this;
     }
 
+    @Override
+    @Contract(value = "_ -> this", mutates = "this,param1")
+    public ByteArrayTag setAll(ByteBuffer buffer) {
+        super.setAll(buffer);
+        return this;
+    }
+
     /// Appends the specified value to the end of this array.
     @Contract(value = "_ -> this", mutates = "this")
     public ByteArrayTag add(byte value) {

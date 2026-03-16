@@ -88,8 +88,8 @@ public final class ChunkRegion implements NBTParent<Chunk>, NBTElement, Iterable
     /// Sets the chunk at the given local index.
     ///
     /// @throws IndexOutOfBoundsException if the local index is out of range.
-    @Contract(mutates = "this,param2")
-    public void setChunk(int localIndex, Chunk chunk) {
+    @Contract(value = "_, _ -> this", mutates = "this,param2")
+    public ChunkRegion setChunk(int localIndex, Chunk chunk) {
         Objects.checkIndex(localIndex, ChunkUtils.CHUNKS_PRE_REGION);
         Objects.requireNonNull(chunk);
 
@@ -106,16 +106,18 @@ public final class ChunkRegion implements NBTParent<Chunk>, NBTElement, Iterable
 
         chunk.setParent(this, localIndex);
         chunks[localIndex] = chunk;
+        return this;
     }
 
     /// Sets the chunk at the given local coordinates.
     ///
     /// @throws IndexOutOfBoundsException if the local coordinates are out of range.
-    @Contract(mutates = "this,param3")
-    public void setChunk(int localX, int localZ, Chunk chunk) {
+    @Contract(value = "_, _, _ -> this", mutates = "this,param3")
+    public ChunkRegion setChunk(int localX, int localZ, Chunk chunk) {
         Objects.checkIndex(localX, ChunkUtils.CHUNKS_PER_REGION_SIDE);
         Objects.checkIndex(localZ, ChunkUtils.CHUNKS_PER_REGION_SIDE);
         setChunk(ChunkUtils.toLocalIndex(localX, localZ), chunk);
+        return this;
     }
 
     @Override

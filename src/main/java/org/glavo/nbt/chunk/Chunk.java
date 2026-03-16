@@ -125,10 +125,10 @@ public final class Chunk implements NBTParent<CompoundTag>, NBTElement {
     }
 
     /// Sets the root tag of this chunk.
-    @Contract(mutates = "this,param1")
-    public void setRootTag(@Nullable CompoundTag rootTag) {
+    @Contract(value = "_ -> this", mutates = "this,param1")
+    public Chunk setRootTag(@Nullable CompoundTag rootTag) {
         if (rootTag == this.rootTag) {
-            return;
+            return this;
         }
 
         if (this.rootTag != null) {
@@ -149,6 +149,7 @@ public final class Chunk implements NBTParent<CompoundTag>, NBTElement {
         }
 
         this.rootTag = rootTag;
+        return this;
     }
 
     /// Return the timestamp of this chunk.
@@ -164,9 +165,10 @@ public final class Chunk implements NBTParent<CompoundTag>, NBTElement {
     /// @apiNote The timestamp can be set to any instant, but when written to a file,
     /// it will only retain precision up to seconds.
     /// Timestamps exceeding the range of unsigned 32-bit epoch seconds will be truncated to `2106-02-07T06:28:15Z`.
-    @Contract(mutates = "this")
-    public void setTimestamp(Instant timestamp) {
+    @Contract(value = "_ -> this", mutates = "this")
+    public Chunk setTimestamp(Instant timestamp) {
         this.timestamp = Objects.requireNonNull(timestamp, "timestamp");
+        return this;
     }
 
     @Override

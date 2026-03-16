@@ -82,17 +82,18 @@ public final class ListTag<T extends Tag> extends ParentTag<T> {
     /// If the list is empty, the element type will be set to the given type;
     /// If the new element type is [TagType#COMPOUND], the list will be converted to a list of compound tags,
     /// every element will be converted to a compound tag with a single subtag.
-    @Contract(mutates = "this")
-    public void setElementType(@Nullable TagType<?> elementType) throws IllegalStateException {
+    @SuppressWarnings("unchecked")
+    @Contract(value = "_ -> this", mutates = "this")
+    public <U extends T> ListTag<U> setElementType(@Nullable TagType<U> elementType) throws IllegalStateException {
         if (this.elementType == elementType) {
-            return;
+            return (ListTag<U>) this;
         }
 
         if (isEmpty()) {
             this.elementType = elementType;
         } else if (elementType == null) {
             throw new IllegalStateException("Cannot set element type to END for a non-empty list");
-        } else if (elementType != TagType.COMPOUND) {
+        } else if (!elementType.equals(TagType.COMPOUND)) {
             throw new IllegalStateException("Cannot set element type to " + elementType + " for a " + this.elementType + " list");
         } else {
             var oldTags = Arrays.copyOf(tags, size);
@@ -112,8 +113,9 @@ public final class ListTag<T extends Tag> extends ParentTag<T> {
                 T castedTag = (T) newSubTag;
                 this.addTag(castedTag);
             }
-
         }
+
+        return (ListTag<U>) this;
     }
 
     /// {@inheritDoc}
@@ -173,7 +175,7 @@ public final class ListTag<T extends Tag> extends ParentTag<T> {
             elementType = tag.getType();
             addTag(tag);
         } else {
-            setElementType(TagType.COMPOUND);
+            ((ListTag<Tag>) this).setElementType(TagType.COMPOUND);
 
             CompoundTag subTag = new CompoundTag();
             subTag.addTag("", tag);
@@ -202,6 +204,7 @@ public final class ListTag<T extends Tag> extends ParentTag<T> {
     }
 
     @Override
+    @SuppressWarnings("unchecked")
     void readContent(DataReader reader) throws IOException {
         byte elementTypeId = reader.readByte();
 
@@ -215,7 +218,7 @@ public final class ListTag<T extends Tag> extends ParentTag<T> {
             elementType = null;
         }
 
-        setElementType(elementType);
+        ((ListTag<Tag>) this).setElementType(elementType);
 
         int count = reader.readInt();
         if (count < 0) {

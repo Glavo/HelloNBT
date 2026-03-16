@@ -112,6 +112,13 @@ public final class LongArrayTag extends ArrayTag<Long, LongTag, long[], LongBuff
         return this;
     }
 
+    @Override
+    @Contract(value = "_ -> this", mutates = "this,param1")
+    public LongArrayTag setAll(LongBuffer buffer) {
+        super.setAll(buffer);
+        return this;
+    }
+
     /// Appends the specified value to the end of this array.
     @Contract(value = "_ -> this", mutates = "this")
     public LongArrayTag add(long value) {

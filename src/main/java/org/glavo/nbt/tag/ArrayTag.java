@@ -263,8 +263,8 @@ public sealed abstract class ArrayTag<E extends Number, T extends ValueTag<E>, A
     /// After calling this method, the `position` of the buffer will be set to `limit`.
     ///
     /// Calling this method will clear the current array, all subtags will be removed.
-    @Contract(mutates = "this,param1")
-    public final void setAll(@Flow(sourceIsContainer = true, targetIsContainer = true)
+    @Contract(value = "_ -> this", mutates = "this,param1")
+    public ArrayTag<E, T, A, B> setAll(@Flow(sourceIsContainer = true, targetIsContainer = true)
                              B buffer) {
         clear();
 
@@ -272,6 +272,7 @@ public sealed abstract class ArrayTag<E extends Number, T extends ValueTag<E>, A
             A array = accessor().get(buffer);
             setArrayWithoutClone(array, accessor().getLength(array));
         }
+        return this;
     }
 
     /// Appends the specified value to the end of this array.

@@ -13,7 +13,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.glavo.nbt.validator;
+package org.glavo.nbt.validation;
 
-public final class NBTSchema {
+import org.glavo.nbt.NBTElement;
+
+/// Validator for NBT elements.
+@FunctionalInterface
+public interface NBTValidator<E extends NBTElement> {
+
+    /// Validates the given NBT element.
+    ///
+    /// @throws NBTValidationException if the element is not valid.
+    boolean validate(E element) throws NBTValidationException;
 }

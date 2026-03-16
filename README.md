@@ -21,37 +21,19 @@ The API is currently unstable.
 
 ## Download
 
-HelloNBT is currently in the early stages of development. You can get snapshot versions
-from [JitPack](https://jitpack.io/#Glavo/HelloNBT).
-
 Gradle (Kotlin DSL):
 
 ```kotlin
-// Add JitPack repository
-repositories {
-    maven(url = "https://jitpack.io")
-}
-
-// Add HelloNBT dependency
 dependencies {
-    implementation("com.github.Glavo:HelloNBT:main-SNAPSHOT")
+    implementation("org.glavo:HelloNBT:0.1.0")
 }
 ```
 
 Maven:
 ```xml
-<!-- Add JitPack repository -->
-<repositories>
-    <repository>
-        <id>jitpack.io</id>
-        <url>https://jitpack.io</url>
-    </repository>
-</repositories>
-
-<!-- Add HelloNBT dependency -->
 <dependency>
-    <groupId>com.github.Glavo</groupId>
+    <groupId>org.glavo</groupId>
     <artifactId>HelloNBT</artifactId>
-    <version>main-SNAPSHOT</version>
+    <version>0.1.0</version>
 </dependency>
 ```

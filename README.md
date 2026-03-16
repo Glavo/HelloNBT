@@ -20,7 +20,7 @@ The API is currently unstable.
 
 ## Download
 
-Gradle (Kotlin DSL):
+Gradle:
 
 ```kotlin
 dependencies {

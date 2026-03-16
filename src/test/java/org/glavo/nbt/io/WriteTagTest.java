@@ -44,6 +44,10 @@ public final class WriteTagTest {
                     edition() == MinecraftEdition.BEDROCK_EDITION));
         }
 
+        default void assertByteSize(Tag tag) throws IOException {
+            assertEquals(toByteArray(tag).length, NBTCodec.of(edition()).byteSize(tag));
+        }
+
         record OutputStream(MinecraftEdition edition) implements Validator {
             @Override
             public byte[] toByteArray(Tag tag) throws IOException {
@@ -159,5 +163,54 @@ public final class WriteTagTest {
         var expected = new com.github.steveice10.opennbt.tag.builtin.StringTag("Meow", value);
         var actual = new StringTag(value).setName("Meow");
         validator.assertTagEquals(expected, actual);
+    }
+
+    @ParameterizedTest
+    @MethodSource("validators")
+    void testByteSize(Validator validator) throws IOException {
+        validator.assertByteSize(new ByteTag());
+        validator.assertByteSize(new ByteTag((byte) 42));
+        validator.assertByteSize(new ByteTag((byte) 42).setName("Meow"));
+        validator.assertByteSize(new ShortTag());
+        validator.assertByteSize(new ShortTag((short) 42));
+        validator.assertByteSize(new ShortTag((short) 42).setName("Meow"));
+        validator.assertByteSize(new IntTag());
+        validator.assertByteSize(new IntTag(42));
+        validator.assertByteSize(new IntTag(42).setName("Meow"));
+        validator.assertByteSize(new LongTag());
+        validator.assertByteSize(new LongTag(42L));
+        validator.assertByteSize(new LongTag(42L).setName("Meow"));
+        validator.assertByteSize(new FloatTag());
+        validator.assertByteSize(new FloatTag(42.0f));
+        validator.assertByteSize(new FloatTag(42.0f).setName("Meow"));
+        validator.assertByteSize(new DoubleTag());
+        validator.assertByteSize(new DoubleTag(42.0));
+        validator.assertByteSize(new DoubleTag(42.0).setName("Meow"));
+        validator.assertByteSize(new StringTag());
+        validator.assertByteSize(new StringTag("Meow"));
+        validator.assertByteSize(new StringTag("Meow").setName("Meow"));
+        validator.assertByteSize(new ByteArrayTag());
+        validator.assertByteSize(new ByteArrayTag(new byte[]{1, 2, 3}));
+        validator.assertByteSize(new ByteArrayTag(new byte[]{1, 2, 3}).setName("Meow"));
+        validator.assertByteSize(new IntArrayTag());
+        validator.assertByteSize(new IntArrayTag(new int[]{1, 2, 3}));
+        validator.assertByteSize(new IntArrayTag(new int[]{1, 2, 3}).setName("Meow"));
+        validator.assertByteSize(new LongArrayTag());
+        validator.assertByteSize(new LongArrayTag(new long[]{1, 2, 3}));
+        validator.assertByteSize(new LongArrayTag(new long[]{1, 2, 3}).setName("Meow"));
+        validator.assertByteSize(new ListTag<>());
+        validator.assertByteSize(new ListTag<>(TagType.INT));
+        validator.assertByteSize(new ListTag<>(TagType.INT)
+                .addTag(new IntTag(42))
+                .addTag(new IntTag(43))
+                .addTag(new IntTag(44)));
+        validator.assertByteSize(new ListTag<>()
+                .addAnyTag(new IntTag(42))
+                .addAnyTag(new StringTag("Meow"))
+                .addAnyTag(new LongArrayTag(new long[]{1, 2, 3})));
+        validator.assertByteSize(new CompoundTag());
+        validator.assertByteSize(new CompoundTag()
+                .addByte("int", (byte) 42)
+                .addString("string", "Meow"));
     }
 }

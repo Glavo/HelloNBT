@@ -16,14 +16,14 @@
 package org.glavo.nbt.io;
 
 import org.glavo.nbt.chunk.ChunkRegion;
+import org.glavo.nbt.internal.TextUtils;
 import org.glavo.nbt.internal.input.InputSource;
 import org.glavo.nbt.internal.input.NBTInput;
 import org.glavo.nbt.internal.input.RawDataReader;
 import org.glavo.nbt.internal.output.NBTOutput;
 import org.glavo.nbt.internal.output.OutputTarget;
 import org.glavo.nbt.internal.output.RawDataWriter;
-import org.glavo.nbt.tag.Tag;
-import org.glavo.nbt.tag.TagType;
+import org.glavo.nbt.tag.*;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.Nullable;
 
@@ -199,6 +199,82 @@ public final class NBTCodec {
     public NBTCodec withExternalChunkAccessorFactory(Function<Path, ExternalChunkAccessor> factory) {
         Objects.requireNonNull(factory, "factory");
         return factory == this.externalChunkAccessorFactory ? this : new NBTCodec(edition, factory);
+    }
+
+    /// Returns the encoded byte size of the content of the simple value tag.
+    private static long simpleValueContentByteSize(TagType<?> type) {
+        if (type == TagType.BYTE) {
+            return 1;
+        } else if (type == TagType.SHORT) {
+            return 2;
+        } else if (type == TagType.INT) {
+            return 4;
+        } else if (type == TagType.LONG) {
+            return 8;
+        } else if (type == TagType.FLOAT) {
+            return 4;
+        } else if (type == TagType.DOUBLE) {
+            return 8;
+        } else {
+            return -1L;
+        }
+    }
+
+    private long stringByteSize(String value) {
+        return 2L + (edition == MinecraftEdition.JAVA_EDITION
+                ? TextUtils.mutf8Length(value)
+                : TextUtils.utf8Length(value));
+    }
+
+    /// Returns the encoded byte size of the content of the tag.
+    ///
+    /// The size excludes the tag type and name.
+    public long contentByteSize(Tag tag) {
+        if (tag instanceof ValueTag<?> valueTag) {
+            long size = simpleValueContentByteSize(valueTag.getType());
+            if (size >= 0) {
+                return size;
+            } else if (tag instanceof StringTag stringTag) {
+                return stringByteSize(stringTag.getValue());
+            } else {
+                throw new IllegalArgumentException("Unsupported tag: " + tag);
+            }
+        } else if (tag instanceof ListTag<?> listTag) {
+            long size = 1 + 4; // element type + length
+
+            TagType<?> elementType = listTag.getElementType();
+            if (elementType == null) {
+                assert listTag.isEmpty() : "Non-empty list with element type END";
+                return size;
+            }
+
+            long elementSize = simpleValueContentByteSize(elementType);
+            if (elementSize >= 0) {
+                return size + elementSize * listTag.size();
+            } else {
+                for (Tag subTag : listTag) {
+                    size += contentByteSize(subTag);
+                }
+                return size;
+            }
+        } else if (tag instanceof CompoundTag compoundTag) {
+            long size = 0L;
+            for (Tag value : compoundTag) {
+                size += byteSize(value);
+            }
+            return size + 1L;
+        } else if (tag instanceof ArrayTag<?, ?, ?, ?> arrayTag) {
+            long elementSize = simpleValueContentByteSize(arrayTag.getElementType());
+            assert elementSize >= 0 : "Unsupported array element type: " + arrayTag.getElementType();
+            return 4L + elementSize * arrayTag.size();
+        } else {
+            throw new IllegalArgumentException("Unsupported tag: " + tag);
+        }
+    }
+
+    /// Returns the encoded byte size of the tag.
+    public long byteSize(Tag tag) {
+        return 1L + stringByteSize(tag.getName()) + contentByteSize(tag);
     }
 
     private Tag check(@Nullable Tag tag) throws IOException {

@@ -60,6 +60,12 @@ public final class LongArrayTag extends ArrayTag<Long, LongTag, long[], LongBuff
     }
 
     @Override
+    @Contract(pure = true)
+    public TagType<LongTag> getElementType() {
+        return TagType.LONG;
+    }
+
+    @Override
     @Contract(value = "_ -> this", mutates = "this")
     public LongArrayTag setName(String name) throws IllegalArgumentException {
         setName0(name);

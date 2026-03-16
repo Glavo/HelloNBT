@@ -56,6 +56,12 @@ public final class ByteArrayTag extends ArrayTag<Byte, ByteTag, byte[], ByteBuff
     }
 
     @Override
+    @Contract(pure = true)
+    public TagType<ByteTag> getElementType() {
+        return TagType.BYTE;
+    }
+
+    @Override
     @Contract(value = "_ -> this", mutates = "this")
     public ByteArrayTag setName(String name) throws IllegalArgumentException {
         setName0(name);

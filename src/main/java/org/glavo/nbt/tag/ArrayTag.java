@@ -87,6 +87,10 @@ public sealed abstract class ArrayTag<E extends Number, T extends ValueTag<E>, A
     @Contract(pure = true)
     public abstract TagType<? extends ArrayTag<E, T, A, B>> getType();
 
+    /// Returns the type of the elements in this array.
+    @Contract(pure = true)
+    public abstract TagType<T> getElementType();
+
     @Override
     @Contract(value = "_ -> this", mutates = "this")
     public ArrayTag<E, T, A, B> setName(String name) throws IllegalArgumentException {

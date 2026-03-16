@@ -64,6 +64,12 @@ public final class IntArrayTag extends ArrayTag<Integer, IntTag, int[], IntBuffe
     }
 
     @Override
+    @Contract(pure = true)
+    public TagType<IntTag> getElementType() {
+        return TagType.INT;
+    }
+
+    @Override
     @Contract(value = "_ -> this", mutates = "this")
     public IntArrayTag setName(String name) throws IllegalArgumentException {
         setName0(name);

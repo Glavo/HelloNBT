@@ -50,6 +50,53 @@ public final class TextUtils {
         return true;
     }
 
+    public static long mutf8Length(String value) {
+        long length = 0L;
+        for (int i = 0; i < value.length(); i++) {
+            char ch = value.charAt(i);
+            if (ch >= 0x800) {
+                length += 3L;
+            } else if (ch >= 0x80 || ch == 0) {
+                length += 2;
+            } else {
+                length += 1;
+            }
+        }
+        return length;
+    }
+
+    public static long utf8Length(String value) {
+        long length = 0L;
+
+        for (int i = 0; i < value.length(); i++) {
+            char c = value.charAt(i);
+            if (c < 0x80) {
+                length += 1L;
+            } else if (c < 0x800) {
+                length += 2L;
+            } else if (Character.isSurrogate(c)) {
+                int uc = -1;
+                char c2;
+                if (Character.isHighSurrogate(c)
+                        && i < value.length() - 1
+                        && Character.isLowSurrogate(c2 = value.charAt(i + 1))) {
+                    uc = Character.toCodePoint(c, c2);
+                }
+                if (uc < 0) {
+                    length += 1L;
+                } else {
+                    length += 4L;
+                    // skip the second surrogate
+                    i++;
+                }
+            } else {
+                length += 3L;
+            }
+        }
+
+        return length;
+    }
+
     private TextUtils() {
     }
 }

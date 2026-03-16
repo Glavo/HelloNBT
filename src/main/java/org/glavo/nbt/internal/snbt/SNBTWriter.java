@@ -75,6 +75,9 @@ public final class SNBTWriter<A extends Appendable> {
         boolean shouldBreakLines = codec.getLineBreakStrategy().shouldBreakLines(tag);
 
         appendable.append('{');
+        if (!shouldBreakLines && !tag.isEmpty()) {
+            writeSpaces(codec.getSurroundingSpaces().getSpacesInsideBrackets());
+        }
 
         identLevel++;
 
@@ -108,6 +111,8 @@ public final class SNBTWriter<A extends Appendable> {
         if (shouldBreakLines) {
             writeNewLine();
             writeIndent();
+        } else if (!tag.isEmpty()) {
+            writeSpaces(codec.getSurroundingSpaces().getSpacesInsideBrackets());
         }
 
         appendable.append('}');
@@ -117,6 +122,9 @@ public final class SNBTWriter<A extends Appendable> {
         boolean shouldBreakLines = codec.getLineBreakStrategy().shouldBreakLines(tag);
 
         appendable.append('[');
+        if (!shouldBreakLines && !tag.isEmpty()) {
+            writeSpaces(codec.getSurroundingSpaces().getSpacesInsideBrackets());
+        }
 
         identLevel++;
 
@@ -144,6 +152,8 @@ public final class SNBTWriter<A extends Appendable> {
         if (shouldBreakLines) {
             writeNewLine();
             writeIndent();
+        } else if (!tag.isEmpty()) {
+            writeSpaces(codec.getSurroundingSpaces().getSpacesInsideBrackets());
         }
 
         appendable.append(']');
@@ -164,6 +174,10 @@ public final class SNBTWriter<A extends Appendable> {
             suffix = 'L';
         } else {
             throw new AssertionError("Unsupported array tag: " + tag);
+        }
+
+        if (!shouldBreakLines && !tag.isEmpty()) {
+            writeSpaces(codec.getSurroundingSpaces().getSpacesInsideBrackets());
         }
 
         identLevel++;
@@ -191,6 +205,8 @@ public final class SNBTWriter<A extends Appendable> {
         if (shouldBreakLines) {
             writeNewLine();
             writeIndent();
+        } else if (!tag.isEmpty()) {
+            writeSpaces(codec.getSurroundingSpaces().getSpacesInsideBrackets());
         }
 
         appendable.append(']');

@@ -26,10 +26,10 @@ import java.util.Objects;
 /// @see SNBTCodec#withSurroundingSpaces(SurroundingSpaces)
 public final class SurroundingSpaces {
     /// Surrounding spaces for compact SNBT.
-    public static final SurroundingSpaces COMPACT = new SurroundingSpaces(0, 0, 0, 0);
+    public static final SurroundingSpaces COMPACT = new SurroundingSpaces(0, 0, 0, 0, 0);
 
     /// Surrounding spaces for pretty SNBT.
-    public static final SurroundingSpaces PRETTY = new SurroundingSpaces(0, 1, 0, 1);
+    public static final SurroundingSpaces PRETTY = new SurroundingSpaces(0, 1, 0, 1, 1);
 
     /// Creates a new builder for [SurroundingSpaces].
     public static SurroundingSpaces.Builder newBuilder() {
@@ -40,12 +40,14 @@ public final class SurroundingSpaces {
     private final int spacesAfterColon;
     private final int spacesBeforeComma;
     private final int spacesAfterComma;
+    private final int spacesInsideBrackets;
 
-    private SurroundingSpaces(int spacesBeforeColon, int spacesAfterColon, int spacesBeforeComma, int spacesAfterComma) {
+    private SurroundingSpaces(int spacesBeforeColon, int spacesAfterColon, int spacesBeforeComma, int spacesAfterComma, int spacesInsideBrackets) {
         this.spacesBeforeColon = spacesBeforeColon;
         this.spacesAfterColon = spacesAfterColon;
         this.spacesBeforeComma = spacesBeforeComma;
         this.spacesAfterComma = spacesAfterComma;
+        this.spacesInsideBrackets = spacesInsideBrackets;
     }
 
     /// The number of spaces before the colon.
@@ -68,9 +70,14 @@ public final class SurroundingSpaces {
         return spacesAfterComma;
     }
 
+    /// The number of spaces inside brackets.
+    public int getSpacesInsideBrackets() {
+        return spacesInsideBrackets;
+    }
+
     @Override
     public int hashCode() {
-        return Objects.hash(spacesBeforeColon, spacesAfterColon, spacesBeforeComma, spacesAfterComma);
+        return Objects.hash(spacesBeforeColon, spacesAfterColon, spacesBeforeComma, spacesAfterComma, spacesInsideBrackets);
     }
 
     @Override
@@ -79,13 +86,14 @@ public final class SurroundingSpaces {
                 && spacesBeforeColon == that.spacesBeforeColon
                 && spacesAfterColon == that.spacesAfterColon
                 && spacesBeforeComma == that.spacesBeforeComma
-                && spacesAfterComma == that.spacesAfterComma;
+                && spacesAfterComma == that.spacesAfterComma
+                && spacesInsideBrackets == that.spacesInsideBrackets;
     }
 
     @Override
     public String toString() {
-        return "Surrounding[spacesBeforeColon=%d, spacesAfterColon=%d, spacesBeforeComma=%d, spacesAfterComma=%d]".formatted(
-                spacesBeforeColon, spacesAfterColon, spacesBeforeComma, spacesAfterComma);
+        return "Surrounding[spacesBeforeColon=%d, spacesAfterColon=%d, spacesBeforeComma=%d, spacesAfterComma=%d, spacesInsideBrackets=%d]".formatted(
+                spacesBeforeColon, spacesAfterColon, spacesBeforeComma, spacesAfterComma, spacesInsideBrackets);
     }
 
     /// Builder for [SurroundingSpaces].
@@ -94,6 +102,7 @@ public final class SurroundingSpaces {
         int spacesAfterColon;
         int spacesBeforeComma;
         int spacesAfterComma;
+        int spacesInsideBrackets;
 
         Builder() {
         }
@@ -101,7 +110,7 @@ public final class SurroundingSpaces {
         /// Builds a new [SurroundingSpaces] instance.
         @Contract(pure = true)
         public SurroundingSpaces build() {
-            return new SurroundingSpaces(spacesBeforeColon, spacesAfterColon, spacesBeforeComma, spacesAfterComma);
+            return new SurroundingSpaces(spacesBeforeColon, spacesAfterColon, spacesBeforeComma, spacesAfterComma, spacesInsideBrackets);
         }
 
         /// Sets the number of spaces before the colon.
@@ -140,6 +149,15 @@ public final class SurroundingSpaces {
                 throw new IllegalArgumentException("spacesAfterComma must be non-negative");
             }
             this.spacesAfterComma = spacesAfterComma;
+            return this;
+        }
+
+        @Contract(value = "_ -> this", mutates = "this")
+        public Builder setSpacesInsideBrackets(int spacesInsideBrackets) {
+            if (spacesInsideBrackets < 0) {
+                throw new IllegalArgumentException("spacesInsideBrackets must be non-negative");
+            }
+            this.spacesInsideBrackets = spacesInsideBrackets;
             return this;
         }
     }

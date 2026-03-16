@@ -430,7 +430,7 @@ final class CompoundTagTest {
         assertEquals("""
                 root: {
                     answer: 42B,
-                    child: {message: "hello"}
+                    child: { message: "hello" }
                 }""", tag.toString());
     }
 }

@@ -106,7 +106,7 @@ import java.util.function.Function;
 /// ```
 ///
 /// Currently, NBTCodec does not support automatic data compression.
-/// When data needs to be compressed, the output stream should be wrapped with `GZipOutputStream` or `LZ4BlockOutputStream` before being passed to the `writeTag` method.
+/// When data needs to be compressed, the output stream should be wrapped with `GZIPOutputStream` or `LZ4BlockOutputStream` before being passed to the `writeTag` method.
 ///
 /// # Reading Anvil files and region files
 ///
@@ -411,6 +411,24 @@ public final class NBTCodec {
         Objects.requireNonNull(channel, "channel");
         try (var reader = new RawDataReader(new InputSource.OfByteChannel(channel, false), MinecraftEdition.JAVA_EDITION)) {
             return NBTInput.readRegion(reader, accessor);
+        }
+    }
+
+    /// Writes a chunk region to a file.
+    ///
+    /// @see ExternalChunkAccessor#of(Path)
+    public void writeRegion(Path file, ChunkRegion region) throws IOException {
+        writeRegion(file, region, ExternalChunkAccessor.of(file));
+    }
+
+    /// Writes a chunk region to a file.
+    public void writeRegion(Path file, ChunkRegion region, ExternalChunkAccessor accessor) throws IOException {
+        try (var channel = Files.newByteChannel(file,
+                StandardOpenOption.WRITE,
+                StandardOpenOption.CREATE,
+                StandardOpenOption.TRUNCATE_EXISTING
+        )) {
+            writeRegion(channel, region, accessor);
         }
     }
 

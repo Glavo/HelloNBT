@@ -106,9 +106,10 @@ public final class LongArrayTag extends ArrayTag<Long, LongTag, long[], LongBuff
     }
 
     @Override
-    @Contract(mutates = "this")
-    public void setAll(long... array) { // Override to use varargs
+    @Contract(value = "_ -> this", mutates = "this")
+    public LongArrayTag setAll(long... array) { // Override to use varargs
         super.setAll(array);
+        return this;
     }
 
     /// Appends the specified value to the end of this array.

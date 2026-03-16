@@ -243,9 +243,9 @@ public sealed abstract class ArrayTag<E extends Number, T extends ValueTag<E>, A
     /// The array is cloned to avoid external modifications.
     ///
     /// Calling this method will clear the current array, all subtags will be removed.
-    @Contract(mutates = "this")
+    @Contract(value = "_ -> this", mutates = "this")
     @MustBeInvokedByOverriders
-    public void setAll(@Flow(sourceIsContainer = true, targetIsContainer = true)
+    public ArrayTag<E, T, A, B> setAll(@Flow(sourceIsContainer = true, targetIsContainer = true)
                        A array) {
         clear();
 
@@ -254,6 +254,7 @@ public sealed abstract class ArrayTag<E extends Number, T extends ValueTag<E>, A
             this.values = accessor().copyOf(array, newSize);
             this.size = newSize;
         }
+        return this;
     }
 
     /// Set all values of the tag from a buffer.

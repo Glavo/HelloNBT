@@ -132,9 +132,10 @@ public final class IntArrayTag extends ArrayTag<Integer, IntTag, int[], IntBuffe
     }
 
     @Override
-    @Contract(mutates = "this")
-    public void setAll(int... array) { // Override to use varargs
+    @Contract(value = "_ -> this", mutates = "this")
+    public IntArrayTag setAll(int... array) { // Override to use varargs
         super.setAll(array);
+        return this;
     }
 
     /// Sets the value of the tag from a UUID.

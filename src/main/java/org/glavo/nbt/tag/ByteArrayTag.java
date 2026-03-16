@@ -102,9 +102,10 @@ public final class ByteArrayTag extends ArrayTag<Byte, ByteTag, byte[], ByteBuff
     }
 
     @Override
-    @Contract(mutates = "this")
-    public void setAll(byte... array) { // Override to use varargs
+    @Contract(value = "_ -> this", mutates = "this")
+    public ByteArrayTag setAll(byte... array) { // Override to use varargs
         super.setAll(array);
+        return this;
     }
 
     /// Appends the specified value to the end of this array.

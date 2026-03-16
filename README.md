@@ -15,10 +15,10 @@ It supports:
 - Supports reading and writing SNBT (Stringified Named Binary Tag).
 - Supports [NBTPath](https://minecraft.wiki/w/NBT_path) (a query language for NBT data).
 
-To get started, check out the following documents:
+To get started, check out the following tutorials:
 
 - Quick Start ([中文](docs/QuickStart_zh.md))
-- Tutorial ([中文](docs/Tutorial_zh.md))
+- Advanced Tutorial ([中文](docs/Tutorial_zh.md))
 
 We also provide detailed documentation for all APIs, which can be found here:
 [HelloNBT Javadoc](https://javadoc.io/doc/org.glavo/HelloNBT).

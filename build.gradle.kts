@@ -7,6 +7,9 @@ plugins {
     id("java-library")
     id("jacoco")
     id("maven-publish")
+    id("signing")
+    id("io.github.gradle-nexus.publish-plugin") version "2.0.0"
+    id("org.glavo.load-maven-publish-properties") version "0.1.0"
 }
 
 group = "org.glavo"
@@ -114,6 +117,30 @@ publishing.publications.create<MavenPublication>("maven") {
 
         scm {
             url.set("https://github.com/Glavo/HelloNBT")
+        }
+    }
+}
+
+if (rootProject.ext.has("signing.key")) {
+    signing {
+        useInMemoryPgpKeys(
+            rootProject.ext["signing.keyId"].toString(),
+            rootProject.ext["signing.key"].toString(),
+            rootProject.ext["signing.password"].toString(),
+        )
+        sign(publishing.publications["maven"])
+    }
+}
+
+// ./gradlew publishToSonatype closeAndReleaseSonatypeStagingRepository
+nexusPublishing {
+    repositories {
+        sonatype {
+            nexusUrl.set(uri("https://ossrh-staging-api.central.sonatype.com/service/local/"))
+            snapshotRepositoryUrl.set(uri("https://central.sonatype.com/repository/maven-snapshots/"))
+
+            username.set(rootProject.ext["sonatypeUsername"].toString())
+            password.set(rootProject.ext["sonatypePassword"].toString())
         }
     }
 }

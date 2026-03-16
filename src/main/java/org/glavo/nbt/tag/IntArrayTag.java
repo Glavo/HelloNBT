@@ -141,8 +141,8 @@ public final class IntArrayTag extends ArrayTag<Integer, IntTag, int[], IntBuffe
     /// Sets the value of the tag from a UUID.
     ///
     /// Calling this method will clear the current array, all subtags will be removed.
-    @Contract(mutates = "this")
-    public void setUUID(UUID uuid) {
+    @Contract(value = "_ -> this", mutates = "this")
+    public IntArrayTag setUUID(UUID uuid) {
         int[] array = new int[4];
         array[0] = (int) (uuid.getMostSignificantBits() >>> 32);
         array[1] = (int) (uuid.getMostSignificantBits() & 0xFFFF_FFFFL);
@@ -151,6 +151,7 @@ public final class IntArrayTag extends ArrayTag<Integer, IntTag, int[], IntBuffe
 
         clear();
         setArrayWithoutClone(array, 4);
+        return this;
     }
 
     /// Appends the specified value to the end of this array.

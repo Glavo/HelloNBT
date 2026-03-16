@@ -189,6 +189,7 @@ public final class WriteTagTest {
         validator.assertByteSize(new StringTag());
         validator.assertByteSize(new StringTag("Meow"));
         validator.assertByteSize(new StringTag("Meow").setName("Meow"));
+        validator.assertByteSize(new StringTag("Meow\0你好😄"));
         validator.assertByteSize(new ByteArrayTag());
         validator.assertByteSize(new ByteArrayTag(new byte[]{1, 2, 3}));
         validator.assertByteSize(new ByteArrayTag(new byte[]{1, 2, 3}).setName("Meow"));

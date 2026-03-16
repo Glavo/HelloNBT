@@ -131,10 +131,6 @@ public final class SNBTCodec {
 
     /// Returns a new codec with the specified line break strategy for all parent tags.
     ///
-    /// This method is a shortcut for calling [withCompoundTagLineBreakStrategy][#withCompoundTagLineBreakStrategy()],
-    /// [withListTagLineBreakStrategy][#withListTagLineBreakStrategy()], and [withArrayTagLineBreakStrategy][#withArrayTagLineBreakStrategy()]
-    /// with the same strategy.
-    ///
     /// @see #getLineBreakStrategy()
     /// @see LineBreakStrategy
     @Contract(value = "_ -> new", pure = true)

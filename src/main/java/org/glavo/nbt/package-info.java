@@ -14,9 +14,13 @@
  * limitations under the License.
  */
 
-/// Base package for the [HelloNBT](https://github.com/Glavo/HelloNBT).
+/// The base package for the [HelloNBT](https://github.com/Glavo/HelloNBT).
 ///
-/// @see org.glavo.nbt.tag
+/// There are the core packages for HelloNBT:
+///
+/// - [org.glavo.nbt.tag]: Provides classes for representing NBT tags.
+/// - [org.glavo.nbt.chunk]: Provides classes for representing NBT chunks and regions.
+/// - [org.glavo.nbt.io]: Provides APIs for reading and writing NBT data.
 @NotNullByDefault
 package org.glavo.nbt;
 

@@ -18,7 +18,6 @@
 ///
 /// - For reading and writing binary NBT data, see [NBTCodec][org.glavo.nbt.io.NBTCodec].
 /// - For reading and writing Stringified NBT data, see [SNBTCodec][org.glavo.nbt.io.SNBTCodec].
-///
 @NotNullByDefault
 package org.glavo.nbt.io;
 

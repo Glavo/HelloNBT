@@ -17,8 +17,6 @@ It supports:
 This library is used for the [Hello! Minecraft Launcher](https://github.com/HMCL-Dev-HMCL).
 The API is currently unstable.
 
-(In the early stages of development)
-
 ## Download
 
 Gradle (Kotlin DSL):

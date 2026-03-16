@@ -391,3 +391,7 @@ assert listTag.equals(new ListTag<>(TagType.COMPOUND)
         .addTag(new CompoundTag().addInt("", 123))
         .addTag(new CompoundTag().addString("", "HelloNBT")));
 ```
+
+## NBT 验证
+
+TODO: 实现 NBTSchema

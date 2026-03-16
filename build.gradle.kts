@@ -13,7 +13,7 @@ plugins {
 }
 
 group = "org.glavo"
-version = "0.1.0" + "-SNAPSHOT"
+version = "0.1.0" // + "-SNAPSHOT"
 description = "A library for reading and writing Minecraft NBT files."
 
 repositories {

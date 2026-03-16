@@ -235,8 +235,8 @@ public sealed abstract class ArrayTag<E extends Number, T extends ValueTag<E>, A
     /// Sets the value at the given index.
     ///
     /// @throws IndexOutOfBoundsException if the index is out of bounds.
-    @Contract(mutates = "this")
-    public abstract void set(int index, @Flow(targetIsContainer = true) E value) throws IndexOutOfBoundsException;
+    @Contract(value = "_, _ -> this", mutates = "this")
+    public abstract ArrayTag<E, T, A, B> set(int index, @Flow(targetIsContainer = true) E value) throws IndexOutOfBoundsException;
 
     /// Sets all values of the tag from an array.
     ///
@@ -276,7 +276,7 @@ public sealed abstract class ArrayTag<E extends Number, T extends ValueTag<E>, A
     /// Appends the specified value to the end of this array.
     @Contract(value = "_ -> this", mutates = "this")
     public abstract ArrayTag<E, T, A, B> add(@Flow(targetIsContainer = true)
-                             E value);
+                                             E value);
 
     @Override
     @MustBeInvokedByOverriders

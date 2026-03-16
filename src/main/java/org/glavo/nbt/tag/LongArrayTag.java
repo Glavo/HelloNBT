@@ -82,8 +82,8 @@ public final class LongArrayTag extends ArrayTag<Long, LongTag, long[], LongBuff
     /// Sets the value at the given index.
     ///
     /// @throws IndexOutOfBoundsException if the index is out of bounds.
-    @Contract(mutates = "this")
-    public void set(int index, long value) throws IndexOutOfBoundsException {
+    @Contract(value = "_, _ -> this", mutates = "this")
+    public LongArrayTag set(int index, long value) throws IndexOutOfBoundsException {
         Objects.checkIndex(index, size);
         setDirect(index, value);
 
@@ -91,16 +91,18 @@ public final class LongArrayTag extends ArrayTag<Long, LongTag, long[], LongBuff
         if (tag != null) {
             tag.setDirect(value);
         }
+        return this;
     }
 
     /// {@inheritDoc}
     ///
     /// @see #set(int, long)
     @Override
-    @Contract(mutates = "this")
+    @Contract(value = "_, _ -> this", mutates = "this")
     @ApiStatus.Obsolete
-    public void set(int index, Long value) throws IndexOutOfBoundsException {
+    public LongArrayTag set(int index, Long value) throws IndexOutOfBoundsException {
         set(index, value.longValue());
+        return this;
     }
 
     @Override

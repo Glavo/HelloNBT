@@ -78,8 +78,8 @@ public final class ByteArrayTag extends ArrayTag<Byte, ByteTag, byte[], ByteBuff
     /// Sets the value at the given index.
     ///
     /// @throws IndexOutOfBoundsException if the index is out of bounds.
-    @Contract(mutates = "this")
-    public void set(int index, byte value) throws IndexOutOfBoundsException {
+    @Contract(value = "_, _ -> this", mutates = "this")
+    public ByteArrayTag set(int index, byte value) throws IndexOutOfBoundsException {
         Objects.checkIndex(index, size);
         setDirect(index, value);
 
@@ -87,16 +87,18 @@ public final class ByteArrayTag extends ArrayTag<Byte, ByteTag, byte[], ByteBuff
         if (tag != null) {
             tag.setDirect(value);
         }
+        return this;
     }
 
     /// {@inheritDoc}
     ///
     /// @see #set(int, byte)
     @Override
-    @Contract(mutates = "this")
+    @Contract(value = "_, _ -> this", mutates = "this")
     @ApiStatus.Obsolete
-    public void set(int index, Byte value) throws IndexOutOfBoundsException {
+    public ByteArrayTag set(int index, Byte value) throws IndexOutOfBoundsException {
         set(index, value.byteValue());
+        return this;
     }
 
     @Override

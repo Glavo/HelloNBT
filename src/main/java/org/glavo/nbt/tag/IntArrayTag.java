@@ -108,8 +108,8 @@ public final class IntArrayTag extends ArrayTag<Integer, IntTag, int[], IntBuffe
     /// Sets the value at the given index.
     ///
     /// @throws IndexOutOfBoundsException if the index is out of bounds.
-    @Contract(mutates = "this")
-    public void set(int index, int value) throws IndexOutOfBoundsException {
+    @Contract(value = "_, _ -> this", mutates = "this")
+    public IntArrayTag set(int index, int value) throws IndexOutOfBoundsException {
         Objects.checkIndex(index, size);
         setDirect(index, value);
 
@@ -117,16 +117,18 @@ public final class IntArrayTag extends ArrayTag<Integer, IntTag, int[], IntBuffe
         if (tag != null) {
             tag.setDirect(value);
         }
+        return this;
     }
 
     /// {@inheritDoc}
     ///
     /// @see #set(int, int)
     @Override
-    @Contract(mutates = "this")
+    @Contract(value = "_, _ -> this", mutates = "this")
     @ApiStatus.Obsolete
-    public void set(int index, Integer value) throws IndexOutOfBoundsException {
+    public IntArrayTag set(int index, Integer value) throws IndexOutOfBoundsException {
         set(index, value.intValue());
+        return this;
     }
 
     @Override

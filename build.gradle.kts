@@ -45,6 +45,8 @@ tasks.withType(JavaCompile::class) {
 
 tasks.javadoc {
     (options as StandardJavadocDocletOptions).also {
+        it.jFlags!!.addAll(listOf("-Duser.language=en", "-Duser.country=", "-Duser.variant="))
+
         it.encoding("UTF-8")
         it.addStringOption("link", "https://docs.oracle.com/en/java/javase/25/docs/api/")
         it.addBooleanOption("html5", true)

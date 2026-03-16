@@ -365,3 +365,29 @@ try (var writer = Files.newBufferedWriter(Path.of("test.snbt"))) {
 ```java
 String snbt = SNBTCodec.of().toString(tag);
 ```
+
+### 异构 List 标签
+
+与 NBT 的二进制表示不同，SNBT 支持异构 List 标签。
+
+在 SNBT 中，如果 List 标签包含不同类型的元素，那么所有非 Compound 标签都会被转换为一个 Compound 标签，
+这个 Compound 标签中包含一个名称为空的子标签，子标签的值为原始的非 Compound 标签。
+
+HelloNBT 的 `ListTag` 类支持模拟这种行为。
+
+为了方便的模拟异构 List 标签，在构造 `ListTag` 时不应该传入元素类型参数：
+
+```java
+ListTag<Tag> listTag = new ListTag<>();
+```
+
+对于这样的 List 标签，应当使用 `addAnyTag` 方法添加子标签：
+
+```java
+listTag.addAnyTag(new IntTag(123))
+listTag.addAnyTag(new StringTag("HelloNBT"));
+
+assert listTag.equals(new ListTag<>(TagType.COMPOUND)
+        .addTag(new CompoundTag().addInt("", 123))
+        .addTag(new CompoundTag().addString("", "HelloNBT")));
+```

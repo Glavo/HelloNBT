@@ -10,7 +10,7 @@ HelloNBT 提供了对 NBT 元素树的基本抽象。
 
 所有 NBT 元素都实现了 `NBTElement` 接口，该接口有以下实现：
 
-- `NBTElement`: 代表任意 NBT 元素。
+- `NBTElement`: 代表任意 NBT元素。
     - `ChunkRegion`: 代表一个区域（Region）。一个区域中包含 32 x 32 个区块。
     - `Chunk`: 代表一个区块。区块中会包含其最后更新时间，以及一个可选的表示其 NBT 数据的 `CompoundTag`。
     - `Tag`: 代表一个 NBT Tag。
@@ -43,3 +43,75 @@ HelloNBT 提供了对 NBT 元素树的基本抽象。
 `clone` 方法会递归复制其所有子元素，返回的副本将与原元素具有相同的内容，但是与原元素完全独立，且没有父元素。
 用户可以 `clone` 出的元素添加至其他 `NBTParent` 中。
 
+## 构造 NBT Tag
+
+大部分 `Tag` 都可以简单的通过构造方法创建：
+
+```java
+// 创建一个 IntTag
+new IntTag();
+
+// 创建一个值为 123 的 IntTag
+new IntTag(123);
+
+// 创建一个空的 CompoundTag
+new CompoundTag();
+```
+
+构造 `ListTag` 时需要传入其元素类型：
+
+```java
+ListTag<IntTag> listTag = new ListTag<>(TagType.INT);
+```
+
+对于 `ValueTag`，除了可以在构造时传入值，也可以通过 `set` 方法修改其值：
+
+```java
+var intTag = new IntTag();
+intTag.set(123);
+```
+
+对于 `CompoundTag`，可以通过 `add` 系列方法添加子元素：
+
+```java
+var compoundTag = new CompoundTag()
+        .addInt("int", 123)             // 添加一个 IntTag 子元素，其名称为 "int"，值为 123
+        .addString("str", "HelloNBT")   // 添加一个 StringTag 子元素，其名称为 "str"，值为 "HelloNBT"
+        .addTag("compound", new CompoundTag()   // addTag 方法可以添加任意子元素
+                .addInt("nestedInt", 456));
+```
+
+`add` 系列的方法支持链式调用，可以方便地构建复杂的 NBT 树。
+当添加的新元素与已存在的元素具有相同的名称时，新元素会覆盖旧元素。
+
+此外，`CompoundTag` 还提供了 `set` 系列的方法，用于修改已存在的子元素的值。
+
+`set` 系列的方法与 `add` 系列的方法类似，但不会覆盖已存在的元素，而是修改其值：
+
+```java
+// 先获取 IntTag 子元素
+var intSubTag = (IntTag) compoundTag.get("int");
+
+compoundTag.setInt("int", 233);
+
+assert intSubTag.get() == 233;
+```
+
+在不存在该子元素时，`set` 系列的方法会创建一个新的子元素并添加到 `CompoundTag` 中：
+
+```java
+assert compoundTag.getTag("anotherInt") == null;
+compoundTag.setInt("anotherInt", 456);
+assert compoundTag.getTag("anotherInt") instanceof IntTag;
+assert ((IntTag) compoundTag.getTag("anotherInt")).get() == 456;
+```
+
+如果已存在的子类型与要设置的类型不匹配，`set` 系列的方法会抛出 `IllegalStateException`：
+
+```java
+try {
+    compoundTag.setInt("string", 233);
+} catch (IllegalStateException e) {
+    // Expected IllegalStateException
+}
+```

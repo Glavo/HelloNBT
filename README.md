@@ -40,4 +40,4 @@ Maven:
 
 ## Getting Started
 
-- Tutorial ([中文](docs/Tutorial_zh.md))
+- Quick Start ([中文](docs/QuickStart_zh.md))

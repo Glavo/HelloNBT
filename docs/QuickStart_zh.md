@@ -1,10 +1,8 @@
-# HelloNBT 教程
-
-## 快速入门
+# HelloNBT 快速入门
 
 如果你初次使用 HelloNBT，可以先阅读本节来快速了解 HelloNBT 的基本用法。
 
-### 读取 NBT 文件
+## 读取 NBT 文件
 
 HelloNBT 支持读取和写入 NBT 文件（例如 `level.dat`、`playerdata/<UUID>.dat`）、
 Anvil 文件和区域文件（`*.mca`/`*.mcr`）。
@@ -46,7 +44,7 @@ tag = NBTCodec.of().readTag(Channels.newChannel(new ByteArrayInputStream(bytes))
 CompoundTag tag = NBTCodec.of().readTag(Path.of("level.dat"), TagType.COMPOUND);
 ```
 
-### 写入 NBT 文件
+## 写入 NBT 文件
 
 `NBTCodec` 提供了 `writeTag` 方法来写入 NBT 文件。
 
@@ -75,7 +73,7 @@ Minecraft Java 版的世界区块信息通常存储在后缀为 `.mca` 的 Anvil
 ChunkRegion region = NBTCodec.of().readRegion(Path.of("region/r.0.0.mca"));
 ```
 
-### 写入 Anvil 文件和 Region 文件
+## 写入 Anvil 文件和 Region 文件
 
 `NBTCodec` 提供了 `writeRegion` 方法来写入 Anvil 文件和 Region 文件：
 
@@ -101,7 +99,7 @@ try (var channel = Files.newByteChannel(Path.of("region/r.0.0.mca"),
 再写入到输出流中，这可能会导致内存占用较大。
 我们更建议使用 `SeekableByteChannel` 作为目标，这样 HelloNBT 可以逐个区块写入通道，避免额外的内存占用。
 
-### 外部区块文件
+## 外部区块文件
 
 Anvil 文件中每个区块的数据最大不能超过 1020KiB。
 

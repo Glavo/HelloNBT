@@ -115,3 +115,37 @@ try {
     // Expected IllegalStateException
 }
 ```
+
+## NBTPath
+
+HelloNBT 提供了对 NBTPath 的支持。
+
+NBTPath 是一种查询 NBT 数据的语言，相关文档可以在 Minecraft Wiki 中查看：[NBTPath](https://zh.minecraft.wiki/w/NBT%E8%B7%AF%E5%BE%84)。
+
+HelloNBT 中可以使用 `NBTPath.of(String)` 来解析 NBTPath 字符串：
+
+```java
+NBTPath<?> path = NBTPath.of("a.b");
+```
+
+NBTPath 可以附加一个 `TagType`，用于指定匹配的 NBT 元素类型：
+
+```java
+NBTPath<IntTag> path = NBTPath.of("a.b").withTagType(TagType.INT);
+```
+
+在获取到一个 NBTPath 后，可以使用 `NBTParent#getAllTags(NBTPath)` 方法来获取所有匹配的 NBT Tag，
+或者用 `NBTParent#getFirstTag(NBTPath)` 方法来获取第一个匹配的 NBT 元素：
+
+```java
+// 获取所有匹配的 NBT Tag
+List<IntTag> _ = compoundTag.getAllTags(path).toList();
+
+// 获取第一个匹配的 NBT Tag，如果不存在则抛出 NoSuchElementException
+IntTag _ = compoundTag.getFirstTag(path);
+
+// 获取第一个匹配的 NBT Tag 的值
+int _ = compoundTag.getFirstInt(path); // 如果不存在则抛出 NoSuchElementException
+Integer _ = compoundTag.getFirstIntOrNull(path); // 如果不存在则返回 null
+int _ = compoundTag.getFirstIntOrDefault(path, 0); // 如果不存在则返回默认值
+```

@@ -103,7 +103,7 @@ publishing.publications.create<MavenPublication>("maven") {
     pom {
         name.set(project.name)
         description.set(project.description)
-        url.set("https://github.com/Glavo/HelloNBT")
+        url.set("https://github.com/HMCL-dev/HelloNBT")
 
         licenses {
             license {
@@ -121,7 +121,7 @@ publishing.publications.create<MavenPublication>("maven") {
         }
 
         scm {
-            url.set("https://github.com/Glavo/HelloNBT")
+            url.set("https://github.com/HMCL-dev/HelloNBT")
         }
     }
 }

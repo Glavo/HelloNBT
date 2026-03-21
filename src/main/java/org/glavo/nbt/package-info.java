@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-/// The base package for the [HelloNBT](https://github.com/Glavo/HelloNBT).
+/// The base package for the [HelloNBT](https://github.com/HMCL-dev/HelloNBT).
 ///
 /// There are the core packages for HelloNBT:
 ///

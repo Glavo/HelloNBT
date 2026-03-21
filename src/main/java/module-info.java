@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
-/// [HelloNBT](https://github.com/Glavo/HelloNBT) is a modern Java library for reading and writing Minecraft NBT files.
+/// [HelloNBT](https://github.com/HMCL-dev/HelloNBT) is a modern Java library for reading and writing Minecraft NBT files.
 ///
-/// For an introduction and detailed tutorials on HelloNBT, please refer to the [HelloNBT Documentation](https://github.com/Glavo/HelloNBT/tree/main/docs).
+/// For an introduction and detailed tutorials on HelloNBT, please refer to the [HelloNBT Documentation](https://github.com/HMCL-dev/HelloNBT/tree/main/docs).
 ///
 /// If you want to learn about the HelloNBT API by reading the Javadoc, check the documentation of the following core classes:
 ///

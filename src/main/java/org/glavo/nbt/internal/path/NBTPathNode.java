@@ -17,6 +17,7 @@
  */
 package org.glavo.nbt.internal.path;
 
+import org.glavo.nbt.internal.schema.MatchSchema;
 import org.glavo.nbt.internal.snbt.SNBTWriter;
 import org.glavo.nbt.io.SNBTCodec;
 import org.glavo.nbt.tag.*;
@@ -31,30 +32,6 @@ public sealed interface NBTPathNode {
     @Unmodifiable
     CompoundTag EMPTY_COMPOUND_TAG = new CompoundTag();
 
-    private static boolean match(Tag tag, CompoundTag expected) {
-        if (tag instanceof CompoundTag compoundTag) {
-            for (Tag expectedSubTag : expected) {
-                Tag actualSubTag = compoundTag.get(expectedSubTag.getName());
-                if (actualSubTag == null || expectedSubTag.getClass() != actualSubTag.getClass()) {
-                    return false;
-                }
-
-                if (expectedSubTag instanceof CompoundTag) {
-                    if (!match(actualSubTag, (CompoundTag) expectedSubTag)) {
-                        return false;
-                    }
-                } else {
-                    if (!expectedSubTag.contentEquals(actualSubTag)) {
-                        return false;
-                    }
-                }
-
-            }
-            return true;
-        } else {
-            return false;
-        }
-    }
 
     private static boolean isListOrArray(ParentTag<?> tag) {
         return tag instanceof ListTag || tag instanceof ArrayTag;
@@ -85,7 +62,7 @@ public sealed interface NBTPathNode {
 
         @Override
         public Stream<? extends Tag> operate(Stream<? extends Tag> tags) {
-            return tags.filter(tag -> match(tag, this.tags));
+            return tags.filter(tag -> MatchSchema.match(tag, this.tags));
         }
 
         @Override
@@ -136,7 +113,7 @@ public sealed interface NBTPathNode {
             return tags.flatMap(tag -> {
                 if (tag instanceof CompoundTag compoundTag) {
                     Tag subTag = compoundTag.get(name);
-                    if (subTag != null && NBTPathNode.match(subTag, this.tags)) {
+                    if (subTag != null && MatchSchema.match(subTag, this.tags)) {
                         return Stream.of(subTag);
                     }
                 }
@@ -236,7 +213,7 @@ public sealed interface NBTPathNode {
         public Stream<? extends Tag> operate(Stream<? extends Tag> tags) {
             return tags.flatMap(tag -> {
                 if (tag instanceof ListTag<?> listTag) {
-                    return listTag.stream().filter(subTag -> match(subTag, this.tags));
+                    return listTag.stream().filter(subTag -> MatchSchema.match(subTag, this.tags));
                 }
 
                 return Stream.empty();

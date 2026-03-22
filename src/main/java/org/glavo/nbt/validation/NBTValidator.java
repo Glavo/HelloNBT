@@ -17,12 +17,33 @@ package org.glavo.nbt.validation;
 
 import org.glavo.nbt.NBTElement;
 
+import java.util.function.Predicate;
+
 /// Validator for NBT elements.
+///
+/// This interface defines two methods for validating NBT elements:
+///
+/// - [#test(NBTElement)]: Returns `true` if the element meets the rules of this validator, otherwise returns `false`.
+/// - [#validate(NBTElement)]: Does nothing if the element meets the rules of this validator, otherwise throws an exception.
+///
+/// `test` is suitable for checking whether an element meets the rules of the validator, while `validate` provides more detailed error information when validation fails.
+///
+/// @see NBTSchema
 @FunctionalInterface
-public interface NBTValidator<E extends NBTElement> {
+public interface NBTValidator<E extends NBTElement> extends Predicate<E> {
+
+    /// Validates the given NBT element.
+    ///
+    /// @return true if the element is valid, false otherwise.
+    @Override
+    boolean test(E e);
 
     /// Validates the given NBT element.
     ///
     /// @throws NBTValidationException if the element is not valid.
-    boolean validate(E element) throws NBTValidationException;
+    default void validate(E element) throws NBTValidationException {
+        if (!test(element)) {
+            throw new NBTValidationException("Invalid NBT element: " + element);
+        }
+    }
 }

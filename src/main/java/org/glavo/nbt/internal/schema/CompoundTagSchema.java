@@ -28,12 +28,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Objects;
 
-public final class CompoundTagSchema implements TagSchema<CompoundTag> {
-    private final @Unmodifiable List<SchemaEntry> entries;
-
-    public CompoundTagSchema(@Unmodifiable List<SchemaEntry> entries) {
-        this.entries = entries;
-    }
+public record CompoundTagSchema(@Unmodifiable List<SchemaEntry> entries) implements TagSchema<CompoundTag> {
 
     @Override
     public boolean testTag(Tag tag) {

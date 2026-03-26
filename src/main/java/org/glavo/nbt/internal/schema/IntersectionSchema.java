@@ -61,7 +61,6 @@ public record IntersectionSchema<T extends Tag>(
         var list = new ArrayList<NBTSchema<? extends T>>(schemas.size() + 1);
         list.addAll(schemas);
         list.add(other);
-
         return new IntersectionSchema<>(List.copyOf(list));
     }
 }

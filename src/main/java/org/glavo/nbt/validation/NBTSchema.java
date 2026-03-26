@@ -26,6 +26,7 @@ import org.glavo.nbt.tag.Tag;
 import org.glavo.nbt.tag.TagType;
 import org.jetbrains.annotations.Contract;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
@@ -79,7 +80,16 @@ public sealed interface NBTSchema<T extends Tag> extends NBTValidator<T>
         if (schemas.length == 1) {
             return narrow(schemas[0]);
         }
-        return new UnionSchema<>(List.of(schemas));
+
+        var list = new ArrayList<NBTSchema<? extends T>>(schemas.length);
+        for (NBTSchema<? extends T> schema : schemas) {
+            if (schema instanceof UnionSchema<? extends T> union) {
+                list.addAll(union.schemas());
+            } else {
+                list.add(schema);
+            }
+        }
+        return new UnionSchema<>(List.copyOf(list));
     }
 
     /// Creates a schema that validates only if all the given schemas validate.
@@ -94,7 +104,16 @@ public sealed interface NBTSchema<T extends Tag> extends NBTValidator<T>
         if (schemas.length == 1) {
             return narrow(schemas[0]);
         }
-        return new IntersectionSchema<>(List.of(schemas));
+
+        var list = new ArrayList<NBTSchema<? extends T>>(schemas.length);
+        for (NBTSchema<? extends T> schema : schemas) {
+            if (schema instanceof IntersectionSchema<? extends T> intersection) {
+                list.addAll(intersection.schemas());
+            } else {
+                list.add(schema);
+            }
+        }
+        return new IntersectionSchema<>(List.copyOf(list));
     }
 
     /// Creates a schema that validates only if both of the given schemas validate.

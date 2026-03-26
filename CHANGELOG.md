@@ -2,7 +2,12 @@
 
 ## 0.4.0 (In development)
 
+- New API `NBTSchema#beginCompound()` for creating a schema for validating compound tags.
 - Relax type bounds of the `NBTSchema#typeIs` method.
+
+### Breaking Changes
+
+- The `NBTSchema.Builder#build()` method has been renamed to `end()`.
 
 ## 0.3.0 (2026-03-25)
 

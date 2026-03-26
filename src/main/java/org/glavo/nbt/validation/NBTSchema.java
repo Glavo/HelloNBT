@@ -108,7 +108,6 @@ public sealed interface NBTSchema<T extends Tag> extends NBTValidator<T>
     /// Creates a schema that validates if either of the given schemas validate.
     ///
     /// @throws IllegalArgumentException if either schema is null.
-
     default NBTSchema<T> or(NBTSchema<? extends T> other) {
         Objects.requireNonNull(other, "other");
         return new UnionSchema<>(List.of(this, other));

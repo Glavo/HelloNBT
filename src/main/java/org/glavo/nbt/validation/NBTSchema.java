@@ -120,16 +120,14 @@ public sealed interface NBTSchema<T extends Tag> extends NBTValidator<T>
     ///
     /// @throws IllegalArgumentException if either schema is null.
     default NBTSchema<T> and(NBTSchema<? extends T> other) {
-        Objects.requireNonNull(other, "other");
-        return new IntersectionSchema<>(List.of(this, other));
+        return intersection(this, other);
     }
 
     /// Creates a schema that validates if either of the given schemas validate.
     ///
     /// @throws IllegalArgumentException if either schema is null.
     default NBTSchema<T> or(NBTSchema<? extends T> other) {
-        Objects.requireNonNull(other, "other");
-        return new UnionSchema<>(List.of(this, other));
+        return union(this, other);
     }
 
     sealed interface Builder<T extends Tag> {

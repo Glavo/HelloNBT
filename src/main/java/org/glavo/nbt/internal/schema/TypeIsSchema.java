@@ -21,7 +21,7 @@ import org.glavo.nbt.tag.Tag;
 import org.glavo.nbt.tag.TagType;
 import org.glavo.nbt.validation.NBTValidationException;
 
-public record TypeIsSchema<T extends Tag>(TagType<T> type) implements TagSchema<T> {
+public record TypeIsSchema<T extends Tag>(TagType<? extends T> type) implements TagSchema<T> {
     @Override
     public boolean testTag(Tag tag) {
         return type.equals(tag.getType());

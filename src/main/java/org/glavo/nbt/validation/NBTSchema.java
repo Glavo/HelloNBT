@@ -48,7 +48,7 @@ public sealed interface NBTSchema<T extends Tag> extends NBTValidator<T>
     ///
     /// @param type The type of the tag.
     /// @return A schema that validates a tag of the given type.
-    static <T extends Tag> NBTSchema<T> typeIs(TagType<T> type) {
+    static <T extends Tag> NBTSchema<T> typeIs(TagType<? extends T> type) {
         Objects.requireNonNull(type, "type");
         return new TypeIsSchema<>(type);
     }

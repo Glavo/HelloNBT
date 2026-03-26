@@ -2,6 +2,8 @@
 
 ## 0.4.0 (In development)
 
+- Relax type bounds of the `NBTSchema#typeIs` method.
+
 ## 0.3.0 (2026-03-25)
 
 - New API `NBTSchema` for validating NBT elements.

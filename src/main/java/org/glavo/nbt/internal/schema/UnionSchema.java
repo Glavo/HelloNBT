@@ -22,7 +22,9 @@ import org.glavo.nbt.validation.NBTSchema;
 import org.glavo.nbt.validation.NBTValidationException;
 import org.jetbrains.annotations.Unmodifiable;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 public record UnionSchema<T extends Tag>(@Unmodifiable List<NBTSchema<? extends T>> schemas) implements TagSchema<T> {
 
@@ -56,5 +58,15 @@ public record UnionSchema<T extends Tag>(@Unmodifiable List<NBTSchema<? extends 
             }
         }
         throw exception;
+    }
+
+    @Override
+    public NBTSchema<T> or(NBTSchema<? extends T> other) {
+        Objects.requireNonNull(other, "other");
+
+        var list = new ArrayList<NBTSchema<? extends T>>(schemas.size() + 1);
+        list.addAll(schemas);
+        list.add(other);
+        return new UnionSchema<>(List.copyOf(list));
     }
 }

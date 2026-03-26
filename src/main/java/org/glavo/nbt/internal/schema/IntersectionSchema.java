@@ -22,7 +22,9 @@ import org.glavo.nbt.validation.NBTSchema;
 import org.glavo.nbt.validation.NBTValidationException;
 import org.jetbrains.annotations.Unmodifiable;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 public record IntersectionSchema<T extends Tag>(
         @Unmodifiable List<NBTSchema<? extends T>> schemas) implements TagSchema<T> {
@@ -50,5 +52,16 @@ public record IntersectionSchema<T extends Tag>(
                 throw new NBTValidationException("Failed to validate tag against schema: " + schema, e);
             }
         }
+    }
+
+    @Override
+    public NBTSchema<T> and(NBTSchema<? extends T> other) {
+        Objects.requireNonNull(other, "other");
+
+        var list = new ArrayList<NBTSchema<? extends T>>(schemas.size() + 1);
+        list.addAll(schemas);
+        list.add(other);
+
+        return new IntersectionSchema<>(List.copyOf(list));
     }
 }

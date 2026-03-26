@@ -79,7 +79,6 @@ public record CompoundTagSchema(@Unmodifiable List<SchemaEntry> entries) impleme
     public static final class Builder implements NBTSchema.Builder.OfCompoundTag {
         private final LinkedHashMap<String, SchemaEntry> entries = new LinkedHashMap<>();
 
-
         private void add(String name, NBTSchema<?> schema, boolean required) {
             entries.put(name, new SchemaEntry(name, (TagSchema<?>) schema, required));
         }

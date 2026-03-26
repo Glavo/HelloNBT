@@ -15,7 +15,6 @@
  */
 package org.glavo.nbt.validation;
 
-import org.glavo.nbt.internal.schema.CompoundTagSchema;
 import org.glavo.nbt.tag.CompoundTag;
 import org.glavo.nbt.tag.IntTag;
 import org.glavo.nbt.tag.StringTag;
@@ -189,19 +188,19 @@ final class NBTSchemaTest {
 	void testCompoundTagBuilderWithRequiredOptionalAndNestedSchemas() {
 		CompoundTag profilePattern = new CompoundTag().setString("role", "admin");
 
-		NBTSchema<CompoundTag> profileSchema = new CompoundTagSchema.Builder()
+		NBTSchema<CompoundTag> profileSchema = NBTSchema.beginCompound()
 				.addRequired("id", TagType.INT)
 				.addOptional("nickname", TagType.STRING)
 				.addRequired("meta", profilePattern)
-				.build();
+				.end();
 
 		profilePattern.setString("role", "guest");
 
-		NBTSchema<CompoundTag> rootSchema = new CompoundTagSchema.Builder()
+		NBTSchema<CompoundTag> rootSchema = NBTSchema.beginCompound()
 				.addRequired("name", TagType.STRING)
 				.addOptional("age", TagType.INT)
 				.addRequired("profile", profileSchema)
-				.build();
+				.end();
 
 		CompoundTag valid = new CompoundTag()
 				.setString("name", "Alex")

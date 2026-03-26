@@ -144,7 +144,7 @@ public final class CompoundTagSchema implements TagSchema<CompoundTag> {
         }
 
         @Override
-        public NBTSchema<CompoundTag> build() {
+        public NBTSchema<CompoundTag> end() {
             return new CompoundTagSchema(List.copyOf(entries.values()));
         }
     }

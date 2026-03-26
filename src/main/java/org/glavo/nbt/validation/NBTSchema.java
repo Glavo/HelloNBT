@@ -17,10 +17,7 @@
  */
 package org.glavo.nbt.validation;
 
-import org.glavo.nbt.internal.schema.IntersectionSchema;
-import org.glavo.nbt.internal.schema.MatchSchema;
-import org.glavo.nbt.internal.schema.TypeIsSchema;
-import org.glavo.nbt.internal.schema.UnionSchema;
+import org.glavo.nbt.internal.schema.*;
 import org.glavo.nbt.tag.CompoundTag;
 import org.glavo.nbt.tag.Tag;
 import org.glavo.nbt.tag.TagType;
@@ -116,6 +113,12 @@ public sealed interface NBTSchema<T extends Tag> extends NBTValidator<T>
         return new IntersectionSchema<>(List.copyOf(list));
     }
 
+
+    @Contract(value = " -> new", pure = true)
+    static NBTSchema.Builder.OfCompoundTag beginCompound() {
+        return new CompoundTagSchema.Builder();
+    }
+
     /// Creates a schema that validates only if both of the given schemas validate.
     ///
     /// @throws IllegalArgumentException if either schema is null.
@@ -133,7 +136,7 @@ public sealed interface NBTSchema<T extends Tag> extends NBTValidator<T>
     sealed interface Builder<T extends Tag> {
         /// Builds a schema for validating NBT elements.
         @Contract(pure = true)
-        NBTSchema<T> build();
+        NBTSchema<T> end();
 
         sealed interface OfCompoundTag extends Builder<CompoundTag>
                 permits org.glavo.nbt.internal.schema.CompoundTagSchema.Builder {

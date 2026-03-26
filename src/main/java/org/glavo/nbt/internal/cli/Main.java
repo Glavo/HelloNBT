@@ -48,7 +48,7 @@ public final class Main {
     }
 
     private static void printUsage(PrintStream out) {
-        out.println("Usage: hello-nbt [options] <input-file>");
+        out.println("Usage: hello-nbt [options]");
         out.println("Options:");
         out.println("  -h, --help      Show this help message and exit");
         out.println("  -v, --version   Show version information and exit");

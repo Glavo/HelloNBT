@@ -39,8 +39,25 @@ java {
     withJavadocJar()
 }
 
+val mainClassName = "org.glavo.nbt.internal.cli.Main"
+
+tasks.jar {
+    manifest.attributes(
+        "Main-Class" to mainClassName,
+        "HelloNBT-Version" to project.version.toString(),
+    )
+}
+
 tasks.withType(JavaCompile::class) {
     options.release.set(17)
+    options.javaModuleMainClass.set(mainClassName)
+    options.javaModuleVersion.set(project.version.toString())
+}
+
+val run by tasks.registering(JavaExec::class) {
+    dependsOn(tasks.jar)
+    mainModule = "org.glavo.nbt"
+    classpath(tasks.jar.map { it.archiveFile })
 }
 
 tasks.javadoc {
@@ -52,11 +69,13 @@ tasks.javadoc {
         it.addBooleanOption("html5", true)
         it.addStringOption("Xdoclint:none", "-quiet")
 
-        it.tags!!.addAll(listOf(
-            "apiNote:a:API Note:",
-            "implNote:a:Implementation Note:",
-            "implSpec:a:Implementation Specification:",
-        ))
+        it.tags!!.addAll(
+            listOf(
+                "apiNote:a:API Note:",
+                "implNote:a:Implementation Note:",
+                "implSpec:a:Implementation Specification:",
+            )
+        )
     }
 }
 

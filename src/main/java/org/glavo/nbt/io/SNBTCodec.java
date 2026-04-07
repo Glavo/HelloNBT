@@ -110,14 +110,29 @@ public final class SNBTCodec {
     private final EscapeStrategy escapeStrategy;
     private final QuoteStrategy nameQuoteStrategy;
     private final QuoteStrategy valueQuoteStrategy;
+    private final boolean allowNewLineAsSeparator;
 
-    private SNBTCodec(LineBreakStrategy lineBreakStrategy, String indentation, SurroundingSpaces surroundingSpaces, EscapeStrategy escapeStrategy, QuoteStrategy nameQuoteStrategy, QuoteStrategy valueQuoteStrategy) {
+    private SNBTCodec(LineBreakStrategy lineBreakStrategy, String indentation, SurroundingSpaces surroundingSpaces,
+        EscapeStrategy escapeStrategy, QuoteStrategy nameQuoteStrategy, QuoteStrategy valueQuoteStrategy) {
+        this(
+            lineBreakStrategy,
+            indentation,
+            surroundingSpaces,
+            escapeStrategy,
+            nameQuoteStrategy,
+            valueQuoteStrategy,
+            false);
+    }
+
+    private SNBTCodec(LineBreakStrategy lineBreakStrategy, String indentation, SurroundingSpaces surroundingSpaces, EscapeStrategy escapeStrategy, QuoteStrategy nameQuoteStrategy, QuoteStrategy valueQuoteStrategy,
+        boolean allowNewLineAsSeparator) {
         this.lineBreakStrategy = lineBreakStrategy;
         this.indentation = indentation;
         this.surroundingSpaces = surroundingSpaces;
         this.escapeStrategy = escapeStrategy;
         this.nameQuoteStrategy = nameQuoteStrategy;
         this.valueQuoteStrategy = valueQuoteStrategy;
+        this.allowNewLineAsSeparator = allowNewLineAsSeparator;
     }
 
     /// Returns the line break strategy for all parent tags.
@@ -245,6 +260,16 @@ public final class SNBTCodec {
         return new SNBTCodec(lineBreakStrategy, indentation, surroundingSpaces, escapeStrategy, nameQuoteStrategy, quoteStrategy);
     }
 
+    @Contract(pure = true)
+    public boolean getAllowNewLineAsSeparator() {
+        return allowNewLineAsSeparator;
+    }
+
+    @Contract(pure = true)
+    public SNBTCodec withAllowNewLineAsSeparator(boolean allowNewLineAsSeparator) {
+        return new SNBTCodec(lineBreakStrategy, indentation, surroundingSpaces, escapeStrategy, nameQuoteStrategy, valueQuoteStrategy, allowNewLineAsSeparator);
+    }
+
     /// Reads a NBT tag from the Stringified NBT data.
     ///
     /// @throws IOException if the input is not a valid Stringified NBT data.
@@ -261,7 +286,7 @@ public final class SNBTCodec {
     public Tag readTag(CharSequence input, int startInclusive, int endExclusive) throws IOException {
         Tag tag;
         try {
-            tag = new SNBTParser(input, startInclusive, endExclusive).nextTag();
+            tag = new SNBTParser(input, startInclusive, endExclusive, allowNewLineAsSeparator).nextTag();
         } catch (IllegalArgumentException e) {
             throw new IOException(e);
         }

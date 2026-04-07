@@ -34,6 +34,7 @@ sealed interface Token {
         COMMA,              // ,
         COLON,              // :
         DOT,                // .
+        NEW_LINE,           // \n
         EOF
     }
 

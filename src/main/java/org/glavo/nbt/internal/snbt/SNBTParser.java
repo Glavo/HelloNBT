@@ -32,6 +32,8 @@ import java.util.UUID;
 public final class SNBTParser {
     private final CharSequence input;
     private final int endIndex;
+    /// Whether allows New Line (\n) as separators in Compound and List. Used in FTB-flavored SNBT.
+    private final boolean allowNewLineAsSeparator;
 
     private boolean parsingPath = false;
 
@@ -43,9 +45,14 @@ public final class SNBTParser {
     private @Nullable Token lookahead;
 
     public SNBTParser(CharSequence input, int beginIndex, int endIndex) {
+        this(input, beginIndex, endIndex, false);
+    }
+
+    public SNBTParser(CharSequence input, int beginIndex, int endIndex, boolean allowNewLineAsSeparator) {
         Objects.checkFromToIndex(beginIndex, endIndex, input.length());
         this.input = input;
         this.endIndex = endIndex;
+        this.allowNewLineAsSeparator = allowNewLineAsSeparator;
 
         this.cursor = beginIndex;
     }
@@ -74,9 +81,12 @@ public final class SNBTParser {
         return buffer;
     }
 
-    private void skipWhiteSpace() {
+    private void skipWhiteSpace(boolean keepNewLine) {
         while (cursor < endIndex) {
             int ch = getCodePoint();
+            if (allowNewLineAsSeparator && keepNewLine && ch == '\n') {
+                break;
+            }
             if (Character.isWhitespace(ch)) {
                 cursor += Character.charCount(ch);
             } else {
@@ -107,7 +117,11 @@ public final class SNBTParser {
     }
 
     Token readNextToken() {
-        skipWhiteSpace();
+        return readNextToken(false);
+    }
+
+    Token readNextToken(boolean tokenizeNewLine) {
+        skipWhiteSpace(tokenizeNewLine);
 
         if (cursor >= endIndex) {
             return Token.SimpleToken.EOF;
@@ -145,6 +159,7 @@ public final class SNBTParser {
             case '.' -> cursor >= endIndex || !TextUtils.isAsciiDigit(input.charAt(cursor))
                     ? Token.SimpleToken.DOT
                     : null;  // Floating point number
+            case '\n' -> Token.SimpleToken.NEW_LINE; // '\n' will be skipped above unless allowed
             default -> null;
         };
 
@@ -307,8 +322,12 @@ public final class SNBTParser {
     }
 
     Token peekToken() {
+        return peekToken(false);
+    }
+
+    Token peekToken(boolean tokenizeNewLine) {
         if (lookahead == null) {
-            lookahead = readNextToken();
+            lookahead = readNextToken(tokenizeNewLine);
         }
         return lookahead;
     }
@@ -400,8 +419,8 @@ public final class SNBTParser {
 
             tag.addTag(nameToken.value(), value);
 
-            Token peek = peekToken();
-            if (peek == Token.SimpleToken.COMMA) {
+            Token peek = peekToken(true);
+            if (peek == Token.SimpleToken.COMMA || peek == Token.SimpleToken.NEW_LINE) {
                 discardPeekedToken(peek);
             } else if (peek == Token.SimpleToken.RIGHT_BRACE) {
                 discardPeekedToken(peek);
@@ -432,8 +451,8 @@ public final class SNBTParser {
             }
             tag.addAnyTag(value);
 
-            peek = peekToken();
-            if (peek == Token.SimpleToken.COMMA) {
+            peek = peekToken(true);
+            if (peek == Token.SimpleToken.COMMA || peek == Token.SimpleToken.NEW_LINE) {
                 discardPeekedToken(peek);
             } else if (peek == Token.SimpleToken.RIGHT_BRACKET) {
                 discardPeekedToken(peek);
